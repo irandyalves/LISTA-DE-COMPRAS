@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lista de Compras</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
+
+  :root {
+    --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    --card-bg: rgba(255, 255, 255, 0.95);
+    --text-main: #2d3436;
+    --success: #00b894;
+    --accent: #6c5ce7;
+  }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--bg-gradient);
+    min-height: 100vh;
+    margin: 0;
+    padding: 15px;
+    color: var(--text-main);
+  }
+
+  #app-container {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  /* Título reduzido em 20% (de 2.5rem para 2.0rem) */
+  h1 {
+    text-align: center;
+    font-weight: 800;
+    color: #2d3436;
+    font-size: 2.0rem; 
+    margin-bottom: 20px;
+  }
+
+  .painel-controle {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: center;
+  }
+
+  button {
+    font-family: 'Poppins', sans-serif;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, opacity 0.2s;
+  }
+
+  button:active { transform: scale(0.95); }
+  
+  .btn-add { background: var(--accent); color: white; }
+  .btn-export { background: var(--success); color: white; }
+  
+  .categoria {
+    background: var(--card-bg);
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  }
+
+  .categoria-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+  }
+
+  .categoria-header h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: var(--accent);
+  }
+
+  .item-row {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-left: 4px solid transparent;
+    transition: all 0.3s ease;
+  }
+
+  .item-row.marcado {
+    background: #e0f8e9;
+    border-left: 4px solid var(--success);
+    opacity: 0.8;
+  }
+
+  .item-nome-linha {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .item-row.marcado .nome-texto {
+    text-decoration: line-through;
+    color: #636e72;
+  }
+
+  .checkbox-custom {
+    font-size: 1.4rem;
+  }
+
+  .item-controles {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    background: white;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #eee;
+  }
+
+  .controle-qtde {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-circle {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #dfe6e9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    padding: 0;
+  }
+
+  input[type="number"], input[type="text"] {
+    font-family: 'Poppins', sans-serif;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 6px;
+    text-align: center;
+  }
+
+  .input-preco {
+    width: 70px;
+  }
+
+  .total-geral {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 800;
+    background: var(--card-bg);
+    padding: 15px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+    color: var(--success);
+  }
+
+</style>
+</head>
+<body>
+
+  <div id="app-container">
+    <h1>🛒 Compras do Mês</h1>
+    
+    <div class="painel-controle">
+      <button class="btn-add" onclick="adicionarCategoria()">+ Nova Categoria</button>
+      <button class="btn-export" onclick="exportarPlanilha()">💾 Salvar Planilha (Drive)</button>
+    </div>
+
+    <div class="total-geral" id="display-total">
+      Total Estimado: R$ 0,00
+    </div>
+
+    <div id="lista-container"></div>
+  </div>
+
+<script>
+  // Dados iniciais (só carregam na primeira vez, depois usa o localStorage)
+  const dadosIniciais = [
+    {
+      id: 1, nome: "🍚 Básicos e Grãos", itens: [
+        { id: 101, nome: "Arroz 5kg", qtde: 2, preco: 0, checado: false },
+        { id: 102, nome: "Feijão", qtde: 2, preco: 0, checado: false },
+        { id: 103, nome: "Açúcar 5kg", qtde: 1, preco: 0, checado: false },
+        { id: 104, nome: "Óleo (litros)", qtde: 5, preco: 0, checado: false }
+      ]
+    },
+    {
+      id: 2, nome: "🥩 Carnes e Frios", itens: [
+        { id: 201, nome: "Peito de Frango", qtde: 3, preco: 0, checado: false },
+        { id: 202, nome: "Mussarela", qtde: 1, preco: 0, checado: false }
+      ]
+    },
+    {
+      id: 3, nome: "🧼 Limpeza", itens: [
+        { id: 301, nome: "Amaciante", qtde: 1, preco: 0, checado: false },
+        { id: 302, nome: "Qboa", qtde: 1, preco: 0, checado: false }
+      ]
+    }
+  ];
+
+  let listaCompras = JSON.parse(localStorage.getItem('listaComprasIrandy')) || dadosIniciais;
+
+  function salvarDados() {
+    localStorage.setItem('listaComprasIrandy', JSON.stringify(listaCompras));
+    renderizarLista();
+  }
+
+  function renderizarLista() {
+    const container = document.getElementById('lista-container');
+    container.innerHTML = '';
+    let totalGeral = 0;
+
+    listaCompras.forEach((categoria, catIndex) => {
+      const catDiv = document.createElement('div');
+      catDiv.className = 'categoria';
+      
+      let htmlItens = '';
+      categoria.itens.forEach((item, itemIndex) => {
+        totalGeral += (item.qtde * item.preco);
+        const iconeCheck = item.checado ? '✅' : '🔲';
+        const classeMarcado = item.checado ? 'marcado' : '';
+
+        htmlItens += `
+          <div class="item-row ${classeMarcado}">
+            <div class="item-nome-linha" onclick="alternarCheck(${catIndex}, ${itemIndex})">
+              <span class="checkbox-custom">${iconeCheck}</span>
+              <span class="nome-texto">${item.nome}</span>
+            </div>
+            <div class="item-controles">
+              <div class="controle-qtde">
+                <button class="btn-circle" onclick="alterarQtde(${catIndex}, ${itemIndex}, -1)">-</button>
+                <span>${item.qtde}</span>
+                <button class="btn-circle" onclick="alterarQtde(${catIndex}, ${itemIndex}, 1)">+</button>
+              </div>
+              <div class="controle-preco">
+                R$ <input type="number" class="input-preco" step="0.01" value="${item.preco}" 
+                     onchange="alterarPreco(${catIndex}, ${itemIndex}, this.value)">
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      catDiv.innerHTML = `
+        <div class="categoria-header">
+          <h2>${categoria.nome}</h2>
+          <button class="btn-circle" style="font-size:0.9rem;" onclick="adicionarProduto(${catIndex})">➕</button>
+        </div>
+        <div>${htmlItens}</div>
+      `;
+      container.appendChild(catDiv);
+    });
+
+    document.getElementById('display-total').innerText = `Total Estimado: R$ ${totalGeral.toFixed(2).replace('.', ',')}`;
+  }
+
+  function alternarCheck(catIndex, itemIndex) {
+    listaCompras[catIndex].itens[itemIndex].checado = !listaCompras[catIndex].itens[itemIndex].checado;
+    salvarDados();
+  }
+
+  function alterarQtde(catIndex, itemIndex, valor) {
+    let novaQtde = listaCompras[catIndex].itens[itemIndex].qtde + valor;
+    if (novaQtde < 1) novaQtde = 1;
+    listaCompras[catIndex].itens[itemIndex].qtde = novaQtde;
+    salvarDados();
+  }
+
+  function alterarPreco(catIndex, itemIndex, valor) {
+    let preco = parseFloat(valor);
+    listaCompras[catIndex].itens[itemIndex].preco = isNaN(preco) ? 0 : preco;
+    salvarDados();
+  }
+
+  function adicionarCategoria() {
+    const nome = prompt("Digite o nome da nova categoria:");
+    if (nome) {
+      listaCompras.push({ id: Date.now(), nome: nome, itens: [] });
+      salvarDados();
+    }
+  }
+
+  function adicionarProduto(catIndex) {
+    const nome = prompt("Digite o nome do produto:");
+    if (nome) {
+      listaCompras[catIndex].itens.push({
+        id: Date.now(), nome: nome, qtde: 1, preco: 0, checado: false
+      });
+      salvarDados();
+    }
+  }
+
+  function exportarPlanilha() {
+    let csv = 'Categoria,Produto,Quantidade,Preco Unitario,Subtotal\n';
+    let totalGeral = 0;
+    
+    listaCompras.forEach(categoria => {
+      categoria.itens.forEach(item => {
+        let subtotal = item.qtde * item.preco;
+        totalGeral += subtotal;
+        csv += `"${categoria.nome}","${item.nome}",${item.qtde},${item.preco.toFixed(2)},${subtotal.toFixed(2)}\n`;
+      });
+    });
+    
+    csv += `,,,TOTAL,${totalGeral.toFixed(2)}\n`;
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    
+    link.setAttribute("href", url);
+    link.setAttribute("download", "lista_compras_mes.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  // Inicializa o app
+  renderizarLista();
+</script>
+
+</body>
+</html>
