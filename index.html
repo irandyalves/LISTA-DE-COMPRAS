@@ -36,9 +36,13 @@
           </button>
           <input type="text" id="input-novo-item" class="input-busca-topo" 
                  placeholder="Pesquisar ou adicionar item..." 
+                 autocomplete="off"
                  oninput="aoDigitarBuscaTopo(this.value)"
-                 onkeydown="if(event.key === 'Enter') adicionarItemRapido()">
+                 onkeydown="gerenciarTeclasBuscaTopo(event)">
           <button class="btn-adicionar-topo" onclick="adicionarItemRapido()">Adicionar</button>
+
+          <!-- Dropdown Flutuante de Sugestões Instantâneas sobre o Menu -->
+          <div id="dropdown-sugestoes-topo" class="dropdown-sugestoes-topo" style="display: none;"></div>
         </div>
 
         <div class="header-acoes-espremidas">
@@ -56,6 +60,9 @@
           <div class="acoes-topo-direita">
             <button class="btn-chip-modo ativo" id="modo-mais-baratos" onclick="aplicarModoCotacao('mais_baratos')" title="Mais Baratos">
               🔥 Mais Baratos
+            </button>
+            <button class="btn-chip-modo" id="modo-alfabetico" onclick="aplicarModoCotacao('alfabetico')" title="Ordem Alfabética (A-Z)">
+              🔤 A-Z
             </button>
             <button class="btn-chip-modo" id="modo-maioria-barata" onclick="aplicarModoCotacao('maioria_barata')" title="Maioria Barata">
               🏆 Maioria Barata
@@ -78,12 +85,12 @@
 
       <!-- LINHA 2: Chips dos Mercados DF espremidos com Logos Oficiais -->
       <div class="barra-mercados-filtro espremida">
-        <button class="btn-chip-mercado ativo" data-mercado="todos" onclick="selecionarMercadoReferencia('todos')">🌐 Média DF</button>
-        <button class="btn-chip-mercado" data-mercado="atacadao" onclick="selecionarMercadoReferencia('atacadao')"><img src="logos/atacadao.png" class="chip-logo-img" alt="Atacadão"> Atacadão</button>
+        <button class="btn-chip-mercado ativo" data-mercado="atacadao" onclick="selecionarMercadoReferencia('atacadao')"><img src="logos/atacadao.png" class="chip-logo-img" alt="Atacadão"> Atacadão</button>
         <button class="btn-chip-mercado" data-mercado="assai" onclick="selecionarMercadoReferencia('assai')"><img src="logos/assai.png" class="chip-logo-img" alt="Assaí"> Assaí</button>
         <button class="btn-chip-mercado" data-mercado="diaadia" onclick="selecionarMercadoReferencia('diaadia')"><img src="logos/diaadia.png" class="chip-logo-img" alt="Dia a Dia"> Dia a Dia</button>
         <button class="btn-chip-mercado" data-mercado="carrefour" onclick="selecionarMercadoReferencia('carrefour')"><img src="logos/carrefour.png" class="chip-logo-img" alt="Carrefour"> Carrefour</button>
         <button class="btn-chip-mercado" data-mercado="bigbox" onclick="selecionarMercadoReferencia('bigbox')"><img src="logos/bigbox.png" class="chip-logo-img" alt="Big Box"> Big Box</button>
+        <button class="btn-chip-mercado" data-mercado="dona" onclick="selecionarMercadoReferencia('dona')"><img src="logos/dona.png" class="chip-logo-img" alt="Dona"> Dona</button>
         <button class="btn-chip-mercado" data-mercado="paodeacucar" onclick="selecionarMercadoReferencia('paodeacucar')"><img src="logos/paodeacucar.png" class="chip-logo-img" alt="Pão de Açúcar"> Pão de Açúcar</button>
       </div>
 
@@ -119,7 +126,7 @@
         <button class="despensa-aba-tab" data-categoria="Diversos" onclick="filtrarCategoriaGeral('Diversos', this)">
           📦 Diversos
         </button>
-        <button id="btn-ordem-alfabetica" class="btn-acao-mini" onclick="alternarOrdemAlfabeticaDespensa()" title="Ordenar de A a Z" style="margin-left: auto;">
+        <button id="btn-ordem-alfabetica" class="btn-acao-mini" onclick="alternarOrdemAlfabeticaGeral()" title="Ordenar de A a Z" style="margin-left: auto;">
           🔤 A-Z
         </button>
       </div>
@@ -151,11 +158,27 @@
     <!-- VIEW 3: MERCADOS - COTAÇÕES (BRASÍLIA DF) -->
     <main id="view-mercados" style="display: none;">
 
-      <!-- Cabeçalho -->
-      <div style="margin-bottom: 10px; padding: 0 4px;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <h2 style="font-size: 1.12rem; font-weight: 800;">🏢 Cotações Brasília (DF)</h2>
-          <span id="badge-produtos-mercados" style="font-size: 0.78rem; font-weight: 700; color: var(--primary); background: #EEF2FF; padding: 3px 10px; border-radius: 10px;">0 itens</span>
+      <!-- Cabeçalho e Barra de Ordenação -->
+      <div style="margin-bottom: 12px; padding: 0 4px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <h2 style="font-size: 1.12rem; font-weight: 800; margin: 0;">🏢 Cotações Brasília (DF)</h2>
+            <span id="badge-produtos-mercados" style="font-size: 0.78rem; font-weight: 700; color: var(--primary); background: #EEF2FF; padding: 3px 10px; border-radius: 10px;">0 itens</span>
+          </div>
+
+          <!-- Controles de Ordenação dos Mercados -->
+          <div class="mercados-ordenacao-bar" style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+            <span style="font-size: 0.74rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Ordenar:</span>
+            <button id="btn-ordem-mercados-alfa" class="btn-chip-modo" onclick="alternarOrdenacaoMercados('alfabetico')" title="Ordenar alfabeticamente (A-Z ou Z-A)">
+              <span id="label-ordem-mercados-alfa">🔤 Ordem Alfabética (A-Z)</span>
+            </button>
+            <button id="btn-ordem-mercados-preco" class="btn-chip-modo" onclick="alternarOrdenacaoMercados('preco')" title="Ordenar pelo menor preço cotado">
+              🔥 Menor Preço
+            </button>
+            <button id="btn-ordem-mercados-original" class="btn-chip-modo ativo" onclick="alternarOrdenacaoMercados('original')" title="Voltar à ordem padrão da lista">
+              📋 Ordem Lista
+            </button>
+          </div>
         </div>
       </div>
 

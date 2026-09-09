@@ -82,6 +82,7 @@ body {
 
 /* Barra de Pesquisa Reduzida no Topo (Único Botão Adicionar) */
 .busca-topo-reduzida {
+  position: relative;
   display: flex;
   align-items: center;
   background: white;
@@ -99,6 +100,186 @@ body {
 .busca-topo-reduzida:focus-within {
   border-color: var(--primary);
   box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+}
+
+/* Efeito ao digitar: Bordas vermelhas brilhosas e fonte bold */
+.busca-topo-reduzida.digitando-ativo {
+  border-color: #EF4444 !important;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.7), 0 0 20px rgba(239, 68, 68, 0.45), inset 0 0 3px rgba(239, 68, 68, 0.25) !important;
+  animation: bordaVermelhaBrilhosa 1s infinite alternate ease-in-out !important;
+}
+
+@keyframes bordaVermelhaBrilhosa {
+  0% {
+    border-color: #EF4444;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.6), 0 0 16px rgba(239, 68, 68, 0.35);
+  }
+  100% {
+    border-color: #DC2626;
+    box-shadow: 0 0 16px rgba(220, 38, 38, 0.9), 0 0 28px rgba(220, 38, 38, 0.55), inset 0 0 5px rgba(220, 38, 38, 0.3);
+  }
+}
+
+.busca-topo-reduzida.digitando-ativo .input-busca-topo,
+.input-busca-topo.digitando-ativo,
+.input-busca-topo:not(:placeholder-shown) {
+  font-weight: 700 !important;
+  color: #0F172A !important;
+}
+
+/* Dropdown Flutuante de Busca Instantânea Sobre o Menu */
+.dropdown-sugestoes-topo {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 100%;
+  min-width: 320px;
+  max-width: 540px;
+  background: #ffffff;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  box-shadow: 0 16px 36px -4px rgba(15, 23, 42, 0.22), 0 8px 16px -2px rgba(15, 23, 42, 0.1);
+  z-index: 99999;
+  max-height: 420px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 6px;
+  animation: dropdownSugestaoAnim 0.15s ease-out;
+}
+
+@keyframes dropdownSugestaoAnim {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.sugestao-cabecalho-secao {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #64748B;
+  padding: 6px 10px 4px;
+  letter-spacing: 0.05em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sugestao-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+  gap: 10px;
+  border-bottom: 1px solid #F1F5F9;
+}
+
+.sugestao-item-row:last-child {
+  border-bottom: none;
+}
+
+.sugestao-item-row:hover, .sugestao-item-row.ativo-teclado {
+  background-color: #F1F5F9;
+}
+
+.sugestao-info-esquerda {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.sugestao-icone-box {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sugestao-textos-box {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.sugestao-nome-prod {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: #1E293B;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sugestao-termo-match {
+  color: #4F46E5;
+  font-weight: 800;
+  text-decoration: underline;
+}
+
+.sugestao-meta-box {
+  font-size: 0.72rem;
+  color: #64748B;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-top: 1px;
+}
+
+.sugestao-preco-tag {
+  font-weight: 700;
+  color: #059669;
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.sugestao-btn-badge {
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.12s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sugestao-btn-add {
+  background: #4F46E5;
+  color: white;
+}
+.sugestao-btn-add:hover {
+  background: #4338CA;
+  transform: scale(1.02);
+}
+
+.sugestao-btn-marcado {
+  background: #ECFDF5;
+  color: #059669;
+  border: 1px solid #A7F3D0;
+}
+.sugestao-btn-marcado:hover {
+  background: #FEE2E2;
+  color: #DC2626;
+  border-color: #FECACA;
+}
+
+.sugestao-row-criar-novo {
+  background: #EEF2FF;
+  border: 1px dashed #A5B4FC;
+  border-radius: 8px;
+  margin-bottom: 6px;
+}
+.sugestao-row-criar-novo:hover {
+  background: #E0E7FF;
 }
 
 .btn-mic-mini {
@@ -2036,28 +2217,151 @@ body {
   text-align: left;
 }
 
-/* Cabeçalho Fixo dos Mercados */
+/* /* Cabeçalho Fixo dos Mercados */
 .mcol-tabela-moderna thead th {
   background: #F8FAFC;
-  padding: 10px 12px;
+  padding: 8px 6px;
   border-bottom: 2px solid #E2E8F0;
   white-space: nowrap;
   vertical-align: middle;
 }
 
-.mcol-th-produto {
+/* Coluna de Quantidade na Frente do Nome */
+.mcol-th-qtde {
   position: sticky;
   left: 0;
+  z-index: 4;
+  background: #F8FAFC !important;
+  font-weight: 800;
+  color: #1E293B;
+  width: 80px;
+  min-width: 80px;
+  max-width: 80px;
+  text-align: center;
+  padding: 8px 4px !important;
+  font-size: 0.78rem;
+}
+
+.mcol-td-qtde {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: white;
+  width: 80px;
+  min-width: 80px;
+  max-width: 80px;
+  padding: 6px 4px !important;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.mcol-tr-item:hover .mcol-td-qtde {
+  background: #F8FAFC;
+}
+
+.contador-qtde-tabela {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: #F1F5F9;
+  border: 1px solid #CBD5E1;
+  border-radius: 6px;
+  padding: 2px;
+}
+
+.btn-step-tabela {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: none;
+  background: white;
+  color: #334155;
+  font-weight: 800;
+  font-size: 0.84rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.btn-step-tabela:active {
+  background: #E2E8F0;
+  transform: scale(0.95);
+}
+
+.input-qtde-tabela,
+.input-qtde-card {
+  width: 26px;
+  height: 20px;
+  border: none;
+  background: transparent;
+  text-align: center;
+  font-weight: 800;
+  font-size: 0.84rem;
+  color: #0F172A;
+  padding: 0;
+  -moz-appearance: textfield;
+}
+
+.input-qtde-tabela::-webkit-inner-spin-button,
+.input-qtde-tabela::-webkit-outer-spin-button,
+.input-qtde-card::-webkit-inner-spin-button,
+.input-qtde-card::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Coluna de Produto: aumentada em 15% (de 220px para 255px) */
+.mcol-th-produto {
+  position: sticky;
+  left: 80px;
   z-index: 3;
   background: #F8FAFC !important;
   font-weight: 800;
   color: #1E293B;
-  min-width: 220px;
-  box-shadow: 2px 0 6px rgba(0,0,0,0.03);
+  min-width: 255px;
+  padding: 8px 10px !important;
+  box-shadow: 2px 0 6px rgba(0,0,0,0.04);
 }
 
+.mcol-th-produto.clicavel {
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.mcol-th-produto.clicavel:hover {
+  background: #EEF2FF !important;
+  color: var(--primary);
+}
+
+.mercados-ordenacao-bar .btn-chip-modo {
+  padding: 4px 10px;
+  font-size: 0.74rem;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+.mcol-td-produto {
+  position: sticky;
+  left: 80px;
+  z-index: 2;
+  background: white;
+  padding: 6px 10px !important;
+  min-width: 255px;
+  box-shadow: 2px 0 6px rgba(0,0,0,0.04);
+}
+
+.mcol-tr-item:hover .mcol-td-produto {
+  background: #F8FAFC;
+}
+
+/* Colunas dos Mercados espremidas */
 .mcol-th-rede {
-  min-width: 110px;
+  min-width: 82px;
+  max-width: 95px;
+  padding: 6px 3px !important;
   text-align: center;
 }
 
@@ -2070,29 +2374,29 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
+  gap: 2px;
 }
 
 .mcol-rede-logo {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   object-fit: contain;
   border-radius: 3px;
 }
 
 .mcol-rede-nome {
-  font-size: 0.76rem;
+  font-size: 0.72rem;
   font-weight: 800;
   color: #334155;
 }
 
 .mcol-badge-campeao-topo {
-  font-size: 0.62rem;
+  font-size: 0.60rem;
   font-weight: 800;
   background: #10B981;
   color: white;
-  padding: 1px 6px;
-  border-radius: 6px;
+  padding: 1px 5px;
+  border-radius: 5px;
   text-transform: uppercase;
   letter-spacing: 0.3px;
 }
@@ -2107,19 +2411,6 @@ body {
   background: #F8FAFC;
 }
 
-.mcol-td-produto {
-  position: sticky;
-  left: 0;
-  z-index: 2;
-  background: white;
-  padding: 8px 12px;
-  box-shadow: 2px 0 6px rgba(0,0,0,0.03);
-}
-
-.mcol-tr-item:hover .mcol-td-produto {
-  background: #F8FAFC;
-}
-
 .mcol-prod-card-cell {
   display: flex;
   align-items: center;
@@ -2127,8 +2418,8 @@ body {
 }
 
 .mcol-prod-icone {
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2136,8 +2427,8 @@ body {
 }
 
 .mcol-prod-icone svg {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
 }
 
 .mcol-prod-textos {
@@ -2155,26 +2446,28 @@ body {
 }
 
 .mcol-prod-marca {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   color: var(--primary);
   font-weight: 700;
 }
 
 .mcol-badge-menor-prod {
-  font-size: 0.64rem;
+  font-size: 0.62rem;
   font-weight: 800;
   background: #DCFCE7;
   color: #15803D;
   border: 1px solid #86EFAC;
-  padding: 1px 6px;
+  padding: 1px 5px;
   border-radius: 6px;
   white-space: nowrap;
   margin-left: auto;
 }
 
-/* Células de Preço na Mesma Linha */
+/* Células de Preço Espremidas */
 .mcol-td-preco {
-  padding: 8px 10px;
+  padding: 4px 3px !important;
+  min-width: 82px;
+  max-width: 95px;
   text-align: center;
   vertical-align: middle;
   border-bottom: 1px solid #F1F5F9;
@@ -2185,11 +2478,11 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
+  gap: 1px;
 }
 
 .mcol-valor {
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 700;
   color: #334155;
   white-space: nowrap;
@@ -2205,49 +2498,57 @@ body {
 }
 
 .mcol-tag-menor {
-  font-size: 0.65rem;
+  font-size: 0.58rem;
   font-weight: 800;
-  color: #15803D;
   background: #DCFCE7;
-  padding: 1px 5px;
+  color: #15803D;
+  padding: 1px 4px;
   border-radius: 4px;
   white-space: nowrap;
 }
 
 .mcol-tag-diff {
-  font-size: 0.65rem;
+  font-size: 0.58rem;
   font-weight: 700;
   color: #DC2626;
-  background: #FEF2F2;
-  border: 1px solid #FECACA;
-  padding: 0 4px;
-  border-radius: 4px;
   white-space: nowrap;
 }
 
 .mcol-a-cotar {
   color: #94A3B8;
-  font-size: 0.72rem;
-  font-style: italic;
+  font-weight: 600;
+  font-size: 0.78rem;
 }
 
 /* Linha de Totais no Rodapé da Tabela */
 .mcol-tr-totais td {
   background: #F8FAFC;
-  padding: 12px 10px;
+  padding: 10px 4px;
   border-top: 2px solid #CBD5E1;
   text-align: center;
   vertical-align: middle;
 }
 
-.mcol-td-totais-label {
+.mcol-td-qtde-total {
   position: sticky;
   left: 0;
+  z-index: 2;
+  background: #F8FAFC !important;
+  width: 80px;
+  min-width: 80px;
+  max-width: 80px;
+  padding: 8px 2px !important;
+}
+
+.mcol-td-totais-label {
+  position: sticky;
+  left: 80px;
   z-index: 3;
   background: #F8FAFC !important;
   text-align: left !important;
-  padding-left: 14px !important;
-  box-shadow: 2px 0 6px rgba(0,0,0,0.03);
+  padding-left: 10px !important;
+  min-width: 255px;
+  box-shadow: 2px 0 6px rgba(0,0,0,0.04);
 }
 
 .mcol-total-box {

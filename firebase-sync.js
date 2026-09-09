@@ -1,6 +1,16 @@
 // Gerenciador de Sincronização em Nuvem (Google Firebase Firestore)
 // Permite sincronização em tempo real entre Celular da Esposa e Computador
 
+const FIREBASE_DEFAULT_CONFIG = {
+  projectId: "lista-compras-d55dc",
+  appId: "1:1026630983698:web:ca377c4cf50c62df5af8cb",
+  storageBucket: "lista-compras-d55dc.firebasestorage.app",
+  apiKey: "AIzaSyDQPg37okFTxaw2QvuaYLnD2bUrl1F8d5Q",
+  authDomain: "lista-compras-d55dc.firebaseapp.com",
+  messagingSenderId: "1026630983698",
+  listId: "compras_familia_irandy"
+};
+
 const FirebaseSync = {
   db: null,
   app: null,
@@ -31,10 +41,13 @@ const FirebaseSync = {
         this.config = JSON.parse(salvo);
         return true;
       } catch (e) {
-        return false;
+        // continua para o padrão
       }
     }
-    return false;
+
+    // Configuração oficial padrão do projeto Firebase do usuário
+    this.config = { ...FIREBASE_DEFAULT_CONFIG };
+    return true;
   },
 
   salvarConfig(configObj) {
@@ -46,7 +59,9 @@ const FirebaseSync = {
     if (!this.config) return null;
     const jsonStr = JSON.stringify(this.config);
     const base64 = btoa(unescape(encodeURIComponent(jsonStr)));
-    const baseUrl = window.location.origin + window.location.pathname;
+    const baseUrl = (window.location.protocol && window.location.protocol.startsWith('http'))
+      ? (window.location.origin + window.location.pathname)
+      : 'https://lista-compras-d55dc.web.app/';
     return `${baseUrl}#fbconfig=${base64}`;
   },
 

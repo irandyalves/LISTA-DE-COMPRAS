@@ -1,0 +1,13 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Protege o banco: permite apenas a leitura e escrita da coleção específica da lista de compras
+    match /listas_compras/{documento} {
+      allow read, write: if true;
+    }
+    // Bloqueia todo o resto do banco de dados
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

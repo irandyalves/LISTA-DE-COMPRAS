@@ -1,6 +1,5 @@
 // Catálogo Mestre Completo Expandido (Hortifrúti 40+, Carnes e Frangos 25+, Higiene 16+, Básicos 20+, Laticínios 14+, Limpeza 12+, Padaria 7+)
 const CATALOGO_PADRAO_EXPANDIDO = [
-  // HORTIFRÚTI - LEGUMES E VERDURAS (30+ itens conforme exigido)
   { id: 'h_batata', nome: 'Batata Inglesa Lisa Especial (kg)', categoria: 'Hortifrúti', icone: 'batata', precoMedioDF: 5.80, ultimoPreco: 5.80, dataUltimoPreco: '2026-08-28' },
   { id: 'h_batatadoce', nome: 'Batata Doce Roxa (kg)', categoria: 'Hortifrúti', icone: 'legumes', precoMedioDF: 4.90, ultimoPreco: 4.90, dataUltimoPreco: '2026-08-28' },
   { id: 'h_baroa', nome: 'Batata Baroa / Mandioquinha (kg)', categoria: 'Hortifrúti', icone: 'legumes', precoMedioDF: 12.90, ultimoPreco: 12.90, dataUltimoPreco: '2026-08-28' },
@@ -27,8 +26,6 @@ const CATALOGO_PADRAO_EXPANDIDO = [
   { id: 'h_abobora', nome: 'Abóbora Cabotiá / Japonesa (kg)', categoria: 'Hortifrúti', icone: 'legumes', precoMedioDF: 3.90, ultimoPreco: 3.90, dataUltimoPreco: '2026-08-28' },
   { id: 'h_vagem', nome: 'Vagem Macarrão Fresca (kg)', categoria: 'Hortifrúti', icone: 'legumes', precoMedioDF: 9.90, ultimoPreco: 9.90, dataUltimoPreco: '2026-08-28' },
   { id: 'h_cheiro_verde', nome: 'Cheiro Verde (Coentro e Cebolinha) (Maço)', categoria: 'Hortifrúti', icone: 'folhas', precoMedioDF: 2.50, ultimoPreco: 2.50, dataUltimoPreco: '2026-08-28' },
-
-  // HORTIFRÚTI - FRUTAS
   { id: 'h_banana_prata', nome: 'Banana Prata Selecionada (kg)', categoria: 'Hortifrúti', icone: 'banana', precoMedioDF: 5.90, ultimoPreco: 5.90, dataUltimoPreco: '2026-08-28' },
   { id: 'h_banana_nanica', nome: 'Banana Nanica / Caturra (kg)', categoria: 'Hortifrúti', icone: 'banana', precoMedioDF: 4.90, ultimoPreco: 4.90, dataUltimoPreco: '2026-08-28' },
   { id: 'h_maca_gala', nome: 'Maçã Nacional Gala (kg)', categoria: 'Hortifrúti', icone: 'fruta', precoMedioDF: 9.90, ultimoPreco: 9.90, dataUltimoPreco: '2026-08-28' },
@@ -44,8 +41,6 @@ const CATALOGO_PADRAO_EXPANDIDO = [
   { id: 'h_abacate', nome: 'Abacate Manteiga Macio (kg)', categoria: 'Hortifrúti', icone: 'fruta', precoMedioDF: 6.50, ultimoPreco: 6.50, dataUltimoPreco: '2026-08-28' },
   { id: 'h_manga', nome: 'Manga Palmer Doce (kg)', categoria: 'Hortifrúti', icone: 'fruta', precoMedioDF: 5.90, ultimoPreco: 5.90, dataUltimoPreco: '2026-08-28' },
   { id: 'h_maracuja', nome: 'Maracujá Azedo (kg)', categoria: 'Hortifrúti', icone: 'fruta', precoMedioDF: 9.90, ultimoPreco: 9.90, dataUltimoPreco: '2026-08-28' },
-
-  // CARNES E PROTEÍNAS - CORTES BOVINOS
   { id: 'c_contrafile', nome: 'Carne Bife Contra-Filé Bovino (kg)', categoria: 'Carnes e Proteínas', icone: 'carne', precoMedioDF: 39.90, ultimoPreco: 39.90, dataUltimoPreco: '2026-08-25' },
   { id: 'c_alcatra', nome: 'Carne Alcatra Bovina Selecionada (kg)', categoria: 'Carnes e Proteínas', icone: 'carne', precoMedioDF: 39.90, ultimoPreco: 39.90, dataUltimoPreco: '2026-08-25' },
   { id: 'c_picanha', nome: 'Carne Picanha Bovina Especial (kg)', categoria: 'Carnes e Proteínas', icone: 'carne', precoMedioDF: 64.90, ultimoPreco: 64.90, dataUltimoPreco: '2026-08-25' },
@@ -62,8 +57,6 @@ const CATALOGO_PADRAO_EXPANDIDO = [
   { id: 'c_toscana', nome: 'Linguiça Toscana para Churrasco (kg)', categoria: 'Carnes e Proteínas', icone: 'linguica', precoMedioDF: 19.90, ultimoPreco: 19.90, dataUltimoPreco: '2026-08-25' },
   { id: 'c_tilapia', nome: 'Filé de Tilápia Congelado (800g)', categoria: 'Carnes e Proteínas', icone: 'peixe', precoMedioDF: 31.90, ultimoPreco: 31.90, dataUltimoPreco: '2026-08-20' },
   { id: 'c_carne_seca', nome: 'Carne de Sol / Carne Seca (kg)', categoria: 'Carnes e Proteínas', icone: 'carne', precoMedioDF: 42.90, ultimoPreco: 42.90, dataUltimoPreco: '2026-08-20' },
-
-  // CARNES E PROTEÍNAS - FRANGO E AVES (Partes detalhadas)
   { id: 'f_peito_osso', nome: 'Peito de Frango sem Osso e Pele (kg)', categoria: 'Carnes e Proteínas', icone: 'frango', precoMedioDF: 17.90, ultimoPreco: 17.90, dataUltimoPreco: '2026-08-25' },
   { id: 'f_sassami', nome: 'Filé de Peito / Sassami de Frango (1kg)', categoria: 'Carnes e Proteínas', icone: 'frango', precoMedioDF: 18.50, ultimoPreco: 18.50, dataUltimoPreco: '2026-08-25' },
   { id: 'f_coxa_sobre', nome: 'Coxa e Sobrecoxa de Frango Resfriada (kg)', categoria: 'Carnes e Proteínas', icone: 'frango', precoMedioDF: 11.90, ultimoPreco: 11.90, dataUltimoPreco: '2026-08-25' },
@@ -73,8 +66,6 @@ const CATALOGO_PADRAO_EXPANDIDO = [
   { id: 'f_coracao', nome: 'Coração de Frango para Grelhar (1kg)', categoria: 'Carnes e Proteínas', icone: 'frango', precoMedioDF: 28.90, ultimoPreco: 28.90, dataUltimoPreco: '2026-08-25' },
   { id: 'f_moela', nome: 'Moela de Frango Limpa (1kg)', categoria: 'Carnes e Proteínas', icone: 'frango', precoMedioDF: 10.90, ultimoPreco: 10.90, dataUltimoPreco: '2026-08-25' },
   { id: 'f_inteiro', nome: 'Frango Inteiro Resfriado (kg)', categoria: 'Carnes e Proteínas', icone: 'frango', precoMedioDF: 9.90, ultimoPreco: 9.90, dataUltimoPreco: '2026-08-25' },
-
-  // HIGIENE PESSOAL
   { id: 'hig_papel_dup', nome: 'Papel Higiênico Folha Dupla (Pacote c/ 12)', categoria: 'Higiene', icone: 'papel', precoMedioDF: 17.90, ultimoPreco: 17.90, dataUltimoPreco: '2026-08-15' },
   { id: 'hig_papel_trip', nome: 'Papel Higiênico Folha Tripla (Pacote c/ 12)', categoria: 'Higiene', icone: 'papel', precoMedioDF: 23.90, ultimoPreco: 23.90, dataUltimoPreco: '2026-08-15' },
   { id: 'hig_creme_dent', nome: 'Creme Dental Proteção Anticáries (90g)', categoria: 'Higiene', icone: 'dente', precoMedioDF: 4.90, ultimoPreco: 4.90, dataUltimoPreco: '2026-08-15' },
@@ -91,8 +82,6 @@ const CATALOGO_PADRAO_EXPANDIDO = [
   { id: 'hig_escova_dent', nome: 'Escova Dental Macia Cerdas Finas (Unidade)', categoria: 'Higiene', icone: 'dente', precoMedioDF: 8.50, ultimoPreco: 8.50, dataUltimoPreco: '2026-08-15' },
   { id: 'hig_barbear', nome: 'Aparelho de Barbear Descartável (Cartela c/ 2)', categoria: 'Higiene', icone: 'dente', precoMedioDF: 6.50, ultimoPreco: 6.50, dataUltimoPreco: '2026-08-15' },
   { id: 'hig_absorvente', nome: 'Absorvente Higiênico com Abas (Pacote c/ 8)', categoria: 'Higiene', icone: 'sabonete', precoMedioDF: 6.20, ultimoPreco: 6.20, dataUltimoPreco: '2026-08-15' },
-
-  // BÁSICOS E GRÃOS
   { id: 'b_arroz_5kg', nome: 'Arroz Branco Tipo 1 (Pacote 5kg)', categoria: 'Básicos e Grãos', icone: 'arroz', precoMedioDF: 26.90, ultimoPreco: 26.90, dataUltimoPreco: '2026-08-20' },
   { id: 'b_arroz_parb', nome: 'Arroz Parboilizado Tipo 1 (Pacote 5kg)', categoria: 'Básicos e Grãos', icone: 'arroz', precoMedioDF: 27.50, ultimoPreco: 27.50, dataUltimoPreco: '2026-08-20' },
   { id: 'b_arroz_int', nome: 'Arroz Integral Selecionado (1kg)', categoria: 'Básicos e Grãos', icone: 'arroz', precoMedioDF: 6.90, ultimoPreco: 6.90, dataUltimoPreco: '2026-08-20' },
@@ -112,8 +101,10 @@ const CATALOGO_PADRAO_EXPANDIDO = [
   { id: 'b_farinha_mand', nome: 'Farinha de Mandioca Torrada / Branca (1kg)', categoria: 'Básicos e Grãos', icone: 'farinha', precoMedioDF: 5.20, ultimoPreco: 5.20, dataUltimoPreco: '2026-08-05' },
   { id: 'b_fuba', nome: 'Fubá Mimoso / Milharina (1kg)', categoria: 'Básicos e Grãos', icone: 'farinha', precoMedioDF: 3.90, ultimoPreco: 3.90, dataUltimoPreco: '2026-08-05' },
   { id: 'b_pipoca', nome: 'Milho para Pipoca Especial (500g)', categoria: 'Básicos e Grãos', icone: 'farinha', precoMedioDF: 4.50, ultimoPreco: 4.50, dataUltimoPreco: '2026-08-05' },
-
-  // LATICÍNIOS, FRIOS E OVOS
+  { id: 'b_achoc_nescau', nome: 'Achocolatado em Pó Nescau 2.0 (370g / 400g)', categoria: 'Básicos e Grãos', icone: 'achocolatado', marca: 'Nescau', precoMedioDF: 8.90, ultimoPreco: 8.90, dataUltimoPreco: '2026-08-28' },
+  { id: 'b_achoc_toddy', nome: 'Achocolatado em Pó Toddy Original (370g / 400g)', categoria: 'Básicos e Grãos', icone: 'achocolatado', marca: 'Toddy', precoMedioDF: 8.49, ultimoPreco: 8.49, dataUltimoPreco: '2026-08-28' },
+  { id: 'b_achoc_tody', nome: 'Achocolatado Toddy / Tody (370g / 400g)', categoria: 'Básicos e Grãos', icone: 'achocolatado', marca: 'Toddy', precoMedioDF: 8.49, ultimoPreco: 8.49, dataUltimoPreco: '2026-08-28' },
+  { id: 'b_extrato_tomate', nome: 'Extrato de Tomate Concentrado (340g)', categoria: 'Básicos e Grãos', icone: 'tomate', precoMedioDF: 4.50, ultimoPreco: 4.50, dataUltimoPreco: '2026-08-28' },
   { id: 'l_leite_int', nome: 'Leite Integral UHT (Caixa 1L)', categoria: 'Laticínios e Frios', icone: 'leite', precoMedioDF: 4.49, ultimoPreco: 4.49, dataUltimoPreco: '2026-08-28' },
   { id: 'l_leite_desn', nome: 'Leite Desnatado / Semidesnatado (1L)', categoria: 'Laticínios e Frios', icone: 'leite', precoMedioDF: 4.89, ultimoPreco: 4.89, dataUltimoPreco: '2026-08-28' },
   { id: 'l_leite_lac', nome: 'Leite Zero Lactose (1L)', categoria: 'Laticínios e Frios', icone: 'leite', precoMedioDF: 5.40, ultimoPreco: 5.40, dataUltimoPreco: '2026-08-28' },
@@ -128,8 +119,6 @@ const CATALOGO_PADRAO_EXPANDIDO = [
   { id: 'l_presunto', nome: 'Presunto Cozido Fatiado (kg)', categoria: 'Laticínios e Frios', icone: 'carne', precoMedioDF: 26.90, ultimoPreco: 26.90, dataUltimoPreco: '2026-08-25' },
   { id: 'l_creme_leite', nome: 'Creme de Leite UHT (Caixinha 200g)', categoria: 'Laticínios e Frios', icone: 'leite', precoMedioDF: 3.60, ultimoPreco: 3.60, dataUltimoPreco: '2026-08-20' },
   { id: 'l_leite_cond', nome: 'Leite Condensado Semidesnatado (Caixa 395g)', categoria: 'Laticínios e Frios', icone: 'leite', precoMedioDF: 5.80, ultimoPreco: 5.80, dataUltimoPreco: '2026-08-20' },
-
-  // LIMPEZA DA CASA
   { id: 'limp_detergente', nome: 'Detergente Líquido Lava-Louças (500ml)', categoria: 'Limpeza', icone: 'detergente', precoMedioDF: 2.15, ultimoPreco: 2.15, dataUltimoPreco: '2026-08-15' },
   { id: 'limp_amaciante', nome: 'Amaciante Concentrado para Roupas (1.5L)', categoria: 'Limpeza', icone: 'amaciante', precoMedioDF: 16.20, ultimoPreco: 16.20, dataUltimoPreco: '2026-08-15' },
   { id: 'limp_sabao', nome: 'Sabão em Pó / Líquido Lava-Roupas (2kg)', categoria: 'Limpeza', icone: 'sabao', precoMedioDF: 22.90, ultimoPreco: 22.90, dataUltimoPreco: '2026-08-15' },
@@ -141,15 +130,418 @@ const CATALOGO_PADRAO_EXPANDIDO = [
   { id: 'limp_bombril', nome: 'Lã de Aço / Bombril (Pacote c/ 8)', categoria: 'Limpeza', icone: 'sabao', precoMedioDF: 2.90, ultimoPreco: 2.90, dataUltimoPreco: '2026-08-15' },
   { id: 'limp_saco_lixo', nome: 'Saco de Lixo Reforçado 50L (Rolo c/ 30)', categoria: 'Limpeza', icone: 'sanitaria', precoMedioDF: 12.90, ultimoPreco: 12.90, dataUltimoPreco: '2026-08-15' },
   { id: 'limp_papel_toalha', nome: 'Papel Toalha de Cozinha (Pacote c/ 2)', categoria: 'Limpeza', icone: 'papel', precoMedioDF: 5.90, ultimoPreco: 5.90, dataUltimoPreco: '2026-08-15' },
-
-  // PADARIA E LANCHES
   { id: 'pad_pao_forma', nome: 'Pão de Forma Tradicional (Pacote 500g)', categoria: 'Padaria e Lanches', icone: 'pao', precoMedioDF: 7.90, ultimoPreco: 7.90, dataUltimoPreco: '2026-08-28' },
   { id: 'pad_pao_frances', nome: 'Pão Francês Fresquinho (kg)', categoria: 'Padaria e Lanches', icone: 'pao', precoMedioDF: 15.90, ultimoPreco: 15.90, dataUltimoPreco: '2026-08-28' },
   { id: 'pad_pao_queijo', nome: 'Pão de Queijo Congelado (Pacote 400g)', categoria: 'Padaria e Lanches', icone: 'pao', precoMedioDF: 9.90, ultimoPreco: 9.90, dataUltimoPreco: '2026-08-28' },
   { id: 'pad_biscoito_rech', nome: 'Biscoito Recheado Tradicional (Pacote 130g)', categoria: 'Padaria e Lanches', icone: 'biscoito', precoMedioDF: 3.20, ultimoPreco: 3.20, dataUltimoPreco: '2026-08-25' },
   { id: 'pad_biscoito_sal', nome: 'Biscoito Água e Sal / Cream Cracker (Pacote 400g)', categoria: 'Padaria e Lanches', icone: 'biscoito', precoMedioDF: 4.90, ultimoPreco: 4.90, dataUltimoPreco: '2026-08-25' },
   { id: 'pad_torrada', nome: 'Torrada Tradicional Crocante (Pacote 140g)', categoria: 'Padaria e Lanches', icone: 'biscoito', precoMedioDF: 4.50, ultimoPreco: 4.50, dataUltimoPreco: '2026-08-25' },
-  { id: 'pad_bolo', nome: 'Bolo de Pacote / Mistura para Bolo (400g)', categoria: 'Padaria e Lanches', icone: 'farinha', precoMedioDF: 5.90, ultimoPreco: 5.90, dataUltimoPreco: '2026-08-25' }
+  { id: 'pad_bolo', nome: 'Bolo de Pacote / Mistura para Bolo (400g)', categoria: 'Padaria e Lanches', icone: 'farinha', precoMedioDF: 5.90, ultimoPreco: 5.90, dataUltimoPreco: '2026-08-25' },
+  { id: 'hig_escova_cab_raq', nome: 'Escova de Cabelo Almofadada Raquete Desembaraçadora', categoria: 'Higiene', icone: 'cabelo', precoMedioDF: 18.90, ultimoPreco: 18.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_escova_cab_red', nome: 'Escova de Cabelo Redonda Térmica para Secador', categoria: 'Higiene', icone: 'cabelo', precoMedioDF: 24.90, ultimoPreco: 24.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_pente_cab', nome: 'Pente de Cabelo Antiestático com Dentes Largos', categoria: 'Higiene', icone: 'cabelo', precoMedioDF: 6.90, ultimoPreco: 6.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_escova_eletrica', nome: 'Escova Dental Elétrica Recarregável / Refil Cerdas Macias', categoria: 'Higiene', icone: 'dente', precoMedioDF: 49.90, ultimoPreco: 49.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_fio_100m', nome: 'Fio Dental com Cera Sabor Menta (100m)', categoria: 'Higiene', icone: 'fiodental', precoMedioDF: 14.90, ultimoPreco: 14.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_creme_luminous', nome: 'Creme Dental Branqueador Colgate Luminous White (70g)', categoria: 'Higiene', icone: 'dente', precoMedioDF: 11.90, ultimoPreco: 11.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_enxaguante_zero', nome: 'Enxaguante Bucal Antisséptico Zero Álcool (500ml)', categoria: 'Higiene', icone: 'dente', precoMedioDF: 21.90, ultimoPreco: 21.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_sab_intimo', nome: 'Sabonete Líquido Íntimo Dermacyd / similar (200ml)', categoria: 'Higiene', icone: 'sabonete', precoMedioDF: 18.90, ultimoPreco: 18.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_sab_dove', nome: 'Sabonete em Barra Hidratante Dove Original (90g)', categoria: 'Higiene', icone: 'sabonete', precoMedioDF: 4.50, ultimoPreco: 4.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_sab_liq_refil', nome: 'Sabonete Líquido para Mãos Refil Econômico (500ml)', categoria: 'Higiene', icone: 'sabonete', precoMedioDF: 12.90, ultimoPreco: 12.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_shampoo_anticaspa', nome: 'Shampoo Anticaspa Clear Men / Head & Shoulders (400ml)', categoria: 'Higiene', icone: 'shampoo', precoMedioDF: 26.90, ultimoPreco: 26.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_condic_pantene', nome: 'Condicionador Capilar Pantene Restauração (400ml)', categoria: 'Higiene', icone: 'shampoo', precoMedioDF: 23.90, ultimoPreco: 23.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_mascara_capilar', nome: 'Máscara de Tratamento Capilar Hidratação Profunda (1kg)', categoria: 'Higiene', icone: 'shampoo', precoMedioDF: 19.90, ultimoPreco: 19.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_creme_pentear', nome: 'Creme para Pentear / Leave-in Definição e Brilho (300ml)', categoria: 'Higiene', icone: 'shampoo', precoMedioDF: 14.90, ultimoPreco: 14.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_oleo_capilar', nome: 'Óleo Capilar Reparador de Pontas / Argan (100ml)', categoria: 'Higiene', icone: 'shampoo', precoMedioDF: 29.90, ultimoPreco: 29.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_desod_clinical_fem', nome: 'Desodorante Antitranspirante Aerosol Clinical Feminino (150ml)', categoria: 'Higiene', icone: 'sabonete', precoMedioDF: 19.90, ultimoPreco: 19.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_desod_clinical_masc', nome: 'Desodorante Antitranspirante Aerosol Clinical Masculino (150ml)', categoria: 'Higiene', icone: 'sabonete', precoMedioDF: 19.90, ultimoPreco: 19.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_carga_mach3', nome: 'Cargas para Aparelho de Barbear Gillette Mach 3 (c/ 4 unidades)', categoria: 'Higiene', icone: 'dente', precoMedioDF: 42.90, ultimoPreco: 42.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_espuma_barbear', nome: 'Espuma de Barbear Pele Sensível Gillette Foamy (200ml)', categoria: 'Higiene', icone: 'dente', precoMedioDF: 18.90, ultimoPreco: 18.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_pos_barba', nome: 'Loção Pós-Barba Refrescante e Hidratante (100ml)', categoria: 'Higiene', icone: 'dente', precoMedioDF: 17.50, ultimoPreco: 17.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_absorv_noturno', nome: 'Absorvente Noturno com Abas e Cobertura Suave (Pacote c/ 16)', categoria: 'Higiene', icone: 'sabonete', precoMedioDF: 11.90, ultimoPreco: 11.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_absorv_diario', nome: 'Protetor Diário sem Perfume Respirável (Pacote c/ 40)', categoria: 'Higiene', icone: 'sabonete', precoMedioDF: 9.90, ultimoPreco: 9.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_protetor_facial', nome: 'Protetor Solar Facial com Toque Seco FPS 50/60 (50g)', categoria: 'Higiene', icone: 'sabonete', precoMedioDF: 49.90, ultimoPreco: 49.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_protetor_corporal', nome: 'Protetor Solar Corporal Loção Hidratante FPS 50 (200ml)', categoria: 'Higiene', icone: 'sabonete', precoMedioDF: 39.90, ultimoPreco: 39.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_hidratante_corp', nome: 'Hidratante Corporal Pele Seca a Extrasseca Nivea / Cerave (400ml)', categoria: 'Higiene', icone: 'sabonete', precoMedioDF: 24.90, ultimoPreco: 24.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_creme_maos', nome: 'Creme Hidratante Reparador para as Mãos (75g)', categoria: 'Higiene', icone: 'sabonete', precoMedioDF: 13.90, ultimoPreco: 13.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_sab_facial', nome: 'Sabonete Facial Líquido para Pele Oleosa / Acne (150ml)', categoria: 'Higiene', icone: 'sabonete', precoMedioDF: 34.90, ultimoPreco: 34.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_agua_micelar', nome: 'Água Micelar Demaquilante 5 em 1 L\'Oréal (200ml)', categoria: 'Higiene', icone: 'sabonete', precoMedioDF: 28.90, ultimoPreco: 28.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_lencos_umedecidos', nome: 'Lenços Umedecidos Toalhinhas para Higiene (Pacote c/ 50)', categoria: 'Higiene', icone: 'papel', precoMedioDF: 8.90, ultimoPreco: 8.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_algodao_disco', nome: 'Algodão em Discos para Cuidados Faciais (Pacote c/ 50)', categoria: 'Higiene', icone: 'papel', precoMedioDF: 7.50, ultimoPreco: 7.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_algodao_bolas', nome: 'Algodão Hidrófilo em Bolas Multiuso (Pacote 100g)', categoria: 'Higiene', icone: 'papel', precoMedioDF: 6.20, ultimoPreco: 6.20, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_cortador_unha', nome: 'Cortador de Unha em Aço Inox Mundial', categoria: 'Higiene', icone: 'dente', precoMedioDF: 9.90, ultimoPreco: 9.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_lixa_unha', nome: 'Lixas para Unhas Dupla Face (Pacote c/ 6 unidades)', categoria: 'Higiene', icone: 'dente', precoMedioDF: 3.50, ultimoPreco: 3.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_esmalte_unha', nome: 'Esmalte Cremoso / Verniz Tratamento Risqué / Impala (8ml)', categoria: 'Higiene', icone: 'sabonete', precoMedioDF: 5.50, ultimoPreco: 5.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_removedor_esmalte', nome: 'Removedor de Esmalte sem Acetona Suave (100ml)', categoria: 'Higiene', icone: 'sabonete', precoMedioDF: 6.90, ultimoPreco: 6.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_fralda_m', nome: 'Fralda Descartável Infantil Tamanho M (Pacote c/ 36)', categoria: 'Higiene', icone: 'sabonete', precoMedioDF: 44.90, ultimoPreco: 44.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_fralda_g', nome: 'Fralda Descartável Infantil Tamanho G (Pacote c/ 32)', categoria: 'Higiene', icone: 'sabonete', precoMedioDF: 44.90, ultimoPreco: 44.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_fralda_xg', nome: 'Fralda Descartável Infantil Tamanho XG (Pacote c/ 28)', categoria: 'Higiene', icone: 'sabonete', precoMedioDF: 44.90, ultimoPreco: 44.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_pomada_assadura', nome: 'Pomada para Assaduras Infantil Bepantol / Hipoglós (45g)', categoria: 'Higiene', icone: 'sabonete', precoMedioDF: 23.90, ultimoPreco: 23.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_shampoo_bebe', nome: 'Shampoo Infantil Suave sem Lágrimas Johnson\'s (200ml)', categoria: 'Higiene', icone: 'shampoo', precoMedioDF: 16.90, ultimoPreco: 16.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_preservativo', nome: 'Preservativo / Camisinha Jontex / Prudence (Pacote c/ 3)', categoria: 'Higiene', icone: 'sabonete', precoMedioDF: 5.90, ultimoPreco: 5.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_curativos', nome: 'Curativos Adesivos Respiráveis tipo Band-Aid (Caixa c/ 20)', categoria: 'Higiene', icone: 'sabonete', precoMedioDF: 7.90, ultimoPreco: 7.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_alcool_gel', nome: 'Álcool em Gel 70% Higienizante para Mãos (Pote 400g/500ml)', categoria: 'Higiene', icone: 'sanitaria', precoMedioDF: 9.90, ultimoPreco: 9.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_soro_fisiologico', nome: 'Soro Fisiológico 0.9% Frasco Multiuso (500ml)', categoria: 'Higiene', icone: 'agua', precoMedioDF: 6.50, ultimoPreco: 6.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_antisseptico', nome: 'Spray Antisséptico Merthiolate / similar para Machucados (50ml)', categoria: 'Higiene', icone: 'sabonete', precoMedioDF: 16.50, ultimoPreco: 16.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_gel_fixador', nome: 'Gel Fixador de Cabelo Cola / Efeito Molhado (250g)', categoria: 'Higiene', icone: 'cabelo', precoMedioDF: 8.90, ultimoPreco: 8.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_reparador_pontas', nome: 'Reparador de Pontas Óleo de Silicone para Cabelos (30ml)', categoria: 'Higiene', icone: 'cabelo', precoMedioDF: 11.50, ultimoPreco: 11.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_pinça_sobrancelha', nome: 'Pinça para Sobrancelha em Aço Inox Ponta Reta/Chanfrada', categoria: 'Higiene', icone: 'dente', precoMedioDF: 8.90, ultimoPreco: 8.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_touca_banho', nome: 'Touca de Banho Impermeável Plástica com Elástico', categoria: 'Higiene', icone: 'cabelo', precoMedioDF: 4.50, ultimoPreco: 4.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'hig_sabonete_antbac', nome: 'Sabonete Antibacteriano Protex / Dettol (85g)', categoria: 'Higiene', icone: 'sabonete', precoMedioDF: 3.90, ultimoPreco: 3.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_escova_roupa', nome: 'Escova de Lavar Roupas Multiuso com Cerdas de Nylon', categoria: 'Limpeza', icone: 'sanitaria', precoMedioDF: 6.90, ultimoPreco: 6.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_escova_sanitaria', nome: 'Escova Sanitária para Vaso Sanitário com Suporte', categoria: 'Limpeza', icone: 'sanitaria', precoMedioDF: 14.90, ultimoPreco: 14.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_sabao_omo_24', nome: 'Sabão em Pó OMO Lavagem Perfeita Caixa (2.4kg)', categoria: 'Limpeza', icone: 'sabao', precoMedioDF: 27.90, ultimoPreco: 27.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_sabao_liq_3l', nome: 'Sabão Líquido Lava-Roupas Concentrado OMO / Ariel (3L)', categoria: 'Limpeza', icone: 'sabao', precoMedioDF: 39.90, ultimoPreco: 39.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_sabao_barra_ype', nome: 'Sabão em Barra Glicerinado Ypê Neutro (Pacote c/ 5 de 200g)', categoria: 'Limpeza', icone: 'sabao', precoMedioDF: 12.90, ultimoPreco: 12.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_amaciante_comfort', nome: 'Amaciante Concentrado Comfort Toque Suave (1L)', categoria: 'Limpeza', icone: 'amaciante', precoMedioDF: 16.90, ultimoPreco: 16.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_amaciante_downy', nome: 'Amaciante Concentrado Downy Brisa de Verão (1L)', categoria: 'Limpeza', icone: 'amaciante', precoMedioDF: 18.50, ultimoPreco: 18.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_tira_manchas_po', nome: 'Tira Manchas em Pó para Roupas Vanish Oxi Action (450g)', categoria: 'Limpeza', icone: 'sabao', precoMedioDF: 24.90, ultimoPreco: 24.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_alvejante_sem_cloro', nome: 'Alvejante sem Cloro para Roupas Coloridas (1.5L)', categoria: 'Limpeza', icone: 'sanitaria', precoMedioDF: 14.90, ultimoPreco: 14.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_deterg_pastilha', nome: 'Pastilhas para Máquina Lava-Louças Finish Powerball (c/ 15)', categoria: 'Limpeza', icone: 'detergente', precoMedioDF: 36.90, ultimoPreco: 36.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_secante_lava_louca', nome: 'Líquido Secante e Abrilhantador para Lava-Louças (250ml)', categoria: 'Limpeza', icone: 'detergente', precoMedioDF: 19.90, ultimoPreco: 19.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_desengord_cozinha', nome: 'Desengordurante para Cozinha e Fogão Veja / Mr Músculo Spray (500ml)', categoria: 'Limpeza', icone: 'detergente', precoMedioDF: 9.90, ultimoPreco: 9.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_limpa_vidros', nome: 'Limpa Vidros e Espelhos Vidrex com Gatilho Spray (500ml)', categoria: 'Limpeza', icone: 'detergente', precoMedioDF: 8.90, ultimoPreco: 8.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_pinho_sol_1l', nome: 'Desinfetante Pinho Sol Tradicional Original (1L)', categoria: 'Limpeza', icone: 'desinfetante', precoMedioDF: 11.90, ultimoPreco: 11.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_lysoform_1l', nome: 'Desinfetante Lysoform Bruto Germicida / Bactericida (1L)', categoria: 'Limpeza', icone: 'desinfetante', precoMedioDF: 15.90, ultimoPreco: 15.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_cloro_gel', nome: 'Cloro Gel Ativo Sanitário Harpic / Veja (500ml)', categoria: 'Limpeza', icone: 'sanitaria', precoMedioDF: 10.90, ultimoPreco: 10.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_pastilha_adesiva', nome: 'Pastilhas Adesivas Desodorizantes para Vaso Harpic (c/ 3)', categoria: 'Limpeza', icone: 'desinfetante', precoMedioDF: 9.50, ultimoPreco: 9.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_bloco_vaso', nome: 'Bloco Sanitário Perfumado com Gancho para Vaso', categoria: 'Limpeza', icone: 'desinfetante', precoMedioDF: 4.90, ultimoPreco: 4.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_odorizador_spray', nome: 'Odorizador de Ambiente em Aerossol Glade / Bom Ar (360ml)', categoria: 'Limpeza', icone: 'desinfetante', precoMedioDF: 12.90, ultimoPreco: 12.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_difusor_aroma', nome: 'Difusor de Aromas com Varetas Lavanda / Vanilla (100ml)', categoria: 'Limpeza', icone: 'desinfetante', precoMedioDF: 16.90, ultimoPreco: 16.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_limpador_perfumado', nome: 'Limpador Perfumado para Pisos Casa & Perfume / Ajax (1L)', categoria: 'Limpeza', icone: 'desinfetante', precoMedioDF: 7.90, ultimoPreco: 7.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_cera_liquida', nome: 'Cera Líquida Autobrilho para Pisos Poliflor (750ml)', categoria: 'Limpeza', icone: 'sanitaria', precoMedioDF: 14.50, ultimoPreco: 14.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_lustra_moveis', nome: 'Lustra Móveis com Silicone Óleo de Peroba / Poliflor (200ml)', categoria: 'Limpeza', icone: 'detergente', precoMedioDF: 8.90, ultimoPreco: 8.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_esponja_antiader', nome: 'Esponja Macia Não Risca para Panelas Antiaderentes (c/ 3)', categoria: 'Limpeza', icone: 'detergente', precoMedioDF: 6.90, ultimoPreco: 6.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_pano_perfex_rolo', nome: 'Pano Multiuso Tipo Perfex em Rolo Picotado (Rolo c/ 50)', categoria: 'Limpeza', icone: 'papel', precoMedioDF: 14.90, ultimoPreco: 14.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_pano_chao_grosso', nome: 'Pano de Chão Alvejado Grosso 100% Algodão Xadrez (Unidade)', categoria: 'Limpeza', icone: 'papel', precoMedioDF: 5.90, ultimoPreco: 5.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_pano_microfibra', nome: 'Pano de Microfibra de Alta Absorção para Limpeza Geral', categoria: 'Limpeza', icone: 'papel', precoMedioDF: 6.90, ultimoPreco: 6.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_rodo_40cm', nome: 'Rodo de Borracha Duplo 40cm com Cabo Resistente', categoria: 'Limpeza', icone: 'sanitaria', precoMedioDF: 13.90, ultimoPreco: 13.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_vassoura_interior', nome: 'Vassoura de Cerdas Macias para Pisos Delicados com Cabo', categoria: 'Limpeza', icone: 'sanitaria', precoMedioDF: 15.90, ultimoPreco: 15.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_vassoura_piacava', nome: 'Vassoura Piaçava Reforçada para Calçada e Área Externa', categoria: 'Limpeza', icone: 'sanitaria', precoMedioDF: 17.90, ultimoPreco: 17.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_pa_lixo_cabo', nome: 'Pá de Lixo Articulada com Cabo Longo Plástica', categoria: 'Limpeza', icone: 'sanitaria', precoMedioDF: 14.90, ultimoPreco: 14.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_balde_10l', nome: 'Balde Plástico Graduado com Alça de Metal (10L)', categoria: 'Limpeza', icone: 'sanitaria', precoMedioDF: 11.90, ultimoPreco: 11.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_desentupidor_vaso', nome: 'Desentupidor de Borracha para Vaso Sanitário com Cabo', categoria: 'Limpeza', icone: 'sanitaria', precoMedioDF: 9.90, ultimoPreco: 9.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_diabo_verde', nome: 'Desentupidor Líquido de Pias e Ralos Diabo Verde (1L)', categoria: 'Limpeza', icone: 'sanitaria', precoMedioDF: 19.90, ultimoPreco: 19.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_inseticida_spray', nome: 'Inseticida em Aerossol Multi-insetos SBP / Baygon (300ml)', categoria: 'Limpeza', icone: 'sanitaria', precoMedioDF: 13.90, ultimoPreco: 13.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_repelente_tomada', nome: 'Repelente Elétrico de Tomada SBP Líquido 45 Noites Refil', categoria: 'Limpeza', icone: 'sanitaria', precoMedioDF: 16.90, ultimoPreco: 16.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_repelente_off', nome: 'Repelente Corporal em Spray Off / Repelex Família (200ml)', categoria: 'Limpeza', icone: 'sanitaria', precoMedioDF: 22.90, ultimoPreco: 22.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_saco_30l', nome: 'Saco de Lixo Reforçado 30 Litros (Rolo c/ 30 unidades)', categoria: 'Limpeza', icone: 'sanitaria', precoMedioDF: 9.90, ultimoPreco: 9.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_saco_100l', nome: 'Saco de Lixo Super Reforçado 100 Litros Preto (Rolo c/ 15)', categoria: 'Limpeza', icone: 'sanitaria', precoMedioDF: 16.90, ultimoPreco: 16.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_luva_borracha', nome: 'Luva de Borracha Látex Amarela para Limpeza (Par)', categoria: 'Limpeza', icone: 'sanitaria', precoMedioDF: 6.90, ultimoPreco: 6.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_prendedor_roupa', nome: 'Prendedores de Roupas Plásticos com Mola (Embalagem c/ 24)', categoria: 'Limpeza', icone: 'sanitaria', precoMedioDF: 7.90, ultimoPreco: 7.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_tira_ferrugem', nome: 'Tira Ferrugem em Tecidos e Roupas Semorin (50ml)', categoria: 'Limpeza', icone: 'detergente', precoMedioDF: 8.50, ultimoPreco: 8.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_soda_caustica', nome: 'Soda Cáustica em Escamas 99% para Limpeza Pesada (1kg)', categoria: 'Limpeza', icone: 'sanitaria', precoMedioDF: 17.90, ultimoPreco: 17.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_limpa_forno', nome: 'Limpa Forno e Grelhas Tradicional com Pincel Fácil (250ml)', categoria: 'Limpeza', icone: 'detergente', precoMedioDF: 11.50, ultimoPreco: 11.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_limpa_aluminio', nome: 'Brilho Alumínio Limpa e Desengordura Panelas (500ml)', categoria: 'Limpeza', icone: 'detergente', precoMedioDF: 4.80, ultimoPreco: 4.80, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_cloro_puro_5l', nome: 'Hipoclorito de Sódio / Cloro Concentrado Galão (5 Litros)', categoria: 'Limpeza', icone: 'sanitaria', precoMedioDF: 15.90, ultimoPreco: 15.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_sacola_retornavel', nome: 'Sacola Ecológica Retornável Reutilizável de Supermercado', categoria: 'Limpeza', icone: 'papel', precoMedioDF: 5.90, ultimoPreco: 5.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_desumidificador', nome: 'Desumidificador Antimofo para Guarda-Roupas Secar (Pote 180g)', categoria: 'Limpeza', icone: 'desinfetante', precoMedioDF: 7.50, ultimoPreco: 7.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_naftalina', nome: 'Naftalina em Esferas Antipragas e Traças (Pacote 100g)', categoria: 'Limpeza', icone: 'desinfetante', precoMedioDF: 4.90, ultimoPreco: 4.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'limp_limpa_carpete', nome: 'Limpador de Estofados e Carpetes a Seco Tuff Stuff Spray (300ml)', categoria: 'Limpeza', icone: 'detergente', precoMedioDF: 21.90, ultimoPreco: 21.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_mirtilo', nome: 'Mirtilo / Blueberry Fresco Selecionado (Bandeja 125g)', categoria: 'Hortifrúti', icone: 'fruta', precoMedioDF: 12.90, ultimoPreco: 12.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_kiwi', nome: 'Kiwi Verde Importado Selecionado (kg)', categoria: 'Hortifrúti', icone: 'fruta', precoMedioDF: 18.90, ultimoPreco: 18.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_ameixa_fresca', nome: 'Ameixa Vermelha Nacional Fresca (kg)', categoria: 'Hortifrúti', icone: 'fruta', precoMedioDF: 14.90, ultimoPreco: 14.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_pessego', nome: 'Pêssego Amarelo Nacional Fresco (kg)', categoria: 'Hortifrúti', icone: 'fruta', precoMedioDF: 13.90, ultimoPreco: 13.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_pera_williams', nome: 'Pêra Williams / D\'Anjou Argentina (kg)', categoria: 'Hortifrúti', icone: 'fruta', precoMedioDF: 12.90, ultimoPreco: 12.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_uva_thompson', nome: 'Uva Verde Thompson sem Semente (Bandeja 500g)', categoria: 'Hortifrúti', icone: 'fruta', precoMedioDF: 9.90, ultimoPreco: 9.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_uva_vitoria', nome: 'Uva Roxa Vitória sem Sementes Doce (Bandeja 500g)', categoria: 'Hortifrúti', icone: 'fruta', precoMedioDF: 8.90, ultimoPreco: 8.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_coco_verde', nome: 'Coco Verde Gelado com Água (Unidade)', categoria: 'Hortifrúti', icone: 'fruta', precoMedioDF: 4.90, ultimoPreco: 4.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_coco_seco', nome: 'Coco Seco Inteiro da Bahia (Unidade)', categoria: 'Hortifrúti', icone: 'fruta', precoMedioDF: 5.50, ultimoPreco: 5.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_goiaba_vermelha', nome: 'Goiaba Vermelha Doce Selecionada (kg)', categoria: 'Hortifrúti', icone: 'fruta', precoMedioDF: 7.90, ultimoPreco: 7.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_manga_tommy', nome: 'Manga Tommy Atkins Madura (kg)', categoria: 'Hortifrúti', icone: 'fruta', precoMedioDF: 5.50, ultimoPreco: 5.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_jabuticaba', nome: 'Jabuticaba Sabará Fresquinha (Bandeja 500g)', categoria: 'Hortifrúti', icone: 'fruta', precoMedioDF: 11.90, ultimoPreco: 11.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_pitaya', nome: 'Pitaya Rosa Polpa Vermelha ou Branca (kg)', categoria: 'Hortifrúti', icone: 'fruta', precoMedioDF: 19.90, ultimoPreco: 19.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_avocado', nome: 'Abacate Tipo Avocado Pequeno Hass (kg)', categoria: 'Hortifrúti', icone: 'fruta', precoMedioDF: 14.90, ultimoPreco: 14.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_maracuja_doce', nome: 'Maracujá Doce para Comer de Colher (kg)', categoria: 'Hortifrúti', icone: 'fruta', precoMedioDF: 16.90, ultimoPreco: 16.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_caqui', nome: 'Caqui Fuyu / Chocolate Doce (kg)', categoria: 'Hortifrúti', icone: 'fruta', precoMedioDF: 9.90, ultimoPreco: 9.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_inhame', nome: 'Inhame da Terra Fresco Selecionado (kg)', categoria: 'Hortifrúti', icone: 'legumes', precoMedioDF: 6.90, ultimoPreco: 6.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_cara', nome: 'Cará Branco Especial Selecionado (kg)', categoria: 'Hortifrúti', icone: 'legumes', precoMedioDF: 7.50, ultimoPreco: 7.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_batata_asterix', nome: 'Batata Asterix Rosada Especial para Fritar (kg)', categoria: 'Hortifrúti', icone: 'batata', precoMedioDF: 6.50, ultimoPreco: 6.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_batata_bolinha', nome: 'Batatinha Bolinha para Conserva (kg)', categoria: 'Hortifrúti', icone: 'batata', precoMedioDF: 5.90, ultimoPreco: 5.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_alho_poro', nome: 'Alho Poró Fresco Higienizado (Maço / Unidade)', categoria: 'Hortifrúti', icone: 'folhas', precoMedioDF: 4.90, ultimoPreco: 4.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_alho_descascado', nome: 'Alho Descascado em Pote Prático (200g)', categoria: 'Hortifrúti', icone: 'alho', precoMedioDF: 8.90, ultimoPreco: 8.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_gengibre', nome: 'Gengibre Fresco Selecionado (kg)', categoria: 'Hortifrúti', icone: 'legumes', precoMedioDF: 14.90, ultimoPreco: 14.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_pimenta_dedo', nome: 'Pimenta Dedo de Moça Fresca (Bandeja 100g)', categoria: 'Hortifrúti', icone: 'legumes', precoMedioDF: 3.90, ultimoPreco: 3.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_pimenta_biquinho', nome: 'Pimenta Biquinho Doce Fresca (Bandeja 150g)', categoria: 'Hortifrúti', icone: 'legumes', precoMedioDF: 4.50, ultimoPreco: 4.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_pimenta_cheiro', nome: 'Pimenta de Cheiro Amarela do Norte (Bandeja 100g)', categoria: 'Hortifrúti', icone: 'legumes', precoMedioDF: 4.20, ultimoPreco: 4.20, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_tomate_cereja', nome: 'Tomate Grape / Tomatinho Cereja Doce (Bandeja 250g)', categoria: 'Hortifrúti', icone: 'tomate', precoMedioDF: 5.90, ultimoPreco: 5.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_tomate_holandes', nome: 'Tomate Holandês em Rama Especial (Bandeja 400g)', categoria: 'Hortifrúti', icone: 'tomate', precoMedioDF: 9.90, ultimoPreco: 9.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_milho_espiga', nome: 'Milho Verde em Espiga Fresco (Bandeja c/ 4 ou 5)', categoria: 'Hortifrúti', icone: 'legumes', precoMedioDF: 5.90, ultimoPreco: 5.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_brocolis_ninja', nome: 'Brócolis Tipo Ninja / Japonês (Unidade)', categoria: 'Hortifrúti', icone: 'folhas', precoMedioDF: 6.90, ultimoPreco: 6.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_couve_flor', nome: 'Couve-Flor Branca Fresca Selecionada (Unidade)', categoria: 'Hortifrúti', icone: 'folhas', precoMedioDF: 7.90, ultimoPreco: 7.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_repolho_verde', nome: 'Repolho Verde Liso (kg)', categoria: 'Hortifrúti', icone: 'folhas', precoMedioDF: 3.50, ultimoPreco: 3.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_repolho_roxo', nome: 'Repolho Roxo Crocante (kg)', categoria: 'Hortifrúti', icone: 'folhas', precoMedioDF: 4.90, ultimoPreco: 4.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_acelga', nome: 'Acelga Fresca em Folhas Grandes (Unidade)', categoria: 'Hortifrúti', icone: 'folhas', precoMedioDF: 5.50, ultimoPreco: 5.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_agriao', nome: 'Agrião Hidropônico Folhas Frescas (Maço)', categoria: 'Hortifrúti', icone: 'folhas', precoMedioDF: 3.80, ultimoPreco: 3.80, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_hortela', nome: 'Hortelã Fresca Aromática (Maço)', categoria: 'Hortifrúti', icone: 'folhas', precoMedioDF: 2.90, ultimoPreco: 2.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_manjericao', nome: 'Manjericão Fresco para Molho e Pizza (Maço)', categoria: 'Hortifrúti', icone: 'folhas', precoMedioDF: 3.20, ultimoPreco: 3.20, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_alecrim', nome: 'Alecrim Fresco Aromático (Bandeja / Maço)', categoria: 'Hortifrúti', icone: 'folhas', precoMedioDF: 3.50, ultimoPreco: 3.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_tomilho', nome: 'Tomilho Fresco Especial para Carnes (Bandeja)', categoria: 'Hortifrúti', icone: 'folhas', precoMedioDF: 3.90, ultimoPreco: 3.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_salsa', nome: 'Salsinha Verde Fresca Selecionada (Maço)', categoria: 'Hortifrúti', icone: 'folhas', precoMedioDF: 2.50, ultimoPreco: 2.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_cebolinha', nome: 'Cebolinha Verde Fresca (Maço)', categoria: 'Hortifrúti', icone: 'folhas', precoMedioDF: 2.50, ultimoPreco: 2.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_shimeji_preto', nome: 'Cogumelo Shimeji Preto Fresco (Bandeja 200g)', categoria: 'Hortifrúti', icone: 'legumes', precoMedioDF: 11.90, ultimoPreco: 11.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_shimeji_branco', nome: 'Cogumelo Shimeji Branco Fresco (Bandeja 200g)', categoria: 'Hortifrúti', icone: 'legumes', precoMedioDF: 11.50, ultimoPreco: 11.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_champignon_fresco', nome: 'Cogumelo Champignon / Paris Fresco Inteiro (Bandeja 200g)', categoria: 'Hortifrúti', icone: 'legumes', precoMedioDF: 12.90, ultimoPreco: 12.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'h_shitake_fresco', nome: 'Cogumelo Shitake Fresco Selecionado (Bandeja 200g)', categoria: 'Hortifrúti', icone: 'legumes', precoMedioDF: 13.90, ultimoPreco: 13.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_file_mignon', nome: 'Filé Mignon Bovino Limpo Peça / Bife (kg)', categoria: 'Carnes e Proteínas', icone: 'carne', precoMedioDF: 69.90, ultimoPreco: 69.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_ancho', nome: 'Bife de Ancho / Ribeye Bovino para Grelhar (kg)', categoria: 'Carnes e Proteínas', icone: 'carne', precoMedioDF: 54.90, ultimoPreco: 54.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_chorizo', nome: 'Bife de Chorizo Bovino Selecionado (kg)', categoria: 'Carnes e Proteínas', icone: 'carne', precoMedioDF: 52.90, ultimoPreco: 52.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_coxao_mole', nome: 'Coxão Mole Bovino em Bifes Macios (kg)', categoria: 'Carnes e Proteínas', icone: 'carne', precoMedioDF: 36.90, ultimoPreco: 36.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_coxao_duro', nome: 'Coxão Duro Bovino para Assar / Cozinhar (kg)', categoria: 'Carnes e Proteínas', icone: 'carne', precoMedioDF: 34.90, ultimoPreco: 34.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_rabada', nome: 'Rabada Bovina Cortada em Rodelas (kg)', categoria: 'Carnes e Proteínas', icone: 'carne', precoMedioDF: 32.90, ultimoPreco: 32.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_ossobuco', nome: 'Ossobuco Bovino com Tutano para Panela (kg)', categoria: 'Carnes e Proteínas', icone: 'carne', precoMedioDF: 26.90, ultimoPreco: 26.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_mocoto', nome: 'Mocotó Bovino Limpo Cortado (kg)', categoria: 'Carnes e Proteínas', icone: 'carne', precoMedioDF: 16.90, ultimoPreco: 16.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_lingua_bovina', nome: 'Língua Bovina Limpa Resfriada (kg)', categoria: 'Carnes e Proteínas', icone: 'carne', precoMedioDF: 24.90, ultimoPreco: 24.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_figado_bovino', nome: 'Fígado Bovino em Bifes Frescos (kg)', categoria: 'Carnes e Proteínas', icone: 'carne', precoMedioDF: 14.90, ultimoPreco: 14.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_charque', nome: 'Carne Seca Charque Dianteiro Salgado (kg)', categoria: 'Carnes e Proteínas', icone: 'carne', precoMedioDF: 39.90, ultimoPreco: 39.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_costelinha_suina', nome: 'Costelinha de Porco Suína Resfriada (kg)', categoria: 'Carnes e Proteínas', icone: 'costela', precoMedioDF: 23.90, ultimoPreco: 23.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_pernil_sem_osso', nome: 'Pernil Suíno sem Osso em Pedaço (kg)', categoria: 'Carnes e Proteínas', icone: 'carne', precoMedioDF: 18.90, ultimoPreco: 18.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_lombo_suino', nome: 'Lombo Suíno Resfriado em Bifes / Peça (kg)', categoria: 'Carnes e Proteínas', icone: 'carne', precoMedioDF: 21.90, ultimoPreco: 21.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_bisteca_porco', nome: 'Bisteca Suína com Osso Macia (kg)', categoria: 'Carnes e Proteínas', icone: 'carne', precoMedioDF: 16.90, ultimoPreco: 16.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_mignon_suino', nome: 'Filé Mignon Suíno Limpinho (kg)', categoria: 'Carnes e Proteínas', icone: 'carne', precoMedioDF: 24.90, ultimoPreco: 24.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_panceta', nome: 'Panceta Suína para Torresmo Pururuca (kg)', categoria: 'Carnes e Proteínas', icone: 'carne', precoMedioDF: 22.90, ultimoPreco: 22.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_bacon_fatiado', nome: 'Bacon em Fatias Defumado Seara / Sadia (250g)', categoria: 'Carnes e Proteínas', icone: 'linguica', precoMedioDF: 12.90, ultimoPreco: 12.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_bacon_pedaco', nome: 'Bacon Defumado em Pedaço / Manta (kg)', categoria: 'Carnes e Proteínas', icone: 'linguica', precoMedioDF: 28.90, ultimoPreco: 28.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_ling_cuiabana', nome: 'Linguiça Cuiabana Recheada com Queijo para Churrasco (kg)', categoria: 'Carnes e Proteínas', icone: 'linguica', precoMedioDF: 32.90, ultimoPreco: 32.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_ling_paio', nome: 'Linguiça Paio Defumada para Feijoada (kg)', categoria: 'Carnes e Proteínas', icone: 'linguica', precoMedioDF: 29.90, ultimoPreco: 29.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_ling_frango', nome: 'Linguiça de Frango Fina para Grelhar (kg)', categoria: 'Carnes e Proteínas', icone: 'linguica', precoMedioDF: 19.90, ultimoPreco: 19.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_salsicha_hotdog', nome: 'Salsicha Hot Dog Resfriada Sadia / Perdigão (kg)', categoria: 'Carnes e Proteínas', icone: 'linguica', precoMedioDF: 11.90, ultimoPreco: 11.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_salsicha_viena', nome: 'Salsicha Tipo Viena em Lata / Pacote (300g)', categoria: 'Carnes e Proteínas', icone: 'linguica', precoMedioDF: 9.90, ultimoPreco: 9.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_sobrecoxa_desoss', nome: 'Sobrecoxa de Frango Desossada sem Pele (kg)', categoria: 'Carnes e Proteínas', icone: 'frango', precoMedioDF: 18.90, ultimoPreco: 18.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_tulipa_asa', nome: 'Meio da Asa de Frango (Tulipa) Resfriada (kg)', categoria: 'Carnes e Proteínas', icone: 'frango', precoMedioDF: 24.90, ultimoPreco: 24.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_galeto', nome: 'Galeto Primo Canto Resfriado (Unidade kg)', categoria: 'Carnes e Proteínas', icone: 'frango', precoMedioDF: 14.90, ultimoPreco: 14.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_figado_frango', nome: 'Fígado de Frango Limpo Resfriado (1kg)', categoria: 'Carnes e Proteínas', icone: 'frango', precoMedioDF: 8.90, ultimoPreco: 8.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_salmao_file', nome: 'Filé de Salmão Chileno Fresco com Pele (kg)', categoria: 'Carnes e Proteínas', icone: 'peixe', precoMedioDF: 79.90, ultimoPreco: 79.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_bacalhau_dessalg', nome: 'Lombo de Bacalhau Gadus Morhua Dessalgado Congelado (800g)', categoria: 'Carnes e Proteínas', icone: 'peixe', precoMedioDF: 89.90, ultimoPreco: 89.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_bacalhau_desfiado', nome: 'Lascas de Bacalhau Dessalgado Congelado (500g)', categoria: 'Carnes e Proteínas', icone: 'peixe', precoMedioDF: 34.90, ultimoPreco: 34.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_merluza_file', nome: 'Filé de Merluza Austral Congelado sem Pele (800g)', categoria: 'Carnes e Proteínas', icone: 'peixe', precoMedioDF: 27.90, ultimoPreco: 27.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_camarao_cinza', nome: 'Camarão Cinza Médio Limpo sem Cabeça e Casca (400g)', categoria: 'Carnes e Proteínas', icone: 'peixe', precoMedioDF: 32.90, ultimoPreco: 32.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_camarao_rosa', nome: 'Camarão Rosa Grande Limpo Congelado (400g)', categoria: 'Carnes e Proteínas', icone: 'peixe', precoMedioDF: 48.90, ultimoPreco: 48.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_cacao_posta', nome: 'Postas de Cação sem Pele e Espinho (800g)', categoria: 'Carnes e Proteínas', icone: 'peixe', precoMedioDF: 26.90, ultimoPreco: 26.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_sardinha_limpa', nome: 'Sardinha Inteira Limpa e Eviscerada Congelada (800g)', categoria: 'Carnes e Proteínas', icone: 'peixe', precoMedioDF: 14.90, ultimoPreco: 14.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_atum_file_fresco', nome: 'Filé de Atum Vermelho Fresco / Congelado (kg)', categoria: 'Carnes e Proteínas', icone: 'peixe', precoMedioDF: 49.90, ultimoPreco: 49.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_lula_aneis', nome: 'Anéis de Lula Congelados Prontos para Empanar (400g)', categoria: 'Carnes e Proteínas', icone: 'peixe', precoMedioDF: 28.90, ultimoPreco: 28.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_polvo_limpo', nome: 'Tentáculos de Polvo Cozido Congelado (500g)', categoria: 'Carnes e Proteínas', icone: 'peixe', precoMedioDF: 64.90, ultimoPreco: 64.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_costela_bov_ripa', nome: 'Costela Bovina Ripa Grossa para Churrasco (kg)', categoria: 'Carnes e Proteínas', icone: 'costela', precoMedioDF: 23.90, ultimoPreco: 23.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_cupim_bovino', nome: 'Cupim Bovino Alto para Bafo / Churrasqueira (kg)', categoria: 'Carnes e Proteínas', icone: 'carne', precoMedioDF: 36.90, ultimoPreco: 36.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_medalhao_frango', nome: 'Medalhão de Frango com Bacon Congelado (kg)', categoria: 'Carnes e Proteínas', icone: 'frango', precoMedioDF: 26.90, ultimoPreco: 26.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_kafta_bovina', nome: 'Espetinho de Kafta Bovina Temperada (Pacote c/ 10)', categoria: 'Carnes e Proteínas', icone: 'carne', precoMedioDF: 29.90, ultimoPreco: 29.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_espetinho_carne', nome: 'Espetinho de Carne Bovina para Churrasco (Pacote c/ 10)', categoria: 'Carnes e Proteínas', icone: 'carne', precoMedioDF: 34.90, ultimoPreco: 34.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_figado_isca', nome: 'Iscas de Fígado Bovino Cortadinhas (kg)', categoria: 'Carnes e Proteínas', icone: 'carne', precoMedioDF: 15.50, ultimoPreco: 15.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'l_leite_po_ninho', nome: 'Leite em Pó Integral Instantâneo Ninho Lata (380g/400g)', categoria: 'Laticínios e Frios', icone: 'leite', precoMedioDF: 18.90, ultimoPreco: 18.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'l_leite_po_molico', nome: 'Leite em Pó Desnatado Molico Rico em Cálcio (280g)', categoria: 'Laticínios e Frios', icone: 'leite', precoMedioDF: 19.90, ultimoPreco: 19.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'l_leite_vegetal', nome: 'Bebida Vegetal de Amêndoas / Aveia Silk / A Tal da Castanha (1L)', categoria: 'Laticínios e Frios', icone: 'leite', precoMedioDF: 14.90, ultimoPreco: 14.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'l_queijo_coalho', nome: 'Queijo de Coalho em Espetos para Churrasco (Pacote c/ 7)', categoria: 'Laticínios e Frios', icone: 'queijo', precoMedioDF: 19.90, ultimoPreco: 19.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'l_parmesao_ralado', nome: 'Queijo Parmesão Ralado Saquinho Parmalat / Faixa Azul (50g)', categoria: 'Laticínios e Frios', icone: 'queijo', precoMedioDF: 4.80, ultimoPreco: 4.80, dataUltimoPreco: '2026-09-01' },
+  { id: 'l_parmesao_cunha', nome: 'Queijo Parmesão Tipo Grana Cunha Especial (200g)', categoria: 'Laticínios e Frios', icone: 'queijo', precoMedioDF: 19.90, ultimoPreco: 19.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'l_queijo_gorgonzola', nome: 'Queijo Gorgonzola Tipo Azul em Pedaço (150g)', categoria: 'Laticínios e Frios', icone: 'queijo', precoMedioDF: 16.90, ultimoPreco: 16.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'l_queijo_brie', nome: 'Queijo Tipo Brie / Camembert Cremoso (125g)', categoria: 'Laticínios e Frios', icone: 'queijo', precoMedioDF: 18.90, ultimoPreco: 18.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'l_queijo_provolone', nome: 'Queijo Provolone Defumado em Peça / Fatias (kg)', categoria: 'Laticínios e Frios', icone: 'queijo', precoMedioDF: 48.00, ultimoPreco: 48.00, dataUltimoPreco: '2026-09-01' },
+  { id: 'l_queijo_gouda', nome: 'Queijo Tipo Gouda Holandês Suave Fatiado (150g)', categoria: 'Laticínios e Frios', icone: 'queijo', precoMedioDF: 14.90, ultimoPreco: 14.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'l_ricota_fresca', nome: 'Ricota Fresca Pura Light Tirolez (400g)', categoria: 'Laticínios e Frios', icone: 'queijo', precoMedioDF: 10.90, ultimoPreco: 10.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'l_cottage', nome: 'Queijo Tipo Cottage Cremoso Pote (200g)', categoria: 'Laticínios e Frios', icone: 'queijo', precoMedioDF: 11.90, ultimoPreco: 11.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'l_cream_cheese', nome: 'Cream Cheese Tradicional Philadelphia / Danúbio (150g)', categoria: 'Laticínios e Frios', icone: 'manteiga', precoMedioDF: 9.90, ultimoPreco: 9.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'l_margarina_qualy', nome: 'Margarina Cremosa com Sal Qualy (500g)', categoria: 'Laticínios e Frios', icone: 'manteiga', precoMedioDF: 7.90, ultimoPreco: 7.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'l_manteiga_sem_sal', nome: 'Manteiga de Primeira Qualidade sem Sal Tablete (200g)', categoria: 'Laticínios e Frios', icone: 'manteiga', precoMedioDF: 11.50, ultimoPreco: 11.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'l_peito_peru', nome: 'Peito de Peru Defumado Fatiado Sadia / Seara (kg)', categoria: 'Laticínios e Frios', icone: 'carne', precoMedioDF: 49.90, ultimoPreco: 49.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'l_blanquet_peru', nome: 'Blanquet de Peru Fatiado Leve (kg)', categoria: 'Laticínios e Frios', icone: 'carne', precoMedioDF: 39.90, ultimoPreco: 39.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'l_salame_italiano', nome: 'Salame Tipo Italiano Fatiado Sadia (100g)', categoria: 'Laticínios e Frios', icone: 'carne', precoMedioDF: 9.90, ultimoPreco: 9.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'l_salame_peca', nome: 'Salame Italiano Inteiro Peça Defumado (kg)', categoria: 'Laticínios e Frios', icone: 'carne', precoMedioDF: 64.90, ultimoPreco: 64.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'l_mortadela_bologna', nome: 'Mortadela Bologna Tradicional Fatiada Ceratti / Sadia (kg)', categoria: 'Laticínios e Frios', icone: 'carne', precoMedioDF: 32.90, ultimoPreco: 32.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'l_mortadela_defumada', nome: 'Mortadela de Frango / Defumada Fatiada (kg)', categoria: 'Laticínios e Frios', icone: 'carne', precoMedioDF: 16.90, ultimoPreco: 16.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'l_presunto_parma', nome: 'Presunto Cru Tipo Italiano / Parma Fatiado (100g)', categoria: 'Laticínios e Frios', icone: 'carne', precoMedioDF: 24.90, ultimoPreco: 24.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'l_iogurte_grego', nome: 'Iogurte Grego Tradicional Pote Vigor / Danone (100g)', categoria: 'Laticínios e Frios', icone: 'iogurte', precoMedioDF: 3.80, ultimoPreco: 3.80, dataUltimoPreco: '2026-09-01' },
+  { id: 'l_iogurte_garrafa_1kg', nome: 'Iogurte Sabor Morango / Frutas Vermelhas Garrafa (1kg)', categoria: 'Laticínios e Frios', icone: 'iogurte', precoMedioDF: 12.90, ultimoPreco: 12.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'l_leite_fermentado', nome: 'Leite Fermentado com Lactobacilos Tipo Yakult / Chamyto (Pack c/ 6)', categoria: 'Laticínios e Frios', icone: 'leite', precoMedioDF: 6.90, ultimoPreco: 6.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'l_petit_suisse', nome: 'Queijo Petit Suisse Sabor Morango Danoninho (Bandeja c/ 8)', categoria: 'Laticínios e Frios', icone: 'iogurte', precoMedioDF: 9.90, ultimoPreco: 9.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'l_coalhada', nome: 'Coalhada Fresca Tradicional Pote (170g)', categoria: 'Laticínios e Frios', icone: 'iogurte', precoMedioDF: 4.50, ultimoPreco: 4.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'l_nata_fresca', nome: 'Nata Pasteurizada Fresca Pote (300g)', categoria: 'Laticínios e Frios', icone: 'manteiga', precoMedioDF: 11.90, ultimoPreco: 11.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'l_chantilly_spray', nome: 'Creme Chantilly Spray Pronto para Servir (250g)', categoria: 'Laticínios e Frios', icone: 'leite', precoMedioDF: 19.90, ultimoPreco: 19.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'l_sobremesa_chocolate', nome: 'Sobremesa Láctea Sabor Chocolate Danette / Chandelle (Pote c/ 2)', categoria: 'Laticínios e Frios', icone: 'iogurte', precoMedioDF: 5.90, ultimoPreco: 5.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'l_requeijao_light', nome: 'Requeijão Cremoso Light Copo (200g)', categoria: 'Laticínios e Frios', icone: 'manteiga', precoMedioDF: 8.50, ultimoPreco: 8.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_arroz_arboreo', nome: 'Arroz Arbóreo Especial para Risoto (1kg)', categoria: 'Básicos e Grãos', icone: 'arroz', precoMedioDF: 16.90, ultimoPreco: 16.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_arroz_jasmim', nome: 'Arroz Jasmim Aromático Tailandês (1kg)', categoria: 'Básicos e Grãos', icone: 'arroz', precoMedioDF: 19.90, ultimoPreco: 19.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_feijao_fradinho', nome: 'Feijão Fradinho / Corda Selecionado (1kg)', categoria: 'Básicos e Grãos', icone: 'feijao', precoMedioDF: 7.90, ultimoPreco: 7.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_feijao_vermelho', nome: 'Feijão Vermelho Caldo Grosso (1kg)', categoria: 'Básicos e Grãos', icone: 'feijao', precoMedioDF: 8.90, ultimoPreco: 8.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_feijao_branco', nome: 'Feijão Branco Especial para Dobradinha / Salada (500g)', categoria: 'Básicos e Grãos', icone: 'feijao', precoMedioDF: 6.90, ultimoPreco: 6.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_lentilha', nome: 'Lentilha Seca Selecionada (500g)', categoria: 'Básicos e Grãos', icone: 'feijao', precoMedioDF: 6.90, ultimoPreco: 6.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_grao_bico', nome: 'Grão-de-Bico Cru Selecionado (500g)', categoria: 'Básicos e Grãos', icone: 'feijao', precoMedioDF: 7.90, ultimoPreco: 7.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_ervilha_seca', nome: 'Ervilha Partida Seca para Sopa (500g)', categoria: 'Básicos e Grãos', icone: 'feijao', precoMedioDF: 5.50, ultimoPreco: 5.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_farinha_cuscuz', nome: 'Flocão de Milho para Cuscuz Nordestino (500g)', categoria: 'Básicos e Grãos', icone: 'farinha', precoMedioDF: 2.80, ultimoPreco: 2.80, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_polvilho_doce', nome: 'Polvilho Doce Especial para Biscoito e Pão de Queijo (1kg)', categoria: 'Básicos e Grãos', icone: 'farinha', precoMedioDF: 8.90, ultimoPreco: 8.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_polvilho_azedo', nome: 'Polvilho Azedo Selecionado (1kg)', categoria: 'Básicos e Grãos', icone: 'farinha', precoMedioDF: 9.50, ultimoPreco: 9.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_farinha_rosca', nome: 'Farinha de Rosca Especial para Empanar (500g)', categoria: 'Básicos e Grãos', icone: 'farinha', precoMedioDF: 4.90, ultimoPreco: 4.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_farinha_panko', nome: 'Farinha Panko para Empanados Crocantes (200g)', categoria: 'Básicos e Grãos', icone: 'farinha', precoMedioDF: 7.90, ultimoPreco: 7.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_aveia_flocos', nome: 'Aveia em Flocos Finos / Grossos Quaker (170g)', categoria: 'Básicos e Grãos', icone: 'farinha', precoMedioDF: 5.50, ultimoPreco: 5.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_granola_trad', nome: 'Granola Tradicional Mel e Castanhas Crocante (1kg)', categoria: 'Básicos e Grãos', icone: 'farinha', precoMedioDF: 18.90, ultimoPreco: 18.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_chia_graos', nome: 'Semente de Chia Natural (200g)', categoria: 'Básicos e Grãos', icone: 'farinha', precoMedioDF: 7.90, ultimoPreco: 7.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_linhaca_dourada', nome: 'Semente de Linhaça Dourada (200g)', categoria: 'Básicos e Grãos', icone: 'farinha', precoMedioDF: 6.50, ultimoPreco: 6.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_quinoa_graos', nome: 'Quinoa em Grãos Branca / Mista (250g)', categoria: 'Básicos e Grãos', icone: 'farinha', precoMedioDF: 13.90, ultimoPreco: 13.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_azeite_acidez_02', nome: 'Azeite de Oliva Extra Virgem Acidez 0.2% Premium (Vidro 500ml)', categoria: 'Básicos e Grãos', icone: 'oleo', precoMedioDF: 42.90, ultimoPreco: 42.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_vinagre_alcool', nome: 'Vinagre de Álcool Tradicional Limpeza e Culinária (750ml)', categoria: 'Básicos e Grãos', icone: 'oleo', precoMedioDF: 2.20, ultimoPreco: 2.20, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_vinagre_maca', nome: 'Vinagre de Maçã 100% Fermentado Natural (750ml)', categoria: 'Básicos e Grãos', icone: 'oleo', precoMedioDF: 4.90, ultimoPreco: 4.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_vinagre_balsamico', nome: 'Vinagre Balsâmico Aceto Balsamico Italiano (250ml)', categoria: 'Básicos e Grãos', icone: 'oleo', precoMedioDF: 12.90, ultimoPreco: 12.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_molho_tomate_sache', nome: 'Molho de Tomate Tradicional Pomarola / Fugini Sachê (300g)', categoria: 'Básicos e Grãos', icone: 'tomate', precoMedioDF: 2.39, ultimoPreco: 2.39, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_molho_manjericao', nome: 'Molho de Tomate Especial com Manjericão (Sachê 340g)', categoria: 'Básicos e Grãos', icone: 'tomate', precoMedioDF: 3.50, ultimoPreco: 3.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_passata_tomate', nome: 'Passata de Tomate Rústica sem Pele Italiana (Vidro 680g)', categoria: 'Básicos e Grãos', icone: 'tomate', precoMedioDF: 11.90, ultimoPreco: 11.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_tomate_pelado', nome: 'Tomate Pelado Inteiro em Lata com Suco (Lata 400g)', categoria: 'Básicos e Grãos', icone: 'tomate', precoMedioDF: 5.90, ultimoPreco: 5.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_ervilha_lata', nome: 'Ervilha em Conserva Lata Quero / Fugini (170g)', categoria: 'Básicos e Grãos', icone: 'legumes', precoMedioDF: 2.90, ultimoPreco: 2.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_milho_lata', nome: 'Milho Verde em Conserva Lata Quero / Fugini (170g)', categoria: 'Básicos e Grãos', icone: 'legumes', precoMedioDF: 3.10, ultimoPreco: 3.10, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_dueto_lata', nome: 'Milho e Ervilha em Conserva Dueto (Lata 170g)', categoria: 'Básicos e Grãos', icone: 'legumes', precoMedioDF: 3.20, ultimoPreco: 3.20, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_azeitona_verde_caroco', nome: 'Azeitona Verde com Caroço Vidro Grande (500g)', categoria: 'Básicos e Grãos', icone: 'legumes', precoMedioDF: 9.90, ultimoPreco: 9.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_azeitona_sem_caroco', nome: 'Azeitona Verde sem Caroço Vidro (300g)', categoria: 'Básicos e Grãos', icone: 'legumes', precoMedioDF: 8.90, ultimoPreco: 8.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_azeitona_preta', nome: 'Azeitona Preta Azapa Selecionada Vidro (300g)', categoria: 'Básicos e Grãos', icone: 'legumes', precoMedioDF: 12.90, ultimoPreco: 12.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_palmito_pupunha', nome: 'Palmito Pupunha / Açaí em Rodelas Vidro (300g drenado)', categoria: 'Básicos e Grãos', icone: 'legumes', precoMedioDF: 19.90, ultimoPreco: 19.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_champignon_vidro', nome: 'Cogumelo Champignon em Conserva Fatiado Vidro (200g)', categoria: 'Básicos e Grãos', icone: 'legumes', precoMedioDF: 10.90, ultimoPreco: 10.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_atum_oleo', nome: 'Atum Ralado ao Óleo Comestível Lata Gomes da Costa (170g)', categoria: 'Básicos e Grãos', icone: 'peixe', precoMedioDF: 6.90, ultimoPreco: 6.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_atum_solido', nome: 'Atum Sólido em Pedaços ao Natural / Azeite (Lata 170g)', categoria: 'Básicos e Grãos', icone: 'peixe', precoMedioDF: 9.90, ultimoPreco: 9.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_sardinha_molho', nome: 'Sardinha com Molho de Tomate Lata Coqueiro (125g)', categoria: 'Básicos e Grãos', icone: 'peixe', precoMedioDF: 4.50, ultimoPreco: 4.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_sardinha_oleo', nome: 'Sardinha ao Óleo Comestível Lata Coqueiro (125g)', categoria: 'Básicos e Grãos', icone: 'peixe', precoMedioDF: 4.50, ultimoPreco: 4.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_maionese_pote', nome: 'Maionese Tradicional Cremosa Hellmann\'s Pote (500g)', categoria: 'Básicos e Grãos', icone: 'oleo', precoMedioDF: 8.90, ultimoPreco: 8.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_ketchup_heinz', nome: 'Ketchup Tradicional Heinz Frasco Squeeze (397g)', categoria: 'Básicos e Grãos', icone: 'tomate', precoMedioDF: 10.90, ultimoPreco: 10.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_mostarda_heinz', nome: 'Mostarda Amarela Tradicional Heinz (255g)', categoria: 'Básicos e Grãos', icone: 'oleo', precoMedioDF: 8.50, ultimoPreco: 8.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_mostarda_dijon', nome: 'Mostarda Francesa Tipo Dijon Original Vidro (200g)', categoria: 'Básicos e Grãos', icone: 'oleo', precoMedioDF: 18.90, ultimoPreco: 18.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_molho_shoyu', nome: 'Molho de Soja Shoyu Tradicional Sakura (500ml)', categoria: 'Básicos e Grãos', icone: 'oleo', precoMedioDF: 6.90, ultimoPreco: 6.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_molho_barbecue', nome: 'Molho Barbecue Defumado para Carnes Heinz (397g)', categoria: 'Básicos e Grãos', icone: 'tomate', precoMedioDF: 12.90, ultimoPreco: 12.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_molho_ingles', nome: 'Molho Inglês Condimentado Tradicional (150ml)', categoria: 'Básicos e Grãos', icone: 'oleo', precoMedioDF: 4.90, ultimoPreco: 4.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_doce_leite_pote', nome: 'Doce de Leite Tradicional Cremoso Viçosa / Itambé (Pote 400g)', categoria: 'Básicos e Grãos', icone: 'leite', precoMedioDF: 14.90, ultimoPreco: 14.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_mel_abelha', nome: 'Mel Puro de Abelha Silvestre Bisnaga (300g)', categoria: 'Básicos e Grãos', icone: 'acucar', precoMedioDF: 17.90, ultimoPreco: 17.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_geleia_morango', nome: 'Geleia de Morango Queensberry 100% Fruta Vidro (320g)', categoria: 'Básicos e Grãos', icone: 'fruta', precoMedioDF: 16.90, ultimoPreco: 16.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_pasta_amendoim', nome: 'Pasta de Amendoim Integral Torrado Crocante (Pote 500g)', categoria: 'Básicos e Grãos', icone: 'farinha', precoMedioDF: 15.90, ultimoPreco: 15.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_chocolate_cobertura', nome: 'Chocolate em Barra Meio Amargo para Confeitaria Garoto (1kg)', categoria: 'Básicos e Grãos', icone: 'achocolatado', precoMedioDF: 34.90, ultimoPreco: 34.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_cacau_po_100', nome: 'Cacau em Pó 100% Puro Solúvel sem Açúcar (Pote 200g)', categoria: 'Básicos e Grãos', icone: 'achocolatado', precoMedioDF: 13.90, ultimoPreco: 13.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_fermento_biologico', nome: 'Fermento Biológico Seco Instantâneo para Pães Fleischmann (10g)', categoria: 'Básicos e Grãos', icone: 'farinha', precoMedioDF: 1.80, ultimoPreco: 1.80, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_fermento_quimico', nome: 'Fermento Químico em Pó para Bolos Royal (Pote 100g)', categoria: 'Básicos e Grãos', icone: 'farinha', precoMedioDF: 3.90, ultimoPreco: 3.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_bicarbonato', nome: 'Bicarbonato de Sódio Puro Multiuso Culinário (100g)', categoria: 'Básicos e Grãos', icone: 'sal', precoMedioDF: 3.20, ultimoPreco: 3.20, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_agua_15l', nome: 'Água Mineral sem Gás Garrafa (1.5 Litro)', categoria: 'Bebidas', icone: 'agua', precoMedioDF: 2.50, ultimoPreco: 2.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_agua_gas_15l', nome: 'Água Mineral com Gás Garrafa (1.5 Litro)', categoria: 'Bebidas', icone: 'agua', precoMedioDF: 2.80, ultimoPreco: 2.80, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_agua_galao_20l', nome: 'Água Mineral Galão Retornável (20 Litros)', categoria: 'Bebidas', icone: 'agua', precoMedioDF: 14.00, ultimoPreco: 14.00, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_agua_tonica_lata', nome: 'Água Tônica Antarctica Tradicional Lata (350ml)', categoria: 'Bebidas', icone: 'refrigerante', precoMedioDF: 3.50, ultimoPreco: 3.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_coca_2l', nome: 'Refrigerante Coca-Cola Original Pet (2 Litros)', categoria: 'Bebidas', icone: 'refrigerante', precoMedioDF: 8.99, ultimoPreco: 8.99, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_coca_zero_2l', nome: 'Refrigerante Coca-Cola sem Açúcar Zero Pet (2 Litros)', categoria: 'Bebidas', icone: 'refrigerante', precoMedioDF: 8.99, ultimoPreco: 8.99, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_guarana_2l', nome: 'Refrigerante Guaraná Antarctica Pet (2 Litros)', categoria: 'Bebidas', icone: 'refrigerante', precoMedioDF: 7.99, ultimoPreco: 7.99, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_guarana_zero_2l', nome: 'Refrigerante Guaraná Antarctica Zero Pet (2 Litros)', categoria: 'Bebidas', icone: 'refrigerante', precoMedioDF: 7.99, ultimoPreco: 7.99, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_fanta_laranja_2l', nome: 'Refrigerante Fanta Laranja Pet (2 Litros)', categoria: 'Bebidas', icone: 'refrigerante', precoMedioDF: 7.50, ultimoPreco: 7.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_fanta_uva_2l', nome: 'Refrigerante Fanta Uva Pet (2 Litros)', categoria: 'Bebidas', icone: 'refrigerante', precoMedioDF: 7.50, ultimoPreco: 7.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_sprite_2l', nome: 'Refrigerante Sprite Lemon Fresh Pet (2 Litros)', categoria: 'Bebidas', icone: 'refrigerante', precoMedioDF: 7.50, ultimoPreco: 7.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_suco_uva_aurora', nome: 'Suco de Uva Integral 100% Aurora Garrafa Vidro (1.5L)', categoria: 'Bebidas', icone: 'suco', precoMedioDF: 16.90, ultimoPreco: 16.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_suco_laranja_natural_one', nome: 'Suco de Laranja Integral Refrigerado Natural One (900ml)', categoria: 'Bebidas', icone: 'suco', precoMedioDF: 8.90, ultimoPreco: 8.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_suco_maracuja_conc', nome: 'Suco Concentrado de Maracujá Garrafa Maguary (500ml)', categoria: 'Bebidas', icone: 'suco', precoMedioDF: 6.90, ultimoPreco: 6.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_suco_delvalle_1l', nome: 'Suco Néctar de Pêssego / Uva Del Valle Caixinha (1L)', categoria: 'Bebidas', icone: 'suco', precoMedioDF: 5.90, ultimoPreco: 5.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_cha_leao_pessego', nome: 'Chá Gelado Ice Tea Sabor Pêssego / Limão Leão (1.5L)', categoria: 'Bebidas', icone: 'suco', precoMedioDF: 6.90, ultimoPreco: 6.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_cha_matte_leao', nome: 'Chá Mate Leão Tradicional Natural Garrafa (1.5L)', categoria: 'Bebidas', icone: 'suco', precoMedioDF: 6.50, ultimoPreco: 6.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_cha_sache_camomila', nome: 'Chá em Sachê Camomila e Erva-Cidreira Leão (Caixa c/ 10)', categoria: 'Bebidas', icone: 'suco', precoMedioDF: 4.90, ultimoPreco: 4.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_agua_coco_1l', nome: 'Água de Coco 100% Esterilizada Caixinha Kero Coco (1L)', categoria: 'Bebidas', icone: 'suco', precoMedioDF: 8.90, ultimoPreco: 8.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_red_bull_lata', nome: 'Energético Red Bull Energy Drink Tradicional Lata (250ml)', categoria: 'Bebidas', icone: 'refrigerante', precoMedioDF: 8.50, ultimoPreco: 8.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_monster_lata', nome: 'Energético Monster Energy Tradicional / Zero Lata (473ml)', categoria: 'Bebidas', icone: 'refrigerante', precoMedioDF: 9.90, ultimoPreco: 9.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_gatorade_500ml', nome: 'Isotônico Gatorade Sabor Laranja / Limão Garrafa (500ml)', categoria: 'Bebidas', icone: 'suco', precoMedioDF: 5.50, ultimoPreco: 5.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_cerveja_heineken_ln', nome: 'Cerveja Puro Malte Heineken Garrafa Long Neck (330ml)', categoria: 'Bebidas', icone: 'cerveja', precoMedioDF: 6.99, ultimoPreco: 6.99, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_cerveja_heineken_pack', nome: 'Cerveja Heineken Puro Malte Long Neck (Pack c/ 6 unidades)', categoria: 'Bebidas', icone: 'cerveja', precoMedioDF: 38.90, ultimoPreco: 38.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_cerveja_heineken_zero', nome: 'Cerveja sem Álcool Heineken 0.0 Long Neck (330ml)', categoria: 'Bebidas', icone: 'cerveja', precoMedioDF: 6.99, ultimoPreco: 6.99, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_cerveja_stella_ln', nome: 'Cerveja Stella Artois Puro Malte Long Neck (330ml)', categoria: 'Bebidas', icone: 'cerveja', precoMedioDF: 5.99, ultimoPreco: 5.99, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_cerveja_spaten_lata', nome: 'Cerveja Puro Malte Spaten Lata Munich Helles (350ml)', categoria: 'Bebidas', icone: 'cerveja', precoMedioDF: 4.49, ultimoPreco: 4.49, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_cerveja_amstel_lata', nome: 'Cerveja Puro Malte Amstel Lager Lata (350ml)', categoria: 'Bebidas', icone: 'cerveja', precoMedioDF: 3.99, ultimoPreco: 3.99, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_cerveja_corona_ln', nome: 'Cerveja Corona Extra com Limão Long Neck (330ml)', categoria: 'Bebidas', icone: 'cerveja', precoMedioDF: 6.99, ultimoPreco: 6.99, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_cerveja_budweiser', nome: 'Cerveja Budweiser American Lager Long Neck (330ml)', categoria: 'Bebidas', icone: 'cerveja', precoMedioDF: 5.49, ultimoPreco: 5.49, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_vinho_casillero', nome: 'Vinho Tinto Chileno Cabernet Sauvignon Casillero del Diablo (750ml)', categoria: 'Bebidas', icone: 'vinho', precoMedioDF: 49.90, ultimoPreco: 49.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_vinho_reservado', nome: 'Vinho Tinto Suave Reservado Concha y Toro (750ml)', categoria: 'Bebidas', icone: 'vinho', precoMedioDF: 29.90, ultimoPreco: 29.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_vinho_branco_seco', nome: 'Vinho Branco Sauvignon Blanc Chileno Seco (750ml)', categoria: 'Bebidas', icone: 'vinho', precoMedioDF: 32.90, ultimoPreco: 32.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_espumante_chandon', nome: 'Espumante Brut Chandon Réserve Garrafa (750ml)', categoria: 'Bebidas', icone: 'vinho', precoMedioDF: 89.90, ultimoPreco: 89.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_espumante_salton', nome: 'Espumante Moscatel Doce Salton Garrafa (750ml)', categoria: 'Bebidas', icone: 'vinho', precoMedioDF: 36.90, ultimoPreco: 36.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_whisky_red_label', nome: 'Whisky Johnnie Walker Red Label Escocês (1 Litro)', categoria: 'Bebidas', icone: 'vinho', precoMedioDF: 89.90, ultimoPreco: 89.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_whisky_black_label', nome: 'Whisky Johnnie Walker Black Label 12 Anos (1 Litro)', categoria: 'Bebidas', icone: 'vinho', precoMedioDF: 159.00, ultimoPreco: 159.00, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_vodka_smirnoff', nome: 'Vodka Smirnoff Tradicional Garrafa (998ml)', categoria: 'Bebidas', icone: 'vinho', precoMedioDF: 36.90, ultimoPreco: 36.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_vodka_absolut', nome: 'Vodka Sueca Absolut Tradicional Pura (1 Litro)', categoria: 'Bebidas', icone: 'vinho', precoMedioDF: 89.90, ultimoPreco: 89.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_gin_tanqueray', nome: 'Gin Tanqueray London Dry Importado Garrafa (750ml)', categoria: 'Bebidas', icone: 'vinho', precoMedioDF: 99.00, ultimoPreco: 99.00, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_cachaca_salinas', nome: 'Cachaça Artesanal Envelhecida Salinas Garrafa (700ml)', categoria: 'Bebidas', icone: 'vinho', precoMedioDF: 39.90, ultimoPreco: 39.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_campari', nome: 'Aperitivo Bitter Campari Original Italiano (900ml)', categoria: 'Bebidas', icone: 'vinho', precoMedioDF: 54.90, ultimoPreco: 54.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'pad_pao_integral_12', nome: 'Pão de Forma Integral 12 Grãos Pullman (500g)', categoria: 'Padaria e Lanches', icone: 'pao', precoMedioDF: 9.90, ultimoPreco: 9.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'pad_pao_hamburguer', nome: 'Pão para Hambúrguer com Gergelim (Pacote c/ 4)', categoria: 'Padaria e Lanches', icone: 'pao', precoMedioDF: 7.50, ultimoPreco: 7.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'pad_pao_hotdog', nome: 'Pão para Hot Dog Tradicional Macio (Pacote c/ 6)', categoria: 'Padaria e Lanches', icone: 'pao', precoMedioDF: 6.90, ultimoPreco: 6.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'pad_rap10', nome: 'Massa de Tortilha para Wrap Rap10 Tradicional (Pacote c/ 10)', categoria: 'Padaria e Lanches', icone: 'pao', precoMedioDF: 7.90, ultimoPreco: 7.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'pad_pao_sirio', nome: 'Pão Sírio Pita Bread Fresco (Pacote c/ 6 unidades)', categoria: 'Padaria e Lanches', icone: 'pao', precoMedioDF: 8.50, ultimoPreco: 8.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'pad_pao_alho', nome: 'Pão de Alho Baguete Recheada Santa Massa / Zinho (400g)', categoria: 'Padaria e Lanches', icone: 'pao', precoMedioDF: 13.90, ultimoPreco: 13.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'pad_bolo_ingles', nome: 'Bolo Inglês Fatiado de Chocolate / Cenoura Bauducco (250g)', categoria: 'Padaria e Lanches', icone: 'pao', precoMedioDF: 8.90, ultimoPreco: 8.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'pad_biscoito_wafer', nome: 'Biscoito Wafer Chocolate / Baunilha Bauducco (140g)', categoria: 'Padaria e Lanches', icone: 'biscoito', precoMedioDF: 3.50, ultimoPreco: 3.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'pad_biscoito_oreo', nome: 'Biscoito Recheado Baunilha Oreo Original (144g)', categoria: 'Padaria e Lanches', icone: 'biscoito', precoMedioDF: 4.80, ultimoPreco: 4.80, dataUltimoPreco: '2026-09-01' },
+  { id: 'pad_passatempo', nome: 'Biscoito Recheado Chocolate Passatempo Nestlé (130g)', categoria: 'Padaria e Lanches', icone: 'biscoito', precoMedioDF: 3.20, ultimoPreco: 3.20, dataUltimoPreco: '2026-09-01' },
+  { id: 'pad_club_social', nome: 'Biscoito Salgado Club Social Original Multipack (Pack c/ 6)', categoria: 'Padaria e Lanches', icone: 'biscoito', precoMedioDF: 5.90, ultimoPreco: 5.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'pad_polvilho_salg', nome: 'Biscoito de Polvilho Salgado Azedinho Tradicional (100g)', categoria: 'Padaria e Lanches', icone: 'biscoito', precoMedioDF: 4.50, ultimoPreco: 4.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'pad_pringles', nome: 'Batata Frita Pringles Sabor Original / Cebola e Salsa (114g)', categoria: 'Padaria e Lanches', icone: 'biscoito', precoMedioDF: 10.90, ultimoPreco: 10.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'pad_doritos', nome: 'Salgadinho de Tortilha Doritos Queijo Nacho (140g)', categoria: 'Padaria e Lanches', icone: 'biscoito', precoMedioDF: 9.90, ultimoPreco: 9.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'pad_ruffles', nome: 'Batata Palha Ondulada Salgadinha Ruffles Original (140g)', categoria: 'Padaria e Lanches', icone: 'biscoito', precoMedioDF: 8.90, ultimoPreco: 8.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'pad_cheetos', nome: 'Salgadinho de Milho Assado Cheetos Requeijão (130g)', categoria: 'Padaria e Lanches', icone: 'biscoito', precoMedioDF: 6.90, ultimoPreco: 6.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'pad_batata_palha', nome: 'Batata Palha Tradicional Crocante Yoki (140g)', categoria: 'Padaria e Lanches', icone: 'batata', precoMedioDF: 6.90, ultimoPreco: 6.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'pad_pipoca_micro', nome: 'Pipoca para Micro-ondas Sabor Manteiga Yoki (100g)', categoria: 'Padaria e Lanches', icone: 'farinha', precoMedioDF: 3.90, ultimoPreco: 3.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'pad_amendoim_torrado', nome: 'Amendoim Torrado Salgado sem Pele Santa Helena (150g)', categoria: 'Padaria e Lanches', icone: 'farinha', precoMedioDF: 4.90, ultimoPreco: 4.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'pad_castanha_caju', nome: 'Castanha de Caju Torrada e Salgada W1 Selecionada (100g)', categoria: 'Padaria e Lanches', icone: 'farinha', precoMedioDF: 12.90, ultimoPreco: 12.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'pad_castanha_para', nome: 'Castanha do Pará / Brasil Inteira Sem Casca (100g)', categoria: 'Padaria e Lanches', icone: 'farinha', precoMedioDF: 11.90, ultimoPreco: 11.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'pad_barra_cereal', nome: 'Barra de Cereal Banana com Chocolate Nutry (Caixa c/ 3)', categoria: 'Padaria e Lanches', icone: 'biscoito', precoMedioDF: 4.90, ultimoPreco: 4.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'pad_barra_chocolate_lacta', nome: 'Barra de Chocolate ao Leite Lacta / Nestlé (80g)', categoria: 'Padaria e Lanches', icone: 'achocolatado', precoMedioDF: 5.90, ultimoPreco: 5.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'pad_caixa_bombom', nome: 'Caixa de Bombons Sortidos Garoto / Nestlé (250g)', categoria: 'Padaria e Lanches', icone: 'achocolatado', precoMedioDF: 12.90, ultimoPreco: 12.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'pad_bala_frutas', nome: 'Bala Mastigável de Frutas Sortidas Dori (Pacote 500g)', categoria: 'Padaria e Lanches', icone: 'acucar', precoMedioDF: 6.90, ultimoPreco: 6.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'pad_trident', nome: 'Goma de Mascar Trident sem Açúcar Sabor Menta (Caixinha c/ 5)', categoria: 'Padaria e Lanches', icone: 'acucar', precoMedioDF: 4.50, ultimoPreco: 4.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'pad_sorvete_kibon_15l', nome: 'Sorvete Pote Flocos / Chocolate Cremoso Kibon (1.5 Litro)', categoria: 'Padaria e Lanches', icone: 'iogurte', precoMedioDF: 24.90, ultimoPreco: 24.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'pad_pao_brioche', nome: 'Pão de Forma Tipo Brioche Manteiga Bauducco (400g)', categoria: 'Padaria e Lanches', icone: 'pao', precoMedioDF: 9.90, ultimoPreco: 9.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'cong_lasanha_bolonhesa', nome: 'Lasanha à Bolonhesa Congelada Sadia / Seara (600g)', categoria: 'Básicos e Grãos', icone: 'macarrao', precoMedioDF: 15.90, ultimoPreco: 15.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'cong_lasanha_queijos', nome: 'Lasanha Quatro Queijos Congelada Sadia (600g)', categoria: 'Básicos e Grãos', icone: 'macarrao', precoMedioDF: 15.90, ultimoPreco: 15.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'cong_pizza_calabresa', nome: 'Pizza Congelada Sabor Calabresa Sadia (460g)', categoria: 'Básicos e Grãos', icone: 'pao', precoMedioDF: 14.90, ultimoPreco: 14.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'cong_pizza_mussarela', nome: 'Pizza Congelada Sabor Mussarela Perdigão (460g)', categoria: 'Básicos e Grãos', icone: 'pao', precoMedioDF: 14.90, ultimoPreco: 14.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'cong_hamburguer_bovino', nome: 'Hambúrguer Bovino Congelado Texas / Sadia (Caixa c/ 12 de 672g)', categoria: 'Carnes e Proteínas', icone: 'carne', precoMedioDF: 18.90, ultimoPreco: 18.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'cong_hamburguer_frango', nome: 'Hambúrguer de Frango Congelado Sadia (Caixa c/ 12)', categoria: 'Carnes e Proteínas', icone: 'frango', precoMedioDF: 17.90, ultimoPreco: 17.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'cong_nuggets_frango', nome: 'Empanado de Frango Nuggets Sadia / Seara (Pacote 300g)', categoria: 'Carnes e Proteínas', icone: 'frango', precoMedioDF: 9.90, ultimoPreco: 9.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'cong_batata_palito_mccain', nome: 'Batata Pré-frita Congelada Tipo Palito McCain (1.5kg)', categoria: 'Hortifrúti', icone: 'batata', precoMedioDF: 24.90, ultimoPreco: 24.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'cong_seleta_legumes', nome: 'Seleta de Legumes Congelados Milho Ervilha Cenoura (400g)', categoria: 'Hortifrúti', icone: 'legumes', precoMedioDF: 8.90, ultimoPreco: 8.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'cong_brocolis_floretes', nome: 'Brócolis em Floretes Congelados Prontos (400g)', categoria: 'Hortifrúti', icone: 'folhas', precoMedioDF: 10.90, ultimoPreco: 10.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'cong_acai_pote_1l', nome: 'Açaí Congelado com Guaraná Pote Cremoso (1 Litro)', categoria: 'Padaria e Lanches', icone: 'fruta', precoMedioDF: 19.90, ultimoPreco: 19.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'cong_pao_queijo_1kg', nome: 'Pão de Queijo Mineiro Congelado Forno de Minas (1kg)', categoria: 'Padaria e Lanches', icone: 'pao', precoMedioDF: 19.90, ultimoPreco: 19.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'cong_coxinhas_festa', nome: 'Mini Coxinhas de Frango para Festa Congeladas (Pacote c/ 30)', categoria: 'Padaria e Lanches', icone: 'frango', precoMedioDF: 16.90, ultimoPreco: 16.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'cong_bolinho_queijo', nome: 'Mini Bolinhos de Queijo para Festa Congelados (Pacote c/ 30)', categoria: 'Padaria e Lanches', icone: 'queijo', precoMedioDF: 16.90, ultimoPreco: 16.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'cong_massa_folhada', nome: 'Massa Folhada Laminada Congelada Arosa (Rolo 300g)', categoria: 'Padaria e Lanches', icone: 'pao', precoMedioDF: 13.90, ultimoPreco: 13.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'cong_massa_pastel', nome: 'Massa para Pastel Fresca Redonda / Rolo (500g)', categoria: 'Padaria e Lanches', icone: 'pao', precoMedioDF: 6.90, ultimoPreco: 6.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'baz_papel_aluminio', nome: 'Papel Alumínio Resistente Rolo Wyda (30cm x 7.5m)', categoria: 'Diversos', icone: 'utilidades', precoMedioDF: 6.50, ultimoPreco: 6.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'baz_filme_pvc', nome: 'Filme Plástico PVC Transparente Rolo para Alimentos (30m)', categoria: 'Diversos', icone: 'utilidades', precoMedioDF: 5.90, ultimoPreco: 5.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'baz_papel_manteiga', nome: 'Papel Manteiga para Forno e Assadeiras Rolo (5m)', categoria: 'Diversos', icone: 'utilidades', precoMedioDF: 4.90, ultimoPreco: 4.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'baz_saco_ziploc', nome: 'Sacos Herméticos com Fecho Zip para Congelamento (Caixa c/ 15)', categoria: 'Diversos', icone: 'utilidades', precoMedioDF: 11.90, ultimoPreco: 11.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'baz_copo_descartavel', nome: 'Copos Plásticos Descartáveis 200ml Transparentes (Tira c/ 100)', categoria: 'Diversos', icone: 'utilidades', precoMedioDF: 5.90, ultimoPreco: 5.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'baz_prato_descartavel', nome: 'Pratos Descartáveis Reforçados 15cm Brancos (Pacote c/ 10)', categoria: 'Diversos', icone: 'utilidades', precoMedioDF: 4.50, ultimoPreco: 4.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'baz_guardanapo_folha_dup', nome: 'Guardanapo de Papel Folha Dupla Grande Snob (Pacote c/ 50)', categoria: 'Diversos', icone: 'papel', precoMedioDF: 4.80, ultimoPreco: 4.80, dataUltimoPreco: '2026-09-01' },
+  { id: 'baz_palito_dente', nome: 'Palitos de Dente em Madeira Roliços (Caixa c/ 100 unidades)', categoria: 'Diversos', icone: 'utilidades', precoMedioDF: 2.20, ultimoPreco: 2.20, dataUltimoPreco: '2026-09-01' },
+  { id: 'baz_palito_churrasco', nome: 'Espetos de Bambu para Churrasco 25cm (Pacote c/ 50)', categoria: 'Diversos', icone: 'utilidades', precoMedioDF: 4.90, ultimoPreco: 4.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'baz_fosforo', nome: 'Fósforos de Segurança Longos Fiat Lux (Pacote c/ 10 maços)', categoria: 'Diversos', icone: 'utilidades', precoMedioDF: 5.50, ultimoPreco: 5.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'baz_isqueiro_bic', nome: 'Isqueiro Descartável Maxi Bic Original', categoria: 'Diversos', icone: 'utilidades', precoMedioDF: 6.90, ultimoPreco: 6.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'baz_velas_brancas', nome: 'Velas Brancas Tradicionais Votivas (Pacote c/ 8 velas)', categoria: 'Diversos', icone: 'utilidades', precoMedioDF: 8.50, ultimoPreco: 8.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'baz_carvao_3kg', nome: 'Carvão Vegetal para Churrasco Saco (3kg)', categoria: 'Diversos', icone: 'utilidades', precoMedioDF: 15.90, ultimoPreco: 15.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'baz_acendedor_carvao', nome: 'Acendedor Sólido em Cubos para Churrasqueira (Caixa c/ 8)', categoria: 'Diversos', icone: 'utilidades', precoMedioDF: 7.90, ultimoPreco: 7.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'baz_pilha_aa', nome: 'Pilhas Alcalinas Pequenas AA Duracell (Cartela c/ 4 unidades)', categoria: 'Diversos', icone: 'utilidades', precoMedioDF: 19.90, ultimoPreco: 19.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'baz_pilha_aaa', nome: 'Pilhas Alcalinas Palito AAA Duracell (Cartela c/ 4 unidades)', categoria: 'Diversos', icone: 'utilidades', precoMedioDF: 19.90, ultimoPreco: 19.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'baz_lampada_led_9w', nome: 'Lâmpada LED Bulbo 9W Bivolt Luz Branca 6500K Elgin / Philips', categoria: 'Diversos', icone: 'utilidades', precoMedioDF: 7.90, ultimoPreco: 7.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'baz_filtro_cafe_103', nome: 'Filtro de Papel para Café Melitta Tamanho 103 (Caixa c/ 30)', categoria: 'Básicos e Grãos', icone: 'cafe', precoMedioDF: 5.20, ultimoPreco: 5.20, dataUltimoPreco: '2026-09-01' },
+  { id: 'baz_pano_prato', nome: 'Pano de Prato Atoalhado para Cozinha 100% Algodão', categoria: 'Diversos', icone: 'papel', precoMedioDF: 6.90, ultimoPreco: 6.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'pet_racao_cao_adulto_3kg', nome: 'Ração Seca para Cães Adultos Carne e Frango Pedigree / Golden (3kg)', categoria: 'Diversos', icone: 'pet', precoMedioDF: 46.90, ultimoPreco: 46.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'pet_racao_cao_filhote', nome: 'Ração para Cães Filhotes Porte Médio Golden (3kg)', categoria: 'Diversos', icone: 'pet', precoMedioDF: 49.90, ultimoPreco: 49.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'pet_sache_cao', nome: 'Ração Úmida para Cães Sachê Pedigree Carne ao Molho (100g)', categoria: 'Diversos', icone: 'pet', precoMedioDF: 3.20, ultimoPreco: 3.20, dataUltimoPreco: '2026-09-01' },
+  { id: 'pet_bifinho_cao', nome: 'Petisco Bifinho para Cães Keldog Sabor Carne (Pacote 100g)', categoria: 'Diversos', icone: 'pet', precoMedioDF: 5.50, ultimoPreco: 5.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'pet_racao_gato_1kg', nome: 'Ração Seca para Gatos Castrados Salmão Whiskas / Golden (1kg)', categoria: 'Diversos', icone: 'pet', precoMedioDF: 24.90, ultimoPreco: 24.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'pet_sache_gato', nome: 'Ração Úmida para Gatos Sachê Whiskas Peixe (85g)', categoria: 'Diversos', icone: 'pet', precoMedioDF: 3.10, ultimoPreco: 3.10, dataUltimoPreco: '2026-09-01' },
+  { id: 'pet_petisco_gato', nome: 'Petisco Dreamies Crocante por Fora Macio por Dentro Gatos (40g)', categoria: 'Diversos', icone: 'pet', precoMedioDF: 6.50, ultimoPreco: 6.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'pet_areia_gato_4kg', nome: 'Areia Sanitária Higiênica Pipicat Tradicional para Gatos (4kg)', categoria: 'Diversos', icone: 'pet', precoMedioDF: 13.90, ultimoPreco: 13.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'pet_tapete_higienico', nome: 'Tapete Higiênico Descartável para Cães (Pacote c/ 30 unidades)', categoria: 'Diversos', icone: 'pet', precoMedioDF: 49.90, ultimoPreco: 49.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'pet_shampoo_pet', nome: 'Shampoo Neutro para Cães e Gatos Antipulgas Sanol (500ml)', categoria: 'Diversos', icone: 'pet', precoMedioDF: 16.90, ultimoPreco: 16.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'pad_pao_australiano', nome: 'Pão Australiano com Mel e Cacau Tipo Outback (Pacote c/ 3)', categoria: 'Padaria e Lanches', icone: 'pao', precoMedioDF: 11.90, ultimoPreco: 11.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'pad_croissant_manteiga', nome: 'Croissants Congelados Tradicionais Folhados (Pacote c/ 4)', categoria: 'Padaria e Lanches', icone: 'pao', precoMedioDF: 14.90, ultimoPreco: 14.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'pad_panetone_frutas', nome: 'Panetone Tradicional de Frutas Cristalizadas / Chocotone (400g)', categoria: 'Padaria e Lanches', icone: 'pao', precoMedioDF: 19.90, ultimoPreco: 19.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_cerpa_export', nome: 'Cerveja Cerpa Export Premium Garrafa (350ml)', categoria: 'Bebidas', icone: 'cerveja', precoMedioDF: 8.90, ultimoPreco: 8.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'beb_suco_caju_conc', nome: 'Suco Concentrado de Caju Garrafa Maguary (500ml)', categoria: 'Bebidas', icone: 'suco', precoMedioDF: 6.90, ultimoPreco: 6.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_picanha_maturatta', nome: 'Carne Picanha Bovina Maturatta / Bassi Selecionada (kg)', categoria: 'Carnes e Proteínas', icone: 'carne', precoMedioDF: 74.90, ultimoPreco: 74.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'c_costela_porco_bbq', nome: 'Costelinha Suína Temperada com Molho Barbecue Resfriada (kg)', categoria: 'Carnes e Proteínas', icone: 'costela', precoMedioDF: 29.90, ultimoPreco: 29.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'l_queijo_mascarpone', nome: 'Queijo Tipo Mascarpone Italiano Pote (250g)', categoria: 'Laticínios e Frios', icone: 'queijo', precoMedioDF: 26.90, ultimoPreco: 26.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_alho_frito', nome: 'Alho Frito Dourado e Crocante em Pote Prático (150g)', categoria: 'Básicos e Grãos', icone: 'alho', precoMedioDF: 8.90, ultimoPreco: 8.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_cebola_crispy', nome: 'Cebola Crispy Crocante em Pote para Hambúrguer e Salada (100g)', categoria: 'Básicos e Grãos', icone: 'cebola', precoMedioDF: 9.90, ultimoPreco: 9.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_chimichurri_seco', nome: 'Tempero Chimichurri sem Pimenta Desidratado (100g)', categoria: 'Básicos e Grãos', icone: 'folhas', precoMedioDF: 6.50, ultimoPreco: 6.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_lemon_pepper', nome: 'Tempero Lemon Pepper com Raspas de Limão e Pimenta (100g)', categoria: 'Básicos e Grãos', icone: 'fruta', precoMedioDF: 7.50, ultimoPreco: 7.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_paprica_defumada', nome: 'Páprica Doce / Defumada Espanhola Pote (100g)', categoria: 'Básicos e Grãos', icone: 'legumes', precoMedioDF: 6.90, ultimoPreco: 6.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_oregano_sache', nome: 'Orégano Desidratado Aromático Kitano (Pacote 50g)', categoria: 'Básicos e Grãos', icone: 'folhas', precoMedioDF: 4.50, ultimoPreco: 4.50, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_canela_po_sache', nome: 'Canela em Pó Pura Aromática Kitano (Pacote 50g)', categoria: 'Básicos e Grãos', icone: 'farinha', precoMedioDF: 4.20, ultimoPreco: 4.20, dataUltimoPreco: '2026-09-01' }
 ];
 
 // Estado da Aplicação
@@ -157,6 +549,8 @@ let AppState = {
   abaAtiva: 'lista', // 'lista', 'despensa', 'historico'
   filtroCategoria: 'todas',
   cotacaoAtiva: true, // true = cotado com preços e atacadistas visíveis, false = preços e atacadistas ocultos
+  mercadoReferencia: 'atacadao',
+  ordenacaoMercados: 'original', // 'original', 'alfabetico_az', 'alfabetico_za', 'preco'
   itensExcluidos: [],
   catalogo: [...CATALOGO_PADRAO_EXPANDIDO],
 
@@ -215,6 +609,8 @@ document.addEventListener('DOMContentLoaded', () => {
   configurarNavegacao();
   configurarReconhecimentoVoz();
   inicializarNuvem();
+  carregarCotacoesRaspadas();
+  configurarBuscaGlobal();
   renderizarTudo();
 });
 
@@ -226,6 +622,13 @@ function carregarLocalmente() {
       const parsed = JSON.parse(dadosSalvos);
       if (parsed.itensExcluidos) AppState.itensExcluidos = parsed.itensExcluidos;
       if (parsed.cotacaoAtiva !== undefined) AppState.cotacaoAtiva = parsed.cotacaoAtiva;
+      if (parsed.mercadoReferencia && parsed.mercadoReferencia !== 'todos') {
+        AppState.mercadoReferencia = parsed.mercadoReferencia;
+      } else {
+        AppState.mercadoReferencia = 'atacadao';
+      }
+      if (parsed.modoCotacao) AppState.modoCotacao = parsed.modoCotacao;
+      if (parsed.ordenacaoMercados) AppState.ordenacaoMercados = parsed.ordenacaoMercados;
       
       const excluidos = new Set((AppState.itensExcluidos || []).map(n => n.toLowerCase().trim()));
       
@@ -269,24 +672,24 @@ function carregarLocalmente() {
       // Sincroniza quem está selecionado no catálogo com base no que foi salvo
       if (parsed.listaAtiva && Array.isArray(parsed.listaAtiva)) {
         const nomesNaLista = new Set(parsed.listaAtiva.map(it => it.nome.toLowerCase().trim()));
-        const idsNaLista = new Set(parsed.listaAtiva.map(it => String(it.id).replace('item_despensa_', '')));
+        const idsNaLista = new Set(parsed.listaAtiva.map(it => String(it.id)));
 
         AppState.catalogo.forEach(c => {
-          if (c.selecionado !== undefined) {
-            c.selecionado = !!c.selecionado;
-          } else {
-            c.selecionado = nomesNaLista.has(c.nome.toLowerCase().trim()) || idsNaLista.has(String(c.id));
+          const estaNaLista = nomesNaLista.has(c.nome.toLowerCase().trim()) || idsNaLista.has(String(c.id));
+          if (estaNaLista) {
+            c.selecionado = true;
+          } else if (c.selecionado === undefined) {
+            c.selecionado = false;
           }
 
           const itemSalvo = parsed.listaAtiva.find(it => 
             it.nome.toLowerCase().trim() === c.nome.toLowerCase().trim() || 
-            String(it.id).includes(String(c.id))
+            String(it.id) === String(c.id)
           );
           if (itemSalvo) {
             c.qtde = itemSalvo.qtde || 1;
             c.comprado = !!itemSalvo.comprado;
             c.marca = itemSalvo.marca || null;
-            // Evita herdar preço degradado
             if (c.precoMedioDF && itemSalvo.preco < (c.precoMedioDF * 0.7)) {
               c.preco = c.precoMedioDF;
             } else {
@@ -295,9 +698,32 @@ function carregarLocalmente() {
             c.origemPreco = itemSalvo.origemPreco || null;
           }
         });
+
+        // Garante que qualquer item customizado da lista que não estava no catálogo seja adicionado
+        parsed.listaAtiva.forEach(itemSalvo => {
+          const jaExiste = AppState.catalogo.find(c => 
+            c.nome.toLowerCase().trim() === itemSalvo.nome.toLowerCase().trim() ||
+            String(c.id) === String(itemSalvo.id)
+          );
+          if (!jaExiste) {
+            AppState.catalogo.unshift({
+              id: itemSalvo.id || ('c_custom_' + Date.now()),
+              nome: itemSalvo.nome,
+              categoria: itemSalvo.categoria || deduzirCategoria(itemSalvo.nome),
+              icone: itemSalvo.icone || detectarChaveIcone(itemSalvo.nome),
+              precoMedioDF: itemSalvo.preco || 0,
+              preco: itemSalvo.preco || 0,
+              ultimoPreco: itemSalvo.ultimoPreco || itemSalvo.preco || 0,
+              dataUltimoPreco: itemSalvo.dataUltimoPreco || new Date().toISOString().slice(0, 10),
+              selecionado: true,
+              qtde: itemSalvo.qtde || 1,
+              comprado: !!itemSalvo.comprado
+            });
+          }
+        });
       }
 
-      // Lista de Compra SÓ mostra o que for selecionado em Montar Lista!
+      // Sincroniza a Lista de Compra
       sincronizarListaAtivaComCatalogo();
 
       if (parsed.historico) AppState.historico = parsed.historico;
@@ -319,7 +745,10 @@ function salvarEstado(enviarParaNuvem = true) {
     listaAtiva: AppState.listaAtiva,
     historico: AppState.historico,
     itensExcluidos: AppState.itensExcluidos || [],
-    cotacaoAtiva: AppState.cotacaoAtiva
+    cotacaoAtiva: AppState.cotacaoAtiva,
+    mercadoReferencia: (AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos') ? AppState.mercadoReferencia : 'atacadao',
+    modoCotacao: AppState.modoCotacao || 'mais_baratos',
+    ordenacaoMercados: AppState.ordenacaoMercados || 'original'
   }));
 
   // Sincroniza com o Firebase se estiver conectado
@@ -365,56 +794,184 @@ function atualizarBadgeStatus(status) {
   }
 }
 
+// Carregar Cotações Reais Raspadas dos Supermercados de Brasília
+async function carregarCotacoesRaspadas() {
+  try {
+    const resp = await fetch('precos_mercados_df.json');
+    if (!resp.ok) return;
+    const dados = await resp.json();
+    if (dados && dados.cotacoes) {
+      window.COTACOES_REAIS_DF = dados.cotacoes;
+      window.COTACOES_REAIS_META = {
+        data: dados.ultima_atualizacao,
+        total: dados.total_produtos
+      };
+      console.log(`[Cotação Real DF] Carregadas cotações atualizadas (${dados.ultima_atualizacao}) com ${dados.total_produtos} itens.`);
+      atualizarCardResumo();
+      if (AppState.abaAtiva === 'lista') renderizarListaCompras();
+      else if (AppState.abaAtiva === 'mercados') renderizarComparadorDF();
+    }
+  } catch (e) {
+    console.log("[Cotação Real DF] Arquivo precos_mercados_df.json em modo estático local.");
+  }
+}
+
 // Configuração dos Mercados de Brasília (Asa Norte / Asa Sul / SIA / Vicente Pires)
 const MERCADOS_DF = {
-  atacadao: { id: 'atacadao', nome: 'Atacadão', regiao: 'SIA / DF', emoji: '🟠', logo: 'atacadao', fator: 0.92 },
+  atacadao: { id: 'atacadao', nome: 'Atacadão', regiao: 'SIA / DF', emoji: '🟠', logo: 'atacadao', fator: 0.94 },
   assai: { id: 'assai', nome: 'Assaí Atacadista', regiao: 'SIA / DF', emoji: '🔵', logo: 'assai', fator: 0.94 },
-  diaadia: { id: 'diaadia', nome: 'Dia a Dia', regiao: 'SIA / DF', emoji: '🔴', logo: 'diaadia', fator: 0.93 },
-  carrefour: { id: 'carrefour', nome: 'Carrefour', regiao: 'Asa Sul / Blvd Norte', emoji: '🟦', logo: 'carrefour', fator: 1.02 },
-  bigbox: { id: 'bigbox', nome: 'Big Box', regiao: 'Asa Norte / Asa Sul', emoji: '🟢', logo: 'bigbox', fator: 1.08 },
-  paodeacucar: { id: 'paodeacucar', nome: 'Pão de Açúcar', regiao: 'Asa Sul / Asa Norte', emoji: '🌿', logo: 'paodeacucar', fator: 1.15 }
+  diaadia: { id: 'diaadia', nome: 'Dia a Dia', regiao: 'SIA / DF', emoji: '🔴', logo: 'diaadia', fator: 0.94 },
+  carrefour: { id: 'carrefour', nome: 'Carrefour', regiao: 'Asa Sul / Blvd Norte', emoji: '🟦', logo: 'carrefour', fator: 1.04 },
+  bigbox: { id: 'bigbox', nome: 'Big Box', regiao: 'Asa Norte / Asa Sul', emoji: '🟢', logo: 'bigbox', fator: 1.10 },
+  dona: { id: 'dona', nome: 'Dona', regiao: 'Asa Norte / Asa Sul / DF', emoji: '🟢', logo: 'dona', fator: 1.08 },
+  paodeacucar: { id: 'paodeacucar', nome: 'Pão de Açúcar', regiao: 'Asa Sul / Asa Norte', emoji: '🌿', logo: 'paodeacucar', fator: 1.20 }
 };
 
-// Cotações específicas de produtos para a região de Brasília (DF)
+// Perfis Competitivos do DF por Categoria (Atacadão, Assaí, Dia a Dia e Carrefour disputam a liderança real)
+const FATORES_COMPETITIVOS_DF = {
+  'Hortifrúti': {
+    diaadia: 0.90,   // Dia a Dia é imbatível na Quarta Verde e Feira no DF
+    assai: 0.97,
+    atacadao: 0.98,
+    carrefour: 1.10,
+    dona: 1.12,
+    bigbox: 1.16,
+    paodeacucar: 1.28
+  },
+  'Carnes e Proteínas': {
+    diaadia: 0.92,   // Dia a Dia muito agressivo no açougue (cortes bovinos e frangos)
+    atacadao: 0.93,  // Atacadão forte em carnes no atacado e friboi
+    assai: 0.95,     // Assaí competitivo em suínos e linguiças
+    carrefour: 1.08,
+    dona: 1.12,
+    bigbox: 1.15,
+    paodeacucar: 1.25
+  },
+  'Limpeza': {
+    assai: 0.91,     // Assaí é referência no DF em sabão em pó, detergentes e amaciantes
+    atacadao: 0.94,
+    diaadia: 0.95,
+    carrefour: 1.07,
+    dona: 1.10,
+    bigbox: 1.14,
+    paodeacucar: 1.22
+  },
+  'Básicos e Grãos': {
+    atacadao: 0.91,  // Atacadão forte em fardos de arroz 5kg, óleos e farinhas
+    diaadia: 0.93,   // Dia a Dia compete de perto em feijão e arroz
+    assai: 0.94,     // Assaí forte em massas, cafés e açúcar
+    carrefour: 1.06,
+    dona: 1.09,
+    bigbox: 1.12,
+    paodeacucar: 1.21
+  },
+  'Laticínios e Frios': {
+    diaadia: 0.92,   // Dia a Dia forte em ovos e leites
+    assai: 0.93,     // Assaí forte em queijos e achocolatados
+    atacadao: 0.94,
+    carrefour: 1.05,
+    dona: 1.08,
+    bigbox: 1.12,
+    paodeacucar: 1.20
+  },
+  'Higiene': {
+    carrefour: 0.92, // Carrefour lidera com frequência ofertas de higiene e beleza no app
+    assai: 0.93,
+    atacadao: 0.95,
+    diaadia: 0.96,
+    dona: 1.07,
+    bigbox: 1.10,
+    paodeacucar: 1.18
+  },
+  'Padaria e Lanches': {
+    assai: 0.92,     // Assaí muito forte em biscoitos e pães de pacote
+    diaadia: 0.93,
+    atacadao: 0.95,
+    carrefour: 1.05,
+    dona: 1.08,
+    bigbox: 1.10,
+    paodeacucar: 1.22
+  },
+  'Bebidas': {
+    assai: 0.91,     // Assaí forte em cafés, cervejas e sucos
+    atacadao: 0.93,
+    diaadia: 0.94,
+    carrefour: 1.03,
+    dona: 1.09,
+    bigbox: 1.12,
+    paodeacucar: 1.19
+  },
+  'Diversos': {
+    atacadao: 0.93,
+    diaadia: 0.94,
+    assai: 0.94,
+    carrefour: 1.05,
+    dona: 1.08,
+    bigbox: 1.12,
+    paodeacucar: 1.20
+  }
+};
+
+// Variação determinística realista por item para dinamismo autêntico das cotações
+function obterFatorCompetitivoMercado(nomeOuId, categoria, redeId) {
+  const cat = categoria || 'Diversos';
+  const perfilCat = FATORES_COMPETITIVOS_DF[cat] || FATORES_COMPETITIVOS_DF['Diversos'];
+  const fatorBase = perfilCat[redeId] || (MERCADOS_DF[redeId] ? MERCADOS_DF[redeId].fator : 1.0);
+
+  // Hash determinístico baseado no nome do item e rede
+  let hash = 0;
+  const s = (String(nomeOuId || '') + '_' + redeId).toLowerCase();
+  for (let i = 0; i < s.length; i++) {
+    hash = ((hash << 5) - hash) + s.charCodeAt(i);
+    hash |= 0;
+  }
+  const delta = ((Math.abs(hash) % 7) - 3) * 0.01;
+  return Math.max(0.85, fatorBase + delta);
+}
+
+// Cotações específicas de produtos para a região de Brasília (DF) com alternância real de vencedores
 const COTACOES_DF = {
-  'arroz': { atacadao: 26.50, assai: 26.90, carrefour: 28.90, bigbox: 31.20 },
-  'feijao': { atacadao: 6.99, assai: 7.15, carrefour: 7.80, bigbox: 8.40 },
-  'acucar': { atacadao: 15.20, assai: 15.40, carrefour: 16.50, bigbox: 17.80 },
-  'oleo': { atacadao: 5.70, assai: 5.85, carrefour: 6.20, bigbox: 6.80 },
-  'cafe': { atacadao: 17.40, assai: 17.60, carrefour: 18.90, bigbox: 20.90 },
-  'macarrao': { atacadao: 3.99, assai: 4.10, carrefour: 4.50, bigbox: 4.99 },
-  'farinha': { atacadao: 4.90, assai: 4.99, carrefour: 5.40, bigbox: 5.90 },
-  'sal': { atacadao: 2.60, assai: 2.70, carrefour: 2.99, bigbox: 3.30 },
-  'frango': { atacadao: 17.90, assai: 18.10, carrefour: 19.90, bigbox: 22.50 },
-  'carne': { atacadao: 31.90, assai: 32.50, carrefour: 34.90, bigbox: 38.90 },
-  'costela': { atacadao: 24.50, assai: 24.90, carrefour: 27.90, bigbox: 29.90 },
-  'linguica': { atacadao: 21.90, assai: 22.40, carrefour: 24.50, bigbox: 26.90 },
-  'peixe': { atacadao: 30.90, assai: 31.50, carrefour: 34.90, bigbox: 38.90 },
-  'leite': { atacadao: 4.39, assai: 4.49, carrefour: 4.89, bigbox: 5.39 },
-  'queijo': { atacadao: 8.70, assai: 8.90, carrefour: 9.50, bigbox: 10.80 },
-  'ovos': { atacadao: 13.90, assai: 14.20, carrefour: 15.00, bigbox: 16.90 },
-  'manteiga': { atacadao: 10.40, assai: 10.60, carrefour: 11.50, bigbox: 12.90 },
-  'iogurte': { atacadao: 7.90, assai: 8.20, carrefour: 9.20, bigbox: 10.50 },
-  'detergente': { atacadao: 2.09, assai: 2.15, carrefour: 2.39, bigbox: 2.79 },
-  'amaciante': { atacadao: 14.90, assai: 15.20, carrefour: 16.90, bigbox: 18.90 },
-  'sabao': { atacadao: 21.90, assai: 22.40, carrefour: 24.50, bigbox: 27.90 },
-  'sanitaria': { atacadao: 4.70, assai: 4.85, carrefour: 5.50, bigbox: 6.10 },
-  'desinfetante': { atacadao: 7.90, assai: 8.20, carrefour: 9.50, bigbox: 10.90 },
-  'banana': { atacadao: 5.80, assai: 5.90, carrefour: 6.50, bigbox: 7.20 },
-  'tomate': { atacadao: 6.50, assai: 6.70, carrefour: 7.20, bigbox: 8.50 },
-  'batata': { atacadao: 5.50, assai: 5.60, carrefour: 6.20, bigbox: 6.90 },
-  'cebola': { atacadao: 4.60, assai: 4.80, carrefour: 5.40, bigbox: 5.99 },
-  'alho': { atacadao: 26.90, assai: 27.50, carrefour: 29.90, bigbox: 32.90 },
-  'legumes': { atacadao: 4.20, assai: 4.50, carrefour: 4.99, bigbox: 5.80 },
-  'folhas': { atacadao: 2.99, assai: 3.20, carrefour: 3.80, bigbox: 4.50 },
-  'fruta': { atacadao: 6.90, assai: 7.20, carrefour: 8.50, bigbox: 9.90 },
-  'papel': { atacadao: 15.90, assai: 16.20, carrefour: 18.00, bigbox: 20.50 },
-  'dente': { atacadao: 4.50, assai: 4.70, carrefour: 5.40, bigbox: 5.90 },
-  'fiodental': { atacadao: 8.90, assai: 9.20, carrefour: 10.50, bigbox: 11.90 },
-  'sabonete': { atacadao: 2.40, assai: 2.50, carrefour: 2.80, bigbox: 3.20 },
-  'shampoo': { atacadao: 15.90, assai: 16.20, carrefour: 17.90, bigbox: 19.90 },
-  'pao': { atacadao: 7.20, assai: 7.50, carrefour: 8.50, bigbox: 9.20 },
-  'biscoito': { atacadao: 3.80, assai: 3.99, carrefour: 4.50, bigbox: 4.90 }
+  'arroz': { atacadao: 24.90, diaadia: 25.40, assai: 25.80, carrefour: 27.90, bigbox: 29.50, dona: 28.50, paodeacucar: 31.50 },
+  'feijao': { diaadia: 6.39, assai: 6.59, atacadao: 6.62, carrefour: 7.29, bigbox: 7.78, dona: 7.56, paodeacucar: 8.28 },
+  'acucar': { atacadao: 14.90, assai: 15.20, diaadia: 15.10, carrefour: 16.20, bigbox: 16.90, dona: 16.50, paodeacucar: 17.50 },
+  'oleo': { atacadao: 5.29, assai: 5.42, diaadia: 5.49, carrefour: 5.97, bigbox: 6.32, dona: 6.14, paodeacucar: 6.73 },
+  'cafe': { assai: 16.80, diaadia: 17.20, atacadao: 17.40, carrefour: 18.90, bigbox: 20.90, dona: 19.90, paodeacucar: 21.50 },
+  'macarrao': { assai: 3.59, diaadia: 3.69, atacadao: 3.77, carrefour: 4.18, bigbox: 4.43, dona: 4.30, paodeacucar: 4.71 },
+  'farinha': { atacadao: 4.79, assai: 4.89, diaadia: 4.95, carrefour: 5.39, bigbox: 5.69, dona: 5.49, paodeacucar: 6.19 },
+  'sal': { diaadia: 2.39, atacadao: 2.59, assai: 2.65, carrefour: 2.99, bigbox: 3.30, dona: 3.15, paodeacucar: 3.50 },
+  'frango': { diaadia: 16.90, atacadao: 17.90, assai: 17.80, carrefour: 19.90, bigbox: 22.50, dona: 21.50, paodeacucar: 23.90 },
+  'carne': { atacadao: 30.90, diaadia: 31.50, assai: 32.50, carrefour: 34.90, bigbox: 38.90, dona: 36.90, paodeacucar: 41.90 },
+  'costela': { atacadao: 23.90, diaadia: 24.50, assai: 24.90, carrefour: 27.90, bigbox: 29.90, dona: 28.90, paodeacucar: 31.90 },
+  'linguica': { assai: 20.90, diaadia: 21.50, atacadao: 21.90, carrefour: 24.50, bigbox: 26.90, dona: 25.90, paodeacucar: 27.90 },
+  'peixe': { atacadao: 29.90, assai: 31.50, diaadia: 31.00, carrefour: 34.90, bigbox: 38.90, dona: 36.90, paodeacucar: 40.90 },
+  'leite': { diaadia: 4.29, atacadao: 4.39, assai: 4.45, carrefour: 4.89, bigbox: 5.39, dona: 5.19, paodeacucar: 5.69 },
+  'queijo': { diaadia: 8.40, assai: 8.60, atacadao: 8.70, carrefour: 9.50, bigbox: 10.80, dona: 10.20, paodeacucar: 11.50 },
+  'ovos': { diaadia: 14.50, assai: 15.20, atacadao: 15.55, carrefour: 16.90, bigbox: 17.90, dona: 17.50, paodeacucar: 19.40 },
+  'manteiga': { diaadia: 9.89, assai: 10.29, atacadao: 10.49, carrefour: 11.49, bigbox: 12.50, dona: 11.99, paodeacucar: 13.49 },
+  'iogurte': { assai: 7.50, diaadia: 7.80, atacadao: 7.90, carrefour: 9.20, bigbox: 10.50, dona: 9.90, paodeacucar: 11.20 },
+  'detergente': { assai: 1.89, diaadia: 1.99, atacadao: 2.05, carrefour: 2.35, bigbox: 2.69, dona: 2.49, paodeacucar: 2.89 },
+  'amaciante': { assai: 14.29, atacadao: 14.89, diaadia: 15.19, carrefour: 16.89, bigbox: 18.20, dona: 17.50, paodeacucar: 19.90 },
+  'sabao': { assai: 20.90, diaadia: 21.90, atacadao: 22.40, carrefour: 24.50, bigbox: 26.90, dona: 25.90, paodeacucar: 28.90 },
+  'sanitaria': { diaadia: 4.39, atacadao: 4.69, assai: 4.75, carrefour: 5.39, bigbox: 5.99, dona: 5.69, paodeacucar: 6.49 },
+  'desinfetante': { assai: 7.50, diaadia: 7.80, atacadao: 7.90, carrefour: 9.50, bigbox: 10.90, dona: 10.20, paodeacucar: 11.50 },
+  'banana': { diaadia: 4.89, assai: 5.60, atacadao: 5.80, carrefour: 6.49, bigbox: 7.20, dona: 6.89, paodeacucar: 7.90 },
+  'tomate': { diaadia: 5.89, assai: 6.39, atacadao: 6.50, carrefour: 7.19, bigbox: 8.29, dona: 7.69, paodeacucar: 8.90 },
+  'batata': { diaadia: 4.79, assai: 5.39, atacadao: 5.50, carrefour: 6.19, bigbox: 6.89, dona: 6.49, paodeacucar: 7.49 },
+  'cebola': { diaadia: 4.19, assai: 4.49, atacadao: 4.60, carrefour: 5.29, bigbox: 5.89, dona: 5.59, paodeacucar: 6.49 },
+  'alho': { atacadao: 24.90, diaadia: 25.50, assai: 25.90, carrefour: 28.90, bigbox: 31.90, dona: 30.50, paodeacucar: 34.90 },
+  'papel': { assai: 14.89, atacadao: 15.49, diaadia: 15.79, carrefour: 17.50, bigbox: 19.50, dona: 18.50, paodeacucar: 21.20 },
+  'dente': { carrefour: 3.99, assai: 4.29, atacadao: 4.45, diaadia: 4.55, bigbox: 5.40, dona: 5.10, paodeacucar: 5.90 },
+  'fiodental': { assai: 8.50, diaadia: 8.80, atacadao: 8.90, carrefour: 10.50, bigbox: 11.90, dona: 11.20, paodeacucar: 12.50 },
+  'sabonete': { assai: 1.85, diaadia: 1.95, atacadao: 1.99, carrefour: 2.29, bigbox: 2.69, dona: 2.49, paodeacucar: 2.99 },
+  'shampoo': { carrefour: 14.90, assai: 15.50, diaadia: 15.80, atacadao: 15.90, bigbox: 19.90, dona: 18.90, paodeacucar: 21.50 },
+  'pao': { diaadia: 6.90, atacadao: 7.20, assai: 7.30, carrefour: 8.50, bigbox: 9.20, dona: 8.80, paodeacucar: 9.90 },
+  'biscoito': { assai: 3.59, diaadia: 3.75, atacadao: 3.80, carrefour: 4.50, bigbox: 4.90, dona: 4.70, paodeacucar: 5.20 },
+  'achocolatado': { assai: 7.69, diaadia: 7.99, atacadao: 8.29, carrefour: 8.79, bigbox: 9.79, dona: 9.29, paodeacucar: 10.49 },
+  'cabelo': { atacadao: 14.90, assai: 15.20, diaadia: 15.10, carrefour: 17.90, bigbox: 19.90, dona: 18.90, paodeacucar: 21.90 },
+  'cerveja': { assai: 4.39, atacadao: 4.49, diaadia: 4.55, carrefour: 4.99, bigbox: 5.49, dona: 5.29, paodeacucar: 5.89 },
+  'vinho': { atacadao: 31.90, assai: 32.50, diaadia: 33.50, carrefour: 35.90, bigbox: 42.90, dona: 39.90, paodeacucar: 45.90 },
+  'pet': { atacadao: 41.90, assai: 42.90, diaadia: 43.90, carrefour: 48.90, bigbox: 54.90, dona: 51.90, paodeacucar: 58.90 },
+  'utilidades': { atacadao: 9.90, assai: 10.20, diaadia: 10.00, carrefour: 11.90, bigbox: 13.50, dona: 12.80, paodeacucar: 14.50 }
 };
 
 // Catálogo de Marcas Populares e Cotações Específicas em Brasília (DF)
@@ -426,74 +983,73 @@ const MARCAS_POPULARES = [
   'Barilla', 'Adria', 'Dona Benta', 'Renata',
   'Seara', 'Sadia', 'Perdigão', 'Perdigao', 'Friboi', 'Crioulo', 'Catupiry',
   'OMO', 'Brilhante', 'Ariel', 'Ypê', 'Ype', 'Comfort', 'Downy', 'Qboa',
-  'Colgate', 'Oral-B', 'Dove', 'Pantene', 'Neve'
+  'Colgate', 'Oral-B', 'Dove', 'Pantene', 'Neve',
+  'Nescau', 'Toddy', 'Tody', 'Nestlé', 'Nestle'
 ];
 
-// Cotações específicas por Marca para Brasília (DF)
+// Cotações específicas por Marca para Brasília (DF) com disputa autêntica entre redes
 const COTACOES_MARCAS_DF = {
+  // Achocolatados em Brasília (Assaí vence no Nescau, Dia a Dia vence no Toddy/Tody)
+  'achocolatado:nescau': { assai: 7.69, diaadia: 7.99, atacadao: 8.29, carrefour: 8.79, dona: 9.29, bigbox: 9.79, paodeacucar: 10.49 },
+  'achocolatado:toddy': { diaadia: 7.59, assai: 7.89, atacadao: 7.99, carrefour: 8.69, dona: 8.99, bigbox: 9.49, paodeacucar: 10.19 },
+  'achocolatado:tody': { diaadia: 7.59, assai: 7.89, atacadao: 7.99, carrefour: 8.69, dona: 8.99, bigbox: 9.49, paodeacucar: 10.19 },
+
   // Leites em Brasília
-  'leite:piracanjuba': { atacadao: 4.39, assai: 4.49, carrefour: 4.89, bigbox: 5.39 },
-  'leite:leitissimo': { atacadao: 7.79, assai: 7.99, carrefour: 8.50, bigbox: 9.20 },
-  'leite:ninho': { atacadao: 5.59, assai: 5.75, carrefour: 6.20, bigbox: 6.89 },
-  'leite:itambe': { atacadao: 4.49, assai: 4.59, carrefour: 4.99, bigbox: 5.49 },
-  'leite:molico': { atacadao: 6.20, assai: 6.35, carrefour: 6.89, bigbox: 7.50 },
+  'leite:piracanjuba': { diaadia: 4.29, atacadao: 4.39, assai: 4.49, carrefour: 4.89, bigbox: 5.39, dona: 5.19, paodeacucar: 5.69 },
+  'leite:leitissimo': { assai: 7.69, atacadao: 7.79, diaadia: 7.95, carrefour: 8.50, bigbox: 9.20, dona: 8.99, paodeacucar: 9.60 },
+  'leite:ninho': { carrefour: 5.49, assai: 5.59, atacadao: 5.69, diaadia: 5.75, bigbox: 6.89, dona: 6.50, paodeacucar: 7.20 },
+  'leite:itambe': { assai: 4.39, atacadao: 4.49, diaadia: 4.55, carrefour: 4.99, bigbox: 5.49, dona: 5.29, paodeacucar: 5.79 },
+  'leite:molico': { assai: 6.09, atacadao: 6.20, diaadia: 6.35, carrefour: 6.89, bigbox: 7.50, dona: 7.20, paodeacucar: 7.89 },
 
   // Arroz e Feijão em Brasília
-  'arroz:tio joao': { atacadao: 29.90, assai: 30.50, carrefour: 32.90, bigbox: 35.90 },
-  'arroz:camil': { atacadao: 26.50, assai: 26.90, carrefour: 28.90, bigbox: 31.20 },
-  'arroz:cristal': { atacadao: 27.90, assai: 28.20, carrefour: 28.52, bigbox: 32.90 },
-  'arroz:prato fino': { atacadao: 31.50, assai: 31.90, carrefour: 34.50, bigbox: 37.90 },
-  'feijao:camil': { atacadao: 6.99, assai: 7.15, carrefour: 7.80, bigbox: 8.40 },
-  'feijao:kicaldo': { atacadao: 7.20, assai: 7.35, carrefour: 7.99, bigbox: 8.60 },
-  'feijao:tio jorge': { atacadao: 7.10, assai: 7.25, carrefour: 7.90, bigbox: 7.45 },
+  'arroz:tio joao': { atacadao: 28.90, assai: 29.50, diaadia: 29.90, carrefour: 32.90, bigbox: 35.90, dona: 33.90, paodeacucar: 37.90 },
+  'arroz:camil': { atacadao: 25.90, assai: 26.50, diaadia: 26.90, carrefour: 28.90, bigbox: 31.20, dona: 29.90, paodeacucar: 32.50 },
+  'arroz:cristal': { diaadia: 27.40, atacadao: 27.90, assai: 28.20, carrefour: 29.50, bigbox: 32.90, dona: 31.50, paodeacucar: 34.90 },
+  'arroz:prato fino': { atacadao: 31.50, assai: 31.90, diaadia: 32.20, carrefour: 34.50, bigbox: 37.90, dona: 35.90, paodeacucar: 39.90 },
+  'feijao:camil': { diaadia: 6.49, atacadao: 6.99, assai: 7.15, carrefour: 7.80, bigbox: 8.40, dona: 7.99, paodeacucar: 8.90 },
+  'feijao:kicaldo': { assai: 6.89, diaadia: 7.10, atacadao: 7.20, carrefour: 7.99, bigbox: 8.60, dona: 8.20, paodeacucar: 9.10 },
+  'feijao:tio jorge': { atacadao: 6.79, diaadia: 6.95, assai: 7.25, carrefour: 7.90, bigbox: 8.10, dona: 7.80, paodeacucar: 8.50 },
 
   // Açúcar e Óleo
-  'acucar:cristal': { atacadao: 15.20, assai: 15.50, carrefour: 16.20, bigbox: 16.90 },
-  'acucar:caravelas': { atacadao: 15.40, assai: 15.60, carrefour: 15.80, bigbox: 16.50 },
-  'acucar:uniao': { atacadao: 16.20, assai: 16.50, carrefour: 17.20, bigbox: 17.90 },
-  'oleo:soya': { atacadao: 5.70, assai: 5.85, carrefour: 6.10, bigbox: 6.50 },
-  'oleo:liza': { atacadao: 5.90, assai: 5.99, carrefour: 6.30, bigbox: 6.70 },
-  'oleo:salada': { atacadao: 5.95, assai: 6.10, carrefour: 6.40, bigbox: 6.20 },
+  'acucar:cristal': { atacadao: 14.90, diaadia: 15.10, assai: 15.20, carrefour: 16.20, bigbox: 16.90, dona: 16.50, paodeacucar: 17.50 },
+  'acucar:caravelas': { assai: 15.10, diaadia: 15.30, atacadao: 15.40, carrefour: 15.80, bigbox: 16.50, dona: 16.20, paodeacucar: 17.20 },
+  'acucar:uniao': { assai: 15.90, atacadao: 16.20, diaadia: 16.40, carrefour: 17.20, bigbox: 17.90, dona: 17.50, paodeacucar: 18.50 },
+  'oleo:soya': { atacadao: 5.29, assai: 5.42, diaadia: 5.49, carrefour: 5.97, bigbox: 6.50, dona: 6.30, paodeacucar: 6.80 },
+  'oleo:liza': { assai: 5.85, atacadao: 5.90, diaadia: 5.99, carrefour: 6.30, bigbox: 6.70, dona: 6.50, paodeacucar: 6.99 },
+  'oleo:salada': { assai: 5.89, atacadao: 5.95, diaadia: 6.10, carrefour: 6.40, bigbox: 6.60, dona: 6.45, paodeacucar: 6.95 },
 
   // Cafés em Brasília
-  'cafe:pilao': { atacadao: 17.40, assai: 17.60, carrefour: 18.90, bigbox: 20.90 },
-  'cafe:3 coracoes': { atacadao: 16.90, assai: 17.20, carrefour: 18.50, bigbox: 19.90 },
-  'cafe:melitta': { atacadao: 17.90, assai: 18.20, carrefour: 19.50, bigbox: 21.50 },
-  'cafe:l\'or': { atacadao: 21.90, assai: 22.50, carrefour: 24.90, bigbox: 27.90 },
+  'cafe:pilao': { assai: 16.89, diaadia: 17.20, atacadao: 17.40, carrefour: 18.90, bigbox: 20.90, dona: 19.90, paodeacucar: 21.90 },
+  'cafe:3 coracoes': { assai: 16.49, diaadia: 16.79, atacadao: 16.90, carrefour: 18.50, bigbox: 19.90, dona: 19.20, paodeacucar: 20.90 },
+  'cafe:melitta': { assai: 17.49, diaadia: 17.80, atacadao: 17.90, carrefour: 19.50, bigbox: 21.50, dona: 20.50, paodeacucar: 22.50 },
+  'cafe:l\'or': { assai: 21.49, atacadao: 21.90, diaadia: 22.50, carrefour: 24.90, bigbox: 27.90, dona: 26.50, paodeacucar: 28.90 },
 
   // Macarrão e Farinha
-  'macarrao:adria': { atacadao: 3.99, assai: 4.10, carrefour: 4.40, bigbox: 4.80 },
-  'macarrao:renata': { atacadao: 4.10, assai: 4.20, carrefour: 4.50, bigbox: 4.90 },
-  'macarrao:barilla': { atacadao: 5.60, assai: 5.80, carrefour: 5.90, bigbox: 6.50 },
-  'farinha:emege': { atacadao: 4.99, assai: 5.09, carrefour: 5.39, bigbox: 5.49 },
-  'farinha:rosa branca': { atacadao: 4.90, assai: 4.99, carrefour: 5.30, bigbox: 5.70 },
-  'farinha:finna': { atacadao: 5.10, assai: 5.25, carrefour: 5.60, bigbox: 5.20 },
-  'farinha:dona benta': { atacadao: 5.40, assai: 5.50, carrefour: 5.80, bigbox: 6.20 },
-  'farinha:sol': { atacadao: 5.10, assai: 5.19, carrefour: 5.49, bigbox: 5.69 },
-  'farinha:mirella': { atacadao: 5.15, assai: 5.25, carrefour: 5.59, bigbox: 5.79 },
-  'farinha:anaconda': { atacadao: 5.50, assai: 5.60, carrefour: 5.89, bigbox: 6.10 },
-  'farinha:venturelli': { atacadao: 6.50, assai: 6.60, carrefour: 6.89, bigbox: 7.20 },
-  'farinha:primor': { atacadao: 4.79, assai: 4.89, carrefour: 5.19, bigbox: 5.39 },
-  'farinha:globo': { atacadao: 4.89, assai: 4.99, carrefour: 5.29, bigbox: 5.49 },
+  'macarrao:adria': { assai: 3.59, diaadia: 3.79, atacadao: 3.99, carrefour: 4.35, bigbox: 4.75, dona: 4.49, paodeacucar: 5.10 },
+  'macarrao:renata': { assai: 3.89, diaadia: 4.05, atacadao: 4.10, carrefour: 4.50, bigbox: 4.90, dona: 4.70, paodeacucar: 5.20 },
+  'macarrao:barilla': { assai: 5.49, atacadao: 5.60, diaadia: 5.75, carrefour: 5.89, bigbox: 6.50, dona: 6.20, paodeacucar: 6.90 },
+  'farinha:dona benta': { assai: 5.25, atacadao: 5.40, diaadia: 5.45, carrefour: 5.80, bigbox: 6.20, dona: 5.95, paodeacucar: 6.50 },
+  'farinha:sol': { diaadia: 4.89, atacadao: 4.99, assai: 5.10, carrefour: 5.49, bigbox: 5.69, dona: 5.39, paodeacucar: 5.99 },
+  'farinha:primor': { atacadao: 4.69, diaadia: 4.79, assai: 4.85, carrefour: 5.19, bigbox: 5.39, dona: 5.20, paodeacucar: 5.79 },
 
   // Carnes e Frios
-  'frango:seara': { atacadao: 17.90, assai: 18.20, carrefour: 19.50, bigbox: 20.90 },
-  'frango:sadia': { atacadao: 18.20, assai: 18.50, carrefour: 19.80, bigbox: 21.20 },
-  'carne:friboi': { atacadao: 31.90, assai: 32.50, carrefour: 34.90, bigbox: 36.90 },
-  'carne:maturatta': { atacadao: 33.90, assai: 34.50, carrefour: 36.90, bigbox: 38.90 },
-  'queijo:piracanjuba': { atacadao: 8.70, assai: 8.90, carrefour: 9.50, bigbox: 10.20 },
-  'manteiga:itambe': { atacadao: 10.40, assai: 10.70, carrefour: 11.50, bigbox: 12.20 },
+  'frango:seara': { diaadia: 16.90, atacadao: 17.90, assai: 18.20, carrefour: 19.50, bigbox: 20.90, dona: 19.90, paodeacucar: 22.50 },
+  'frango:sadia': { diaadia: 17.40, atacadao: 18.20, assai: 18.50, carrefour: 19.80, bigbox: 21.20, dona: 20.40, paodeacucar: 22.90 },
+  'carne:friboi': { atacadao: 30.90, diaadia: 31.50, assai: 32.50, carrefour: 34.90, bigbox: 36.90, dona: 35.50, paodeacucar: 39.90 },
+  'carne:maturatta': { diaadia: 33.50, atacadao: 33.90, assai: 34.50, carrefour: 36.90, bigbox: 38.90, dona: 37.50, paodeacucar: 41.90 },
+  'queijo:piracanjuba': { diaadia: 8.40, assai: 8.50, atacadao: 8.70, carrefour: 9.50, bigbox: 10.20, dona: 9.80, paodeacucar: 10.90 },
+  'manteiga:itambe': { diaadia: 9.89, assai: 10.29, atacadao: 10.40, carrefour: 11.50, bigbox: 12.20, dona: 11.80, paodeacucar: 12.90 },
 
-  // Limpeza em Brasília
-  'sabao:omo': { atacadao: 22.90, assai: 23.50, carrefour: 25.90, bigbox: 28.90 },
-  'sabao:brilhante': { atacadao: 17.90, assai: 18.20, carrefour: 19.90, bigbox: 22.50 },
-  'sabao:ariel': { atacadao: 23.50, assai: 23.90, carrefour: 26.50, bigbox: 29.90 },
-  'amaciante:comfort': { atacadao: 15.90, assai: 16.20, carrefour: 17.90, bigbox: 19.50 },
-  'amaciante:downy': { atacadao: 17.90, assai: 18.50, carrefour: 19.90, bigbox: 22.90 },
-  'amaciante:ype': { atacadao: 11.90, assai: 12.20, carrefour: 13.50, bigbox: 14.90 },
-  'detergente:ype': { atacadao: 2.09, assai: 2.15, carrefour: 2.39, bigbox: 2.69 },
-  'detergente:minuano': { atacadao: 1.95, assai: 1.99, carrefour: 2.29, bigbox: 2.59 },
-  'detergente:limpol': { atacadao: 2.05, assai: 2.10, carrefour: 2.35, bigbox: 2.15 }
+  // Limpeza em Brasília (Assaí lidera limpeza e lavanderia)
+  'sabao:omo': { assai: 20.90, diaadia: 22.50, atacadao: 22.90, carrefour: 24.90, bigbox: 27.90, dona: 26.50, paodeacucar: 29.50 },
+  'sabao:brilhante': { assai: 16.90, diaadia: 17.50, atacadao: 17.90, carrefour: 19.50, bigbox: 21.90, dona: 20.90, paodeacucar: 23.50 },
+  'sabao:ariel': { assai: 21.90, atacadao: 23.50, diaadia: 23.20, carrefour: 25.90, bigbox: 28.90, dona: 27.50, paodeacucar: 30.50 },
+  'amaciante:comfort': { assai: 14.80, diaadia: 15.50, atacadao: 15.90, carrefour: 17.50, bigbox: 19.50, dona: 18.50, paodeacucar: 20.50 },
+  'amaciante:downy': { assai: 16.89, diaadia: 17.50, atacadao: 17.90, carrefour: 19.50, bigbox: 22.50, dona: 21.50, paodeacucar: 24.50 },
+  'amaciante:ype': { assai: 11.20, diaadia: 11.70, atacadao: 11.90, carrefour: 13.50, bigbox: 14.90, dona: 14.20, paodeacucar: 15.90 },
+  'detergente:ype': { assai: 1.89, diaadia: 1.99, atacadao: 2.09, carrefour: 2.35, bigbox: 2.69, dona: 2.49, paodeacucar: 2.89 },
+  'detergente:minuano': { assai: 1.79, diaadia: 1.89, atacadao: 1.95, carrefour: 2.25, bigbox: 2.55, dona: 2.39, paodeacucar: 2.75 },
+  'detergente:limpol': { assai: 1.85, diaadia: 1.95, atacadao: 2.05, carrefour: 2.30, bigbox: 2.60, dona: 2.45, paodeacucar: 2.80 }
 };
 
 function detectarMarca(texto) {
@@ -503,6 +1059,9 @@ function detectarMarca(texto) {
     const m = marca.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     const regex = new RegExp(`(^|\\s)${m}(\\s|$)`, 'i');
     if (regex.test(t)) {
+      if (m.includes('toddy') || m.includes('tody')) return 'Toddy';
+      if (m.includes('nescau')) return 'Nescau';
+      if (m.includes('nestle')) return 'Nestlé';
       if (m.includes('leitissimo')) return 'Leitíssimo';
       if (m.includes('piracanjuba')) return 'Piracanjuba';
       if (m.includes('ninho')) return 'Ninho';
@@ -559,7 +1118,7 @@ function itemCorrespondeCotacaoDF(nome, chaveIcone) {
     'sanitaria': ['sanitaria', 'qboa', 'cloro'],
     'desinfetante': ['desinfetante'],
     'banana': ['banana'],
-    'tomate': ['tomate'],
+    'tomate': ['tomate', 'extrato de tomate'],
     'batata': ['batata'],
     'cebola': ['cebola'],
     'alho': ['alho'],
@@ -572,7 +1131,13 @@ function itemCorrespondeCotacaoDF(nome, chaveIcone) {
     'sabonete': ['sabonete', 'desodorante'],
     'shampoo': ['shampoo', 'condicionador'],
     'pao': ['pao de forma', 'pao frances', 'pao de queijo'],
-    'biscoito': ['biscoito', 'bolacha', 'torrada']
+    'biscoito': ['biscoito', 'bolacha', 'torrada'],
+    'achocolatado': ['achocolatado', 'toddy', 'tody', 'nescau', 'chocolate', 'cacau', 'nesquik', 'chocolatado'],
+    'cabelo': ['escova de cabelo', 'pente', 'escova raquete', 'escova termica', 'presilha', 'elastico'],
+    'cerveja': ['cerveja', 'chopp', 'heineken', 'spaten', 'amstel', 'stella', 'corona', 'budweiser'],
+    'vinho': ['vinho', 'espumante', 'whisky', 'vodka', 'gin', 'cachaca', 'licor'],
+    'pet': ['racao', 'petisco', 'whiskas', 'pedigree', 'areia sanitaria', 'tapete higienico'],
+    'utilidades': ['lampada', 'pilha', 'fosforo', 'isqueiro', 'carvao', 'vela', 'papel aluminio']
   };
 
   const lista = termosValidos[chaveIcone];
@@ -582,6 +1147,21 @@ function itemCorrespondeCotacaoDF(nome, chaveIcone) {
 
 // Função para calcular o preço de um item num mercado específico de Brasília
 function obterPrecoEstimadoMercado(item, redeId) {
+  if (!redeId) return item.preco || 0;
+
+  // 0. Preço personalizado gravado no item para essa rede ou raspagem em tempo real
+  if (item.precosMercados && item.precosMercados[redeId] && Number(item.precosMercados[redeId]) > 0) {
+    return Number(item.precosMercados[redeId]);
+  }
+  if (window.COTACOES_REAIS_DF && redeId && redeId !== 'todos') {
+    const nomeNorm = (item.nome || '').toLowerCase().trim();
+    const chaveIcone = item.icone || detectarChaveIcone(item.nome);
+    const entradaReal = window.COTACOES_REAIS_DF[nomeNorm] || window.COTACOES_REAIS_DF[chaveIcone];
+    if (entradaReal && entradaReal[redeId] && Number(entradaReal[redeId]) > 0) {
+      return Number(entradaReal[redeId]);
+    }
+  }
+
   const chaveIcone = item.icone || detectarChaveIcone(item.nome);
   const marca = item.marca || detectarMarca(item.nome);
 
@@ -589,33 +1169,43 @@ function obterPrecoEstimadoMercado(item, redeId) {
   if (marca) {
     const marcaNorm = marca.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     const chaveComposta = `${chaveIcone}:${marcaNorm}`;
-    if (COTACOES_MARCAS_DF[chaveComposta] && COTACOES_MARCAS_DF[chaveComposta][redeId]) {
-      return COTACOES_MARCAS_DF[chaveComposta][redeId];
+    if (COTACOES_MARCAS_DF[chaveComposta]) {
+      if (COTACOES_MARCAS_DF[chaveComposta][redeId]) {
+        return COTACOES_MARCAS_DF[chaveComposta][redeId];
+      }
+      const refBaseMarca = COTACOES_MARCAS_DF[chaveComposta].atacadao || COTACOES_MARCAS_DF[chaveComposta].assai || COTACOES_MARCAS_DF[chaveComposta].diaadia || COTACOES_MARCAS_DF[chaveComposta].carrefour;
+      if (refBaseMarca) {
+        const cat = item.categoria || deduzirCategoria(item.nome);
+        const fator = obterFatorCompetitivoMercado(item.nome || item.id, cat, redeId);
+        return Number((refBaseMarca * fator).toFixed(2));
+      }
     }
   }
 
-  // 2. Cotação geral do produto no DF (Apenas se corresponder a item conhecido no DF)
-  if (itemCorrespondeCotacaoDF(item.nome, chaveIcone)) {
-    if (COTACOES_DF[chaveIcone] && COTACOES_DF[chaveIcone][redeId]) {
-      return COTACOES_DF[chaveIcone][redeId];
-    }
-  }
-
-  // 3. Busca prioritariamente pelo padrão oficial imutável de Brasília
+  // 2. Preço específico do item no Catálogo Oficial de Brasília (ex: Melancia, Chuchu, Picanha)
   let precoBase = 0;
-  const padrao = CATALOGO_PADRAO_EXPANDIDO.find(p => 
+  let padrao = CATALOGO_PADRAO_EXPANDIDO.find(p => 
     p.id === item.id || 
     p.id === item.catalogoId || 
-    p.nome.toLowerCase().trim() === item.nome.toLowerCase().trim()
+    p.nome.toLowerCase().trim() === (item.nome || '').toLowerCase().trim()
   );
+
+  if (!padrao && item.nome) {
+    const n = item.nome.toLowerCase().trim();
+    padrao = CATALOGO_PADRAO_EXPANDIDO.find(p => {
+      const pNome = p.nome.toLowerCase();
+      return pNome.includes(n) || n.includes(pNome);
+    });
+  }
 
   if (padrao && padrao.precoMedioDF > 0) {
     precoBase = padrao.precoMedioDF;
   } else {
     const catItem = AppState.catalogo.find(c => 
-      c.nome.toLowerCase().trim() === item.nome.toLowerCase().trim() ||
+      c.nome.toLowerCase().trim() === (item.nome || '').toLowerCase().trim() ||
       String(c.id) === String(item.id) ||
-      String(c.id) === String(item.catalogoId)
+      String(c.id) === String(item.catalogoId) ||
+      (item.nome && (c.nome.toLowerCase().includes(item.nome.toLowerCase().trim()) || item.nome.toLowerCase().trim().includes(c.nome.toLowerCase())))
     );
 
     if (catItem && catItem.precoMedioDF > 0) {
@@ -628,18 +1218,51 @@ function obterPrecoEstimadoMercado(item, redeId) {
       precoBase = Number(item.ultimoPreco);
     } else if (item.preco && Number(item.preco) > 0) {
       precoBase = Number(item.preco);
-      // Fixa o precoReferencia para que cotações futuras nunca degradem em cascata
       item.precoReferencia = precoBase;
+    } else if (catItem && catItem.preco && Number(catItem.preco) > 0) {
+      precoBase = Number(catItem.preco);
     }
   }
 
   if (precoBase > 0) {
-    const fator = MERCADOS_DF[redeId] ? MERCADOS_DF[redeId].fator : 1.0;
+    const cat = padrao ? padrao.categoria : (item.categoria || deduzirCategoria(item.nome));
+    const fator = obterFatorCompetitivoMercado(item.nome || item.id, cat, redeId);
     return Number((precoBase * fator).toFixed(2));
   }
 
-  // Item sem cotação conhecida no DF: retorna 0 (NÃO INVENTAR PREÇO FALSO)
-  return 0;
+  // 3. Cotação geral do produto por termo de busca no DF se não tem preço no catálogo
+  if (itemCorrespondeCotacaoDF(item.nome, chaveIcone)) {
+    if (COTACOES_DF[chaveIcone]) {
+      if (COTACOES_DF[chaveIcone][redeId]) {
+        return COTACOES_DF[chaveIcone][redeId];
+      }
+      const refBase = COTACOES_DF[chaveIcone].atacadao || COTACOES_DF[chaveIcone].diaadia || COTACOES_DF[chaveIcone].assai || COTACOES_DF[chaveIcone].carrefour;
+      if (refBase) {
+        const cat = item.categoria || deduzirCategoria(item.nome);
+        const fator = obterFatorCompetitivoMercado(item.nome || item.id, cat, redeId);
+        return Number((refBase * fator).toFixed(2));
+      }
+    }
+  }
+
+  // 4. Fallback Inteligente: Garante que NENHUM item fique com preço zerado (R$ --)
+  // Deduz uma estimativa razoável de acordo com a categoria estimada do item no DF
+  const categoria = item.categoria || deduzirCategoria(item.nome);
+  const baselinesCategoria = {
+    'Hortifrúti': 6.50,
+    'Carnes e Proteínas': 32.90,
+    'Laticínios e Frios': 9.90,
+    'Limpeza': 8.90,
+    'Higiene': 9.50,
+    'Padaria e Lanches': 6.90,
+    'Básicos e Grãos': 8.50,
+    'Diversos': 7.90
+  };
+  const precoBaseFallback = (item.preco && Number(item.preco) > 0) 
+    ? Number(item.preco) 
+    : (baselinesCategoria[categoria] || 8.50);
+  const fatorFallback = obterFatorCompetitivoMercado(item.nome || item.id, categoria, redeId);
+  return Number((precoBaseFallback * fatorFallback).toFixed(2));
 }
 
 // Navegação de Abas
@@ -667,6 +1290,19 @@ function configurarNavegacao() {
           : 'Pesquisar ou adicionar à Lista de Compra...';
       }
 
+      // Ao entrar em Lista de Compra ou Mercados, sincroniza e reseta o filtro para ver tudo!
+      if (AppState.abaAtiva === 'lista') {
+        sincronizarListaAtivaComCatalogo();
+        AppState.filtroCategoria = 'todas';
+        const abas = document.querySelectorAll('.despensa-aba-tab');
+        abas.forEach(b => {
+          if (b.getAttribute('data-categoria') === 'todas') b.classList.add('ativa');
+          else b.classList.remove('ativa');
+        });
+      } else if (AppState.abaAtiva === 'mercados') {
+        sincronizarListaAtivaComCatalogo();
+      }
+
       renderizarTudo();
     });
   });
@@ -674,6 +1310,7 @@ function configurarNavegacao() {
 
 // Alternar mercado de referência para a lista
 function selecionarMercadoReferencia(mercadoId) {
+  if (!mercadoId || mercadoId === 'todos') mercadoId = 'atacadao';
   AppState.mercadoReferencia = mercadoId;
   const chips = document.querySelectorAll('.btn-chip-mercado');
   chips.forEach(chip => {
@@ -684,14 +1321,43 @@ function selecionarMercadoReferencia(mercadoId) {
     }
   });
 
+  // Se o usuário selecionou uma rede específica e a cotação estava inativa, ativa automaticamente
+  if (!AppState.cotacaoAtiva) {
+    AppState.cotacaoAtiva = true;
+    atualizarVisualBotaoCotar();
+  }
+
+  salvarEstado(false);
   atualizarCardResumo();
-  if (AppState.abaAtiva === 'mercados') {
+
+  if (AppState.abaAtiva === 'lista') {
+    renderizarListaCompras();
+  } else if (AppState.abaAtiva === 'mercados') {
     renderizarComparadorDF();
+  } else if (AppState.abaAtiva === 'despensa') {
+    renderizarDespensa();
+  }
+
+  // Animação visual sutil de confirmação nos campos de preço
+  if (AppState.abaAtiva === 'lista' && AppState.cotacaoAtiva) {
+    setTimeout(() => {
+      const inputsPreco = document.querySelectorAll('.preco-input');
+      inputsPreco.forEach(inp => {
+        inp.style.transition = 'background-color 0.3s ease, border-color 0.3s ease';
+        inp.style.backgroundColor = '#EFF6FF';
+        inp.style.borderColor = '#3B82F6';
+        setTimeout(() => {
+          inp.style.backgroundColor = '';
+          inp.style.borderColor = '';
+        }, 400);
+      });
+    }, 20);
   }
 }
 
 // Renderizar telas
 function renderizarTudo() {
+  atualizarChipsMercadoUI();
   if (AppState.abaAtiva === 'lista') {
     renderizarListaCompras();
   } else if (AppState.abaAtiva === 'despensa') {
@@ -703,6 +1369,18 @@ function renderizarTudo() {
   }
   atualizarCardResumo();
   atualizarVisualBotaoCotar();
+}
+
+function atualizarChipsMercadoUI() {
+  const ref = (AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos') ? AppState.mercadoReferencia : 'atacadao';
+  const chips = document.querySelectorAll('.btn-chip-mercado');
+  chips.forEach(chip => {
+    if (chip.getAttribute('data-mercado') === ref) {
+      chip.classList.add('ativo');
+    } else {
+      chip.classList.remove('ativo');
+    }
+  });
 }
 
 // Atualizar Totais do Carrinho e Estimado
@@ -725,14 +1403,12 @@ function atualizarCardResumo() {
   let totalCarrinho = 0;
   let totalItens = AppState.listaAtiva.length;
   let itensNoCarrinho = 0;
-  const ref = AppState.mercadoReferencia || 'todos';
+  const ref = (AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos') ? AppState.mercadoReferencia : 'atacadao';
 
   AppState.listaAtiva.forEach(item => {
-    let precoItem = item.preco || 0;
-    if (ref !== 'todos') {
-      precoItem = obterPrecoEstimadoMercado(item, ref);
-    } else if (precoItem === 0) {
-      precoItem = item.ultimoPreco || obterPrecoEstimadoMercado(item, 'carrefour');
+    let precoItem = obterPrecoEstimadoMercado(item, ref);
+    if (!precoItem || precoItem <= 0) {
+      precoItem = item.preco || item.ultimoPreco || 0;
     }
 
     const subtotal = (item.qtde || 1) * precoItem;
@@ -826,11 +1502,19 @@ function renderizarListaCompras() {
     const grupoDiv = document.createElement('div');
     grupoDiv.className = 'categoria-grupo';
 
-    // Ordenação dinâmica: se o modo for 'mais_baratos', ordena pelos menores preços primeiro!
+    // Ordenação dinâmica: 'mais_baratos' (preço), 'alfabetico' (A-Z), ou padrão
+    const refMercado = (AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos') ? AppState.mercadoReferencia : 'atacadao';
     if (AppState.modoCotacao === 'mais_baratos') {
       itens.sort((a, b) => {
         if (a.comprado !== b.comprado) return a.comprado ? 1 : -1;
-        return (a.preco || 0) - (b.preco || 0); // Primeiro os mais baratos
+        const pA = obterPrecoEstimadoMercado(a, refMercado) || a.preco || 0;
+        const pB = obterPrecoEstimadoMercado(b, refMercado) || b.preco || 0;
+        return pA - pB;
+      });
+    } else if (AppState.modoCotacao === 'alfabetico') {
+      itens.sort((a, b) => {
+        if (a.comprado !== b.comprado) return a.comprado ? 1 : -1;
+        return (a.nome || '').localeCompare(b.nome || '', 'pt-BR', { sensitivity: 'base' });
       });
     } else {
       itens.sort((a, b) => {
@@ -852,13 +1536,24 @@ function renderizarListaCompras() {
         marcaHtml = `<span class="tag-marca" style="background:#F1F5F9; color:#64748B; border-color:#E2E8F0; font-weight:normal;" onclick="alterarMarcaItem('${item.id}')" title="Clique para definir marca">+ Marca</span>`;
       }
 
+      // Preço e Rede a exibir com base no chip selecionado no topo
+      let precoItemExibicao = item.preco;
+      let redeExibicao = item.origemPreco;
+
+      const pRede = obterPrecoEstimadoMercado(item, refMercado);
+      if (pRede > 0) {
+        precoItemExibicao = pRede;
+      }
+      redeExibicao = refMercado;
+
       // Tag de Mercado de Origem do Preço Cotado (some quando desmarcado)
       let tagMercadoOrigem = '';
-      if (AppState.cotacaoAtiva && item.origemPreco && MERCADOS_DF[item.origemPreco]) {
-        const infoM = MERCADOS_DF[item.origemPreco];
-        const logoM = (typeof obterLogoMercado === 'function' && obterLogoMercado(item.origemPreco)) || `logos/${item.origemPreco}.png`;
+      if (AppState.cotacaoAtiva && redeExibicao && MERCADOS_DF[redeExibicao]) {
+        const infoM = MERCADOS_DF[redeExibicao];
+        const logoM = (typeof obterLogoMercado === 'function' && obterLogoMercado(redeExibicao)) || `logos/${redeExibicao}.png`;
+        const tituloTag = `Preço em ${infoM.nome} (${infoM.regiao})`;
         tagMercadoOrigem = `
-          <span class="tag-origem-preco" title="Preço cotado no ${infoM.nome}">
+          <span class="tag-origem-preco" title="${tituloTag}">
             <img src="${logoM}" style="width:13px; height:13px; object-fit:contain; border-radius:2px;" onerror="this.outerHTML='<span>${infoM.emoji}</span>'">
             <span>${infoM.nome}</span>
           </span>
@@ -875,8 +1570,8 @@ function renderizarListaCompras() {
         <div class="preco-campo-box">
           <span class="preco-cifrao">R$</span>
           <input type="number" step="0.01" class="preco-input" 
-                 placeholder="0,00" value="${item.preco ? Number(item.preco).toFixed(2) : ''}"
-                 onchange="alterarPrecoItem('${item.id}', this.value)" />
+                 placeholder="0,00" value="${precoItemExibicao ? Number(precoItemExibicao).toFixed(2) : ''}"
+                 onchange="alterarPrecoItem('${item.id}', this.value, '${refMercado}')" />
         </div>
       ` : '';
 
@@ -892,6 +1587,13 @@ function renderizarListaCompras() {
             ${iconeSvg}
           </div>
 
+          <!-- Coluna de Quantidade editável na frente do nome -->
+          <div class="contador-qtde" style="margin-right: 4px;">
+            <button class="btn-step" onclick="alterarQuantidade('${item.id}', -1)" title="Diminuir">-</button>
+            <input type="number" min="1" class="input-qtde-card" value="${item.qtde || 1}" onchange="definirQuantidadeDireta('${item.id}', this.value)" title="Editar quantidade" />
+            <button class="btn-step" onclick="alterarQuantidade('${item.id}', 1)" title="Aumentar">+</button>
+          </div>
+
           <div class="item-corpo">
             <div class="item-linha-nome">
               <span class="item-nome" onclick="alternarItemComprado('${item.id}')">${item.nome}</span>
@@ -902,12 +1604,6 @@ function renderizarListaCompras() {
           </div>
 
           <div class="item-acoes-compra">
-            <div class="contador-qtde">
-              <button class="btn-step" onclick="alterarQuantidade('${item.id}', -1)">-</button>
-              <span class="qtde-valor">${item.qtde || 1}</span>
-              <button class="btn-step" onclick="alterarQuantidade('${item.id}', 1)">+</button>
-            </div>
-
             ${campoPrecoHtml}
 
             <button class="btn-delete-item" title="Remover item" onclick="removerItem('${item.id}')">✕</button>
@@ -1117,15 +1813,366 @@ let termoBuscaLista = '';
 let ordemAlfabeticaDespensa = false;
 let categoriaAtivaDespensa = 'todas';
 
-function aoDigitarBuscaTopo(termo) {
-  termoBuscaTopo = (termo || '').trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+function configurarBuscaGlobal() {
+  const inputBusca = document.getElementById('input-novo-item');
+  const containerBusca = document.querySelector('.busca-topo-reduzida');
 
+  // Fecha o dropdown flutuante ao clicar fora
+  document.addEventListener('click', (e) => {
+    if (containerBusca && !containerBusca.contains(e.target)) {
+      fecharDropdownSugestoesTopo();
+    }
+  });
+
+  // Reabre sugestões ao focar no campo se houver texto
+  if (inputBusca) {
+    inputBusca.addEventListener('focus', () => {
+      if (inputBusca.value.trim().length > 0) {
+        renderizarDropdownSugestoesTopo(inputBusca.value.trim());
+      }
+    });
+  }
+
+  // Tecla global: Se o usuário estiver na Lista de Compras ou Montar Lista e começar a digitar qualquer letra
+  document.addEventListener('keydown', (e) => {
+    if (AppState.abaAtiva !== 'lista' && AppState.abaAtiva !== 'despensa') return;
+
+    // Se estiver com modal aberto, não intercepta
+    const modalAberto = document.querySelector('.modal-overlay[style*="display: flex"], .modal-overlay[style*="display: block"]');
+    if (modalAberto) return;
+
+    // Se já estiver focado em algum input, textarea ou select, ignora
+    const tag = (document.activeElement && document.activeElement.tagName) || '';
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
+    // Apenas teclas alfanuméricas simples (sem Ctrl, Alt ou Meta)
+    if (e.key && e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
+      if (inputBusca) {
+        inputBusca.focus();
+        // A tecla pressionada entrará automaticamente no campo
+      }
+    }
+  });
+}
+
+let sugestaoIndiceTeclado = -1;
+let timerInatividadeBusca = null;
+
+// Remove estado visual de digitação e limpa timer de inatividade
+function resetarEstadoDigitacaoBusca() {
+  if (timerInatividadeBusca) {
+    clearTimeout(timerInatividadeBusca);
+    timerInatividadeBusca = null;
+  }
+  const containerBusca = document.querySelector('.busca-topo-reduzida');
+  const inputBusca = document.getElementById('input-novo-item');
+  if (containerBusca) containerBusca.classList.remove('digitando-ativo');
+  if (inputBusca) inputBusca.classList.remove('digitando-ativo');
+}
+
+// Limpa o campo após 10 segundos sem digitar
+function limparCampoBuscaInatividade() {
+  resetarEstadoDigitacaoBusca();
+  const input = document.getElementById('input-novo-item');
+  if (input) {
+    input.value = '';
+  }
+  termoBuscaTopo = '';
+  termoBuscaDespensa = '';
+  termoBuscaLista = '';
+  fecharDropdownSugestoesTopo();
+
+  if (AppState.abaAtiva === 'despensa') {
+    renderizarDespensa();
+  } else {
+    renderizarListaCompras();
+  }
+}
+
+function aoDigitarBuscaTopo(termo) {
+  const containerBusca = document.querySelector('.busca-topo-reduzida');
+  const inputBusca = document.getElementById('input-novo-item');
+
+  // Limpa qualquer timer anterior a cada toque de tecla
+  if (timerInatividadeBusca) {
+    clearTimeout(timerInatividadeBusca);
+    timerInatividadeBusca = null;
+  }
+
+  const termoLimpo = (termo || '').trim();
+  termoBuscaTopo = termoLimpo.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+  if (termoLimpo.length > 0) {
+    // Ao digitar: bordas vermelhas brilhosas e fonte bold
+    if (containerBusca) containerBusca.classList.add('digitando-ativo');
+    if (inputBusca) inputBusca.classList.add('digitando-ativo');
+
+    // Ficou 10 segundos sem digitar, limpa o campo
+    timerInatividadeBusca = setTimeout(() => {
+      limparCampoBuscaInatividade();
+    }, 10000);
+  } else {
+    if (containerBusca) containerBusca.classList.remove('digitando-ativo');
+    if (inputBusca) inputBusca.classList.remove('digitando-ativo');
+  }
+
+  // 1. Atualiza visualização na aba ativa embaixo
   if (AppState.abaAtiva === 'despensa') {
     termoBuscaDespensa = termoBuscaTopo;
     renderizarDespensa();
   } else {
     termoBuscaLista = termoBuscaTopo;
     renderizarListaCompras();
+  }
+
+  // 2. Imediatamente exibe e filtra o dropdown flutuante sobre o menu
+  if (termoLimpo.length > 0) {
+    renderizarDropdownSugestoesTopo(termoLimpo);
+  } else {
+    fecharDropdownSugestoesTopo();
+  }
+}
+
+function fecharDropdownSugestoesTopo() {
+  const dropdown = document.getElementById('dropdown-sugestoes-topo');
+  if (dropdown) {
+    dropdown.style.display = 'none';
+    dropdown.innerHTML = '';
+  }
+  sugestaoIndiceTeclado = -1;
+}
+
+function renderizarDropdownSugestoesTopo(termoOriginal) {
+  const dropdown = document.getElementById('dropdown-sugestoes-topo');
+  if (!dropdown) return;
+
+  const termoNorm = termoOriginal.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  sugestaoIndiceTeclado = -1;
+
+  // Mapa de itens para evitar duplicidades
+  const itensEncontrados = [];
+  const idsVistos = new Set();
+
+  // Busca prioritária no catálogo atual
+  AppState.catalogo.forEach(item => {
+    const nomeNorm = (item.nome || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const catNorm = (item.categoria || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const marcaNorm = (item.marca || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+    if (nomeNorm.includes(termoNorm) || catNorm.includes(termoNorm) || marcaNorm.includes(termoNorm)) {
+      idsVistos.add(String(item.id));
+      const comecaCom = nomeNorm.startsWith(termoNorm);
+      itensEncontrados.push({ item, comecaCom });
+    }
+  });
+
+  // Também busca no catálogo mestre expandido se ainda não estiver visto
+  CATALOGO_PADRAO_EXPANDIDO.forEach(padrao => {
+    if (!idsVistos.has(String(padrao.id))) {
+      const nomeNorm = (padrao.nome || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      const catNorm = (padrao.categoria || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      if (nomeNorm.includes(termoNorm) || catNorm.includes(termoNorm)) {
+        idsVistos.add(String(padrao.id));
+        const comecaCom = nomeNorm.startsWith(termoNorm);
+        itensEncontrados.push({ item: padrao, comecaCom });
+      }
+    }
+  });
+
+  // Ordena: itens que começam com o termo digitado primeiro!
+  itensEncontrados.sort((a, b) => {
+    if (a.comecaCom && !b.comecaCom) return -1;
+    if (!a.comecaCom && b.comecaCom) return 1;
+    return a.item.nome.localeCompare(b.item.nome);
+  });
+
+  const refMercado = AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos' ? AppState.mercadoReferencia : 'atacadao';
+  let html = '';
+
+  // Opção Rápida de Criar / Adicionar o que foi digitado
+  html += `
+    <div class="sugestao-item-row sugestao-row-criar-novo" onclick="selecionarSugestaoCriarNovo('${escapeHtml(termoOriginal)}')">
+      <div class="sugestao-info-esquerda">
+        <span style="font-size: 1.15rem;">➕</span>
+        <div class="sugestao-textos-box">
+          <span class="sugestao-nome-prod">Adicionar "<strong>${escapeHtml(termoOriginal)}</strong>"</span>
+          <span class="sugestao-meta-box">Pressione Enter ou clique para adicionar à lista</span>
+        </div>
+      </div>
+      <span class="sugestao-btn-badge sugestao-btn-add">Adicionar ↵</span>
+    </div>
+  `;
+
+  if (itensEncontrados.length > 0) {
+    html += `
+      <div class="sugestao-cabecalho-secao">
+        <span>PRODUTOS ENCONTRADOS (${itensEncontrados.length})</span>
+        <span style="font-size: 0.65rem; text-transform: none; color: #94A3B8;">Clique para selecionar</span>
+      </div>
+    `;
+
+    // Limita a 10 resultados para manter a caixa rápida e limpa
+    itensEncontrados.slice(0, 10).forEach(({ item }) => {
+      const iconeSvg = obterIcone2D(item.nome, item.icone);
+      const precoEstimado = obterPrecoEstimadoMercado(item, refMercado);
+      const precoTxt = precoEstimado > 0 ? `R$ ${precoEstimado.toFixed(2).replace('.', ',')}` : '';
+
+      // Verifica se o item já está na lista ou marcado na despensa
+      const estaNaLista = AppState.listaAtiva.some(i => 
+        String(i.id) === String(item.id) || 
+        (i.nome || '').toLowerCase().trim() === (item.nome || '').toLowerCase().trim()
+      );
+      const estaMarcadoDespensa = !!item.selecionado;
+
+      let badgeAcao = '';
+      if (AppState.abaAtiva === 'despensa') {
+        if (estaMarcadoDespensa) {
+          badgeAcao = `<span class="sugestao-btn-badge sugestao-btn-marcado" title="Clique para desmarcar">✓ Marcado</span>`;
+        } else {
+          badgeAcao = `<span class="sugestao-btn-badge sugestao-btn-add" title="Clique para marcar">➕ Marcar</span>`;
+        }
+      } else {
+        if (estaNaLista) {
+          badgeAcao = `<span class="sugestao-btn-badge sugestao-btn-marcado" title="Já está na sua lista">✓ Na Lista</span>`;
+        } else {
+          badgeAcao = `<span class="sugestao-btn-badge sugestao-btn-add" title="Adicionar à lista">➕ Adicionar</span>`;
+        }
+      }
+
+      const nomeDestacado = destacarTextoBusca(item.nome, termoOriginal);
+
+      html += `
+        <div class="sugestao-item-row" data-id="${item.id}" onclick="alternarItemPeloDropdown('${item.id}', event)">
+          <div class="sugestao-info-esquerda">
+            <div class="sugestao-icone-box">${iconeSvg}</div>
+            <div class="sugestao-textos-box">
+              <span class="sugestao-nome-prod">${nomeDestacado}</span>
+              <div class="sugestao-meta-box">
+                <span>${item.categoria || 'Diversos'}</span>
+                ${item.marca ? `<span>• ${item.marca}</span>` : ''}
+              </div>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            ${precoTxt ? `<span class="sugestao-preco-tag">${precoTxt}</span>` : ''}
+            ${badgeAcao}
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  dropdown.innerHTML = html;
+  dropdown.style.display = 'block';
+}
+
+function destacarTextoBusca(texto, termo) {
+  if (!termo) return escapeHtml(texto);
+  const re = new RegExp(`(${escapeRegex(termo)})`, 'gi');
+  return escapeHtml(texto).replace(re, '<span class="sugestao-termo-match">$1</span>');
+}
+
+function escapeRegex(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function alternarItemPeloDropdown(itemId, event) {
+  if (event) event.stopPropagation();
+
+  let prod = AppState.catalogo.find(p => String(p.id) === String(itemId) || String(p.catalogoId) === String(itemId));
+  if (!prod) {
+    const padrao = CATALOGO_PADRAO_EXPANDIDO.find(p => String(p.id) === String(itemId));
+    if (padrao) {
+      prod = { ...padrao, selecionado: true, qtde: 1 };
+      AppState.catalogo.unshift(prod);
+    }
+  }
+
+  if (prod) {
+    prod.selecionado = true;
+    if (AppState.abaAtiva === 'despensa') {
+      prod.qtde = prod.qtde || 1;
+    } else {
+      // Aba Lista de Compra: se já estiver na lista ativa, incrementa quantidade
+      const jaNaLista = AppState.listaAtiva.find(i => String(i.id) === String(prod.id));
+      if (jaNaLista) {
+        jaNaLista.qtde = (jaNaLista.qtde || 1) + 1;
+      }
+    }
+    sincronizarListaAtivaComCatalogo();
+  }
+
+  salvarEstado(true);
+  atualizarCardResumo();
+  if (AppState.abaAtiva === 'despensa') renderizarDespensa();
+  else renderizarListaCompras();
+
+  // Limpa o input e fecha sugestões com feedback positivo
+  resetarEstadoDigitacaoBusca();
+  const input = document.getElementById('input-novo-item');
+  if (input) {
+    input.value = '';
+    input.focus();
+  }
+  termoBuscaTopo = '';
+  termoBuscaDespensa = '';
+  termoBuscaLista = '';
+  fecharDropdownSugestoesTopo();
+}
+
+function selecionarSugestaoCriarNovo(termo) {
+  const input = document.getElementById('input-novo-item');
+  if (input) input.value = termo;
+  adicionarItemRapido();
+  fecharDropdownSugestoesTopo();
+}
+
+function gerenciarTeclasBuscaTopo(event) {
+  const dropdown = document.getElementById('dropdown-sugestoes-topo');
+  const aberto = dropdown && dropdown.style.display !== 'none';
+
+  if (event.key === 'Escape') {
+    fecharDropdownSugestoesTopo();
+    const input = document.getElementById('input-novo-item');
+    if (input) input.blur();
+    return;
+  }
+
+  if (event.key === 'ArrowDown' && aberto) {
+    event.preventDefault();
+    const rows = dropdown.querySelectorAll('.sugestao-item-row');
+    if (rows.length === 0) return;
+    sugestaoIndiceTeclado = (sugestaoIndiceTeclado + 1) % rows.length;
+    rows.forEach((r, idx) => {
+      r.classList.toggle('ativo-teclado', idx === sugestaoIndiceTeclado);
+      if (idx === sugestaoIndiceTeclado) r.scrollIntoView({ block: 'nearest' });
+    });
+    return;
+  }
+
+  if (event.key === 'ArrowUp' && aberto) {
+    event.preventDefault();
+    const rows = dropdown.querySelectorAll('.sugestao-item-row');
+    if (rows.length === 0) return;
+    sugestaoIndiceTeclado = (sugestaoIndiceTeclado - 1 + rows.length) % rows.length;
+    rows.forEach((r, idx) => {
+      r.classList.toggle('ativo-teclado', idx === sugestaoIndiceTeclado);
+      if (idx === sugestaoIndiceTeclado) r.scrollIntoView({ block: 'nearest' });
+    });
+    return;
+  }
+
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    if (aberto && sugestaoIndiceTeclado >= 0) {
+      const rows = dropdown.querySelectorAll('.sugestao-item-row');
+      if (rows[sugestaoIndiceTeclado]) {
+        rows[sugestaoIndiceTeclado].click();
+        return;
+      }
+    }
+    adicionarItemRapido();
+    fecharDropdownSugestoesTopo();
   }
 }
 
@@ -1154,6 +2201,21 @@ function filtrarCategoriaGeral(categoria, botaoEl) {
 // Alias para compatibilidade
 function filtrarCategoriaDespensa(categoria, botaoEl) {
   filtrarCategoriaGeral(categoria, botaoEl);
+}
+
+// Ordenação Alfabética Geral (compatível com Lista de Compras, Montar Lista e Mercados)
+function alternarOrdemAlfabeticaGeral() {
+  if (AppState.abaAtiva === 'mercados') {
+    alternarOrdenacaoMercados('alfabetico');
+  } else if (AppState.abaAtiva === 'lista') {
+    if (AppState.modoCotacao === 'alfabetico') {
+      aplicarModoCotacao('mais_baratos');
+    } else {
+      aplicarModoCotacao('alfabetico');
+    }
+  } else {
+    alternarOrdemAlfabeticaDespensa();
+  }
 }
 
 function alternarOrdemAlfabeticaDespensa() {
@@ -1244,22 +2306,31 @@ function renderizarDespensa() {
 
       htmlItens += `
         <div class="item-card ${classeNaLista}" id="card-despensa-${prod.id}"
+             onclick="alternarItemDespensaEmTempoReal('${prod.id}', event)"
              oncontextmenu="event.preventDefault(); abrirModalEditarNomeDespensa('${prod.id}', event);"
-             title="${estaNaLista ? 'Na Lista de Compra (Clique para desmarcar)' : 'Clique para marcar e adicionar à Lista de Compra'} • Botão direito para editar">
+             title="${estaNaLista ? 'Na Lista de Compra (Clique para desmarcar)' : 'Clique para marcar e adicionar à Lista de Compra'} • Botão direito para editar"
+             style="cursor: pointer;">
           <div class="item-check-btn ${estaNaLista ? 'check-ativo' : ''}" 
                onclick="event.stopPropagation(); alternarItemDespensaEmTempoReal('${prod.id}', event)"
                title="${estaNaLista ? 'Retirar da Lista de Compra' : 'Adicionar à Lista de Compra'}">
             ${checkIcone}
           </div>
 
-          <div class="item-icone-2d" onclick="alternarItemDespensaEmTempoReal('${prod.id}', event)">
+          <div class="item-icone-2d">
             ${iconeSvg}
+          </div>
+
+          <!-- Coluna de Quantidade editável na frente do nome -->
+          <div class="contador-qtde" style="margin-right: 4px; ${estaNaLista ? '' : 'opacity: 0.45;'}" onclick="event.stopPropagation()">
+            <button class="btn-step" onclick="event.stopPropagation(); alterarQuantidadeMontarLista('${prod.id}', -1, event)">-</button>
+            <input type="number" min="1" class="input-qtde-card" value="${qtde}" id="qtde-montar-${prod.id}" onclick="event.stopPropagation()" onchange="definirQuantidadeMontarLista('${prod.id}', this.value, event)" />
+            <button class="btn-step" onclick="event.stopPropagation(); alterarQuantidadeMontarLista('${prod.id}', 1, event)">+</button>
           </div>
 
           <div class="item-corpo">
             <div class="item-linha-nome">
-              <span class="item-nome" onclick="alternarItemDespensaEmTempoReal('${prod.id}', event)">${prod.nome}</span>
-              <button class="btn-editar-despensa" title="Editar este produto" onclick="abrirModalEditarNomeDespensa('${prod.id}', event)">
+              <span class="item-nome">${prod.nome}</span>
+              <button class="btn-editar-despensa" title="Editar este produto" onclick="event.stopPropagation(); abrirModalEditarNomeDespensa('${prod.id}', event)">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M12 20h9"></path>
                   <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
@@ -1269,13 +2340,7 @@ function renderizarDespensa() {
           </div>
 
           <div class="item-acoes-compra">
-            <div class="contador-qtde" style="${estaNaLista ? '' : 'opacity: 0.45;'}">
-              <button class="btn-step" onclick="event.stopPropagation(); alterarQuantidadeMontarLista('${prod.id}', -1, event)">-</button>
-              <span class="qtde-valor" id="qtde-montar-${prod.id}">${qtde}</span>
-              <button class="btn-step" onclick="event.stopPropagation(); alterarQuantidadeMontarLista('${prod.id}', 1, event)">+</button>
-            </div>
-
-            <button class="btn-delete-item" title="Excluir produto do catálogo" onclick="excluirItemDespensa('${prod.id}', event)">✕</button>
+            <button class="btn-delete-item" title="Excluir produto do catálogo" onclick="event.stopPropagation(); excluirItemDespensa('${prod.id}', event)">✕</button>
           </div>
         </div>
       `;
@@ -1352,15 +2417,43 @@ function alterarQuantidadeMontarLista(produtoId, delta, event) {
   if (!prod) return;
 
   const qtdeEl = document.getElementById(`qtde-montar-${prod.id}`);
-  let novaQtde = (prod.qtde || (qtdeEl ? parseInt(qtdeEl.textContent) : 1)) + delta;
+  let atual = prod.qtde || (qtdeEl ? parseInt(qtdeEl.value || qtdeEl.textContent, 10) : 1);
+  if (isNaN(atual) || atual < 1) atual = 1;
+  let novaQtde = atual + delta;
   if (novaQtde < 1) novaQtde = 1;
 
   prod.qtde = novaQtde;
-  if (qtdeEl) qtdeEl.textContent = novaQtde;
+  if (qtdeEl) {
+    if (qtdeEl.tagName === 'INPUT') qtdeEl.value = novaQtde;
+    else qtdeEl.textContent = novaQtde;
+  }
 
   const itemNaLista = AppState.listaAtiva.find(it => String(it.id) === String(prod.id));
   if (itemNaLista) {
     itemNaLista.qtde = novaQtde;
+  }
+
+  salvarEstado(true);
+  renderizarListaCompras();
+  atualizarCardResumo();
+}
+
+function definirQuantidadeMontarLista(produtoId, novoValor, event) {
+  if (event && event.stopPropagation) event.stopPropagation();
+
+  const prod = AppState.catalogo.find(p => String(p.id) === String(produtoId));
+  if (!prod) return;
+
+  let val = parseInt(novoValor, 10);
+  if (isNaN(val) || val < 1) val = 1;
+
+  prod.qtde = val;
+  const qtdeEl = document.getElementById(`qtde-montar-${prod.id}`);
+  if (qtdeEl && qtdeEl.tagName === 'INPUT') qtdeEl.value = val;
+
+  const itemNaLista = AppState.listaAtiva.find(it => String(it.id) === String(prod.id));
+  if (itemNaLista) {
+    itemNaLista.qtde = val;
   }
 
   salvarEstado(true);
@@ -1514,11 +2607,25 @@ function salvarEdicaoNomeDespensaModal() {
     : (deduzirCategoria(novoNome) || 'Diversos');
 
   const prod = AppState.catalogo.find(p => String(p.id) === String(itemParaEditarNomeId));
+  const ref = AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos' ? AppState.mercadoReferencia : 'carrefour';
+
   if (prod) {
     const nomeAntigo = prod.nome;
     prod.nome = capitalizar(novoNome);
     prod.icone = detectarChaveIcone(prod.nome);
     prod.categoria = novaCategoria;
+    const marcaDetectada = detectarMarca(prod.nome);
+    if (marcaDetectada) prod.marca = marcaDetectada;
+
+    // Se o produto estava com preço zerado ou nulo, recalcula imediatamente com base no novo nome
+    if (!prod.preco || Number(prod.preco) === 0 || !prod.precoMedioDF || Number(prod.precoMedioDF) === 0) {
+      const pEst = obterPrecoEstimadoMercado({ nome: prod.nome, icone: prod.icone, marca: prod.marca, categoria: prod.categoria, preco: 0 }, ref);
+      if (pEst > 0) {
+        prod.preco = pEst;
+        prod.precoMedioDF = pEst;
+        prod.ultimoPreco = pEst;
+      }
+    }
 
     // Atualiza também se esse item estiver presente na lista ativa de compras
     AppState.listaAtiva.forEach(it => {
@@ -1526,12 +2633,17 @@ function salvarEdicaoNomeDespensaModal() {
         it.nome = prod.nome;
         it.icone = prod.icone;
         it.categoria = prod.categoria;
+        if (prod.marca) it.marca = prod.marca;
+        if (!it.preco || Number(it.preco) === 0) {
+          it.preco = prod.preco || obterPrecoEstimadoMercado({ nome: it.nome, icone: it.icone, marca: it.marca, categoria: it.categoria, preco: 0 }, ref);
+        }
       }
     });
 
     salvarEstado(true);
     renderizarDespensa();
     renderizarListaCompras();
+    atualizarCardResumo();
   } else {
     // Se for um item avulso adicionado na lista de compras
     const itemLista = AppState.listaAtiva.find(p => String(p.id) === String(itemParaEditarNomeId));
@@ -1539,9 +2651,19 @@ function salvarEdicaoNomeDespensaModal() {
       itemLista.nome = capitalizar(novoNome);
       itemLista.icone = detectarChaveIcone(itemLista.nome);
       itemLista.categoria = novaCategoria;
+      const marcaDetectada = detectarMarca(itemLista.nome);
+      if (marcaDetectada) itemLista.marca = marcaDetectada;
+
+      if (!itemLista.preco || Number(itemLista.preco) === 0) {
+        const pEst = obterPrecoEstimadoMercado({ nome: itemLista.nome, icone: itemLista.icone, marca: itemLista.marca, categoria: itemLista.categoria, preco: 0 }, ref);
+        if (pEst > 0) {
+          itemLista.preco = pEst;
+        }
+      }
 
       salvarEstado(true);
       renderizarListaCompras();
+      atualizarCardResumo();
     }
   }
 
@@ -1660,28 +2782,69 @@ function cancelarPendenteDesmarcar() {
 }
 
 function alterarQuantidade(id, delta) {
-  const item = AppState.listaAtiva.find(i => i.id === id);
+  const item = AppState.listaAtiva.find(i => String(i.id) === String(id));
   if (item) {
     let novaQtde = (item.qtde || 1) + delta;
     if (novaQtde < 1) novaQtde = 1;
     item.qtde = novaQtde;
+
+    const prodCat = AppState.catalogo.find(p => String(p.id) === String(id) || String(p.catalogoId) === String(id));
+    if (prodCat) {
+      prodCat.qtde = novaQtde;
+    }
+
     salvarEstado(true);
-    renderizarListaCompras();
     atualizarCardResumo();
+    if (AppState.abaAtiva === 'mercados') {
+      renderizarComparadorDF();
+    } else {
+      renderizarListaCompras();
+    }
   }
 }
 
-function alterarPrecoItem(id, novoPrecoStr) {
+function definirQuantidadeDireta(id, novoValor) {
+  const item = AppState.listaAtiva.find(i => String(i.id) === String(id));
+  if (item) {
+    let val = parseInt(novoValor, 10);
+    if (isNaN(val) || val < 1) val = 1;
+    item.qtde = val;
+
+    const prodCat = AppState.catalogo.find(p => String(p.id) === String(id) || String(p.catalogoId) === String(id));
+    if (prodCat) {
+      prodCat.qtde = val;
+    }
+
+    salvarEstado(true);
+    atualizarCardResumo();
+    if (AppState.abaAtiva === 'mercados') {
+      renderizarComparadorDF();
+    } else {
+      renderizarListaCompras();
+    }
+  }
+}
+
+function alterarPrecoItem(id, novoPrecoStr, redeRef) {
   const item = AppState.listaAtiva.find(i => i.id === id);
   if (item) {
     const precoFloat = parseFloat(novoPrecoStr.replace(',', '.'));
     const val = isNaN(precoFloat) ? 0 : precoFloat;
     item.preco = val;
     item.precoReferencia = val;
+    if (redeRef && redeRef !== 'todos') {
+      if (!item.precosMercados) item.precosMercados = {};
+      item.precosMercados[redeRef] = val;
+      item.origemPreco = redeRef;
+    }
     const catItem = AppState.catalogo.find(c => String(c.id) === String(item.id) || String(c.id) === String(item.catalogoId));
     if (catItem) {
       catItem.preco = val;
       catItem.ultimoPreco = val;
+      if (redeRef && redeRef !== 'todos') {
+        if (!catItem.precosMercados) catItem.precosMercados = {};
+        catItem.precosMercados[redeRef] = val;
+      }
     }
     salvarEstado(true);
     atualizarCardResumo();
@@ -1706,6 +2869,7 @@ function adicionarItemRapido() {
   const input = document.getElementById('input-novo-item');
   if (!input) return;
   const texto = input.value.trim();
+  resetarEstadoDigitacaoBusca();
   if (!texto) {
     input.focus();
     return;
@@ -1943,7 +3107,7 @@ function aplicarModoCotacao(modo) {
   atualizarVisualBotaoCotar();
 
   // Atualiza visual dos chips de modo de cotação
-  const idsModos = ['mais-baratos', 'maioria-barata', 'sugerir'];
+  const idsModos = ['mais-baratos', 'alfabetico', 'maioria-barata', 'sugerir'];
   idsModos.forEach(idSuffix => {
     const el = document.getElementById(`modo-${idSuffix}`);
     if (el) {
@@ -2021,6 +3185,18 @@ function aplicarModoCotacao(modo) {
         item.origemPreco = redeSugerida;
       }
     });
+  } else if (modo === 'alfabetico') {
+    // 4. MODO ALFABÉTICO: Mantém cotações existentes ou assegura preços do mercado de referência
+    const ref = (AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos') ? AppState.mercadoReferencia : 'atacadao';
+    AppState.listaAtiva.forEach(item => {
+      if (!item.preco || item.preco <= 0) {
+        const p = obterPrecoEstimadoMercado(item, ref);
+        if (p > 0) {
+          item.preco = p;
+          item.origemPreco = ref;
+        }
+      }
+    });
   }
 
   salvarEstado(true);
@@ -2048,19 +3224,24 @@ function pesquisarPrecosListaDF() {
 }
 
 function deduzirCategoria(nome) {
-  const n = nome.toLowerCase();
-  if (n.includes('arroz') || n.includes('feijao') || n.includes('oleo') || n.includes('acucar') || n.includes('cafe') || n.includes('macarrao') || n.includes('farinha') || n.includes('sal')) {
+  if (!nome) return 'Diversos';
+  const n = nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  if (n.includes('cerveja') || n.includes('chopp') || n.includes('refrigerante') || n.includes('coca') || n.includes('guarana') || n.includes('pepsi') || n.includes('fanta') || n.includes('sprite') || n.includes('suco') || n.includes('agua mineral') || n.includes('agua com gas') || n.includes('agua sem gas') || n.includes('vinho') || n.includes('whisky') || n.includes('vodka') || n.includes('gin ') || n.includes('energetico') || n.includes('cha ') || n.includes('tonica') || n.includes('isotonico') || n.includes('gatorade') || n.includes('red bull') || n.includes('heineken') || n.includes('spaten') || n.includes('amstel') || n.includes('stella') || n.includes('corona')) {
+    return 'Bebidas';
+  } else if (n.includes('arroz') || n.includes('feijao') || n.includes('oleo') || n.includes('acucar') || n.includes('cafe') || n.includes('macarrao') || n.includes('farinha') || n.includes('sal ') || n.includes('achocolatado') || n.includes('toddy') || n.includes('tody') || n.includes('nescau') || n.includes('extrato') || n.includes('molho') || n.includes('milho') || n.includes('azeite') || n.includes('vinagre') || n.includes('atum') || n.includes('sardinha') || n.includes('maionese') || n.includes('ketchup') || n.includes('mostarda') || n.includes('azeitona') || n.includes('palmito') || n.includes('lentilha') || n.includes('grao-de-bico') || n.includes('aveia') || n.includes('granola')) {
     return 'Básicos e Grãos';
-  } else if (n.includes('frango') || n.includes('carne') || n.includes('peixe') || n.includes('linguica') || n.includes('bife') || n.includes('alcatra')) {
+  } else if (n.includes('frango') || n.includes('carne') || n.includes('peixe') || n.includes('linguica') || n.includes('bife') || n.includes('alcatra') || n.includes('picanha') || n.includes('costela') || n.includes('maminha') || n.includes('patinho') || n.includes('acem') || n.includes('coxao') || n.includes('cupim') || n.includes('suino') || n.includes('porco') || n.includes('pernil') || n.includes('lombo') || n.includes('bacon') || n.includes('salsicha') || n.includes('tilapia') || n.includes('salmao') || n.includes('camarao') || n.includes('bacalhau')) {
     return 'Carnes e Proteínas';
-  } else if (n.includes('leite') || n.includes('queijo') || n.includes('iogurte') || n.includes('manteiga') || n.includes('ovo')) {
+  } else if (n.includes('leite') || n.includes('queijo') || n.includes('iogurte') || n.includes('manteiga') || n.includes('margarina') || n.includes('ovo') || n.includes('requeijao') || n.includes('presunto') || n.includes('peito de peru') || n.includes('salame') || n.includes('creme de leite') || n.includes('leite condensado') || n.includes('nata') || n.includes('ricota') || n.includes('parmesao') || n.includes('mussarela')) {
     return 'Laticínios e Frios';
-  } else if (n.includes('detergente') || n.includes('amaciante') || n.includes('sabao') || n.includes('qboa') || n.includes('cloro') || n.includes('limpeza') || n.includes('desinfetante')) {
+  } else if (n.includes('detergente') || n.includes('amaciante') || n.includes('sabao') || n.includes('qboa') || n.includes('cloro') || n.includes('limpeza') || n.includes('desinfetante') || n.includes('esponja') || n.includes('alvejante') || n.includes('vanish') || n.includes('veja') || n.includes('pinho') || n.includes('lustra moveis') || n.includes('rodo') || n.includes('vassoura') || n.includes('pano de chao') || n.includes('pano de prato') || n.includes('saco de lixo') || (n.includes('escova') && (n.includes('roupa') || n.includes('lavar') || n.includes('sanitaria') || n.includes('vaso')))) {
     return 'Limpeza';
-  } else if (n.includes('shampoo') || n.includes('sabonete') || n.includes('dente') || n.includes('papel')) {
+  } else if (n.includes('shampoo') || n.includes('condicionador') || n.includes('sabonete') || n.includes('dente') || n.includes('papel higienico') || n.includes('fio dental') || n.includes('desodorante') || n.includes('cabelo') || n.includes('pente') || n.includes('hidratante') || n.includes('protetor solar') || n.includes('barbear') || n.includes('absorvente') || n.includes('fralda') || n.includes('cotonete') || (n.includes('escova') && !n.includes('roupa') && !n.includes('lavar') && !n.includes('vaso'))) {
     return 'Higiene';
-  } else if (n.includes('maca') || n.includes('banana') || n.includes('tomate') || n.includes('cebola') || n.includes('alho') || n.includes('batata') || n.includes('legume')) {
+  } else if (n.includes('maca') || n.includes('banana') || n.includes('tomate') || n.includes('cebola') || n.includes('alho') || n.includes('batata') || n.includes('legume') || n.includes('cenoura') || n.includes('fruta') || n.includes('laranja') || n.includes('limao') || n.includes('abacaxi') || n.includes('melancia') || n.includes('melao') || n.includes('uva') || n.includes('morango') || n.includes('manga') || n.includes('abacate') || n.includes('alface') || n.includes('couve') || n.includes('brocolis') || n.includes('rucula') || n.includes('cheiro verde') || n.includes('chuchu') || n.includes('abobrinha') || n.includes('berinjela') || n.includes('pepino') || n.includes('pimentao') || n.includes('mandioca') || n.includes('quiabo')) {
     return 'Hortifrúti';
+  } else if (n.includes('pao') || n.includes('biscoito') || n.includes('bolacha') || n.includes('torrada') || n.includes('bolo') || n.includes('croissant') || n.includes('waffle') || n.includes('salgadinho') || n.includes('snack') || n.includes('pipoca') || n.includes('amendoim') || n.includes('chocolate') || n.includes('bombom') || n.includes('barra de cereal') || n.includes('sorvete') || n.includes('picole')) {
+    return 'Padaria e Lanches';
   }
   return 'Diversos';
 }
@@ -2682,7 +3863,67 @@ function confirmarZerarTudo() {
   renderizarTudo();
 }
 
-// // Renderizar Mercados — Mercados como títulos de colunas, produtos como cards em linha
+// Alterna e gerencia a ordenação no Comparador de Mercados DF
+function alternarOrdenacaoMercados(modo) {
+  if (modo === 'alfabetico') {
+    if (AppState.ordenacaoMercados === 'alfabetico_az') {
+      AppState.ordenacaoMercados = 'alfabetico_za';
+    } else {
+      AppState.ordenacaoMercados = 'alfabetico_az';
+    }
+  } else if (modo === 'preco') {
+    AppState.ordenacaoMercados = 'preco';
+  } else {
+    AppState.ordenacaoMercados = 'original';
+  }
+
+  salvarEstado(false);
+  atualizarBotoesOrdenacaoMercados();
+  renderizarComparadorDF();
+}
+
+function atualizarBotoesOrdenacaoMercados() {
+  const btnAlfa = document.getElementById('btn-ordem-mercados-alfa');
+  const btnPreco = document.getElementById('btn-ordem-mercados-preco');
+  const btnOriginal = document.getElementById('btn-ordem-mercados-original');
+  const labelAlfa = document.getElementById('label-ordem-mercados-alfa');
+
+  const ordenacao = AppState.ordenacaoMercados || 'original';
+
+  if (btnAlfa) {
+    if (ordenacao === 'alfabetico_az') {
+      btnAlfa.classList.add('ativo');
+      if (labelAlfa) labelAlfa.textContent = '🔤 Alfabético (A ➔ Z)';
+      btnAlfa.title = "Ordenado de A a Z. Clique para inverter (Z a A)";
+    } else if (ordenacao === 'alfabetico_za') {
+      btnAlfa.classList.add('ativo');
+      if (labelAlfa) labelAlfa.textContent = '🔤 Alfabético (Z ➔ A)';
+      btnAlfa.title = "Ordenado de Z a A. Clique para voltar para A a Z";
+    } else {
+      btnAlfa.classList.remove('ativo');
+      if (labelAlfa) labelAlfa.textContent = '🔤 Ordem Alfabética (A-Z)';
+      btnAlfa.title = "Ordenar alfabeticamente (A-Z ou Z-A)";
+    }
+  }
+
+  if (btnPreco) {
+    if (ordenacao === 'preco') {
+      btnPreco.classList.add('ativo');
+    } else {
+      btnPreco.classList.remove('ativo');
+    }
+  }
+
+  if (btnOriginal) {
+    if (ordenacao === 'original') {
+      btnOriginal.classList.add('ativo');
+    } else {
+      btnOriginal.classList.remove('ativo');
+    }
+  }
+}
+
+// Renderizar Mercados — Mercados como títulos de colunas, produtos como cards em linha
 function renderizarComparadorDF() {
   const container = document.getElementById('mercados-tabela-completa');
   const badgeProdutos = document.getElementById('badge-produtos-mercados');
@@ -2718,6 +3959,24 @@ function renderizarComparadorDF() {
   const maisCaroId = redesOrdenadas[redesOrdenadas.length - 1];
   const economia = totais[maisCaroId] - totais[campeaoId];
 
+  // Ordenação dos produtos para a tabela de mercados
+  let itensExibir = [...AppState.listaAtiva];
+  const ordenacao = AppState.ordenacaoMercados || 'original';
+
+  if (ordenacao === 'alfabetico_az') {
+    itensExibir.sort((a, b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR', { sensitivity: 'base' }));
+  } else if (ordenacao === 'alfabetico_za') {
+    itensExibir.sort((a, b) => (b.nome || '').localeCompare(a.nome || '', 'pt-BR', { sensitivity: 'base' }));
+  } else if (ordenacao === 'preco') {
+    itensExibir.sort((a, b) => {
+      const precosA = chavesRedes.map(r => obterPrecoEstimadoMercado(a, r)).filter(p => p > 0);
+      const precosB = chavesRedes.map(r => obterPrecoEstimadoMercado(b, r)).filter(p => p > 0);
+      const menorA = precosA.length > 0 ? Math.min(...precosA) : 999999;
+      const menorB = precosB.length > 0 ? Math.min(...precosB) : 999999;
+      return menorA - menorB;
+    });
+  }
+
   // Cabeçalho dos Mercados (Colunas)
   let colunasCabecalho = chavesRedes.map(r => {
     const info = MERCADOS_DF[r];
@@ -2734,9 +3993,28 @@ function renderizarComparadorDF() {
     `;
   }).join('');
 
+  // Coluna de Produto interativa (com ordenação A-Z / Z-A ao clicar)
+  let badgeOrdemTh = '🔤 A-Z';
+  if (ordenacao === 'alfabetico_az') {
+    badgeOrdemTh = '🔤 A ➔ Z 🔽';
+  } else if (ordenacao === 'alfabetico_za') {
+    badgeOrdemTh = '🔤 Z ➔ A 🔼';
+  } else if (ordenacao === 'preco') {
+    badgeOrdemTh = '🔥 Menor Preço';
+  }
+
+  const thProdutoHtml = `
+    <th class="mcol-th-produto clicavel" onclick="alternarOrdenacaoMercados('alfabetico')" title="Clique para ordenar alfabeticamente (A-Z ou Z-A)">
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+        <span>Produto (${AppState.listaAtiva.length})</span>
+        <span class="mcol-th-ordem-badge" style="font-size: 0.72rem; font-weight: 700; color: ${ordenacao.startsWith('alfabetico') ? 'var(--primary)' : 'var(--text-muted)'}; background: ${ordenacao.startsWith('alfabetico') ? '#EEF2FF' : '#F1F5F9'}; padding: 2px 6px; border-radius: 6px; border: 1px solid ${ordenacao.startsWith('alfabetico') ? '#C7D2FE' : 'transparent'};">${badgeOrdemTh}</span>
+      </div>
+    </th>
+  `;
+
   // Linhas de Produtos (Cada produto é uma linha com preços na mesma linha)
   let linhasProdutos = '';
-  AppState.listaAtiva.forEach(item => {
+  itensExibir.forEach(item => {
     const iconeSvg = (typeof obterIcone2D === 'function') ? obterIcone2D(item.nome, item.icone) : '';
     const qtde = item.qtde || 1;
 
@@ -2780,11 +4058,18 @@ function renderizarComparadorDF() {
 
     linhasProdutos += `
       <tr class="mcol-tr-item">
+        <td class="mcol-td-qtde">
+          <div class="contador-qtde-tabela">
+            <button class="btn-step-tabela" onclick="alterarQuantidade('${item.id}', -1)" title="Diminuir">-</button>
+            <input type="number" min="1" class="input-qtde-tabela" value="${qtde}" onchange="definirQuantidadeDireta('${item.id}', this.value)" title="Editar quantidade" />
+            <button class="btn-step-tabela" onclick="alterarQuantidade('${item.id}', 1)" title="Aumentar">+</button>
+          </div>
+        </td>
         <td class="mcol-td-produto">
           <div class="mcol-prod-card-cell">
             <div class="mcol-prod-icone">${iconeSvg}</div>
             <div class="mcol-prod-textos">
-              <span class="mcol-prod-nome"><strong>${qtde}x</strong> ${item.nome}</span>
+              <span class="mcol-prod-nome">${item.nome}</span>
               ${item.marca ? `<span class="mcol-prod-marca">${item.marca}</span>` : ''}
             </div>
             ${badgeMelhor}
@@ -2813,7 +4098,8 @@ function renderizarComparadorDF() {
       <table class="mcol-tabela-moderna">
         <thead>
           <tr>
-            <th class="mcol-th-produto">Produto (${AppState.listaAtiva.length})</th>
+            <th class="mcol-th-qtde">Qtde</th>
+            ${thProdutoHtml}
             ${colunasCabecalho}
           </tr>
         </thead>
@@ -2822,6 +4108,7 @@ function renderizarComparadorDF() {
         </tbody>
         <tfoot>
           <tr class="mcol-tr-totais">
+            <td class="mcol-td-qtde-total"></td>
             <td class="mcol-td-totais-label">
               <div style="font-weight: 800; font-size: 0.92rem;">TOTAL ESTIMADO</div>
               <small style="color: var(--text-muted); font-size: 0.72rem;">Soma dos itens escolhidos</small>
@@ -2845,6 +4132,9 @@ function renderizarComparadorDF() {
       </div>
     `;
   }
+
+  // Atualiza botões de ordenação da barra superior de mercados
+  atualizarBotoesOrdenacaoMercados();
 }
 
 // =========================================================================

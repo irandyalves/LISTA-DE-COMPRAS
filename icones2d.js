@@ -55,6 +55,15 @@ const ICONS_2D = {
     <ellipse cx="28" cy="56" rx="20" ry="3" fill="#6D4C41"/>
   </svg>`,
 
+  achocolatado: `<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="18" y="16" width="28" height="42" rx="6" fill="#795548"/>
+    <rect x="16" y="24" width="32" height="24" rx="3" fill="#D84315"/>
+    <rect x="22" y="10" width="20" height="8" rx="3" fill="#F4511E"/>
+    <circle cx="32" cy="36" r="8" fill="#FFE082"/>
+    <path d="M28 36L32 32L36 36L32 40Z" fill="#E65100"/>
+    <path d="M30 42C30 42 32 44 34 42" stroke="#5D4037" stroke-width="2" stroke-linecap="round"/>
+  </svg>`,
+
   macarrao: `<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect x="18" y="10" width="28" height="46" rx="6" fill="#F6E58D"/>
     <rect x="18" y="24" width="28" height="18" fill="#ECCC68"/>
@@ -323,6 +332,49 @@ const ICONS_2D = {
     <circle cx="24" cy="38" r="2.5" fill="#6D4C41"/>
   </svg>`,
 
+  cabelo: `<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M22 10C16.4772 10 12 14.4772 12 20C12 28 17 34 22 36V54C22 56.2 23.8 58 26 58H30C32.2 58 34 56.2 34 54V36C39 34 44 28 44 20C44 14.4772 39.5228 10 34 10H22Z" fill="#E84393"/>
+    <rect x="18" y="16" width="20" height="14" rx="4" fill="#FD79A8"/>
+    <circle cx="23" cy="20" r="1.5" fill="#FFFFFF"/>
+    <circle cx="28" cy="20" r="1.5" fill="#FFFFFF"/>
+    <circle cx="33" cy="20" r="1.5" fill="#FFFFFF"/>
+    <circle cx="23" cy="25" r="1.5" fill="#FFFFFF"/>
+    <circle cx="28" cy="25" r="1.5" fill="#FFFFFF"/>
+    <circle cx="33" cy="25" r="1.5" fill="#FFFFFF"/>
+    <path d="M44 18H52M44 23H50M44 28H48" stroke="#E84393" stroke-width="2.5" stroke-linecap="round"/>
+  </svg>`,
+
+  cerveja: `<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="16" y="20" width="26" height="36" rx="4" fill="#F1C40F"/>
+    <path d="M42 26H48C51.3 26 54 28.7 54 32V42C54 45.3 51.3 48 48 48H42V26Z" stroke="#F39C12" stroke-width="4"/>
+    <path d="M14 16C14 13.8 15.8 12 18 12H40C42.2 12 44 13.8 44 16C44 18.2 42.2 20 40 20H18C15.8 20 14 18.2 14 16Z" fill="#FFFFFF"/>
+    <ellipse cx="23" cy="13" rx="6" ry="4" fill="#FFFFFF"/>
+    <ellipse cx="35" cy="13" rx="7" ry="5" fill="#FFFFFF"/>
+    <rect x="22" y="26" width="4" height="24" rx="2" fill="#FFEAA7"/>
+  </svg>`,
+
+  vinho: `<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="18" y="26" width="16" height="32" rx="4" fill="#6C5CE7"/>
+    <path d="M22 16H30V26H22V16Z" fill="#4834D4"/>
+    <rect x="23" y="10" width="8" height="6" rx="1" fill="#D63031"/>
+    <path d="M38 34C38 34 38 46 44 46H46C52 46 52 34 52 34H38Z" fill="#D63031"/>
+    <path d="M45 46V56M40 56H50" stroke="#D63031" stroke-width="3" stroke-linecap="round"/>
+  </svg>`,
+
+  pet: `<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="32" cy="40" rx="12" ry="10" fill="#E67E22"/>
+    <circle cx="20" cy="25" r="5" fill="#D35400"/>
+    <circle cx="32" cy="20" r="5" fill="#D35400"/>
+    <circle cx="44" cy="25" r="5" fill="#D35400"/>
+  </svg>`,
+
+  utilidades: `<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M22 26C22 18 26.5 12 32 12C37.5 12 42 18 42 26C42 32 38 36 36 40H28C26 36 22 32 22 26Z" fill="#F1C40F"/>
+    <rect x="27" y="42" width="10" height="4" rx="1" fill="#7F8C8D"/>
+    <rect x="28" y="48" width="8" height="4" rx="1" fill="#95A5A6"/>
+    <path d="M32 6V2M14 20L10 18M50 20L54 18" stroke="#F39C12" stroke-width="3" stroke-linecap="round"/>
+  </svg>`,
+
   // PADRÃO / OUTROS
   padrao: `<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect x="14" y="20" width="36" height="34" rx="8" fill="#6C5CE7"/>
@@ -377,12 +429,21 @@ function obterIcone2D(nomeProduto, iconeManual) {
 
   if (t.includes('shampoo') || t.includes('condicionador') || t.includes('creme')) return ICONS_2D.shampoo;
   if (t.includes('sabonete')) return ICONS_2D.sabonete;
-  if (t.includes('dente') || t.includes('colgate') || t.includes('pasta') || t.includes('escova')) return ICONS_2D.dente;
+  
+  if (t.includes('cabelo') || t.includes('pente') || (t.includes('escova') && (t.includes('cabelo') || t.includes('raquete') || t.includes('secador') || t.includes('desembaracad')))) return ICONS_2D.cabelo;
+  if (t.includes('escova') && (t.includes('roupa') || t.includes('lavar') || t.includes('sanitaria') || t.includes('vaso') || t.includes('limpeza'))) return ICONS_2D.sanitaria;
+  if (t.includes('dente') || t.includes('colgate') || t.includes('pasta') || t.includes('dental') || t.includes('escova')) return ICONS_2D.dente;
+
+  if (t.includes('cerveja') || t.includes('chopp') || t.includes('heineken') || t.includes('stella') || t.includes('spaten') || t.includes('corona') || t.includes('amstel') || t.includes('budweiser')) return ICONS_2D.cerveja;
+  if (t.includes('vinho') || t.includes('espumante') || t.includes('whisky') || t.includes('vodka') || t.includes('gin ') || t.includes('cachaca') || t.includes('licor')) return ICONS_2D.vinho;
+  if (t.includes('racao') || t.includes('petisco cao') || t.includes('petisco gato') || t.includes('whiskas') || t.includes('pedigree') || t.includes('gato') || t.includes('pet')) return ICONS_2D.pet;
+  if (t.includes('lampada') || t.includes('pilha') || t.includes('fosforo') || t.includes('isqueiro') || t.includes('vela') || t.includes('carvao')) return ICONS_2D.utilidades;
 
   if (t.includes('refrigerante') || t.includes('coca') || t.includes('guarana') || t.includes('pepsi')) return ICONS_2D.refrigerante;
   if (t.includes('suco')) return ICONS_2D.suco;
   if (t.includes('agua') || t.includes('mineral')) return ICONS_2D.agua;
   if (t.includes('biscoito') || t.includes('bolacha') || t.includes('snack') || t.includes('salgadinho')) return ICONS_2D.biscoito;
+  if (t.includes('achocolatado') || t.includes('toddy') || t.includes('tody') || t.includes('nescau') || t.includes('cacau') || t.includes('chocolate')) return ICONS_2D.achocolatado;
 
   if (t.includes('fio dental')) return ICONS_2D.fiodental;
   if (t.includes('costela')) return ICONS_2D.costela;
@@ -399,6 +460,17 @@ function detectarChaveIcone(nomeProduto) {
   if (t.includes('fio dental')) return 'fiodental';
   if (t.includes('costela')) return 'costela';
   if (t.includes('alface') || t.includes('couve') || t.includes('espinafre') || t.includes('rucula') || t.includes('verdura')) return 'folhas';
+  if (t.includes('achocolatado') || t.includes('toddy') || t.includes('tody') || t.includes('nescau') || t.includes('cacau') || t.includes('chocolate')) return 'achocolatado';
+
+  if (t.includes('cabelo') || t.includes('pente') || (t.includes('escova') && (t.includes('cabelo') || t.includes('raquete') || t.includes('secador') || t.includes('desembaracad')))) return 'cabelo';
+  if (t.includes('escova') && (t.includes('roupa') || t.includes('lavar') || t.includes('sanitaria') || t.includes('vaso') || t.includes('limpeza'))) return 'sanitaria';
+  if (t.includes('dente') || t.includes('colgate') || t.includes('pasta') || t.includes('dental') || t.includes('escova')) return 'dente';
+
+  if (t.includes('cerveja') || t.includes('chopp') || t.includes('heineken') || t.includes('stella') || t.includes('spaten') || t.includes('corona') || t.includes('amstel') || t.includes('budweiser')) return 'cerveja';
+  if (t.includes('vinho') || t.includes('espumante') || t.includes('whisky') || t.includes('vodka') || t.includes('gin ') || t.includes('cachaca') || t.includes('licor')) return 'vinho';
+  if (t.includes('racao') || t.includes('petisco cao') || t.includes('petisco gato') || t.includes('whiskas') || t.includes('pedigree') || t.includes('gato') || t.includes('pet')) return 'pet';
+  if (t.includes('lampada') || t.includes('pilha') || t.includes('fosforo') || t.includes('isqueiro') || t.includes('vela') || t.includes('carvao')) return 'utilidades';
+
   for (let chave in ICONS_2D) {
     if (chave === 'padrao') continue;
     if (t.includes(chave)) return chave;
