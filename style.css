@@ -500,17 +500,27 @@ body {
   box-shadow: 0 0 0 1.5px white;
 }
 
-/* Linha 2: Chips dos Mercados DF Espremidos */
+/* Linha 2: Chips dos Mercados DF Espremidos + Botões de Ordenação à Direita */
 .barra-mercados-filtro.espremida {
   display: flex;
-  gap: 4px;
-  margin-bottom: 10px;
-  overflow-x: auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
   padding: 2px 0;
-  scrollbar-width: none;
-  justify-content: flex-start;
+  flex-wrap: wrap;
 }
 
+.grupo-chips-mercados {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex-wrap: wrap;
+}
+
+.grupo-chips-mercados .btn-chip-mercado,
 .barra-mercados-filtro.espremida .btn-chip-mercado {
   padding: 3px 8px;
   font-size: 0.7rem;
@@ -518,6 +528,22 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+}
+
+.grupo-ordenacao-mercados-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.grupo-ordenacao-mercados-header .btn-chip-modo {
+  padding: 3px 9px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
 }
 
 .chip-logo-img {
@@ -919,11 +945,11 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--text-muted);
+  font-size: 0.84rem;
+  font-weight: 800; /* Título em negrito forte */
+  color: #334155;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
   margin-bottom: 6px;
   padding: 0 4px;
 }
@@ -932,6 +958,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 6px; /* Espremido */
+  padding-left: 22px; /* Indentação aumentada para a direita em relação ao título da categoria */
 }
 
 /* Cartão do Item de Compra (Altura reduzida em 15%) */
@@ -1254,55 +1281,59 @@ body {
   line-height: 1 !important;
 }
 
-/* Fundo do Modal/Tela Montar Lista (Mais Escuro) */
+/* Fundo da Tela Montar Lista (Idêntico a Lista de Compras e Mercados) */
 #view-despensa {
-  background: #E2E8F0; /* Cor mais escura para destacar */
-  border-radius: 16px;
-  padding: 14px 10px 24px 10px;
-  border: 1px solid #CBD5E1;
-  box-shadow: inset 0 2px 6px rgba(15, 23, 42, 0.06);
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
   min-height: calc(100vh - 200px);
 }
 
 [data-theme="dark"] #view-despensa {
-  background: #0F172A;
-  border-color: #334155;
+  background: transparent;
+  border: none;
 }
 
 /* =========================================================================
    ESTILOS DE MONTAR LISTA (INVERTIDO CONFORME SOLICITADO)
-   - Não selecionado: fundo cinza médio, fonte cinza claro, sem itálico
+   - Não selecionado: fundo cinza bem claro, fonte lilás
    - Selecionado: fundo claro, fonte itálica, sem negrito, riscada
    ========================================================================= */
 
-/* NÃO SELECIONADO: fundo cinza mais claro suave (contraste reduzido), fonte clara, sem itálico */
+/* NÃO SELECIONADO: fundo cinza bem claro e suave, fonte lilás */
 #view-despensa .item-card {
-  background: #94A3B8 !important;
-  border: 1px solid #7E8E9F !important;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+  background: #F1F5F9 !important;
+  border: 1px solid #E2E8F0 !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
   transition: all 0.2s ease;
 }
 
 #view-despensa .item-card .item-nome {
-  color: #FFFFFF !important;
+  color: #7C3AED !important; /* Fonte lilás / violeta */
   font-style: normal !important;
-  font-weight: 600 !important;
+  font-weight: 700 !important;
   text-decoration: none !important;
 }
 
 #view-despensa .item-card .contador-qtde {
-  background: #7E8E9F !important;
-  border-color: #64748B !important;
-  color: #FFFFFF !important;
+  background: #E2E8F0 !important;
+  border-color: #CBD5E1 !important;
+  color: #475569 !important;
 }
 
 #view-despensa .item-card .contador-qtde .btn-step,
-#view-despensa .item-card .contador-qtde .qtde-valor {
-  color: #FFFFFF !important;
+#view-despensa .item-card .contador-qtde .qtde-valor,
+#view-despensa .item-card .contador-qtde .input-qtde-card {
+  color: #475569 !important;
 }
 
 #view-despensa .item-card .btn-delete-item {
-  color: #F1F5F9 !important;
+  color: #94A3B8 !important;
+}
+
+#view-despensa .item-card .btn-delete-item:hover {
+  color: #EF4444 !important;
 }
 
 #view-despensa .item-card .item-check-btn {
@@ -1332,7 +1363,8 @@ body {
 }
 
 #view-despensa .item-card.na-lista-montar .contador-qtde .btn-step,
-#view-despensa .item-card.na-lista-montar .contador-qtde .qtde-valor {
+#view-despensa .item-card.na-lista-montar .contador-qtde .qtde-valor,
+#view-despensa .item-card.na-lista-montar .contador-qtde .input-qtde-card {
   color: #475569 !important;
 }
 
@@ -1354,7 +1386,7 @@ body {
 }
 
 [data-theme="dark"] #view-despensa .item-card .item-nome {
-  color: #F1F5F9 !important;
+  color: #34D399 !important;
 }
 
 [data-theme="dark"] #view-despensa .item-card.na-lista-montar {
@@ -2671,7 +2703,7 @@ body {
   background: white;
   border-radius: 20px;
   padding: 22px;
-  max-width: 580px;
+  max-width: 435px;
   width: 100%;
   max-height: 88vh;
   overflow-y: auto;
@@ -2987,7 +3019,7 @@ body {
   border: 1.5px solid #CBD5E1;
   border-radius: 20px;
   padding: 18px;
-  width: 380px;
+  width: 475px;
   max-width: 100%;
   max-height: 88vh;
   display: flex;
@@ -3063,7 +3095,60 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+/* Barra de Busca no 2º Modal */
+.drawer-busca-container {
+  position: relative;
+  display: flex;
+  align-items: center;
   margin-bottom: 10px;
+}
+
+.input-busca-drawer {
+  width: 100%;
+  padding: 7px 32px 7px 10px;
+  font-size: 0.82rem;
+  font-family: inherit;
+  font-weight: 600;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 8px;
+  background: #F8FAFC;
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.input-busca-drawer:focus {
+  border-color: var(--primary);
+  background: white;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.12);
+}
+
+.drawer-busca-container.digitando-ativo .input-busca-drawer,
+.input-busca-drawer.digitando-ativo {
+  border-color: #EF4444 !important;
+  background: #FFF5F5 !important;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.7), 0 0 20px rgba(239, 68, 68, 0.45), inset 0 0 3px rgba(239, 68, 68, 0.25) !important;
+  animation: bordaVermelhaBrilhosa 1s infinite alternate ease-in-out !important;
+  font-weight: 700 !important;
+  color: #0F172A !important;
+}
+
+.btn-limpar-busca-drawer {
+  position: absolute;
+  right: 8px;
+  background: none;
+  border: none;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #94A3B8;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.btn-limpar-busca-drawer:hover {
+  color: #0F172A;
 }
 
 .drawer-lista-itens {
@@ -3074,7 +3159,7 @@ body {
   flex-direction: column;
   gap: 6px;
   margin-bottom: 12px;
-  max-height: calc(88vh - 220px);
+  max-height: calc(88vh - 250px);
 }
 
 .drawer-item-row {
@@ -3091,6 +3176,16 @@ body {
 .drawer-item-row:hover {
   background: #F1F5F9;
   border-color: #E2E8F0;
+}
+
+.drawer-item-row.sugestao-geral {
+  background: #F0FDF4;
+  border-color: #DCFCE7;
+}
+
+.drawer-item-row.sugestao-geral:hover {
+  background: #DCFCE7;
+  border-color: #BBF7D0;
 }
 
 .drawer-item-icone {
@@ -3133,6 +3228,60 @@ body {
   white-space: nowrap;
 }
 
+.btn-drawer-remover {
+  background: none;
+  border: none;
+  font-size: 0.8rem;
+  padding: 3px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  opacity: 0.55;
+  transition: all 0.15s ease;
+  color: #EF4444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-drawer-remover:hover {
+  opacity: 1;
+  background: #FEE2E2;
+  transform: scale(1.1);
+}
+
+.btn-drawer-adicionar-item {
+  background: #10B981;
+  color: white;
+  border: none;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.btn-drawer-adicionar-item:hover {
+  background: #059669;
+  transform: scale(1.04);
+}
+
+.drawer-secao-geral-rotulo {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #047857;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 10px 0 4px;
+  padding: 4px 6px;
+  background: #ECFDF5;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .drawer-rodape-acoes {
   display: flex;
   gap: 8px;
@@ -3171,6 +3320,10 @@ body {
   cursor: pointer;
   transition: all 0.15s ease;
   box-shadow: 0 2px 6px rgba(16, 185, 129, 0.25);
+}
+
+.btn-drawer-aplicar:hover {
+  background: #059669;
 }
 
 .btn-drawer-aplicar:hover {
