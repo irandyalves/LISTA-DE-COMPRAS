@@ -82,11 +82,11 @@ const CATALOGO_PADRAO_EXPANDIDO = [
   { id: 'hig_escova_dent', nome: 'Escova Dental Macia Cerdas Finas (Unidade)', categoria: 'Higiene', icone: 'dente', precoMedioDF: 8.50, ultimoPreco: 8.50, dataUltimoPreco: '2026-08-15' },
   { id: 'hig_barbear', nome: 'Aparelho de Barbear Descartável (Cartela c/ 2)', categoria: 'Higiene', icone: 'dente', precoMedioDF: 6.50, ultimoPreco: 6.50, dataUltimoPreco: '2026-08-15' },
   { id: 'hig_absorvente', nome: 'Absorvente Higiênico com Abas (Pacote c/ 8)', categoria: 'Higiene', icone: 'sabonete', precoMedioDF: 6.20, ultimoPreco: 6.20, dataUltimoPreco: '2026-08-15' },
-  { id: 'b_arroz_5kg', nome: 'Arroz Branco Tipo 1 (Pacote 5kg)', categoria: 'Básicos e Grãos', icone: 'arroz', precoMedioDF: 26.90, ultimoPreco: 26.90, dataUltimoPreco: '2026-08-20' },
-  { id: 'b_arroz_parb', nome: 'Arroz Parboilizado Tipo 1 (Pacote 5kg)', categoria: 'Básicos e Grãos', icone: 'arroz', precoMedioDF: 27.50, ultimoPreco: 27.50, dataUltimoPreco: '2026-08-20' },
-  { id: 'b_arroz_int', nome: 'Arroz Integral Selecionado (1kg)', categoria: 'Básicos e Grãos', icone: 'arroz', precoMedioDF: 6.90, ultimoPreco: 6.90, dataUltimoPreco: '2026-08-20' },
-  { id: 'b_feijao_car', nome: 'Feijão Carioca Novo Tipo 1 (1kg)', categoria: 'Básicos e Grãos', icone: 'feijao', precoMedioDF: 7.20, ultimoPreco: 7.20, dataUltimoPreco: '2026-08-20' },
-  { id: 'b_feijao_pt', nome: 'Feijão Preto Tipo 1 (1kg)', categoria: 'Básicos e Grãos', icone: 'feijao', precoMedioDF: 7.50, ultimoPreco: 7.50, dataUltimoPreco: '2026-08-15' },
+  { id: 'b_arroz_5kg', nome: 'Arroz Branco Tipo 1 (Pacote 5kg)', categoria: 'Básicos e Grãos', icone: 'arroz', precoMedioDF: 22.90, ultimoPreco: 22.90, dataUltimoPreco: '2026-09-09' },
+  { id: 'b_arroz_parb', nome: 'Arroz Parboilizado Tipo 1 (Pacote 5kg)', categoria: 'Básicos e Grãos', icone: 'arroz_parboilizado', precoMedioDF: 24.50, ultimoPreco: 24.50, dataUltimoPreco: '2026-09-09' },
+  { id: 'b_arroz_int', nome: 'Arroz Integral Selecionado (1kg)', categoria: 'Básicos e Grãos', icone: 'arroz_integral', precoMedioDF: 7.90, ultimoPreco: 7.90, dataUltimoPreco: '2026-09-09' },
+  { id: 'b_feijao_car', nome: 'Feijão Carioca Novo Tipo 1 (1kg)', categoria: 'Básicos e Grãos', icone: 'feijao', precoMedioDF: 7.49, ultimoPreco: 7.49, dataUltimoPreco: '2026-09-09' },
+  { id: 'b_feijao_pt', nome: 'Feijão Preto Tipo 1 (1kg)', categoria: 'Básicos e Grãos', icone: 'feijao_preto', precoMedioDF: 8.90, ultimoPreco: 8.90, dataUltimoPreco: '2026-09-09' },
   { id: 'b_acucar_cris', nome: 'Açúcar Cristal Especial (5kg)', categoria: 'Básicos e Grãos', icone: 'acucar', precoMedioDF: 15.90, ultimoPreco: 15.90, dataUltimoPreco: '2026-08-15' },
   { id: 'b_acucar_ref', nome: 'Açúcar Refinado (1kg)', categoria: 'Básicos e Grãos', icone: 'acucar', precoMedioDF: 4.20, ultimoPreco: 4.20, dataUltimoPreco: '2026-08-15' },
   { id: 'b_oleo_soja', nome: 'Óleo de Soja Refinado (Garrafa 900ml)', categoria: 'Básicos e Grãos', icone: 'oleo', precoMedioDF: 5.85, ultimoPreco: 5.85, dataUltimoPreco: '2026-08-20' },
@@ -358,11 +358,11 @@ const CATALOGO_PADRAO_EXPANDIDO = [
   { id: 'l_chantilly_spray', nome: 'Creme Chantilly Spray Pronto para Servir (250g)', categoria: 'Laticínios e Frios', icone: 'leite', precoMedioDF: 19.90, ultimoPreco: 19.90, dataUltimoPreco: '2026-09-01' },
   { id: 'l_sobremesa_chocolate', nome: 'Sobremesa Láctea Sabor Chocolate Danette / Chandelle (Pote c/ 2)', categoria: 'Laticínios e Frios', icone: 'iogurte', precoMedioDF: 5.90, ultimoPreco: 5.90, dataUltimoPreco: '2026-09-01' },
   { id: 'l_requeijao_light', nome: 'Requeijão Cremoso Light Copo (200g)', categoria: 'Laticínios e Frios', icone: 'manteiga', precoMedioDF: 8.50, ultimoPreco: 8.50, dataUltimoPreco: '2026-09-01' },
-  { id: 'b_arroz_arboreo', nome: 'Arroz Arbóreo Especial para Risoto (1kg)', categoria: 'Básicos e Grãos', icone: 'arroz', precoMedioDF: 16.90, ultimoPreco: 16.90, dataUltimoPreco: '2026-09-01' },
-  { id: 'b_arroz_jasmim', nome: 'Arroz Jasmim Aromático Tailandês (1kg)', categoria: 'Básicos e Grãos', icone: 'arroz', precoMedioDF: 19.90, ultimoPreco: 19.90, dataUltimoPreco: '2026-09-01' },
-  { id: 'b_feijao_fradinho', nome: 'Feijão Fradinho / Corda Selecionado (1kg)', categoria: 'Básicos e Grãos', icone: 'feijao', precoMedioDF: 7.90, ultimoPreco: 7.90, dataUltimoPreco: '2026-09-01' },
-  { id: 'b_feijao_vermelho', nome: 'Feijão Vermelho Caldo Grosso (1kg)', categoria: 'Básicos e Grãos', icone: 'feijao', precoMedioDF: 8.90, ultimoPreco: 8.90, dataUltimoPreco: '2026-09-01' },
-  { id: 'b_feijao_branco', nome: 'Feijão Branco Especial para Dobradinha / Salada (500g)', categoria: 'Básicos e Grãos', icone: 'feijao', precoMedioDF: 6.90, ultimoPreco: 6.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_arroz_arboreo', nome: 'Arroz Arbóreo Especial para Risoto (1kg)', categoria: 'Básicos e Grãos', icone: 'arroz_1kg', precoMedioDF: 16.90, ultimoPreco: 16.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_arroz_jasmim', nome: 'Arroz Jasmim Aromático Tailandês (1kg)', categoria: 'Básicos e Grãos', icone: 'arroz_1kg', precoMedioDF: 19.90, ultimoPreco: 19.90, dataUltimoPreco: '2026-09-01' },
+  { id: 'b_feijao_fradinho', nome: 'Feijão Fradinho / Corda Selecionado (1kg)', categoria: 'Básicos e Grãos', icone: 'feijao', precoMedioDF: 8.50, ultimoPreco: 8.50, dataUltimoPreco: '2026-09-09' },
+  { id: 'b_feijao_vermelho', nome: 'Feijão Vermelho Caldo Grosso (1kg)', categoria: 'Básicos e Grãos', icone: 'feijao_preto', precoMedioDF: 9.90, ultimoPreco: 9.90, dataUltimoPreco: '2026-09-09' },
+  { id: 'b_feijao_branco', nome: 'Feijão Branco Especial para Dobradinha / Salada (500g)', categoria: 'Básicos e Grãos', icone: 'feijao', precoMedioDF: 7.90, ultimoPreco: 7.90, dataUltimoPreco: '2026-09-09' },
   { id: 'b_lentilha', nome: 'Lentilha Seca Selecionada (500g)', categoria: 'Básicos e Grãos', icone: 'feijao', precoMedioDF: 6.90, ultimoPreco: 6.90, dataUltimoPreco: '2026-09-01' },
   { id: 'b_grao_bico', nome: 'Grão-de-Bico Cru Selecionado (500g)', categoria: 'Básicos e Grãos', icone: 'feijao', precoMedioDF: 7.90, ultimoPreco: 7.90, dataUltimoPreco: '2026-09-01' },
   { id: 'b_ervilha_seca', nome: 'Ervilha Partida Seca para Sopa (500g)', categoria: 'Básicos e Grãos', icone: 'feijao', precoMedioDF: 5.50, ultimoPreco: 5.50, dataUltimoPreco: '2026-09-01' },
@@ -588,9 +588,9 @@ const CATALOGO_PADRAO_EXPANDIDO = [
   { id: 'c_kani_kama', nome: 'Kani Kama Bastonetes de Siri Congelados (250g)', categoria: 'Carnes e Proteínas', icone: 'peixe', precoMedioDF: 11.90, ultimoPreco: 11.90, dataUltimoPreco: '2026-09-09' },
 
   // --- BÁSICOS E GRÃOS EXPANDIDO ---
-  { id: 'b_arroz_7_graos', nome: 'Arroz 7 Grãos Integrais Selecionados (500g)', categoria: 'Básicos e Grãos', icone: 'arroz', precoMedioDF: 8.90, ultimoPreco: 8.90, dataUltimoPreco: '2026-09-09' },
-  { id: 'b_arroz_preto', nome: 'Arroz Preto / Vermelho Nobre Ruzene (500g)', categoria: 'Básicos e Grãos', icone: 'arroz', precoMedioDF: 14.90, ultimoPreco: 14.90, dataUltimoPreco: '2026-09-09' },
-  { id: 'b_feijao_rajado', nome: 'Feijão Rajado Tipo 1 Caldo Claro (1kg)', categoria: 'Básicos e Grãos', icone: 'feijao', precoMedioDF: 8.50, ultimoPreco: 8.50, dataUltimoPreco: '2026-09-09' },
+  { id: 'b_arroz_7_graos', nome: 'Arroz 7 Grãos Integrais Selecionados (500g)', categoria: 'Básicos e Grãos', icone: 'arroz_integral', precoMedioDF: 8.90, ultimoPreco: 8.90, dataUltimoPreco: '2026-09-09' },
+  { id: 'b_arroz_preto', nome: 'Arroz Preto / Vermelho Nobre Ruzene (500g)', categoria: 'Básicos e Grãos', icone: 'arroz_integral', precoMedioDF: 14.90, ultimoPreco: 14.90, dataUltimoPreco: '2026-09-09' },
+  { id: 'b_feijao_rajado', nome: 'Feijão Rajado Tipo 1 Caldo Claro (1kg)', categoria: 'Básicos e Grãos', icone: 'feijao_preto', precoMedioDF: 9.50, ultimoPreco: 9.50, dataUltimoPreco: '2026-09-09' },
   { id: 'b_feijao_verde', nome: 'Feijão Verde em Grãos Fresco / Congelado (500g)', categoria: 'Básicos e Grãos', icone: 'feijao', precoMedioDF: 9.90, ultimoPreco: 9.90, dataUltimoPreco: '2026-09-09' },
   { id: 'b_macarrao_ninho', nome: 'Macarrão Ninho de Sêmola com Ovos (500g)', categoria: 'Básicos e Grãos', icone: 'macarrao', precoMedioDF: 5.90, ultimoPreco: 5.90, dataUltimoPreco: '2026-09-09' },
   { id: 'b_macarrao_gravatinha', nome: 'Macarrão Gravatinha / Farfalle Barilla (500g)', categoria: 'Básicos e Grãos', icone: 'macarrao', precoMedioDF: 6.90, ultimoPreco: 6.90, dataUltimoPreco: '2026-09-09' },
@@ -731,6 +731,7 @@ let AppState = {
   abaAtiva: 'lista', // 'lista', 'despensa', 'historico'
   filtroCategoria: 'todas',
   cotacaoAtiva: true, // true = cotado com preços e atacadistas visíveis, false = preços e atacadistas ocultos
+  modoNoMercado: false, // true = modo focado no corredor (oculta comparações e tags), false = modo cotação (comparações ativas)
   mercadoReferencia: 'atacadao',
   ordenacaoMercados: 'original', // 'original', 'alfabetico_az', 'alfabetico_za', 'preco'
   itensExcluidos: [],
@@ -788,6 +789,7 @@ function sincronizarListaAtivaComCatalogo() {
 // Inicialização da Aplicação
 document.addEventListener('DOMContentLoaded', () => {
   carregarLocalmente();
+  atualizarUIModoNoMercado();
   configurarNavegacao();
   configurarReconhecimentoVoz();
   inicializarNuvem();
@@ -804,10 +806,11 @@ function carregarLocalmente() {
       const parsed = JSON.parse(dadosSalvos);
       if (parsed.itensExcluidos) AppState.itensExcluidos = parsed.itensExcluidos;
       if (parsed.cotacaoAtiva !== undefined) AppState.cotacaoAtiva = parsed.cotacaoAtiva;
+      if (parsed.modoNoMercado !== undefined) AppState.modoNoMercado = parsed.modoNoMercado;
       if (parsed.mercadoReferencia && parsed.mercadoReferencia !== 'todos') {
         AppState.mercadoReferencia = parsed.mercadoReferencia;
       } else {
-        AppState.mercadoReferencia = 'atacadao';
+        AppState.mercadoReferencia = 'nenhum';
       }
       if (parsed.modoCotacao) AppState.modoCotacao = parsed.modoCotacao;
       if (parsed.ordenacaoMercados) AppState.ordenacaoMercados = parsed.ordenacaoMercados;
@@ -928,7 +931,8 @@ function salvarEstado(enviarParaNuvem = true) {
     historico: AppState.historico,
     itensExcluidos: AppState.itensExcluidos || [],
     cotacaoAtiva: AppState.cotacaoAtiva,
-    mercadoReferencia: (AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos') ? AppState.mercadoReferencia : 'atacadao',
+    modoNoMercado: AppState.modoNoMercado || false,
+    mercadoReferencia: (AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos') ? AppState.mercadoReferencia : 'nenhum',
     modoCotacao: AppState.modoCotacao || 'mais_baratos',
     ordenacaoMercados: AppState.ordenacaoMercados || 'original'
   }));
@@ -1096,6 +1100,7 @@ const FATORES_COMPETITIVOS_DF = {
 
 // Variação determinística realista por item para dinamismo autêntico das cotações
 function obterFatorCompetitivoMercado(nomeOuId, categoria, redeId) {
+  if (!redeId || redeId === 'nenhum' || redeId === 'todos') return 1.0;
   const cat = categoria || 'Diversos';
   const perfilCat = FATORES_COMPETITIVOS_DF[cat] || FATORES_COMPETITIVOS_DF['Diversos'];
   const fatorBase = perfilCat[redeId] || (MERCADOS_DF[redeId] ? MERCADOS_DF[redeId].fator : 1.0);
@@ -1113,8 +1118,12 @@ function obterFatorCompetitivoMercado(nomeOuId, categoria, redeId) {
 
 // Cotações específicas de produtos para a região de Brasília (DF) com alternância real de vencedores
 const COTACOES_DF = {
-  'arroz': { atacadao: 24.90, diaadia: 25.40, assai: 25.80, carrefour: 27.90, bigbox: 29.50, dona: 28.50, paodeacucar: 31.50 },
-  'feijao': { diaadia: 6.39, assai: 6.59, atacadao: 6.62, carrefour: 7.29, bigbox: 7.78, dona: 7.56, paodeacucar: 8.28 },
+  'arroz': { atacadao: 22.90, diaadia: 23.50, assai: 23.90, carrefour: 25.90, bigbox: 27.50, dona: 26.50, paodeacucar: 29.50 },
+  'arroz_1kg': { atacadao: 5.90, diaadia: 6.20, assai: 6.30, carrefour: 6.90, bigbox: 7.50, dona: 7.20, paodeacucar: 7.90 },
+  'arroz_integral': { atacadao: 7.50, diaadia: 7.80, assai: 7.90, carrefour: 8.90, bigbox: 9.50, dona: 9.20, paodeacucar: 10.50 },
+  'arroz_parboilizado': { atacadao: 24.50, diaadia: 25.20, assai: 25.50, carrefour: 27.50, bigbox: 29.90, dona: 28.50, paodeacucar: 31.90 },
+  'feijao': { diaadia: 6.99, assai: 7.29, atacadao: 7.49, carrefour: 7.90, bigbox: 8.50, dona: 8.20, paodeacucar: 9.29 },
+  'feijao_preto': { diaadia: 8.29, assai: 8.59, atacadao: 8.79, carrefour: 9.50, bigbox: 10.20, dona: 9.90, paodeacucar: 11.50 },
   'acucar': { atacadao: 14.90, assai: 15.20, diaadia: 15.10, carrefour: 16.20, bigbox: 16.90, dona: 16.50, paodeacucar: 17.50 },
   'oleo': { atacadao: 5.29, assai: 5.42, diaadia: 5.49, carrefour: 5.97, bigbox: 6.32, dona: 6.14, paodeacucar: 6.73 },
   'cafe': { assai: 16.80, diaadia: 17.20, atacadao: 17.40, carrefour: 18.90, bigbox: 20.90, dona: 19.90, paodeacucar: 21.50 },
@@ -1188,9 +1197,29 @@ const COTACOES_MARCAS_DF = {
   'arroz:camil': { atacadao: 25.90, assai: 26.50, diaadia: 26.90, carrefour: 28.90, bigbox: 31.20, dona: 29.90, paodeacucar: 32.50 },
   'arroz:cristal': { diaadia: 27.40, atacadao: 27.90, assai: 28.20, carrefour: 29.50, bigbox: 32.90, dona: 31.50, paodeacucar: 34.90 },
   'arroz:prato fino': { atacadao: 31.50, assai: 31.90, diaadia: 32.20, carrefour: 34.50, bigbox: 37.90, dona: 35.90, paodeacucar: 39.90 },
+
+  // Arroz Integral e 1kg por Marca — Brasília DF
+  'arroz_integral:camil': { atacadao: 7.50, assai: 7.80, diaadia: 7.90, carrefour: 8.90, bigbox: 9.50, dona: 9.20, paodeacucar: 10.50 },
+  'arroz_integral:tio joao': { atacadao: 7.90, assai: 8.20, diaadia: 8.40, carrefour: 9.20, bigbox: 9.90, dona: 9.60, paodeacucar: 10.90 },
+  'arroz_integral:cristal': { diaadia: 7.70, atacadao: 7.90, assai: 8.10, carrefour: 8.95, bigbox: 9.40, dona: 9.10, paodeacucar: 10.20 },
+  'arroz_1kg:camil': { diaadia: 5.90, atacadao: 6.20, assai: 6.30, carrefour: 6.90, bigbox: 7.50, dona: 7.20, paodeacucar: 7.90 },
+  'arroz_1kg:tio joao': { assai: 6.50, diaadia: 6.70, atacadao: 6.80, carrefour: 7.50, bigbox: 8.20, dona: 7.90, paodeacucar: 8.50 },
+  'arroz_1kg:prato fino': { atacadao: 7.20, assai: 7.40, diaadia: 7.50, carrefour: 7.99, bigbox: 8.60, dona: 8.30, paodeacucar: 8.90 },
   'feijao:camil': { diaadia: 6.49, atacadao: 6.99, assai: 7.15, carrefour: 7.80, bigbox: 8.40, dona: 7.99, paodeacucar: 8.90 },
   'feijao:kicaldo': { assai: 6.89, diaadia: 7.10, atacadao: 7.20, carrefour: 7.99, bigbox: 8.60, dona: 8.20, paodeacucar: 9.10 },
   'feijao:tio jorge': { atacadao: 6.79, diaadia: 6.95, assai: 7.25, carrefour: 7.90, bigbox: 8.10, dona: 7.80, paodeacucar: 8.50 },
+
+  // Feijão Preto por Marca (15-20% mais caro que carioca — realidade do DF)
+  'feijao_preto:camil': { diaadia: 7.99, atacadao: 8.49, assai: 8.69, carrefour: 9.50, bigbox: 10.20, dona: 9.79, paodeacucar: 10.90 },
+  'feijao_preto:kicaldo': { assai: 8.39, diaadia: 8.60, atacadao: 8.79, carrefour: 9.69, bigbox: 10.40, dona: 9.99, paodeacucar: 11.20 },
+  'feijao_preto:tio jorge': { atacadao: 8.29, diaadia: 8.49, assai: 8.89, carrefour: 9.60, bigbox: 10.10, dona: 9.69, paodeacucar: 10.90 },
+
+  // Creme Dental por Marca — Brasília DF (set/2026)
+  'dente:colgate': { carrefour: 3.99, assai: 4.29, atacadao: 4.45, diaadia: 4.55, dona: 5.10, bigbox: 5.40, paodeacucar: 5.90 },
+  'dente:oral-b': { carrefour: 6.49, assai: 6.89, atacadao: 7.20, diaadia: 7.39, dona: 8.20, bigbox: 8.50, paodeacucar: 9.90 },
+  'dente:sorriso': { carrefour: 3.49, assai: 3.79, atacadao: 3.99, diaadia: 4.10, dona: 4.60, bigbox: 4.90, paodeacucar: 5.50 },
+  'dente:close up': { carrefour: 3.79, assai: 4.09, atacadao: 4.29, diaadia: 4.39, dona: 4.90, bigbox: 5.20, paodeacucar: 5.70 },
+  'dente:sensodyne': { carrefour: 14.90, assai: 15.50, atacadao: 15.90, diaadia: 16.20, dona: 17.90, bigbox: 18.50, paodeacucar: 19.90 },
 
   // Açúcar e Óleo
   'acucar:cristal': { atacadao: 14.90, diaadia: 15.10, assai: 15.20, carrefour: 16.20, bigbox: 16.90, dona: 16.50, paodeacucar: 17.50 },
@@ -1276,8 +1305,12 @@ function itemCorrespondeCotacaoDF(nome, chaveIcone) {
   if (doCatalogo) return true;
 
   const termosValidos = {
-    'arroz': ['arroz'],
-    'feijao': ['feijao'],
+    'arroz': ['arroz 5kg', 'arroz branco', 'arroz agulhinha'],
+    'arroz_1kg': ['arroz arboreo', 'arroz jasmim', 'arroz 1kg'],
+    'arroz_integral': ['arroz integral', 'arroz 7 graos', 'arroz preto', 'arroz vermelho'],
+    'arroz_parboilizado': ['arroz parboilizado'],
+    'feijao': ['feijao carioca', 'feijao fradinho', 'feijao branco', 'feijao verde', 'feijao'],
+    'feijao_preto': ['feijao preto', 'feijao vermelho', 'feijao rajado'],
     'acucar': ['acucar'],
     'oleo': ['oleo', 'soya', 'liza', 'azeite'],
     'cafe': ['cafe', 'pilao', 'melitta'],
@@ -1329,7 +1362,17 @@ function itemCorrespondeCotacaoDF(nome, chaveIcone) {
 
 // Função para calcular o preço de um item num mercado específico de Brasília
 function obterPrecoEstimadoMercado(item, redeId) {
-  if (!redeId) return item.preco || 0;
+  if (!redeId || redeId === 'nenhum' || redeId === 'todos') {
+    const pProprio = Number(item.preco || item.ultimoPreco || item.precoReferencia || item.precoMedioDF || 0);
+    if (pProprio > 0) return pProprio;
+    const padrao = CATALOGO_PADRAO_EXPANDIDO.find(p => 
+      p.id === item.id || 
+      p.id === item.catalogoId || 
+      p.nome.toLowerCase().trim() === (item.nome || '').toLowerCase().trim()
+    );
+    if (padrao && padrao.precoMedioDF > 0) return Number(padrao.precoMedioDF);
+    return 0;
+  }
 
   // 0. Preço personalizado gravado no item para essa rede ou raspagem em tempo real
   if (item.precosMercados && item.precosMercados[redeId] && Number(item.precosMercados[redeId]) > 0) {
@@ -1464,6 +1507,16 @@ function configurarNavegacao() {
       // Alternar abas do painel superior congelado
       const abasCategorias = document.getElementById('barra-abas-categorias');
       const inputTopo = document.getElementById('input-novo-item');
+      const barraMercados = document.querySelector('.barra-mercados-filtro');
+      const btnToggleModo = document.getElementById('btn-toggle-modo-mercado');
+
+      // Em Montar Lista e Histórico, retira a linha com supermercados!
+      if (barraMercados) {
+        barraMercados.style.display = (AppState.abaAtiva === 'despensa' || AppState.abaAtiva === 'historico' || AppState.modoNoMercado) ? 'none' : 'flex';
+      }
+      if (btnToggleModo) {
+        btnToggleModo.style.display = (AppState.abaAtiva === 'lista') ? 'inline-flex' : 'none';
+      }
 
       if (abasCategorias) abasCategorias.style.display = (AppState.abaAtiva === 'lista' || AppState.abaAtiva === 'despensa') ? 'flex' : 'none';
       if (inputTopo) {
@@ -1492,7 +1545,11 @@ function configurarNavegacao() {
 
 // Alternar mercado de referência para a lista
 function selecionarMercadoReferencia(mercadoId) {
-  if (!mercadoId || mercadoId === 'todos') mercadoId = 'atacadao';
+  // Se clicar no mercado que já está ativo (exceto 'nenhum'), desmarca para 'nenhum'
+  if (AppState.mercadoReferencia === mercadoId && mercadoId !== 'nenhum') {
+    mercadoId = 'nenhum';
+  }
+  if (!mercadoId || mercadoId === 'todos') mercadoId = 'nenhum';
   AppState.mercadoReferencia = mercadoId;
   const chips = document.querySelectorAll('.btn-chip-mercado');
   chips.forEach(chip => {
@@ -1503,8 +1560,8 @@ function selecionarMercadoReferencia(mercadoId) {
     }
   });
 
-  // Se o usuário selecionou uma rede específica e a cotação estava inativa, ativa automaticamente
-  if (!AppState.cotacaoAtiva) {
+  // Se o usuário selecionou uma rede específica (diferente de 'nenhum') e a cotação estava inativa, ativa automaticamente
+  if (!AppState.cotacaoAtiva && mercadoId !== 'nenhum') {
     AppState.cotacaoAtiva = true;
     atualizarVisualBotaoCotar();
   }
@@ -1554,7 +1611,7 @@ function renderizarTudo() {
 }
 
 function atualizarChipsMercadoUI() {
-  const ref = (AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos') ? AppState.mercadoReferencia : 'atacadao';
+  const ref = (AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos') ? AppState.mercadoReferencia : 'nenhum';
   const chips = document.querySelectorAll('.btn-chip-mercado');
   chips.forEach(chip => {
     if (chip.getAttribute('data-mercado') === ref) {
@@ -1585,12 +1642,16 @@ function atualizarCardResumo() {
   let totalCarrinho = 0;
   let totalItens = AppState.listaAtiva.length;
   let itensNoCarrinho = 0;
-  const ref = (AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos') ? AppState.mercadoReferencia : 'atacadao';
+  const ref = (AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos') ? AppState.mercadoReferencia : 'nenhum';
 
   AppState.listaAtiva.forEach(item => {
-    let precoItem = obterPrecoEstimadoMercado(item, ref);
+    let precoItem = (ref !== 'nenhum') ? obterPrecoEstimadoMercado(item, ref) : 0;
     if (!precoItem || precoItem <= 0) {
-      precoItem = item.preco || item.ultimoPreco || 0;
+      precoItem = item.preco || item.ultimoPreco || item.precoReferencia || 0;
+    }
+    if (!precoItem || precoItem <= 0) {
+      const precosValidos = Object.keys(MERCADOS_DF).map(r => obterPrecoEstimadoMercado(item, r)).filter(p => p > 0);
+      if (precosValidos.length > 0) precoItem = Math.min(...precosValidos);
     }
 
     const subtotal = (item.qtde || 1) * precoItem;
@@ -1621,7 +1682,7 @@ function renderizarListaCompras() {
         <div style="width: 64px; height: 64px; margin: 0 auto 12px;">${ICONS_2D.padrao}</div>
         <h3 style="font-weight: 700; color: var(--text-main);">Sua lista está vazia!</h3>
         <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">
-          Digite um item acima, use o microfone por voz ou escolha itens frequentes na aba <strong>Despensa</strong>.
+          Digite um item acima, use o microfone por voz ou escolha itens frequentes na aba <strong>Montar Lista</strong>.
         </p>
       </div>
     `;
@@ -1637,7 +1698,7 @@ function renderizarListaCompras() {
 
   if (termoBuscaLista) {
     itensListaParaExibir = itensListaParaExibir.filter(item => {
-      const nomeNorm = item.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      const nomeNorm = (item.nome || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
       const catNorm = (item.categoria || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
       const marcaNorm = (item.marca || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
       return nomeNorm.includes(termoBuscaLista) || catNorm.includes(termoBuscaLista) || marcaNorm.includes(termoBuscaLista);
@@ -1672,6 +1733,45 @@ function renderizarListaCompras() {
     }
   }
 
+  const chavesRedes = Object.keys(MERCADOS_DF);
+  const ocultarMercados = !!AppState.modoNoMercado;
+
+  // Calcular totais por mercado para toda a lista ativa
+  const totais = {};
+  chavesRedes.forEach(r => { totais[r] = 0; });
+  AppState.listaAtiva.forEach(item => {
+    const qtde = item.qtde || 1;
+    chavesRedes.forEach(r => {
+      totais[r] += qtde * obterPrecoEstimadoMercado(item, r);
+    });
+  });
+
+  const redesOrdenadas = [...chavesRedes].sort((a, b) => totais[a] - totais[b]);
+  const campeaoId = redesOrdenadas[0];
+  const maisCaroId = redesOrdenadas[redesOrdenadas.length - 1];
+  const economia = totais[maisCaroId] - totais[campeaoId];
+
+  // Cabeçalho dos 7 Mercados (se não ocultarMercados)
+  let colunasCabecalhoMercados = '';
+  if (!ocultarMercados) {
+    colunasCabecalhoMercados = chavesRedes.map(r => {
+      const info = MERCADOS_DF[r];
+      const logo = (typeof obterLogoMercado === 'function' && obterLogoMercado(r)) || `logos/${r}.png`;
+      const isCampeao = r === campeaoId;
+      return `
+        <th class="mcol-th-rede ${isCampeao ? 'mcol-campeao-header' : ''}">
+          <div class="mcol-rede-header-inner">
+            <img src="${logo}" class="mcol-rede-logo" onerror="this.outerHTML='<span style=\\'font-size:1.1rem\\'>${info.emoji}</span>'" alt="${info.nome}">
+            <span class="mcol-rede-nome">${info.nome}</span>
+            ${isCampeao ? '<span class="mcol-badge-campeao-topo">⭐ Campeão</span>' : ''}
+          </div>
+        </th>
+      `;
+    }).join('');
+  }
+
+  const numColunas = (ocultarMercados ? 3 : (3 + chavesRedes.length)) + 1;
+
   // Agrupar itens por Categoria
   const grupos = {};
   itensListaParaExibir.forEach((item, index) => {
@@ -1680,37 +1780,40 @@ function renderizarListaCompras() {
     grupos[cat].push({ ...item, indexOriginal: index });
   });
 
-  for (const [categoria, itens] of Object.entries(grupos)) {
-    const grupoDiv = document.createElement('div');
-    grupoDiv.className = 'categoria-grupo';
+  let linhasTabelaHtml = '';
 
-    // Ordenação dinâmica: 'mais_baratos' (preço), 'alfabetico' (A-Z), ou padrão
-    const refMercado = (AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos') ? AppState.mercadoReferencia : 'atacadao';
-    if (AppState.modoCotacao === 'mais_baratos') {
-      itens.sort((a, b) => {
-        if (a.comprado !== b.comprado) return a.comprado ? 1 : -1;
-        const pA = obterPrecoEstimadoMercado(a, refMercado) || a.preco || 0;
-        const pB = obterPrecoEstimadoMercado(b, refMercado) || b.preco || 0;
-        return pA - pB;
-      });
-    } else if (AppState.modoCotacao === 'alfabetico') {
+  for (const [categoria, itens] of Object.entries(grupos)) {
+    // Ordenação dinâmica dentro da categoria
+    if (AppState.modoCotacao === 'alfabetico') {
       itens.sort((a, b) => {
         if (a.comprado !== b.comprado) return a.comprado ? 1 : -1;
         return (a.nome || '').localeCompare(b.nome || '', 'pt-BR', { sensitivity: 'base' });
       });
     } else {
+      // Itens não comprados primeiro
       itens.sort((a, b) => {
         if (a.comprado === b.comprado) return 0;
         return a.comprado ? 1 : -1;
       });
     }
 
-    let htmlItens = '';
+    // Linha de Cabeçalho da Categoria
+    linhasTabelaHtml += `
+      <tr class="mcol-tr-categoria-separador">
+        <td colspan="${numColunas}">
+          <div class="categoria-titulo-tabela">
+            <span>${categoria}</span>
+            <span style="font-size: 0.74rem; font-weight: 600; color: #64748B;">(${itens.length} ${itens.length === 1 ? 'item' : 'itens'})</span>
+          </div>
+        </td>
+      </tr>
+    `;
+
+    // Linhas de Itens
     itens.forEach(item => {
-      const iconeSvg = obterIcone2D(item.nome, item.icone);
-      const classeComprado = item.comprado ? 'comprado' : '';
-      const checkIcone = item.comprado ? '✓' : '';
-      
+      const iconeSvg = (typeof obterIcone2D === 'function') ? obterIcone2D(item.nome, item.icone) : '';
+      const qtde = item.qtde || 1;
+
       let marcaHtml = '';
       if (item.marca) {
         marcaHtml = `<span class="tag-marca" onclick="alterarMarcaItem('${item.id}')" title="Marca: ${item.marca} (Clique para alterar)">${item.marca}</span>`;
@@ -1718,92 +1821,153 @@ function renderizarListaCompras() {
         marcaHtml = `<span class="tag-marca" style="background:#F1F5F9; color:#64748B; border-color:#E2E8F0; font-weight:normal;" onclick="alterarMarcaItem('${item.id}')" title="Clique para definir marca">+ Marca</span>`;
       }
 
-      // Preço e Rede a exibir com base no chip selecionado no topo
-      let precoItemExibicao = item.preco;
-      let redeExibicao = item.origemPreco;
+      let celulasPrecos = '';
+      let badgeMelhor = '';
 
-      const pRede = obterPrecoEstimadoMercado(item, refMercado);
-      if (pRede > 0) {
-        precoItemExibicao = pRede;
+      if (!ocultarMercados) {
+        const precos = {};
+        const precosValidos = [];
+        chavesRedes.forEach(r => {
+          const p = obterPrecoEstimadoMercado(item, r);
+          precos[r] = p;
+          if (p > 0) precosValidos.push(p);
+        });
+
+        const menorPreco = precosValidos.length > 0 ? Math.min(...precosValidos) : -1;
+        const melhorRede = menorPreco > 0 ? chavesRedes.find(r => precos[r] === menorPreco) : null;
+
+        celulasPrecos = chavesRedes.map(r => {
+          const p = precos[r];
+          const isMenor = p > 0 && p === menorPreco;
+
+          let diffHtml = '';
+          if (p > 0 && !isMenor && menorPreco > 0) {
+            const diffPct = ((p - menorPreco) / menorPreco) * 100;
+            const pctTxt = diffPct < 1 ? `+${diffPct.toFixed(1).replace('.', ',')}%` : `+${Math.round(diffPct)}%`;
+            diffHtml = `<span class="mcol-tag-diff">${pctTxt}</span>`;
+          } else if (isMenor) {
+            diffHtml = `<span class="mcol-tag-menor">✓ Menor</span>`;
+          }
+
+          const precoTxt = p > 0 ? `R$ ${p.toFixed(2).replace('.', ',')}` : '<span class="mcol-a-cotar">—</span>';
+
+          return `
+            <td class="mcol-td-preco ${isMenor ? 'mcol-td-menor-bg' : ''}">
+              <div class="mcol-preco-linha-box">
+                <span class="mcol-valor ${isMenor ? 'mcol-valor-menor' : ''}">${precoTxt}</span>
+                ${diffHtml}
+              </div>
+            </td>
+          `;
+        }).join('');
+
+        if (melhorRede) {
+          badgeMelhor = `<span class="mcol-badge-menor-prod" title="Mais barato no ${MERCADOS_DF[melhorRede].nome}">🏆 ${MERCADOS_DF[melhorRede].nome}</span>`;
+        }
       }
-      redeExibicao = refMercado;
 
-      // Tag de Mercado de Origem do Preço Cotado (some quando desmarcado)
-      let tagMercadoOrigem = '';
-      if (AppState.cotacaoAtiva && redeExibicao && MERCADOS_DF[redeExibicao]) {
-        const infoM = MERCADOS_DF[redeExibicao];
-        const logoM = (typeof obterLogoMercado === 'function' && obterLogoMercado(redeExibicao)) || `logos/${redeExibicao}.png`;
-        const tituloTag = `Preço em ${infoM.nome} (${infoM.regiao})`;
-        tagMercadoOrigem = `
-          <span class="tag-origem-preco" title="${tituloTag}">
-            <img src="${logoM}" style="width:13px; height:13px; object-fit:contain; border-radius:2px;" onerror="this.outerHTML='<span>${infoM.emoji}</span>'">
-            <span>${infoM.nome}</span>
-          </span>
-        `;
-      }
-
-      const isPendente = (itemPendenteDesmarcarId === item.id);
-      const classePendente = isPendente ? 'pendente-desmarcar' : '';
-      const badgePendente = isPendente 
-        ? `<span class="badge-confirmar-desmarcar" title="Clique mais uma vez para desmarcar">⚠️ Toque novamente para desmarcar</span>` 
-        : '';
-
-      const campoPrecoHtml = AppState.cotacaoAtiva ? `
-        <div class="preco-campo-box">
-          <span class="preco-cifrao">R$</span>
-          <input type="number" step="0.01" class="preco-input" 
-                 placeholder="0,00" value="${precoItemExibicao ? Number(precoItemExibicao).toFixed(2) : ''}"
-                 onchange="alterarPrecoItem('${item.id}', this.value, '${refMercado}')" />
-        </div>
-      ` : '';
-
-      htmlItens += `
-        <div class="item-card ${classeComprado} ${classePendente}" id="card-item-${item.id}" 
-             oncontextmenu="event.preventDefault(); abrirModalEditarNomeDespensa('${item.id}', event);"
-             title="Botão direito do mouse para editar">
-          <div class="item-check-btn" onclick="alternarItemComprado('${item.id}')" title="${item.comprado ? (isPendente ? 'Clique para confirmar desmarcação' : 'Clique 2x para desmarcar') : 'Clique para marcar como comprado'}">
-            ${isPendente ? '❓' : checkIcone}
-          </div>
-
-          <div class="item-icone-2d">
-            ${iconeSvg}
-          </div>
-
-          <!-- Coluna de Quantidade editável na frente do nome -->
-          <div class="contador-qtde" style="margin-right: 4px;">
-            <button class="btn-step" onclick="alterarQuantidade('${item.id}', -1)" title="Diminuir">-</button>
-            <input type="number" min="1" class="input-qtde-card" value="${item.qtde || 1}" onchange="definirQuantidadeDireta('${item.id}', this.value)" title="Editar quantidade" />
-            <button class="btn-step" onclick="alterarQuantidade('${item.id}', 1)" title="Aumentar">+</button>
-          </div>
-
-          <div class="item-corpo">
-            <div class="item-linha-nome">
-              <span class="item-nome" onclick="alternarItemComprado('${item.id}')">${item.nome}</span>
-              ${badgePendente}
-              ${marcaHtml}
-              ${tagMercadoOrigem}
+      linhasTabelaHtml += `
+        <tr class="mcol-tr-item ${item.comprado ? 'item-linha-comprado' : ''}" id="tr-item-${item.id}">
+          <td class="mcol-td-check">
+            <input type="checkbox" class="check-item-comprado" ${item.comprado ? 'checked' : ''} 
+                   onchange="alternarItemComprado('${item.id}', this.checked)" 
+                   title="${item.comprado ? 'Desmarcar' : 'Marcar como pego no carrinho'}" />
+          </td>
+          <td class="mcol-td-qtde">
+            <div class="contador-qtde-tabela">
+              <button class="btn-step-tabela" onclick="alterarQuantidade('${item.id}', -1)" title="Diminuir">-</button>
+              <input type="number" min="1" class="input-qtde-tabela" value="${qtde}" onchange="definirQuantidadeDireta('${item.id}', this.value)" title="Editar quantidade" />
+              <button class="btn-step-tabela" onclick="alterarQuantidade('${item.id}', 1)" title="Aumentar">+</button>
             </div>
-          </div>
-
-          <div class="item-acoes-compra">
-            ${campoPrecoHtml}
-
-            <button class="btn-delete-item" title="Remover item" onclick="removerItem('${item.id}')">✕</button>
-          </div>
-        </div>
+          </td>
+          <td class="mcol-td-produto">
+            <div class="mcol-prod-card-cell">
+              <div class="mcol-prod-icone">${iconeSvg}</div>
+              <div class="mcol-prod-textos">
+                <span class="mcol-prod-nome ${item.comprado ? 'texto-riscado' : ''}" onclick="alternarItemComprado('${item.id}')">${item.nome}</span>
+                ${marcaHtml}
+              </div>
+              ${badgeMelhor}
+            </div>
+          </td>
+          ${celulasPrecos}
+          <td class="mcol-td-acoes">
+            <button class="btn-delete-item-tabela" onclick="removerItem('${item.id}')" title="Remover item da lista">✕</button>
+          </td>
+        </tr>
       `;
     });
-
-    grupoDiv.innerHTML = `
-      <div class="categoria-titulo">
-        <span>${categoria}</span>
-        <span style="font-size: 0.8rem; font-weight: 500;">${itens.length} itens</span>
-      </div>
-      <div class="itens-lista">${htmlItens}</div>
-    `;
-
-    container.appendChild(grupoDiv);
   }
+
+  // Rodapé com Totais dos Mercados
+  let tfootHtml = '';
+  if (!ocultarMercados) {
+    let celulasTotais = chavesRedes.map(r => {
+      const isCampeao = r === campeaoId;
+      return `
+        <td class="mcol-td-total ${isCampeao ? 'mcol-td-total-campeao' : ''}">
+          <div class="mcol-total-box">
+            <span class="mcol-total-valor">R$ ${totais[r].toFixed(2).replace('.', ',')}</span>
+            ${isCampeao ? '<span class="mcol-campeao-tag">⭐ CAMPEÃO</span>' : ''}
+          </div>
+        </td>
+      `;
+    }).join('');
+
+    tfootHtml = `
+      <tfoot>
+        <tr class="mcol-tr-totais">
+          <td class="mcol-td-check-total"></td>
+          <td class="mcol-td-qtde-total"></td>
+          <td class="mcol-td-totais-label">
+            <div style="font-weight: 800; font-size: 0.92rem;">TOTAL ESTIMADO</div>
+            <small style="color: var(--text-muted); font-size: 0.72rem;">Soma dos ${AppState.listaAtiva.length} itens</small>
+          </td>
+          ${celulasTotais}
+          <td class="mcol-td-acoes-total"></td>
+        </tr>
+      </tfoot>
+    `;
+  }
+
+  // Bloco de destaque de economia abaixo da tabela (quando mercados visíveis)
+  let destaqueEconomiaHtml = '';
+  if (!ocultarMercados && economia > 0) {
+    destaqueEconomiaHtml = `
+      <div class="destaque-economia-box" style="margin-top: 14px;">
+        <span>💡</span>
+        <div style="flex: 1;">
+          Comprando no <strong>${MERCADOS_DF[campeaoId].nome}</strong> o carrinho sai por <strong>R$ ${totais[campeaoId].toFixed(2).replace('.', ',')}</strong>.
+          Você economiza até <strong>R$ ${economia.toFixed(2).replace('.', ',')}</strong> nesta lista!
+        </div>
+      </div>
+    `;
+  }
+
+  container.innerHTML = `
+    <div class="mcol-tabela-scroll">
+      <table class="mcol-tabela-moderna tabela-lista-compras ${ocultarMercados ? 'mercados-ocultos' : ''}">
+        <thead>
+          <tr>
+            <th class="mcol-th-check">✓</th>
+            <th class="mcol-th-qtde">Qtde</th>
+            <th class="mcol-th-produto">
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+                <span>Produto (${itensListaParaExibir.length})</span>
+              </div>
+            </th>
+            ${colunasCabecalhoMercados}
+            <th class="mcol-th-acoes">✕</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${linhasTabelaHtml}
+        </tbody>
+        ${tfootHtml}
+      </table>
+    </div>
+    ${destaqueEconomiaHtml}
+  `;
 }
 
 // Catálogo Especial da Despensa com Marcas e Menor Preço (8 Cards Lado a Lado)
@@ -1820,14 +1984,47 @@ const PRODUTOS_DESPENSA_MARCAS = [
     ]
   },
   {
+    id: 'p_arroz_1kg',
+    nome: 'ARROZ 1KG',
+    icone: 'arroz_1kg',
+    categoria: 'Básicos e Grãos',
+    marcas: [
+      { nome: 'Camil', preco: 5.90, mercado: 'Dia a Dia', emoji: '🔴' },
+      { nome: 'Tio João', preco: 6.50, mercado: 'Assaí', emoji: '🔵' },
+      { nome: 'Prato Fino', preco: 7.20, mercado: 'Atacadão', emoji: '🟠' }
+    ]
+  },
+  {
+    id: 'p_arroz_int',
+    nome: 'ARROZ INTEGRAL',
+    icone: 'arroz_integral',
+    categoria: 'Básicos e Grãos',
+    marcas: [
+      { nome: 'Camil', preco: 7.50, mercado: 'Atacadão', emoji: '🟠' },
+      { nome: 'Cristal', preco: 7.70, mercado: 'Dia a Dia', emoji: '🔴' },
+      { nome: 'Tio João', preco: 7.90, mercado: 'Assaí', emoji: '🔵' }
+    ]
+  },
+  {
     id: 'p_feijao',
-    nome: 'FEIJÃO',
+    nome: 'FEIJÃO CARIOCA',
     icone: 'feijao',
     categoria: 'Básicos e Grãos',
     marcas: [
-      { nome: 'Camil', preco: 6.99, mercado: 'Atacadão', emoji: '🟠' },
-      { nome: 'Kicaldo', preco: 7.20, mercado: 'Assaí', emoji: '🔵' },
-      { nome: 'Tio Jorge', preco: 7.45, mercado: 'Big Box', emoji: '🟢' }
+      { nome: 'Camil', preco: 6.49, mercado: 'Dia a Dia', emoji: '🔴' },
+      { nome: 'Tio Jorge', preco: 6.79, mercado: 'Atacadão', emoji: '🟠' },
+      { nome: 'Kicaldo', preco: 6.89, mercado: 'Assaí', emoji: '🔵' }
+    ]
+  },
+  {
+    id: 'p_feijao_preto',
+    nome: 'FEIJÃO PRETO',
+    icone: 'feijao_preto',
+    categoria: 'Básicos e Grãos',
+    marcas: [
+      { nome: 'Camil', preco: 7.99, mercado: 'Dia a Dia', emoji: '🔴' },
+      { nome: 'Tio Jorge', preco: 8.29, mercado: 'Atacadão', emoji: '🟠' },
+      { nome: 'Kicaldo', preco: 8.39, mercado: 'Assaí', emoji: '🔵' }
     ]
   },
   {
@@ -1984,6 +2181,19 @@ const PRODUTOS_DESPENSA_MARCAS = [
       { nome: 'Dragão', preco: 3.99, mercado: 'Assaí', emoji: '🔵' },
       { nome: 'Qboa', preco: 4.70, mercado: 'Atacadão', emoji: '🟠' },
       { nome: 'Brilhante', preco: 5.20, mercado: 'Carrefour', emoji: '🟦' }
+    ]
+  },
+  {
+    id: 'p_dente',
+    nome: 'CREME DENTAL',
+    icone: 'dente',
+    categoria: 'Higiene',
+    marcas: [
+      { nome: 'Sorriso', preco: 3.49, mercado: 'Carrefour', emoji: '🟦' },
+      { nome: 'Close Up', preco: 3.79, mercado: 'Carrefour', emoji: '🟦' },
+      { nome: 'Colgate', preco: 3.99, mercado: 'Carrefour', emoji: '🟦' },
+      { nome: 'Oral-B', preco: 6.49, mercado: 'Carrefour', emoji: '🟦' },
+      { nome: 'Sensodyne', preco: 14.90, mercado: 'Carrefour', emoji: '🟦' }
     ]
   }
 ];
@@ -2184,7 +2394,7 @@ function renderizarDropdownSugestoesTopo(termoOriginal) {
     return a.item.nome.localeCompare(b.item.nome);
   });
 
-  const refMercado = AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos' ? AppState.mercadoReferencia : 'atacadao';
+  const refMercado = AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos' ? AppState.mercadoReferencia : 'nenhum';
   let html = '';
 
   // Opção Rápida de Criar / Adicionar o que foi digitado
@@ -2722,7 +2932,7 @@ function salvarNovoItemDespensaModal() {
   const nomeLimpo = capitalizar(nome);
   const chaveIcone = detectarChaveIcone(nomeLimpo);
   const categoria = deduzirCategoria(nomeLimpo);
-  const ref = AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos' ? AppState.mercadoReferencia : 'carrefour';
+  const ref = AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos' ? AppState.mercadoReferencia : 'nenhum';
   const precoEstimado = obterPrecoEstimadoMercado({ nome: nomeLimpo, icone: chaveIcone, preco: 0 }, ref);
 
   const novoItem = {
@@ -2805,7 +3015,7 @@ function salvarEdicaoNomeDespensaModal() {
     : (deduzirCategoria(novoNome) || 'Diversos');
 
   const prod = AppState.catalogo.find(p => String(p.id) === String(itemParaEditarNomeId));
-  const ref = AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos' ? AppState.mercadoReferencia : 'carrefour';
+  const ref = AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos' ? AppState.mercadoReferencia : 'nenhum';
 
   if (prod) {
     const nomeAntigo = prod.nome;
@@ -2933,42 +3143,27 @@ function renderizarHistorico() {
 let itemPendenteDesmarcarId = null;
 let timerPendenteDesmarcar = null;
 
-function alternarItemComprado(id) {
+function alternarItemComprado(id, forcarEstado = null) {
   const item = AppState.listaAtiva.find(i => String(i.id) === String(id));
   if (!item) return;
 
-  // CASO 1: Item ainda NÃO comprado -> Marca imediatamente com 1 clique!
-  if (!item.comprado) {
-    item.comprado = true;
-    // Se estava algum outro item pendente de desmarcar, cancela
-    cancelarPendenteDesmarcar();
-    salvarEstado(true);
-    renderizarListaCompras();
-    atualizarCardResumo();
-    return;
-  }
-
-  // CASO 2: Item JÁ ESTÁ COMPRADO -> Exige 2 cliques para desmarcar
-  if (itemPendenteDesmarcarId === id) {
-    // Segundo clique confirmado dentro da janela de tempo!
-    clearTimeout(timerPendenteDesmarcar);
-    itemPendenteDesmarcarId = null;
-    item.comprado = false;
-    salvarEstado(true);
-    renderizarListaCompras();
-    atualizarCardResumo();
+  if (forcarEstado !== null && forcarEstado !== undefined) {
+    item.comprado = Boolean(forcarEstado);
   } else {
-    // Primeiro clique: entra em estado de confirmação
-    cancelarPendenteDesmarcar();
-    itemPendenteDesmarcarId = id;
-    renderizarListaCompras();
-
-    // Timer de 3 segundos para expirar a confirmação
-    timerPendenteDesmarcar = setTimeout(() => {
-      cancelarPendenteDesmarcar();
-      renderizarListaCompras();
-    }, 3000);
+    item.comprado = !item.comprado;
   }
+
+  cancelarPendenteDesmarcar();
+
+  // Sincroniza com o catálogo da despensa
+  const catItem = AppState.catalogo.find(c => String(c.id) === String(item.id) || String(c.id) === String(item.catalogoId));
+  if (catItem) {
+    catItem.comprado = item.comprado;
+  }
+
+  salvarEstado(true);
+  renderizarListaCompras();
+  atualizarCardResumo();
 }
 
 function cancelarPendenteDesmarcar() {
@@ -3030,7 +3225,7 @@ function alterarPrecoItem(id, novoPrecoStr, redeRef) {
     const val = isNaN(precoFloat) ? 0 : precoFloat;
     item.preco = val;
     item.precoReferencia = val;
-    if (redeRef && redeRef !== 'todos') {
+    if (redeRef && redeRef !== 'todos' && redeRef !== 'nenhum') {
       if (!item.precosMercados) item.precosMercados = {};
       item.precosMercados[redeRef] = val;
       item.origemPreco = redeRef;
@@ -3039,7 +3234,7 @@ function alterarPrecoItem(id, novoPrecoStr, redeRef) {
     if (catItem) {
       catItem.preco = val;
       catItem.ultimoPreco = val;
-      if (redeRef && redeRef !== 'todos') {
+      if (redeRef && redeRef !== 'todos' && redeRef !== 'nenhum') {
         if (!catItem.precosMercados) catItem.precosMercados = {};
         catItem.precosMercados[redeRef] = val;
       }
@@ -3215,7 +3410,7 @@ function processarUploadLista(substituir = false) {
 
     // Se deve pesquisar e aplicar preços estimados de Brasília (DF)
     if (cotarAuto && preco === 0) {
-      const ref = AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos' ? AppState.mercadoReferencia : 'carrefour';
+      const ref = AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos' ? AppState.mercadoReferencia : 'nenhum';
       preco = obterPrecoEstimadoMercado({ nome, icone: iconeDetectado, marca: marcaDetectada, preco: 0 }, ref);
     }
 
@@ -3293,6 +3488,62 @@ function alternarCotacaoEstado() {
 
 function cotarPrecosDinamico() {
   alternarCotacaoEstado();
+}
+
+// Controle do Modo no Mercado (foco no carrinho e no corredor)
+let itemReguaAbertaId = null;
+function alternarReguaMercadosItem(itemId) {
+  itemReguaAbertaId = (itemReguaAbertaId === itemId) ? null : itemId;
+  renderizarListaCompras();
+}
+
+function alternarModoNoMercado() {
+  AppState.modoNoMercado = !AppState.modoNoMercado;
+  atualizarUIModoNoMercado();
+  salvarEstado(true);
+  renderizarListaCompras();
+  atualizarCardResumo();
+}
+
+function atualizarUIModoNoMercado() {
+  const btn = document.getElementById('btn-toggle-modo-mercado');
+  const rotuloTotal = document.getElementById('total-rotulo-texto');
+  if (AppState.modoNoMercado) {
+    document.body.classList.add('modo-mercado-ativo');
+    if (btn) {
+      btn.classList.add('modo-mercado-on');
+      btn.innerHTML = '<span class="ico-modo">🏢</span> <span class="txt-modo">Exibir Mercados</span>';
+      btn.title = 'Mostrar colunas de supermercados e cotações';
+    }
+    if (rotuloTotal) rotuloTotal.textContent = 'NO CARRINHO';
+  } else {
+    document.body.classList.remove('modo-mercado-ativo');
+    if (btn) {
+      btn.classList.remove('modo-mercado-on');
+      btn.innerHTML = '<span class="ico-modo">👁️</span> <span class="txt-modo">Ocultar Mercados</span>';
+      btn.title = 'Ocultar colunas de mercados para facilitar a compra';
+    }
+    if (rotuloTotal) rotuloTotal.textContent = 'TOTAL ESTIMADO';
+  }
+}
+
+function abrirModalOpcoesHeader() {
+  const modal = document.getElementById('modal-opcoes-header');
+  if (!modal) return;
+  const badge = document.getElementById('badge-status-cotado');
+  if (badge) {
+    badge.textContent = AppState.cotacaoAtiva ? 'Ativo' : 'Pausado';
+    badge.style.background = AppState.cotacaoAtiva ? '#D1FAE5' : '#F1F5F9';
+    badge.style.color = AppState.cotacaoAtiva ? '#065F46' : '#64748B';
+  }
+  modal.style.display = 'flex';
+}
+
+function navegarParaAba(abaId) {
+  const botoesNav = document.querySelectorAll('.nav-item');
+  botoesNav.forEach(b => {
+    if (b.getAttribute('data-aba') === abaId) b.click();
+  });
 }
 
 // Alterna e aplica os filtros dinâmicos de cotação:
@@ -3385,16 +3636,18 @@ function aplicarModoCotacao(modo) {
     });
   } else if (modo === 'alfabetico') {
     // 4. MODO ALFABÉTICO: Mantém cotações existentes ou assegura preços do mercado de referência
-    const ref = (AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos') ? AppState.mercadoReferencia : 'atacadao';
-    AppState.listaAtiva.forEach(item => {
-      if (!item.preco || item.preco <= 0) {
-        const p = obterPrecoEstimadoMercado(item, ref);
-        if (p > 0) {
-          item.preco = p;
-          item.origemPreco = ref;
+    const ref = (AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos') ? AppState.mercadoReferencia : 'nenhum';
+    if (ref !== 'nenhum') {
+      AppState.listaAtiva.forEach(item => {
+        if (!item.preco || item.preco <= 0) {
+          const p = obterPrecoEstimadoMercado(item, ref);
+          if (p > 0) {
+            item.preco = p;
+            item.origemPreco = ref;
+          }
         }
-      }
-    });
+      });
+    }
   }
 
   salvarEstado(true);
@@ -3478,7 +3731,7 @@ function adicionarProdutoPorTexto(textoCompleto) {
   // Se o item não tem preço definido e o usuário quer cotação automática de Brasília
   let precoFinal = ultimoPreco;
   if (precoFinal === 0) {
-    const ref = AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos' ? AppState.mercadoReferencia : 'carrefour';
+    const ref = AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos' ? AppState.mercadoReferencia : 'nenhum';
     precoFinal = obterPrecoEstimadoMercado({ nome, icone: iconeDetectado, marca: marcaDetectada, preco: 0 }, ref);
   }
 
@@ -3653,14 +3906,26 @@ function filtrarMarcasRealtime(texto) {
 function obterMarcasParaProduto(chaveIcone, nomeItem) {
   const lista = [];
   const marcasVistas = new Set();
-  const nomeNorm = (nomeItem || '').toLowerCase();
+  const nomeNorm = (nomeItem || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
-  // 1. Marcas da Despensa
-  const pDespensa = PRODUTOS_DESPENSA_MARCAS.find(p => 
-    p.icone === chaveIcone || 
-    nomeNorm.includes(p.nome.toLowerCase()) || 
-    p.nome.toLowerCase().includes(nomeNorm)
-  );
+  // 1. Marcas da Despensa — prioriza correspondência mais específica
+  let pDespensa = null;
+  if (nomeNorm.includes('integral') || chaveIcone === 'arroz_integral') {
+    pDespensa = PRODUTOS_DESPENSA_MARCAS.find(p => p.id === 'p_arroz_int');
+  } else if ((nomeNorm.includes('arroz') && (nomeNorm.includes('1kg') || nomeNorm.includes('1 kg') || nomeNorm.includes('arboreo') || nomeNorm.includes('jasmim'))) || chaveIcone === 'arroz_1kg') {
+    pDespensa = PRODUTOS_DESPENSA_MARCAS.find(p => p.id === 'p_arroz_1kg');
+  } else if ((nomeNorm.includes('feijao') && (nomeNorm.includes('preto') || nomeNorm.includes('vermelho') || nomeNorm.includes('rajado'))) || chaveIcone === 'feijao_preto') {
+    pDespensa = PRODUTOS_DESPENSA_MARCAS.find(p => p.id === 'p_feijao_preto');
+  } else if (nomeNorm.includes('dente') || nomeNorm.includes('dental') || nomeNorm.includes('creme dental') || nomeNorm.includes('pasta') || chaveIcone === 'dente') {
+    pDespensa = PRODUTOS_DESPENSA_MARCAS.find(p => p.id === 'p_dente');
+  }
+
+  if (!pDespensa) {
+    pDespensa = PRODUTOS_DESPENSA_MARCAS.find(p => 
+      p.icone === chaveIcone || 
+      nomeNorm.includes(p.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""))
+    );
+  }
 
   if (pDespensa && pDespensa.marcas) {
     pDespensa.marcas.forEach(m => {
@@ -3688,13 +3953,23 @@ function obterMarcasParaProduto(chaveIcone, nomeItem) {
         let mercadoNome = 'Atacadão';
         let emoji = '🟠';
 
-        Object.entries(cotacoes).forEach(([mId, pVal]) => {
-          if (pVal < menorPreco) {
-            menorPreco = pVal;
-            mercadoNome = MERCADOS_DF[mId]?.nome || 'Atacadão';
-            emoji = MERCADOS_DF[mId]?.emoji || '🟠';
-          }
-        });
+        const refMercado = (AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos' && AppState.mercadoReferencia !== 'nenhum') 
+          ? AppState.mercadoReferencia 
+          : null;
+
+        if (refMercado && cotacoes[refMercado]) {
+          menorPreco = cotacoes[refMercado];
+          mercadoNome = MERCADOS_DF[refMercado]?.nome || 'Atacadão';
+          emoji = MERCADOS_DF[refMercado]?.emoji || '🟠';
+        } else {
+          Object.entries(cotacoes).forEach(([mId, pVal]) => {
+            if (pVal < menorPreco) {
+              menorPreco = pVal;
+              mercadoNome = MERCADOS_DF[mId]?.nome || 'Atacadão';
+              emoji = MERCADOS_DF[mId]?.emoji || '🟠';
+            }
+          });
+        }
 
         lista.push({
           nome: nomeMarca,
@@ -3725,15 +4000,34 @@ function selecionarMarcaModal(marca, preco) {
   // Atualiza marca
   item.marca = marca ? capitalizar(marca) : null;
 
-  // Atualiza preço
+  // Atualiza preço imediatamente sincronizado
   const precoNum = Number(preco);
+  const ref = (AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos') ? AppState.mercadoReferencia : 'nenhum';
+
   if (!isNaN(precoNum) && precoNum > 0) {
     item.preco = precoNum;
+    item.precoReferencia = precoNum;
     item.ultimoPreco = precoNum;
+    if (!item.precosMercados) item.precosMercados = {};
+    if (ref !== 'nenhum') {
+      item.precosMercados[ref] = precoNum;
+      item.origemPreco = ref;
+    }
   } else {
-    const ref = AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos' ? AppState.mercadoReferencia : 'carrefour';
     item.preco = obterPrecoEstimadoMercado(item, ref);
     item.ultimoPreco = item.preco;
+  }
+
+  // Sincroniza também no catálogo da despensa
+  const catItem = AppState.catalogo.find(p => p.id === item.id || p.id === item.catalogoId);
+  if (catItem) {
+    catItem.marca = item.marca;
+    catItem.preco = item.preco;
+    catItem.ultimoPreco = item.preco;
+    if (ref !== 'nenhum' && item.preco > 0) {
+      if (!catItem.precosMercados) catItem.precosMercados = {};
+      catItem.precosMercados[ref] = item.preco;
+    }
   }
 
   // Persiste no LocalStorage e Nuvem Firebase

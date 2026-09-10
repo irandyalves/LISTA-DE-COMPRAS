@@ -375,27 +375,253 @@ body {
   line-height: 1.1;
 }
 
-/* Ações Espremidas na Linha 1 */
-.header-acoes-espremidas {
+/* Ações Unificadas no Topo */
+.header-acoes-unificadas {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.btn-toggle-modo-mercado {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  background: #EEF2FF;
+  color: var(--primary);
+  border: 1.5px solid #C7D2FE;
+  box-shadow: 0 1px 3px rgba(79, 70, 229, 0.12);
+}
+
+.btn-toggle-modo-mercado:hover {
+  background: #E0E7FF;
+  border-color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.btn-toggle-modo-mercado.modo-mercado-on {
+  background: #059669 !important;
+  color: white !important;
+  border-color: #047857 !important;
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.35) !important;
+}
+
+.btn-menu-opcoes {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  font-size: 1rem;
+  background: white;
+  color: #334155;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-menu-opcoes:hover {
+  background: #F8FAFC;
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* Modal de Opções do Topo */
+.modal-opcoes-content {
+  max-width: 420px;
+  border-radius: 16px;
+}
+
+.modal-body-opcoes {
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.secao-opcoes-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.titulo-secao-opcoes {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #64748B;
+  letter-spacing: 0.05em;
+}
+
+.grid-modos-cotacao {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.lista-acoes-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.btn-menu-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  flex: 1;
-  min-width: 250px;
+  padding: 10px 12px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #1E293B;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
 }
 
-.acoes-topo-esquerda {
-  display: flex;
-  align-items: center;
-  gap: 4px;
+.btn-menu-item:hover {
+  background: #EEF2FF;
+  border-color: #C7D2FE;
+  color: var(--primary);
+  transform: translateX(2px);
 }
 
-.acoes-topo-direita {
+.btn-menu-perigo {
+  background: #FEF2F2 !important;
+  border-color: #FECACA !important;
+  color: #DC2626 !important;
+}
+
+.btn-menu-perigo:hover {
+  background: #FEE2E2 !important;
+  border-color: #EF4444 !important;
+}
+
+.badge-status-cotado {
+  font-size: 0.68rem;
+  font-weight: 800;
+  background: #D1FAE5;
+  color: #065F46;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+/* Checkbox à Esquerda Padronizado */
+.item-check-btn-esquerdo {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border-radius: 50%;
+  border: 2px solid #CBD5E1;
+  background: white;
   display: flex;
   align-items: center;
-  gap: 4px;
-  margin-left: auto;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 900;
+  color: white;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-right: 8px;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.item-check-btn-esquerdo:hover {
+  border-color: #10B981;
+  background: #ECFDF5;
+}
+
+.item-check-btn-esquerdo.comprado {
+  background: #10B981 !important;
+  border-color: #059669 !important;
+  color: white !important;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.4);
+}
+
+/* Modo no Mercado Ativo */
+body.modo-mercado-ativo .painel-topo-congelado .barra-mercados-filtro {
+  display: none !important;
+}
+
+body.modo-mercado-ativo .regua-precos-inline,
+body.modo-mercado-ativo .btn-comparar-inline,
+body.modo-mercado-ativo .tag-origem-preco {
+  display: none !important;
+}
+
+body.modo-mercado-ativo .item-card {
+  padding: 12px 14px;
+  background: #ffffff;
+  border: 1.5px solid #E2E8F0;
+}
+
+body.modo-mercado-ativo .item-nome {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+/* Mini-Régua Comparativa Inline de 7 Mercados no Modo Cotação */
+.btn-comparar-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 6px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  border-radius: 6px;
+  background: #F1F5F9;
+  color: #475569;
+  border: 1px solid #E2E8F0;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-comparar-inline:hover {
+  background: #EEF2FF;
+  color: var(--primary);
+  border-color: #C7D2FE;
+}
+
+.regua-precos-inline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  margin-top: 6px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-size: 0.72rem;
+}
+
+.regua-item-mercado {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: white;
+  border: 1px solid #E2E8F0;
+  white-space: nowrap;
+}
+
+.regua-item-mercado.menor-preco {
+  background: #ECFDF5;
+  border-color: #6EE7B7;
+  color: #065F46;
+  font-weight: 800;
 }
 
 /* Botão de Cotação Dinâmica com Toggle */
@@ -2258,17 +2484,56 @@ body {
   vertical-align: middle;
 }
 
-/* Coluna de Quantidade na Frente do Nome */
-.mcol-th-qtde {
+/* Coluna de Checkbox na Frente de Tudo */
+.mcol-th-check {
   position: sticky;
   left: 0;
   z-index: 4;
   background: #F8FAFC !important;
   font-weight: 800;
   color: #1E293B;
-  width: 80px;
-  min-width: 80px;
-  max-width: 80px;
+  width: 36px;
+  min-width: 36px;
+  max-width: 36px;
+  text-align: center;
+  padding: 8px 4px !important;
+  font-size: 0.78rem;
+}
+
+.mcol-td-check {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: white;
+  width: 36px;
+  min-width: 36px;
+  max-width: 36px;
+  padding: 6px 4px !important;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.check-item-comprado {
+  width: 18px !important;
+  height: 18px !important;
+  cursor: pointer;
+  accent-color: #10B981;
+  border-radius: 4px;
+  margin: 0 auto;
+  display: block;
+}
+
+/* Coluna de Quantidade na Frente do Nome */
+.mcol-th-qtde {
+  position: sticky;
+  left: 36px !important;
+  z-index: 4;
+  background: #F8FAFC !important;
+  font-weight: 800;
+  color: #1E293B;
+  width: 74px !important;
+  min-width: 74px !important;
+  max-width: 74px !important;
   text-align: center;
   padding: 8px 4px !important;
   font-size: 0.78rem;
@@ -2276,12 +2541,12 @@ body {
 
 .mcol-td-qtde {
   position: sticky;
-  left: 0;
+  left: 36px !important;
   z-index: 2;
   background: white;
-  width: 80px;
-  min-width: 80px;
-  max-width: 80px;
+  width: 74px !important;
+  min-width: 74px !important;
+  max-width: 74px !important;
   padding: 6px 4px !important;
   text-align: center;
   vertical-align: middle;
@@ -2345,10 +2610,10 @@ body {
   margin: 0;
 }
 
-/* Coluna de Produto: aumentada em 15% (de 220px para 255px) */
+/* Coluna de Produto: ajustada com left 110px (check 36px + qtde 74px) */
 .mcol-th-produto {
   position: sticky;
-  left: 80px;
+  left: 110px !important;
   z-index: 3;
   background: #F8FAFC !important;
   font-weight: 800;
@@ -2377,7 +2642,7 @@ body {
 
 .mcol-td-produto {
   position: sticky;
-  left: 80px;
+  left: 110px !important;
   z-index: 2;
   background: white;
   padding: 6px 10px !important;
@@ -2387,6 +2652,86 @@ body {
 
 .mcol-tr-item:hover .mcol-td-produto {
   background: #F8FAFC;
+}
+
+/* Linha de Categoria Separadora na Tabela */
+.mcol-tr-categoria-separador td {
+  background: #F1F5F9 !important;
+  padding: 8px 14px !important;
+  border-top: 1.5px solid #CBD5E1;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.categoria-titulo-tabela {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  font-weight: 900;
+  color: #334155;
+  letter-spacing: 0.05em;
+}
+
+/* Ações (botão delete) */
+.mcol-th-acoes {
+  width: 44px;
+  min-width: 44px;
+  text-align: center;
+}
+
+.mcol-td-acoes {
+  width: 44px;
+  min-width: 44px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.btn-delete-item-tabela {
+  background: transparent;
+  border: none;
+  color: #94A3B8;
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: all 0.15s;
+}
+
+.btn-delete-item-tabela:hover {
+  background: #FEE2E2;
+  color: #DC2626;
+}
+
+/* Quando mercados estão ocultos (Modo Mercado / Foco na Compra) */
+.tabela-lista-compras.mercados-ocultos {
+  min-width: 100% !important;
+}
+
+.tabela-lista-compras.mercados-ocultos .col-mercado,
+.tabela-lista-compras.mercados-ocultos .mcol-th-rede,
+.tabela-lista-compras.mercados-ocultos .mcol-td-preco,
+.tabela-lista-compras.mercados-ocultos .mcol-td-total {
+  display: none !important;
+}
+
+.tabela-lista-compras.mercados-ocultos .mcol-th-produto,
+.tabela-lista-compras.mercados-ocultos .mcol-td-produto {
+  width: 100% !important;
+  min-width: 250px !important;
+  max-width: none !important;
+  box-shadow: none !important;
+}
+
+/* Estilo de item comprado / riscado */
+.item-linha-comprado td {
+  background: #F8FAFC !important;
+  opacity: 0.55;
+}
+
+.texto-riscado {
+  text-decoration: line-through;
+  color: #64748B !important;
 }
 
 /* Colunas dos Mercados espremidas */

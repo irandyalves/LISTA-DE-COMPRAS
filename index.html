@@ -45,66 +45,17 @@
           <div id="dropdown-sugestoes-topo" class="dropdown-sugestoes-topo" style="display: none;"></div>
         </div>
 
-        <div class="header-acoes-espremidas">
-          <div class="acoes-topo-esquerda">
-            <button class="btn-acao-mini" onclick="abrirModalSubirLista()" title="Importar lista (WhatsApp/Texto)">
-              📥 Subir
-            </button>
-            <button class="btn-acao-mini" onclick="alternarParaConstruirLista()" title="Montar lista de compras">
-              📋 Montar Lista
-            </button>
-            <button class="btn-acao-mini" onclick="limparTudoEZerar()" title="Zerar lista e limpar cache" style="color: #DC2626; border-color: #FECACA; background: #FEF2F2; font-weight: 700;">
-              🗑️ Zerar
-            </button>
-          </div>
-          <div class="acoes-topo-direita">
-            <button class="btn-chip-modo ativo" id="modo-mais-baratos" onclick="aplicarModoCotacao('mais_baratos')" title="Mais Baratos">
-              🔥 Mais Baratos
-            </button>
-            <button class="btn-chip-modo" id="modo-alfabetico" onclick="aplicarModoCotacao('alfabetico')" title="Ordem Alfabética (A-Z)">
-              🔤 A-Z
-            </button>
-            <button class="btn-chip-modo" id="modo-maioria-barata" onclick="aplicarModoCotacao('maioria_barata')" title="Maioria Barata">
-              🏆 Maioria Barata
-            </button>
-            <button class="btn-chip-modo" id="modo-sugerir" onclick="aplicarModoCotacao('sugerir')" title="A Sugerir">
-              💡 A Sugerir
-            </button>
-            <button class="btn-acao-mini btn-cotado-ativo" id="btn-cotar-header" onclick="alternarCotacaoEstado()" title="Cotar preços da lista">
-              <span style="font-weight: 900; margin-right: 4px;">✓</span> Cotado
-            </button>
-            <button class="btn-icon-mini" onclick="exportarParaPlanilhaCSV()" title="Exportar Planilha (Excel/CSV)">
-              📊
-            </button>
-            <button class="btn-icon-mini" id="btn-nuvem-header" onclick="abrirModalNuvem()" title="Configurar Nuvem / Compartilhar com Esposa">
-              ☁️
-            </button>
-          </div>
+        <div class="header-acoes-unificadas">
+          <button id="btn-toggle-modo-mercado" class="btn-toggle-modo-mercado" onclick="alternarModoNoMercado()" title="Ocultar ou exibir colunas de mercados para facilitar a compra">
+            <span class="ico-modo">👁️</span> <span class="txt-modo">Ocultar Mercados</span>
+          </button>
+          <button class="btn-menu-opcoes" onclick="abrirModalOpcoesHeader()" title="Mais opções (Zerar, Importar, CSV, Nuvem)">
+            ⚙️
+          </button>
         </div>
       </header>
 
-      <!-- LINHA 2: Chips dos Mercados DF espremidos com Logos Oficiais + Botões de Ordenação à Direita -->
-      <div class="barra-mercados-filtro espremida">
-        <div class="grupo-chips-mercados">
-          <button class="btn-chip-mercado ativo" data-mercado="atacadao" onclick="selecionarMercadoReferencia('atacadao')"><img src="logos/atacadao.png" class="chip-logo-img" alt="Atacadão"> Atacadão</button>
-          <button class="btn-chip-mercado" data-mercado="assai" onclick="selecionarMercadoReferencia('assai')"><img src="logos/assai.png" class="chip-logo-img" alt="Assaí"> Assaí</button>
-          <button class="btn-chip-mercado" data-mercado="diaadia" onclick="selecionarMercadoReferencia('diaadia')"><img src="logos/diaadia.png" class="chip-logo-img" alt="Dia a Dia"> Dia a Dia</button>
-          <button class="btn-chip-mercado" data-mercado="carrefour" onclick="selecionarMercadoReferencia('carrefour')"><img src="logos/carrefour.png" class="chip-logo-img" alt="Carrefour"> Carrefour</button>
-          <button class="btn-chip-mercado" data-mercado="bigbox" onclick="selecionarMercadoReferencia('bigbox')"><img src="logos/bigbox.png" class="chip-logo-img" alt="Big Box"> Big Box</button>
-          <button class="btn-chip-mercado" data-mercado="dona" onclick="selecionarMercadoReferencia('dona')"><img src="logos/dona.png" class="chip-logo-img" alt="Dona"> Dona</button>
-          <button class="btn-chip-mercado" data-mercado="paodeacucar" onclick="selecionarMercadoReferencia('paodeacucar')"><img src="logos/paodeacucar.png" class="chip-logo-img" alt="Pão de Açúcar"> Pão de Açúcar</button>
-        </div>
-        <div class="grupo-ordenacao-mercados-header">
-          <button id="btn-ordem-mercados-preco" class="btn-chip-modo" onclick="alternarOrdenacaoMercados('preco')" title="Ordenar pelo menor preço cotado">
-            🔥 Menor Preço
-          </button>
-          <button id="btn-ordem-mercados-original" class="btn-chip-modo ativo" onclick="alternarOrdenacaoMercados('original')" title="Voltar à ordem padrão da lista">
-            📋 Ordem Lista
-          </button>
-        </div>
-      </div>
-
-      <!-- LINHA 3: Abas de Categorias (Geral, Básicos & Grãos, Hortifrúti, Carnes, Higiene, Limpeza, etc.) -->
+      <!-- Abas de Categorias (Geral, Básicos & Grãos, Hortifrúti, Carnes, Higiene, Limpeza, etc.) -->
       <div class="despensa-abas-categorias" id="barra-abas-categorias">
         <button class="despensa-aba-tab ativa" data-categoria="todas" onclick="filtrarCategoriaGeral('todas', this)">
           🌐 Geral
@@ -184,25 +135,72 @@
 
   </div>
 
-  <!-- Barra de Navegação Inferior (Mobile Friendly) -->
+  <!-- Barra de Navegação Inferior (Mobile Friendly - 3 Abas Unificadas) -->
   <nav class="bottom-nav">
-    <button class="nav-item ativo" data-aba="lista">
+    <button class="nav-item ativo" data-aba="lista" onclick="navegarParaAba('lista')">
       <span class="nav-icon">🛒</span>
-      <span>Lista de Compra</span>
+      <span>Comprar</span>
     </button>
-    <button class="nav-item" data-aba="despensa">
+    <button class="nav-item" data-aba="despensa" onclick="navegarParaAba('despensa')">
       <span class="nav-icon">📋</span>
       <span>Montar Lista</span>
     </button>
-    <button class="nav-item" data-aba="mercados">
-      <span class="nav-icon">🏢</span>
-      <span>Mercados</span>
-    </button>
-    <button class="nav-item" data-aba="historico">
+    <button class="nav-item" data-aba="historico" onclick="navegarParaAba('historico')">
       <span class="nav-icon">📊</span>
       <span>Histórico</span>
     </button>
   </nav>
+
+  <!-- MODAL: MENU DE OPÇÕES DO CABEÇALHO -->
+  <div id="modal-opcoes-header" class="modal-overlay" style="display: none;" onclick="if(event.target === this) fecharModal('modal-opcoes-header')">
+    <div class="modal-content modal-opcoes-content">
+      <div class="modal-header">
+        <h3>⚙️ Opções & Modos</h3>
+        <button class="btn-fechar" onclick="fecharModal('modal-opcoes-header')">&times;</button>
+      </div>
+      <div class="modal-body-opcoes">
+        <div class="secao-opcoes-grupo">
+          <span class="titulo-secao-opcoes">Modo de Cotação da Lista</span>
+          <div class="grid-modos-cotacao">
+            <button class="btn-chip-modo ativo" id="modo-mais-baratos" onclick="aplicarModoCotacao('mais_baratos'); fecharModal('modal-opcoes-header');">
+              🔥 Mais Baratos
+            </button>
+            <button class="btn-chip-modo" id="modo-alfabetico" onclick="aplicarModoCotacao('alfabetico'); fecharModal('modal-opcoes-header');">
+              🔤 Ordem A-Z
+            </button>
+            <button class="btn-chip-modo" id="modo-maioria-barata" onclick="aplicarModoCotacao('maioria_barata'); fecharModal('modal-opcoes-header');">
+              🏆 Maioria Barata
+            </button>
+            <button class="btn-chip-modo" id="modo-sugerir" onclick="aplicarModoCotacao('sugerir'); fecharModal('modal-opcoes-header');">
+              💡 A Sugerir
+            </button>
+          </div>
+        </div>
+
+        <div class="secao-opcoes-grupo">
+          <span class="titulo-secao-opcoes">Ações da Lista</span>
+          <div class="lista-acoes-menu">
+            <button class="btn-menu-item" onclick="alternarCotacaoEstado(); fecharModal('modal-opcoes-header');" id="btn-cotar-menu">
+              <span>✓ Exibir Preços Cotados</span>
+              <span class="badge-status-cotado" id="badge-status-cotado">Ativo</span>
+            </button>
+            <button class="btn-menu-item" onclick="abrirModalSubirLista(); fecharModal('modal-opcoes-header');">
+              <span>📥 Subir / Importar Lista (WhatsApp / TXT)</span>
+            </button>
+            <button class="btn-menu-item" onclick="exportarParaPlanilhaCSV(); fecharModal('modal-opcoes-header');">
+              <span>📊 Exportar Planilha (Excel / CSV)</span>
+            </button>
+            <button class="btn-menu-item" onclick="abrirModalNuvem(); fecharModal('modal-opcoes-header');">
+              <span>☁️ Sincronizar na Nuvem Google / Compartilhar</span>
+            </button>
+            <button class="btn-menu-item btn-menu-perigo" onclick="limparTudoEZerar(); fecharModal('modal-opcoes-header');">
+              <span>🗑️ Zerar Lista Ativa e Limpar Carrinho</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- MODAL: SUBIR / IMPORTAR LISTA -->
   <div id="modal-subir-lista" class="modal-overlay" style="display: none;" onclick="if(event.target === this) fecharModal('modal-subir-lista')">

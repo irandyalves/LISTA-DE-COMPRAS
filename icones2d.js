@@ -471,6 +471,19 @@ function detectarChaveIcone(nomeProduto) {
   if (t.includes('racao') || t.includes('petisco cao') || t.includes('petisco gato') || t.includes('whiskas') || t.includes('pedigree') || t.includes('gato') || t.includes('pet')) return 'pet';
   if (t.includes('lampada') || t.includes('pilha') || t.includes('fosforo') || t.includes('isqueiro') || t.includes('vela') || t.includes('carvao')) return 'utilidades';
 
+  // Arroz: distinguir por peso/tipo antes do fallback genérico
+  if (t.includes('arroz')) {
+    if (t.includes('integral') || t.includes('7 graos') || t.includes('sete graos') || t.includes('preto') || t.includes('vermelho') || t.includes('negro')) return 'arroz_integral';
+    if (t.includes('parboilizado') || t.includes('parbolizado')) return 'arroz_parboilizado';
+    if (t.includes('1kg') || t.includes('1 kg') || t.includes('arboreo') || t.includes('risoto') || t.includes('jasmim') || t.includes('basmati') || t.includes('500g') || t.includes('500 g')) return 'arroz_1kg';
+    return 'arroz'; // padrão = fardo 5kg
+  }
+  // Feijão: distinguir preto/vermelho/rajado do carioca
+  if (t.includes('feijao') || t.includes('feijão')) {
+    if (t.includes('preto') || t.includes('vermelho') || t.includes('rajado')) return 'feijao_preto';
+    return 'feijao'; // padrão = carioca
+  }
+
   for (let chave in ICONS_2D) {
     if (chave === 'padrao') continue;
     if (t.includes(chave)) return chave;
