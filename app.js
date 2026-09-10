@@ -1860,10 +1860,6 @@ function renderizarListaCompras() {
             </td>
           `;
         }).join('');
-
-        if (melhorRede) {
-          badgeMelhor = `<span class="mcol-badge-menor-prod" title="Mais barato no ${MERCADOS_DF[melhorRede].nome}">🏆 ${MERCADOS_DF[melhorRede].nome}</span>`;
-        }
       }
 
       linhasTabelaHtml += `
@@ -1887,7 +1883,6 @@ function renderizarListaCompras() {
                 <span class="mcol-prod-nome ${item.comprado ? 'texto-riscado' : ''}" onclick="alternarItemComprado('${item.id}')">${item.nome}</span>
                 ${marcaHtml}
               </div>
-              ${badgeMelhor}
             </div>
           </td>
           ${celulasPrecos}
@@ -4567,8 +4562,6 @@ function renderizarComparadorDF() {
       `;
     }).join('');
 
-    const badgeMelhor = melhorRede ? `<span class="mcol-badge-menor-prod" title="Mais barato no ${MERCADOS_DF[melhorRede].nome}">🏆 ${MERCADOS_DF[melhorRede].nome}</span>` : '';
-
     linhasProdutos += `
       <tr class="mcol-tr-item">
         <td class="mcol-td-qtde">
@@ -4585,7 +4578,6 @@ function renderizarComparadorDF() {
               <span class="mcol-prod-nome">${item.nome}</span>
               ${item.marca ? `<span class="mcol-prod-marca">${item.marca}</span>` : ''}
             </div>
-            ${badgeMelhor}
           </div>
         </td>
         ${celulasPrecos}

@@ -2523,7 +2523,7 @@ body.modo-mercado-ativo .item-nome {
   display: block;
 }
 
-/* Coluna de Quantidade na Frente do Nome */
+/* Coluna de Quantidade na Frente do Nome - Espremida */
 .mcol-th-qtde {
   position: sticky;
   left: 36px !important;
@@ -2531,12 +2531,12 @@ body.modo-mercado-ativo .item-nome {
   background: #F8FAFC !important;
   font-weight: 800;
   color: #1E293B;
-  width: 74px !important;
-  min-width: 74px !important;
-  max-width: 74px !important;
+  width: 50px !important;
+  min-width: 50px !important;
+  max-width: 50px !important;
   text-align: center;
-  padding: 8px 4px !important;
-  font-size: 0.78rem;
+  padding: 8px 1px !important;
+  font-size: 0.74rem;
 }
 
 .mcol-td-qtde {
@@ -2544,10 +2544,10 @@ body.modo-mercado-ativo .item-nome {
   left: 36px !important;
   z-index: 2;
   background: white;
-  width: 74px !important;
-  min-width: 74px !important;
-  max-width: 74px !important;
-  padding: 6px 4px !important;
+  width: 50px !important;
+  min-width: 50px !important;
+  max-width: 50px !important;
+  padding: 4px 1px !important;
   text-align: center;
   vertical-align: middle;
 }
@@ -2559,36 +2559,57 @@ body.modo-mercado-ativo .item-nome {
 .contador-qtde-tabela {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
+  gap: 0;
   background: #F1F5F9;
   border: 1px solid #CBD5E1;
-  border-radius: 6px;
-  padding: 2px;
+  border-radius: 4px;
+  padding: 1px;
 }
 
 .btn-step-tabela {
-  width: 20px;
-  height: 20px;
-  border-radius: 4px;
+  width: 15px;
+  height: 18px;
+  min-width: 15px;
+  border-radius: 2px;
   border: none;
   background: white;
   color: #334155;
-  font-weight: 800;
-  font-size: 0.84rem;
+  font-weight: 900;
+  font-size: 0.75rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.15s;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  padding: 0;
+  line-height: 1;
 }
 
 .btn-step-tabela:active {
   background: #E2E8F0;
-  transform: scale(0.95);
+  transform: scale(0.92);
 }
 
-.input-qtde-tabela,
+.input-qtde-tabela {
+  width: 16px;
+  height: 18px;
+  min-width: 16px;
+  border: none;
+  background: transparent;
+  text-align: center;
+  font-weight: 800;
+  font-size: 0.78rem;
+  color: #0F172A;
+  padding: 0;
+  -moz-appearance: textfield;
+}
+
+.input-qtde-tabela::-webkit-inner-spin-button,
+.input-qtde-tabela::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 .input-qtde-card {
   width: 26px;
   height: 20px;
@@ -2602,24 +2623,22 @@ body.modo-mercado-ativo .item-nome {
   -moz-appearance: textfield;
 }
 
-.input-qtde-tabela::-webkit-inner-spin-button,
-.input-qtde-tabela::-webkit-outer-spin-button,
 .input-qtde-card::-webkit-inner-spin-button,
 .input-qtde-card::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-/* Coluna de Produto: ajustada com left 110px (check 36px + qtde 74px) */
+/* Coluna de Produto: ajustada com left 86px (check 36px + qtde 50px) */
 .mcol-th-produto {
   position: sticky;
-  left: 110px !important;
+  left: 86px !important;
   z-index: 3;
   background: #F8FAFC !important;
   font-weight: 800;
   color: #1E293B;
-  min-width: 255px;
-  padding: 8px 10px !important;
+  min-width: 235px;
+  padding: 8px 8px !important;
   box-shadow: 2px 0 6px rgba(0,0,0,0.04);
 }
 
@@ -2642,11 +2661,11 @@ body.modo-mercado-ativo .item-nome {
 
 .mcol-td-produto {
   position: sticky;
-  left: 110px !important;
+  left: 86px !important;
   z-index: 2;
   background: white;
-  padding: 6px 10px !important;
-  min-width: 255px;
+  padding: 6px 8px !important;
+  min-width: 235px;
   box-shadow: 2px 0 6px rgba(0,0,0,0.04);
 }
 
