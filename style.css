@@ -2753,6 +2753,25 @@ body.modo-mercado-ativo .item-nome {
   color: #64748B !important;
 }
 
+/* Estado de Confirmação na Tabela: 2º Clique para Desmarcar */
+.mcol-tr-item.pendente-desmarcar td {
+  background: #FFFBEB !important;
+  opacity: 1 !important;
+  border-top: 1px dashed #F59E0B !important;
+  border-bottom: 1px dashed #F59E0B !important;
+}
+
+.mcol-tr-item.pendente-desmarcar .check-item-comprado {
+  accent-color: #D97706 !important;
+  outline: 2px solid #F59E0B !important;
+}
+
+.mcol-tr-item.pendente-desmarcar .mcol-prod-nome {
+  color: #B45309 !important;
+  text-decoration: none !important;
+  font-weight: 700 !important;
+}
+
 /* Colunas dos Mercados espremidas */
 .mcol-th-rede {
   min-width: 82px;

@@ -1862,12 +1862,18 @@ function renderizarListaCompras() {
         }).join('');
       }
 
+      const isPendente = (itemPendenteDesmarcarId === item.id);
+      const classePendente = isPendente ? 'pendente-desmarcar' : '';
+      const badgePendente = isPendente 
+        ? `<span class="badge-confirmar-desmarcar" title="Clique mais uma vez para desmarcar">⚠️ Toque novamente para desmarcar</span>` 
+        : '';
+
       linhasTabelaHtml += `
-        <tr class="mcol-tr-item ${item.comprado ? 'item-linha-comprado' : ''}" id="tr-item-${item.id}">
+        <tr class="mcol-tr-item ${item.comprado ? 'item-linha-comprado' : ''} ${classePendente}" id="tr-item-${item.id}">
           <td class="mcol-td-check">
             <input type="checkbox" class="check-item-comprado" ${item.comprado ? 'checked' : ''} 
-                   onchange="alternarItemComprado('${item.id}', this.checked)" 
-                   title="${item.comprado ? 'Desmarcar' : 'Marcar como pego no carrinho'}" />
+                   onclick="event.preventDefault(); alternarItemComprado('${item.id}')" 
+                   title="${item.comprado ? (isPendente ? 'Clique novamente para confirmar' : 'Clique 2x para desmarcar') : 'Marcar como pego no carrinho'}" />
           </td>
           <td class="mcol-td-qtde">
             <div class="contador-qtde-tabela">
@@ -1880,7 +1886,8 @@ function renderizarListaCompras() {
             <div class="mcol-prod-card-cell">
               <div class="mcol-prod-icone">${iconeSvg}</div>
               <div class="mcol-prod-textos">
-                <span class="mcol-prod-nome ${item.comprado ? 'texto-riscado' : ''}" onclick="alternarItemComprado('${item.id}')">${item.nome}</span>
+                <span class="mcol-prod-nome ${item.comprado && !isPendente ? 'texto-riscado' : ''}" onclick="alternarItemComprado('${item.id}')">${item.nome}</span>
+                ${badgePendente}
                 ${marcaHtml}
               </div>
             </div>
@@ -3138,27 +3145,48 @@ function renderizarHistorico() {
 let itemPendenteDesmarcarId = null;
 let timerPendenteDesmarcar = null;
 
-function alternarItemComprado(id, forcarEstado = null) {
+function alternarItemComprado(id) {
   const item = AppState.listaAtiva.find(i => String(i.id) === String(id));
   if (!item) return;
 
-  if (forcarEstado !== null && forcarEstado !== undefined) {
-    item.comprado = Boolean(forcarEstado);
+  // CASO 1: Item ainda NÃO comprado -> Marca imediatamente com 1 clique!
+  if (!item.comprado) {
+    item.comprado = true;
+    cancelarPendenteDesmarcar();
+
+    const catItem = AppState.catalogo.find(c => String(c.id) === String(item.id) || String(c.id) === String(item.catalogoId));
+    if (catItem) catItem.comprado = true;
+
+    salvarEstado(true);
+    renderizarListaCompras();
+    atualizarCardResumo();
+    return;
+  }
+
+  // CASO 2: Item JÁ ESTÁ COMPRADO -> Exige 2 cliques para desmarcar (regra anti-toque acidental)
+  if (itemPendenteDesmarcarId === id) {
+    // Segundo clique confirmado dentro da janela de 3 segundos!
+    cancelarPendenteDesmarcar();
+    item.comprado = false;
+
+    const catItem = AppState.catalogo.find(c => String(c.id) === String(item.id) || String(c.id) === String(item.catalogoId));
+    if (catItem) catItem.comprado = false;
+
+    salvarEstado(true);
+    renderizarListaCompras();
+    atualizarCardResumo();
   } else {
-    item.comprado = !item.comprado;
+    // Primeiro clique: entra em estado de aviso/confirmação
+    cancelarPendenteDesmarcar();
+    itemPendenteDesmarcarId = id;
+    renderizarListaCompras();
+
+    // Timer de 3 segundos para expirar a confirmação se não houver o 2º clique
+    timerPendenteDesmarcar = setTimeout(() => {
+      cancelarPendenteDesmarcar();
+      renderizarListaCompras();
+    }, 3000);
   }
-
-  cancelarPendenteDesmarcar();
-
-  // Sincroniza com o catálogo da despensa
-  const catItem = AppState.catalogo.find(c => String(c.id) === String(item.id) || String(c.id) === String(item.catalogoId));
-  if (catItem) {
-    catItem.comprado = item.comprado;
-  }
-
-  salvarEstado(true);
-  renderizarListaCompras();
-  atualizarCardResumo();
 }
 
 function cancelarPendenteDesmarcar() {
