@@ -2459,6 +2459,8 @@ body.modo-mercado-ativo .item-nome {
 .mcol-tabela-scroll {
   width: 100%;
   overflow-x: auto;
+  overflow-y: auto;
+  max-height: calc(100vh - 155px);
   -webkit-overflow-scrolling: touch;
   background: white;
   border-radius: 14px;
@@ -2475,40 +2477,44 @@ body.modo-mercado-ativo .item-nome {
   text-align: left;
 }
 
-/* /* Cabeçalho Fixo dos Mercados */
+/* Cabeçalho Fixo dos Mercados - Congelado até a linha dos supermercados */
 .mcol-tabela-moderna thead th {
-  background: #F8FAFC;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: #F8FAFC !important;
   padding: 8px 6px;
-  border-bottom: 2px solid #E2E8F0;
+  border-bottom: 2px solid #CBD5E1;
   white-space: nowrap;
   vertical-align: middle;
 }
 
-/* Coluna de Checkbox na Frente de Tudo */
+/* Coluna de Checkbox na Frente de Tudo - Indentada à direita */
 .mcol-th-check {
   position: sticky;
+  top: 0;
   left: 0;
-  z-index: 4;
+  z-index: 30 !important;
   background: #F8FAFC !important;
   font-weight: 800;
   color: #1E293B;
-  width: 36px;
-  min-width: 36px;
-  max-width: 36px;
+  width: 48px !important;
+  min-width: 48px !important;
+  max-width: 48px !important;
   text-align: center;
-  padding: 8px 4px !important;
+  padding: 8px 4px 8px 14px !important;
   font-size: 0.78rem;
 }
 
 .mcol-td-check {
   position: sticky;
   left: 0;
-  z-index: 2;
+  z-index: 5;
   background: white;
-  width: 36px;
-  min-width: 36px;
-  max-width: 36px;
-  padding: 6px 4px !important;
+  width: 48px !important;
+  min-width: 48px !important;
+  max-width: 48px !important;
+  padding: 6px 4px 6px 14px !important;
   text-align: center;
   vertical-align: middle;
 }
@@ -2526,8 +2532,9 @@ body.modo-mercado-ativo .item-nome {
 /* Coluna de Quantidade na Frente do Nome - Espremida */
 .mcol-th-qtde {
   position: sticky;
-  left: 36px !important;
-  z-index: 4;
+  top: 0;
+  left: 48px !important;
+  z-index: 30 !important;
   background: #F8FAFC !important;
   font-weight: 800;
   color: #1E293B;
@@ -2541,8 +2548,8 @@ body.modo-mercado-ativo .item-nome {
 
 .mcol-td-qtde {
   position: sticky;
-  left: 36px !important;
-  z-index: 2;
+  left: 48px !important;
+  z-index: 5;
   background: white;
   width: 50px !important;
   min-width: 50px !important;
@@ -2629,16 +2636,17 @@ body.modo-mercado-ativo .item-nome {
   margin: 0;
 }
 
-/* Coluna de Produto: ajustada com left 86px (check 36px + qtde 50px) */
+/* Coluna de Produto: ajustada com left 98px (check 48px + qtde 50px) */
 .mcol-th-produto {
   position: sticky;
-  left: 86px !important;
-  z-index: 3;
+  top: 0;
+  left: 98px !important;
+  z-index: 29 !important;
   background: #F8FAFC !important;
   font-weight: 800;
   color: #1E293B;
   min-width: 235px;
-  padding: 8px 8px !important;
+  padding: 8px 8px 8px 12px !important;
   box-shadow: 2px 0 6px rgba(0,0,0,0.04);
 }
 
@@ -2661,10 +2669,10 @@ body.modo-mercado-ativo .item-nome {
 
 .mcol-td-produto {
   position: sticky;
-  left: 86px !important;
-  z-index: 2;
+  left: 98px !important;
+  z-index: 4;
   background: white;
-  padding: 6px 8px !important;
+  padding: 6px 8px 6px 12px !important;
   min-width: 235px;
   box-shadow: 2px 0 6px rgba(0,0,0,0.04);
 }
@@ -2673,26 +2681,39 @@ body.modo-mercado-ativo .item-nome {
   background: #F8FAFC;
 }
 
-/* Linha de Categoria Separadora na Tabela */
+/* Linha de Categoria Separadora na Tabela - Título 50% maior e em negrito */
 .mcol-tr-categoria-separador td {
   background: #F1F5F9 !important;
-  padding: 8px 14px !important;
-  border-top: 1.5px solid #CBD5E1;
-  border-bottom: 1px solid #E2E8F0;
+  padding: 10px 14px !important;
+  border-top: 2px solid #CBD5E1;
+  border-bottom: 1.5px solid #E2E8F0;
 }
 
 .categoria-titulo-tabela {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.8rem;
-  font-weight: 900;
-  color: #334155;
-  letter-spacing: 0.05em;
+  gap: 10px;
+}
+
+.categoria-nome-txt {
+  font-size: 1.25rem !important; /* 50% maior */
+  font-weight: 900 !important;   /* Negrito forte */
+  color: #0F172A !important;
+  letter-spacing: -0.01em;
+}
+
+.categoria-qtd-badge {
+  font-size: 0.85rem !important;
+  font-weight: 700 !important;
+  color: #64748B !important;
 }
 
 /* Ações (botão delete) */
 .mcol-th-acoes {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: #F8FAFC !important;
   width: 44px;
   min-width: 44px;
   text-align: center;
@@ -2778,11 +2799,6 @@ body.modo-mercado-ativo .item-nome {
   max-width: 95px;
   padding: 6px 3px !important;
   text-align: center;
-}
-
-.mcol-th-rede.mcol-campeao-header {
-  background: #ECFDF5 !important;
-  border-bottom-color: #10B981;
 }
 
 .mcol-rede-header-inner {

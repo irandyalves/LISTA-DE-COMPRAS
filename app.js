@@ -1757,13 +1757,11 @@ function renderizarListaCompras() {
     colunasCabecalhoMercados = chavesRedes.map(r => {
       const info = MERCADOS_DF[r];
       const logo = (typeof obterLogoMercado === 'function' && obterLogoMercado(r)) || `logos/${r}.png`;
-      const isCampeao = r === campeaoId;
       return `
-        <th class="mcol-th-rede ${isCampeao ? 'mcol-campeao-header' : ''}">
+        <th class="mcol-th-rede">
           <div class="mcol-rede-header-inner">
             <img src="${logo}" class="mcol-rede-logo" onerror="this.outerHTML='<span style=\\'font-size:1.1rem\\'>${info.emoji}</span>'" alt="${info.nome}">
             <span class="mcol-rede-nome">${info.nome}</span>
-            ${isCampeao ? '<span class="mcol-badge-campeao-topo">⭐ Campeão</span>' : ''}
           </div>
         </th>
       `;
@@ -1802,8 +1800,8 @@ function renderizarListaCompras() {
       <tr class="mcol-tr-categoria-separador">
         <td colspan="${numColunas}">
           <div class="categoria-titulo-tabela">
-            <span>${categoria}</span>
-            <span style="font-size: 0.74rem; font-weight: 600; color: #64748B;">(${itens.length} ${itens.length === 1 ? 'item' : 'itens'})</span>
+            <span class="categoria-nome-txt">${categoria}</span>
+            <span class="categoria-qtd-badge">(${itens.length} ${itens.length === 1 ? 'item' : 'itens'})</span>
           </div>
         </td>
       </tr>
@@ -4517,13 +4515,11 @@ function renderizarComparadorDF() {
   let colunasCabecalho = chavesRedes.map(r => {
     const info = MERCADOS_DF[r];
     const logo = (typeof obterLogoMercado === 'function' && obterLogoMercado(r)) || `logos/${r}.png`;
-    const isCampeao = r === campeaoId;
     return `
-      <th class="mcol-th-rede ${isCampeao ? 'mcol-campeao-header' : ''}">
+      <th class="mcol-th-rede">
         <div class="mcol-rede-header-inner">
           <img src="${logo}" class="mcol-rede-logo" onerror="this.outerHTML='<span style=\\'font-size:1.1rem\\'>${info.emoji}</span>'" alt="${info.nome}">
           <span class="mcol-rede-nome">${info.nome}</span>
-          ${isCampeao ? '<span class="mcol-badge-campeao-topo">⭐ Campeão</span>' : ''}
         </div>
       </th>
     `;
