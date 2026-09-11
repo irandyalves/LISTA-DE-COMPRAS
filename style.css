@@ -2520,7 +2520,7 @@ body.modo-mercado-ativo .item-nome {
   z-index: 25;
 }
 
-/* Coluna de Checkbox na Frente de Tudo - Começa embaixo da 3ª letra do título (38px) com parte branca de 6px até o checkbox (44px) */
+/* Coluna de Checkbox na Frente de Tudo - Pertinho da borda esquerda começando com 10px */
 .mcol-th-check {
   position: sticky;
   top: 0;
@@ -2529,11 +2529,11 @@ body.modo-mercado-ativo .item-nome {
   background: #F8FAFC !important;
   font-weight: 800;
   color: #1E293B;
-  width: 68px !important;
-  min-width: 68px !important;
-  max-width: 68px !important;
-  text-align: left !important;
-  padding: 8px 4px 8px 44px !important;
+  width: 36px !important;
+  min-width: 36px !important;
+  max-width: 36px !important;
+  text-align: center;
+  padding: 8px 4px 8px 10px !important;
   font-size: 0.78rem;
   box-shadow: 0 6px 14px -2px rgba(15, 23, 42, 0.16);
 }
@@ -2542,12 +2542,12 @@ body.modo-mercado-ativo .item-nome {
   position: sticky;
   left: 0;
   z-index: 5;
-  background: linear-gradient(to right, #F8FAFC 0px, #F8FAFC 38px, white 38px, white 100%) !important;
-  width: 68px !important;
-  min-width: 68px !important;
-  max-width: 68px !important;
-  padding: 6px 4px 6px 44px !important;
-  text-align: left !important;
+  background: white;
+  width: 36px !important;
+  min-width: 36px !important;
+  max-width: 36px !important;
+  padding: 6px 4px 6px 10px !important;
+  text-align: center;
   vertical-align: middle;
 }
 
@@ -2557,8 +2557,7 @@ body.modo-mercado-ativo .item-nome {
   cursor: pointer;
   accent-color: #10B981;
   border-radius: 4px;
-  margin-left: 0 !important;
-  margin-right: auto !important;
+  margin: 0 auto;
   display: block;
 }
 
@@ -2566,7 +2565,7 @@ body.modo-mercado-ativo .item-nome {
 .mcol-th-qtde {
   position: sticky;
   top: 0;
-  left: 68px !important;
+  left: 36px !important;
   z-index: 30 !important;
   background: #F8FAFC !important;
   font-weight: 800;
@@ -2582,7 +2581,7 @@ body.modo-mercado-ativo .item-nome {
 
 .mcol-td-qtde {
   position: sticky;
-  left: 68px !important;
+  left: 36px !important;
   z-index: 5;
   background: white;
   width: 50px !important;
@@ -2670,11 +2669,11 @@ body.modo-mercado-ativo .item-nome {
   margin: 0;
 }
 
-/* Coluna de Produto: ajustada com left 118px (check 68px + qtde 50px) */
+/* Coluna de Produto: ajustada com left 86px (check 36px + qtde 50px) */
 .mcol-th-produto {
   position: sticky;
   top: 0;
-  left: 118px !important;
+  left: 86px !important;
   z-index: 29 !important;
   background: #F8FAFC !important;
   font-weight: 800;
@@ -2703,7 +2702,7 @@ body.modo-mercado-ativo .item-nome {
 
 .mcol-td-produto {
   position: sticky;
-  left: 118px !important;
+  left: 86px !important;
   z-index: 4;
   background: white;
   padding: 6px 8px 6px 12px !important;
@@ -3019,15 +3018,15 @@ body.modo-mercado-ativo .item-nome {
   left: 0;
   z-index: 5;
   background: #F8FAFC !important;
-  width: 68px;
-  min-width: 68px;
-  max-width: 68px;
+  width: 36px;
+  min-width: 36px;
+  max-width: 36px;
   padding: 8px 2px !important;
 }
 
 .mcol-td-qtde-total {
   position: sticky;
-  left: 68px;
+  left: 36px;
   z-index: 5;
   background: #F8FAFC !important;
   width: 50px;
@@ -3038,7 +3037,7 @@ body.modo-mercado-ativo .item-nome {
 
 .mcol-td-totais-label {
   position: sticky;
-  left: 118px;
+  left: 86px;
   z-index: 4;
   background: #F8FAFC !important;
   text-align: left !important;
