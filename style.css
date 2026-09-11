@@ -1187,17 +1187,22 @@ body.modo-mercado-ativo .item-nome {
   padding-left: 22px; /* Indentação aumentada para a direita em relação ao título da categoria */
 }
 
-/* Cartão do Item de Compra (Altura reduzida em 15%) */
+/* Cartão do Item de Compra (com sombra suave de elevação por cima e ao redor) */
 .item-card {
   background: var(--card-bg);
   border-radius: var(--radius-sm);
-  padding: 4px 10px; /* Redução de 15% na altura */
+  padding: 5px 10px;
   border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06), 0 -1px 2px rgba(15, 23, 42, 0.03);
   display: flex;
   align-items: center;
   gap: 8px;
   transition: all 0.2s ease;
+}
+
+.item-card:hover {
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.09);
+  transform: translateY(-1px);
 }
 
 .item-card.comprado {
@@ -2477,7 +2482,7 @@ body.modo-mercado-ativo .item-nome {
   text-align: left;
 }
 
-/* Cabeçalho Fixo dos Mercados - Congelado até a linha dos supermercados */
+/* Cabeçalho Fixo dos Mercados - Congelado até a linha dos supermercados com sombra por cima dos cards */
 .mcol-tabela-moderna thead th {
   position: sticky;
   top: 0;
@@ -2487,9 +2492,10 @@ body.modo-mercado-ativo .item-nome {
   border-bottom: 2px solid #CBD5E1;
   white-space: nowrap;
   vertical-align: middle;
+  box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.08);
 }
 
-/* Coluna de Checkbox na Frente de Tudo - Indentada à direita */
+/* Coluna de Checkbox na Frente de Tudo - Indentada à direita (cards indentados em relação aos títulos) */
 .mcol-th-check {
   position: sticky;
   top: 0;
@@ -2498,12 +2504,13 @@ body.modo-mercado-ativo .item-nome {
   background: #F8FAFC !important;
   font-weight: 800;
   color: #1E293B;
-  width: 48px !important;
-  min-width: 48px !important;
-  max-width: 48px !important;
+  width: 72px !important;
+  min-width: 72px !important;
+  max-width: 72px !important;
   text-align: center;
-  padding: 8px 4px 8px 14px !important;
+  padding: 8px 4px 8px 36px !important;
   font-size: 0.78rem;
+  box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.08);
 }
 
 .mcol-td-check {
@@ -2511,10 +2518,10 @@ body.modo-mercado-ativo .item-nome {
   left: 0;
   z-index: 5;
   background: white;
-  width: 48px !important;
-  min-width: 48px !important;
-  max-width: 48px !important;
-  padding: 6px 4px 6px 14px !important;
+  width: 72px !important;
+  min-width: 72px !important;
+  max-width: 72px !important;
+  padding: 6px 4px 6px 36px !important;
   text-align: center;
   vertical-align: middle;
 }
@@ -2533,7 +2540,7 @@ body.modo-mercado-ativo .item-nome {
 .mcol-th-qtde {
   position: sticky;
   top: 0;
-  left: 48px !important;
+  left: 72px !important;
   z-index: 30 !important;
   background: #F8FAFC !important;
   font-weight: 800;
@@ -2544,11 +2551,12 @@ body.modo-mercado-ativo .item-nome {
   text-align: center;
   padding: 8px 1px !important;
   font-size: 0.74rem;
+  box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.08);
 }
 
 .mcol-td-qtde {
   position: sticky;
-  left: 48px !important;
+  left: 72px !important;
   z-index: 5;
   background: white;
   width: 50px !important;
@@ -2636,18 +2644,18 @@ body.modo-mercado-ativo .item-nome {
   margin: 0;
 }
 
-/* Coluna de Produto: ajustada com left 98px (check 48px + qtde 50px) */
+/* Coluna de Produto: ajustada com left 122px (check 72px + qtde 50px) */
 .mcol-th-produto {
   position: sticky;
   top: 0;
-  left: 98px !important;
+  left: 122px !important;
   z-index: 29 !important;
   background: #F8FAFC !important;
   font-weight: 800;
   color: #1E293B;
   min-width: 235px;
   padding: 8px 8px 8px 12px !important;
-  box-shadow: 2px 0 6px rgba(0,0,0,0.04);
+  box-shadow: 2px 0 6px rgba(0,0,0,0.04), 0 4px 12px -2px rgba(15, 23, 42, 0.08);
 }
 
 .mcol-th-produto.clicavel {
@@ -2669,7 +2677,7 @@ body.modo-mercado-ativo .item-nome {
 
 .mcol-td-produto {
   position: sticky;
-  left: 98px !important;
+  left: 122px !important;
   z-index: 4;
   background: white;
   padding: 6px 8px 6px 12px !important;
@@ -2681,12 +2689,15 @@ body.modo-mercado-ativo .item-nome {
   background: #F8FAFC;
 }
 
-/* Linha de Categoria Separadora na Tabela - Título 50% maior e em negrito */
+/* Linha de Categoria Separadora na Tabela - Título 50% maior e em negrito com sombra projetada por cima dos cards */
 .mcol-tr-categoria-separador td {
   background: #F1F5F9 !important;
-  padding: 10px 14px !important;
+  padding: 11px 16px !important;
   border-top: 2px solid #CBD5E1;
   border-bottom: 1.5px solid #E2E8F0;
+  box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.08);
+  position: relative;
+  z-index: 6;
 }
 
 .categoria-titulo-tabela {
@@ -2717,6 +2728,7 @@ body.modo-mercado-ativo .item-nome {
   width: 44px;
   min-width: 44px;
   text-align: center;
+  box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.08);
 }
 
 .mcol-td-acoes {
@@ -2832,13 +2844,17 @@ body.modo-mercado-ativo .item-nome {
   letter-spacing: 0.3px;
 }
 
-/* Linhas dos Produtos (Card Row) */
+/* Linhas dos Produtos (Card Row) - Com suave efeito de sombra e profundidade */
 .mcol-tr-item {
-  border-bottom: 1px solid #F1F5F9;
-  transition: background 0.15s ease;
+  border-bottom: 1px solid #E2E8F0;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
 }
 
 .mcol-tr-item:hover {
+  background: #F8FAFC;
+}
+
+.mcol-tr-item:hover td {
   background: #F8FAFC;
 }
 
@@ -2960,26 +2976,59 @@ body.modo-mercado-ativo .item-nome {
   vertical-align: middle;
 }
 
-.mcol-td-qtde-total {
+.mcol-td-check-total {
   position: sticky;
   left: 0;
-  z-index: 2;
+  z-index: 5;
   background: #F8FAFC !important;
-  width: 80px;
-  min-width: 80px;
-  max-width: 80px;
+  width: 72px;
+  min-width: 72px;
+  max-width: 72px;
+  padding: 8px 2px !important;
+}
+
+.mcol-td-qtde-total {
+  position: sticky;
+  left: 72px;
+  z-index: 5;
+  background: #F8FAFC !important;
+  width: 50px;
+  min-width: 50px;
+  max-width: 50px;
   padding: 8px 2px !important;
 }
 
 .mcol-td-totais-label {
   position: sticky;
-  left: 80px;
-  z-index: 3;
+  left: 122px;
+  z-index: 4;
   background: #F8FAFC !important;
   text-align: left !important;
   padding-left: 10px !important;
-  min-width: 255px;
+  min-width: 235px;
   box-shadow: 2px 0 6px rgba(0,0,0,0.04);
+}
+
+/* Compatibilidade para tabelas sem coluna de check (Comparador DF) */
+.mcol-tabela-moderna:not(.tabela-lista-compras) .mcol-th-qtde,
+.mcol-tabela-moderna:not(.tabela-lista-compras) .mcol-td-qtde {
+  left: 0 !important;
+}
+
+.mcol-tabela-moderna:not(.tabela-lista-compras) .mcol-th-produto,
+.mcol-tabela-moderna:not(.tabela-lista-compras) .mcol-td-produto {
+  left: 50px !important;
+}
+
+.mcol-tabela-moderna:not(.tabela-lista-compras) .mcol-td-qtde-total {
+  left: 0 !important;
+  width: 50px !important;
+  min-width: 50px !important;
+  max-width: 50px !important;
+}
+
+.mcol-tabela-moderna:not(.tabela-lista-compras) .mcol-td-totais-label {
+  left: 50px !important;
 }
 
 .mcol-total-box {
