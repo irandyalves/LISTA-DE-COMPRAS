@@ -424,6 +424,19 @@ body {
   box-shadow: 0 2px 8px rgba(5, 150, 105, 0.35) !important;
 }
 
+.btn-toggle-resumir.modo-resumido-on {
+  background: var(--primary) !important;
+  color: white !important;
+  border-color: #3730A3 !important;
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.35) !important;
+}
+
+#btn-resumir-despensa.modo-resumido-on {
+  background: linear-gradient(135deg, #4F46E5, #3730A3) !important;
+  color: white !important;
+  box-shadow: 0 3px 10px rgba(79, 70, 229, 0.4) !important;
+}
+
 .btn-menu-opcoes {
   display: inline-flex;
   align-items: center;

@@ -732,6 +732,7 @@ let AppState = {
   filtroCategoria: 'todas',
   cotacaoAtiva: true, // true = cotado com preços e atacadistas visíveis, false = preços e atacadistas ocultos
   modoNoMercado: false, // true = modo focado no corredor (oculta comparações e tags), false = modo cotação (comparações ativas)
+  modoResumido: false, // true = exibe nomes simplificados e deduplica variedades
   mercadoReferencia: 'atacadao',
   ordenacaoMercados: 'original', // 'original', 'alfabetico_az', 'alfabetico_za', 'preco'
   itensExcluidos: [],
@@ -790,6 +791,7 @@ function sincronizarListaAtivaComCatalogo() {
 document.addEventListener('DOMContentLoaded', () => {
   carregarLocalmente();
   atualizarUIModoNoMercado();
+  atualizarUIModoResumido();
   configurarNavegacao();
   configurarReconhecimentoVoz();
   inicializarNuvem();
@@ -807,6 +809,7 @@ function carregarLocalmente() {
       if (parsed.itensExcluidos) AppState.itensExcluidos = parsed.itensExcluidos;
       if (parsed.cotacaoAtiva !== undefined) AppState.cotacaoAtiva = parsed.cotacaoAtiva;
       if (parsed.modoNoMercado !== undefined) AppState.modoNoMercado = parsed.modoNoMercado;
+      if (parsed.modoResumido !== undefined) AppState.modoResumido = parsed.modoResumido;
       if (parsed.mercadoReferencia && parsed.mercadoReferencia !== 'todos') {
         AppState.mercadoReferencia = parsed.mercadoReferencia;
       } else {
@@ -932,6 +935,7 @@ function salvarEstado(enviarParaNuvem = true) {
     itensExcluidos: AppState.itensExcluidos || [],
     cotacaoAtiva: AppState.cotacaoAtiva,
     modoNoMercado: AppState.modoNoMercado || false,
+    modoResumido: AppState.modoResumido || false,
     mercadoReferencia: (AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos') ? AppState.mercadoReferencia : 'nenhum',
     modoCotacao: AppState.modoCotacao || 'mais_baratos',
     ordenacaoMercados: AppState.ordenacaoMercados || 'original'
@@ -1509,6 +1513,7 @@ function configurarNavegacao() {
       const inputTopo = document.getElementById('input-novo-item');
       const barraMercados = document.querySelector('.barra-mercados-filtro');
       const btnToggleModo = document.getElementById('btn-toggle-modo-mercado');
+      const btnToggleResumir = document.getElementById('btn-toggle-resumir');
 
       // Em Montar Lista e Histórico, retira a linha com supermercados!
       if (barraMercados) {
@@ -1516,6 +1521,9 @@ function configurarNavegacao() {
       }
       if (btnToggleModo) {
         btnToggleModo.style.display = (AppState.abaAtiva === 'lista') ? 'inline-flex' : 'none';
+      }
+      if (btnToggleResumir) {
+        btnToggleResumir.style.display = (AppState.abaAtiva === 'lista' || AppState.abaAtiva === 'despensa') ? 'inline-flex' : 'none';
       }
 
       if (abasCategorias) abasCategorias.style.display = (AppState.abaAtiva === 'lista' || AppState.abaAtiva === 'despensa') ? 'flex' : 'none';
@@ -1808,7 +1816,19 @@ function renderizarListaCompras() {
     `;
 
     // Linhas de Itens
+    const nomesResumidosVistos = new Set();
     itens.forEach(item => {
+      let nomeExibicao = item.nome;
+      if (AppState.modoResumido) {
+        nomeExibicao = obterNomeResumido(item.nome);
+        const chaveDeduplicacao = nomeExibicao.toLowerCase().trim();
+        if (nomesResumidosVistos.has(chaveDeduplicacao)) {
+          // No modo resumido, variedades com o mesmo nome resumido não são exibidas ("só exibe a primeira")
+          return;
+        }
+        nomesResumidosVistos.add(chaveDeduplicacao);
+      }
+
       const iconeSvg = (typeof obterIcone2D === 'function') ? obterIcone2D(item.nome, item.icone) : '';
       const qtde = item.qtde || 1;
 
@@ -1884,7 +1904,7 @@ function renderizarListaCompras() {
             <div class="mcol-prod-card-cell">
               <div class="mcol-prod-icone">${iconeSvg}</div>
               <div class="mcol-prod-textos">
-                <span class="mcol-prod-nome ${item.comprado && !isPendente ? 'texto-riscado' : ''}" onclick="alternarItemComprado('${item.id}')">${item.nome}</span>
+                <span class="mcol-prod-nome ${item.comprado && !isPendente ? 'texto-riscado' : ''}" onclick="alternarItemComprado('${item.id}')" title="${item.nome}">${nomeExibicao}</span>
                 ${badgePendente}
                 ${marcaHtml}
               </div>
@@ -2702,7 +2722,21 @@ function renderizarDespensa() {
     grupoDiv.className = 'categoria-grupo';
 
     let htmlItens = '';
+    const nomesResumidosVistos = new Set();
+    let itensVisiveisContador = 0;
     itens.forEach(prod => {
+      let nomeExibicao = prod.nome;
+      if (AppState.modoResumido) {
+        nomeExibicao = obterNomeResumido(prod.nome);
+        const chaveDeduplicacao = nomeExibicao.toLowerCase().trim();
+        if (nomesResumidosVistos.has(chaveDeduplicacao)) {
+          // No modo resumido, variedades com o mesmo nome resumido não são exibidas ("só exibe a primeira")
+          return;
+        }
+        nomesResumidosVistos.add(chaveDeduplicacao);
+      }
+      itensVisiveisContador++;
+
       const chaveIcone = prod.icone || detectarChaveIcone(prod.nome);
       const iconeSvg = obterIcone2D(prod.nome, chaveIcone);
 
@@ -2737,7 +2771,7 @@ function renderizarDespensa() {
 
           <div class="item-corpo">
             <div class="item-linha-nome">
-              <span class="item-nome">${prod.nome}</span>
+              <span class="item-nome" title="${prod.nome}">${nomeExibicao}</span>
               <button class="btn-editar-despensa" title="Editar este produto" onclick="event.stopPropagation(); abrirModalEditarNomeDespensa('${prod.id}', event)">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M12 20h9"></path>
@@ -2757,7 +2791,7 @@ function renderizarDespensa() {
     grupoDiv.innerHTML = `
       <div class="categoria-titulo">
         <span>${categoria}</span>
-        <span style="font-size: 0.8rem; font-weight: 500;">${itens.length} itens</span>
+        <span style="font-size: 0.8rem; font-weight: 500;">${itensVisiveisContador} ${itensVisiveisContador === 1 ? 'item' : 'itens'}</span>
       </div>
       <div class="itens-lista">${htmlItens}</div>
     `;
@@ -3545,6 +3579,98 @@ function atualizarUIModoNoMercado() {
       btn.title = 'Ocultar colunas de mercados para facilitar a compra';
     }
     if (rotuloTotal) rotuloTotal.textContent = 'TOTAL ESTIMADO';
+  }
+}
+
+// Regras de simplificação para o Modo Resumido
+const REGRAS_NOMES_RESUMIDOS = [
+  { padrao: /^óleo\s+(?:de\s+)?soja/i, res: 'Óleo' },
+  { padrao: /^alface\s+(americana|crespa|lisa|roxa|hidrop[oô]nica)/i, res: 'Alface' },
+  { padrao: /^feij[aã]o\s+carioca/i, res: 'Feijão Carioca' },
+  { padrao: /^feij[aã]o\s+preto/i, res: 'Feijão Preto' },
+  { padrao: /^feij[aã]o\s+fradinho/i, res: 'Feijão Fradinho' },
+  { padrao: /^feij[aã]o\s+branco/i, res: 'Feijão Branco' },
+  { padrao: /^feij[aã]o\s+vermelho/i, res: 'Feijão Vermelho' },
+  { padrao: /^arroz\s+(branco|agulhinha|tipo\s*1)/i, res: 'Arroz Branco' },
+  { padrao: /^arroz\s+parboilizado/i, res: 'Arroz Parboilizado' },
+  { padrao: /^arroz\s+integral/i, res: 'Arroz Integral' },
+  { padrao: /^leite\s+integral/i, res: 'Leite Integral' },
+  { padrao: /^leite\s+desnatado/i, res: 'Leite Desnatado' },
+  { padrao: /^leite\s+semidesnatado/i, res: 'Leite Semidesnatado' },
+  { padrao: /^leite\s+zero\s+lactose/i, res: 'Leite Zero Lactose' },
+  { padrao: /^caf[eé]\s+(mo[ií]do|torrado|tradicional|extraforte|sol[uú]vel)/i, res: 'Café' },
+  { padrao: /^a[cç][uú]car\s+refinado/i, res: 'Açúcar Refinado' },
+  { padrao: /^a[cç][uú]car\s+cristal/i, res: 'Açúcar Cristal' },
+  { padrao: /^a[cç][uú]car\s+demerara/i, res: 'Açúcar Demerara' },
+  { padrao: /^a[cç][uú]car\s+mascavo/i, res: 'Açúcar Mascavo' },
+  { padrao: /^sal\s+refinado/i, res: 'Sal Refinado' },
+  { padrao: /^sal\s+grosso/i, res: 'Sal Grosso' },
+  { padrao: /^tomate\s+italiano/i, res: 'Tomate Italiano' },
+  { padrao: /^tomate\s+salada/i, res: 'Tomate' },
+  { padrao: /^cebola\s+branca/i, res: 'Cebola Branca' },
+  { padrao: /^cebola\s+roxa/i, res: 'Cebola Roxa' },
+  { padrao: /^banana\s+prata/i, res: 'Banana Prata' },
+  { padrao: /^banana\s+nanica/i, res: 'Banana Nanica' },
+  { padrao: /^ma[cç][aã]\s+(?:nacional\s+)?gala/i, res: 'Maçã Gala' },
+  { padrao: /^ma[cç][aã]\s+(?:verde\s*\/\s*)?fuji/i, res: 'Maçã Fuji' },
+  { padrao: /^batata\s+inglesa/i, res: 'Batata Inglesa' },
+  { padrao: /^batata\s+doce/i, res: 'Batata Doce' },
+  { padrao: /^batata\s+baroa/i, res: 'Batata Baroa' }
+];
+
+function obterNomeResumido(nome) {
+  if (!nome || typeof nome !== 'string') return '';
+  const limpoTrim = nome.trim();
+  for (const r of REGRAS_NOMES_RESUMIDOS) {
+    if (r.padrao.test(limpoTrim)) return r.res;
+  }
+  // Limpeza geral para outros itens: remove parênteses de unidades e adjetivos comerciais
+  let limpo = limpoTrim.replace(/\s*\([^)]*\)/g, '');
+  limpo = limpo.replace(/\b(refinado|refinada|especial|tipo\s*\d+|novo\s+tipo\s*\d+|uht|crocante|hidrop[oô]nica|fresco|fresca|fresquinho|selecionado|selecionada|resfriado|resfriada|congelado|congelada|tradicional|nacional|extra\s+virgem|antisséptico|concentrado|concentrada)\b/gi, '');
+  limpo = limpo.replace(/\s{2,}/g, ' ').trim();
+  return limpo || nome;
+}
+
+function alternarModoResumido() {
+  AppState.modoResumido = !AppState.modoResumido;
+  atualizarUIModoResumido();
+  salvarEstado(true);
+  if (AppState.abaAtiva === 'lista') {
+    renderizarListaCompras();
+  } else if (AppState.abaAtiva === 'despensa') {
+    renderizarDespensa();
+  } else if (AppState.abaAtiva === 'mercados') {
+    renderizarComparadorDF();
+  }
+}
+
+function atualizarUIModoResumido() {
+  const btnHeader = document.getElementById('btn-toggle-resumir');
+  const btnDespensa = document.getElementById('btn-resumir-despensa');
+  const ativo = !!AppState.modoResumido;
+
+  if (btnHeader) {
+    if (ativo) {
+      btnHeader.classList.add('modo-resumido-on');
+      btnHeader.innerHTML = '<span class="ico-modo">📄</span> <span class="txt-modo">Completo</span>';
+      btnHeader.title = 'Alternar para nomes completos e todas as variedades';
+    } else {
+      btnHeader.classList.remove('modo-resumido-on');
+      btnHeader.innerHTML = '<span class="ico-modo">📝</span> <span class="txt-modo">Resumir</span>';
+      btnHeader.title = 'Alternar para nomes resumidos e simplificados';
+    }
+  }
+
+  if (btnDespensa) {
+    if (ativo) {
+      btnDespensa.classList.add('modo-resumido-on');
+      btnDespensa.innerHTML = '📄 Completo';
+      btnDespensa.title = 'Alternar para nomes completos e todas as variedades';
+    } else {
+      btnDespensa.classList.remove('modo-resumido-on');
+      btnDespensa.innerHTML = '📝 Resumir';
+      btnDespensa.title = 'Alternar para nomes resumidos e simplificados';
+    }
   }
 }
 
@@ -4544,70 +4670,79 @@ function renderizarComparadorDF() {
     </th>
   `;
 
-  // Linhas de Produtos (Cada produto é uma linha com preços na mesma linha)
-  let linhasProdutos = '';
-  itensExibir.forEach(item => {
-    const iconeSvg = (typeof obterIcone2D === 'function') ? obterIcone2D(item.nome, item.icone) : '';
-    const qtde = item.qtde || 1;
-
-    const precos = {};
-    const precosValidos = [];
-    chavesRedes.forEach(r => {
-      const p = obterPrecoEstimadoMercado(item, r);
-      precos[r] = p;
-      if (p > 0) precosValidos.push(p);
-    });
-
-    const menorPreco = precosValidos.length > 0 ? Math.min(...precosValidos) : -1;
-    const melhorRede = menorPreco > 0 ? chavesRedes.find(r => precos[r] === menorPreco) : null;
-
-    let celulasPrecos = chavesRedes.map(r => {
-      const p = precos[r];
-      const isMenor = p > 0 && p === menorPreco;
-
-      let diffHtml = '';
-      if (p > 0 && !isMenor && menorPreco > 0) {
-        const diffPct = ((p - menorPreco) / menorPreco) * 100;
-        const pctTxt = diffPct < 1 ? `+${diffPct.toFixed(1).replace('.', ',')}%` : `+${Math.round(diffPct)}%`;
-        diffHtml = `<span class="mcol-tag-diff">${pctTxt}</span>`;
-      } else if (isMenor) {
-        diffHtml = `<span class="mcol-tag-menor">✓ Menor</span>`;
+    const nomesResumidosVistos = new Set();
+    itensExibir.forEach(item => {
+      let nomeExibicao = item.nome;
+      if (AppState.modoResumido) {
+        nomeExibicao = obterNomeResumido(item.nome);
+        const chaveDeduplicacao = nomeExibicao.toLowerCase().trim();
+        if (nomesResumidosVistos.has(chaveDeduplicacao)) {
+          return; // Deduplica variações no modo resumido
+        }
+        nomesResumidosVistos.add(chaveDeduplicacao);
       }
 
-      const precoTxt = p > 0 ? `R$ ${p.toFixed(2).replace('.', ',')}` : '<span class="mcol-a-cotar">—</span>';
+      const iconeSvg = (typeof obterIcone2D === 'function') ? obterIcone2D(item.nome, item.icone) : '';
+      const qtde = item.qtde || 1;
 
-      return `
-        <td class="mcol-td-preco ${isMenor ? 'mcol-td-menor-bg' : ''}">
-          <div class="mcol-preco-linha-box">
-            <span class="mcol-valor ${isMenor ? 'mcol-valor-menor' : ''}">${precoTxt}</span>
-            ${diffHtml}
-          </div>
-        </td>
-      `;
-    }).join('');
+      const precos = {};
+      const precosValidos = [];
+      chavesRedes.forEach(r => {
+        const p = obterPrecoEstimadoMercado(item, r);
+        precos[r] = p;
+        if (p > 0) precosValidos.push(p);
+      });
 
-    linhasProdutos += `
-      <tr class="mcol-tr-item">
-        <td class="mcol-td-qtde">
-          <div class="contador-qtde-tabela">
-            <button class="btn-step-tabela" onclick="alterarQuantidade('${item.id}', -1)" title="Diminuir">-</button>
-            <input type="number" min="1" class="input-qtde-tabela" value="${qtde}" onchange="definirQuantidadeDireta('${item.id}', this.value)" title="Editar quantidade" />
-            <button class="btn-step-tabela" onclick="alterarQuantidade('${item.id}', 1)" title="Aumentar">+</button>
-          </div>
-        </td>
-        <td class="mcol-td-produto">
-          <div class="mcol-prod-card-cell">
-            <div class="mcol-prod-icone">${iconeSvg}</div>
-            <div class="mcol-prod-textos">
-              <span class="mcol-prod-nome">${item.nome}</span>
-              ${item.marca ? `<span class="mcol-prod-marca">${item.marca}</span>` : ''}
+      const menorPreco = precosValidos.length > 0 ? Math.min(...precosValidos) : -1;
+      const melhorRede = menorPreco > 0 ? chavesRedes.find(r => precos[r] === menorPreco) : null;
+
+      let celulasPrecos = chavesRedes.map(r => {
+        const p = precos[r];
+        const isMenor = p > 0 && p === menorPreco;
+
+        let diffHtml = '';
+        if (p > 0 && !isMenor && menorPreco > 0) {
+          const diffPct = ((p - menorPreco) / menorPreco) * 100;
+          const pctTxt = diffPct < 1 ? `+${diffPct.toFixed(1).replace('.', ',')}%` : `+${Math.round(diffPct)}%`;
+          diffHtml = `<span class="mcol-tag-diff">${pctTxt}</span>`;
+        } else if (isMenor) {
+          diffHtml = `<span class="mcol-tag-menor">✓ Menor</span>`;
+        }
+
+        const precoTxt = p > 0 ? `R$ ${p.toFixed(2).replace('.', ',')}` : '<span class="mcol-a-cotar">—</span>';
+
+        return `
+          <td class="mcol-td-preco ${isMenor ? 'mcol-td-menor-bg' : ''}">
+            <div class="mcol-preco-linha-box">
+              <span class="mcol-valor ${isMenor ? 'mcol-valor-menor' : ''}">${precoTxt}</span>
+              ${diffHtml}
             </div>
-          </div>
-        </td>
-        ${celulasPrecos}
-      </tr>
-    `;
-  });
+          </td>
+        `;
+      }).join('');
+
+      linhasProdutos += `
+        <tr class="mcol-tr-item">
+          <td class="mcol-td-qtde">
+            <div class="contador-qtde-tabela">
+              <button class="btn-step-tabela" onclick="alterarQuantidade('${item.id}', -1)" title="Diminuir">-</button>
+              <input type="number" min="1" class="input-qtde-tabela" value="${qtde}" onchange="definirQuantidadeDireta('${item.id}', this.value)" title="Editar quantidade" />
+              <button class="btn-step-tabela" onclick="alterarQuantidade('${item.id}', 1)" title="Aumentar">+</button>
+            </div>
+          </td>
+          <td class="mcol-td-produto">
+            <div class="mcol-prod-card-cell">
+              <div class="mcol-prod-icone">${iconeSvg}</div>
+              <div class="mcol-prod-textos">
+                <span class="mcol-prod-nome" title="${item.nome}">${nomeExibicao}</span>
+                ${item.marca ? `<span class="mcol-prod-marca">${item.marca}</span>` : ''}
+              </div>
+            </div>
+          </td>
+          ${celulasPrecos}
+        </tr>
+      `;
+    });
 
   // Linha de Totais (Rodapé da Tabela)
   let celulasTotais = chavesRedes.map(r => {

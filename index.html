@@ -46,6 +46,9 @@
         </div>
 
         <div class="header-acoes-unificadas">
+          <button id="btn-toggle-resumir" class="btn-toggle-modo-mercado btn-toggle-resumir" onclick="alternarModoResumido()" title="Alternar entre nomes resumidos ou nomes completos dos produtos">
+            <span class="ico-modo">📝</span> <span class="txt-modo">Resumir</span>
+          </button>
           <button id="btn-toggle-modo-mercado" class="btn-toggle-modo-mercado" onclick="alternarModoNoMercado()" title="Ocultar ou exibir colunas de mercados para facilitar a compra">
             <span class="ico-modo">👁️</span> <span class="txt-modo">Ocultar Mercados</span>
           </button>
@@ -108,6 +111,9 @@
           <span style="font-size: 0.78rem; color: var(--text-muted);">Marque o que falta em casa</span>
         </div>
         <div class="despensa-topo-botoes-grupo">
+          <button id="btn-resumir-despensa" class="btn-minha-lista-acao" onclick="alternarModoResumido()" title="Alternar entre nomes resumidos ou nomes completos">
+            📝 Resumir
+          </button>
           <button class="btn-minha-lista-acao" onclick="abrirModalPresets()" title="Carregar lista pré-montada ou meu preset">
             ⭐ Minha Lista (Presets)
           </button>
