@@ -50,7 +50,7 @@ body {
   padding: 12px;
 }
 
-/* Painel Superior Congelado (Sticky Header com Abas) */
+/* Painel Superior Congelado (Sticky Header com Abas) - Sombra pronunciada sobre a lista */
 .painel-topo-congelado {
   position: sticky;
   top: 0;
@@ -58,8 +58,20 @@ body {
   background: var(--bg-app);
   padding: 8px 12px 6px 12px;
   margin: -12px -12px 10px -12px;
-  border-bottom: 1.5px solid var(--border);
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+  border-bottom: 1.5px solid #CBD5E1;
+  box-shadow: 0 8px 24px -3px rgba(15, 23, 42, 0.18), 0 3px 8px -2px rgba(15, 23, 42, 0.10);
+}
+
+.painel-topo-congelado::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -10px;
+  height: 10px;
+  background: linear-gradient(to bottom, rgba(15, 23, 42, 0.18), rgba(15, 23, 42, 0.04) 70%, transparent);
+  pointer-events: none;
+  z-index: 1001;
 }
 
 /* Cabeçalho Otimizado com Busca na Frente do Total */
@@ -1184,7 +1196,7 @@ body.modo-mercado-ativo .item-nome {
   display: flex;
   flex-direction: column;
   gap: 6px; /* Espremido */
-  padding-left: 22px; /* Indentação aumentada para a direita em relação ao título da categoria */
+  padding-left: 28px; /* Indentação para começar debaixo da letra 'R' de Hortifrúti */
 }
 
 /* Cartão do Item de Compra (com sombra suave de elevação por cima e ao redor) */
@@ -2477,12 +2489,13 @@ body.modo-mercado-ativo .item-nome {
 .mcol-tabela-moderna {
   width: 100%;
   min-width: 780px;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   font-size: 0.82rem;
   text-align: left;
 }
 
-/* Cabeçalho Fixo dos Mercados - Congelado até a linha dos supermercados com sombra por cima dos cards */
+/* Cabeçalho Fixo dos Mercados - Congelado até a linha dos supermercados com sombra marcante sobre a lista */
 .mcol-tabela-moderna thead th {
   position: sticky;
   top: 0;
@@ -2492,10 +2505,22 @@ body.modo-mercado-ativo .item-nome {
   border-bottom: 2px solid #CBD5E1;
   white-space: nowrap;
   vertical-align: middle;
-  box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 6px 14px -2px rgba(15, 23, 42, 0.16);
 }
 
-/* Coluna de Checkbox na Frente de Tudo - Indentada à direita (cards indentados em relação aos títulos) */
+.mcol-tabela-moderna thead th::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -10px;
+  height: 10px;
+  background: linear-gradient(to bottom, rgba(15, 23, 42, 0.22), rgba(15, 23, 42, 0.05) 75%, transparent);
+  pointer-events: none;
+  z-index: 25;
+}
+
+/* Coluna de Checkbox na Frente de Tudo - Alinhada debaixo da letra 'r' de Hortifrúti (16px + 30px = 46px) */
 .mcol-th-check {
   position: sticky;
   top: 0;
@@ -2504,13 +2529,13 @@ body.modo-mercado-ativo .item-nome {
   background: #F8FAFC !important;
   font-weight: 800;
   color: #1E293B;
-  width: 72px !important;
-  min-width: 72px !important;
-  max-width: 72px !important;
-  text-align: center;
-  padding: 8px 4px 8px 36px !important;
+  width: 78px !important;
+  min-width: 78px !important;
+  max-width: 78px !important;
+  text-align: left !important;
+  padding: 8px 4px 8px 46px !important;
   font-size: 0.78rem;
-  box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 6px 14px -2px rgba(15, 23, 42, 0.16);
 }
 
 .mcol-td-check {
@@ -2518,11 +2543,11 @@ body.modo-mercado-ativo .item-nome {
   left: 0;
   z-index: 5;
   background: white;
-  width: 72px !important;
-  min-width: 72px !important;
-  max-width: 72px !important;
-  padding: 6px 4px 6px 36px !important;
-  text-align: center;
+  width: 78px !important;
+  min-width: 78px !important;
+  max-width: 78px !important;
+  padding: 6px 4px 6px 46px !important;
+  text-align: left !important;
   vertical-align: middle;
 }
 
@@ -2532,7 +2557,8 @@ body.modo-mercado-ativo .item-nome {
   cursor: pointer;
   accent-color: #10B981;
   border-radius: 4px;
-  margin: 0 auto;
+  margin-left: 0 !important;
+  margin-right: auto !important;
   display: block;
 }
 
@@ -2540,7 +2566,7 @@ body.modo-mercado-ativo .item-nome {
 .mcol-th-qtde {
   position: sticky;
   top: 0;
-  left: 72px !important;
+  left: 78px !important;
   z-index: 30 !important;
   background: #F8FAFC !important;
   font-weight: 800;
@@ -2551,12 +2577,12 @@ body.modo-mercado-ativo .item-nome {
   text-align: center;
   padding: 8px 1px !important;
   font-size: 0.74rem;
-  box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 6px 14px -2px rgba(15, 23, 42, 0.16);
 }
 
 .mcol-td-qtde {
   position: sticky;
-  left: 72px !important;
+  left: 78px !important;
   z-index: 5;
   background: white;
   width: 50px !important;
@@ -2644,18 +2670,18 @@ body.modo-mercado-ativo .item-nome {
   margin: 0;
 }
 
-/* Coluna de Produto: ajustada com left 122px (check 72px + qtde 50px) */
+/* Coluna de Produto: ajustada com left 128px (check 78px + qtde 50px) */
 .mcol-th-produto {
   position: sticky;
   top: 0;
-  left: 122px !important;
+  left: 128px !important;
   z-index: 29 !important;
   background: #F8FAFC !important;
   font-weight: 800;
   color: #1E293B;
   min-width: 235px;
   padding: 8px 8px 8px 12px !important;
-  box-shadow: 2px 0 6px rgba(0,0,0,0.04), 0 4px 12px -2px rgba(15, 23, 42, 0.08);
+  box-shadow: 2px 0 6px rgba(0,0,0,0.04), 0 6px 14px -2px rgba(15, 23, 42, 0.16);
 }
 
 .mcol-th-produto.clicavel {
@@ -2677,7 +2703,7 @@ body.modo-mercado-ativo .item-nome {
 
 .mcol-td-produto {
   position: sticky;
-  left: 122px !important;
+  left: 128px !important;
   z-index: 4;
   background: white;
   padding: 6px 8px 6px 12px !important;
@@ -2694,10 +2720,22 @@ body.modo-mercado-ativo .item-nome {
   background: #F1F5F9 !important;
   padding: 11px 16px !important;
   border-top: 2px solid #CBD5E1;
-  border-bottom: 1.5px solid #E2E8F0;
-  box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.08);
+  border-bottom: 2px solid #CBD5E1;
+  box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.12);
   position: relative;
   z-index: 6;
+}
+
+.mcol-tr-categoria-separador td::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -8px;
+  height: 8px;
+  background: linear-gradient(to bottom, rgba(15, 23, 42, 0.18), transparent);
+  pointer-events: none;
+  z-index: 10;
 }
 
 .categoria-titulo-tabela {
@@ -2981,15 +3019,15 @@ body.modo-mercado-ativo .item-nome {
   left: 0;
   z-index: 5;
   background: #F8FAFC !important;
-  width: 72px;
-  min-width: 72px;
-  max-width: 72px;
+  width: 78px;
+  min-width: 78px;
+  max-width: 78px;
   padding: 8px 2px !important;
 }
 
 .mcol-td-qtde-total {
   position: sticky;
-  left: 72px;
+  left: 78px;
   z-index: 5;
   background: #F8FAFC !important;
   width: 50px;
@@ -3000,7 +3038,7 @@ body.modo-mercado-ativo .item-nome {
 
 .mcol-td-totais-label {
   position: sticky;
-  left: 122px;
+  left: 128px;
   z-index: 4;
   background: #F8FAFC !important;
   text-align: left !important;
@@ -3077,7 +3115,7 @@ body.modo-mercado-ativo .item-nome {
   border-radius: 12px;
   border: 1px solid var(--border);
   margin-bottom: 12px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 6px 16px -2px rgba(15, 23, 42, 0.14), 0 2px 6px -1px rgba(15, 23, 42, 0.08);
 }
 
 .despensa-topo-info {
