@@ -43,9 +43,24 @@ body {
   padding-bottom: 75px; /* Espaço para a barra inferior mobile */
 }
 
+/* Layout Geral de 2 Colunas (Sidebar à esquerda + Conteúdo à direita) */
+.layout-geral-app {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.layout-conteudo-principal {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
 /* Container Principal */
 .app-container {
   max-width: 1440px;
+  width: 100%;
   margin: 0 auto;
   padding: 12px;
 }
@@ -102,24 +117,74 @@ body {
 }
 
 .sidebar-esquerda {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 290px;
-  max-width: 85vw;
-  height: 100vh;
   background: #FFFFFF;
-  z-index: 10000;
-  box-shadow: 12px 0 32px rgba(15, 23, 42, 0.18);
   display: flex;
   flex-direction: column;
-  transform: translateX(-100%);
-  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
   overflow-y: auto;
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.sidebar-esquerda.aberta {
-  transform: translateX(0);
+/* NO DESKTOP (telas >= 900px): FIXA, ABERTA E PERMANENTE À ESQUERDA! */
+@media (min-width: 900px) {
+  body {
+    padding-bottom: 0 !important; /* Sem espaço de barra inferior no desktop */
+  }
+
+  .sidebar-esquerda {
+    position: sticky !important;
+    top: 0 !important;
+    height: 100vh !important;
+    width: 275px !important;
+    min-width: 275px !important;
+    max-width: 275px !important;
+    transform: none !important;
+    border-right: 1.5px solid var(--border) !important;
+    box-shadow: 4px 0 16px rgba(15, 23, 42, 0.06) !important;
+    z-index: 1050 !important;
+  }
+
+  .btn-fechar-sidebar {
+    display: none !important;
+  }
+
+  .sidebar-overlay {
+    display: none !important;
+  }
+
+  .btn-toggle-sidebar {
+    display: none !important; /* Oculta botão hambúrguer no PC pois a barra já está aberta */
+  }
+
+  .bottom-nav {
+    display: none !important; /* Oculta a barra de celular no desktop! */
+  }
+}
+
+/* NO MOBILE (< 900px): Desliza ao clicar em ☰ */
+@media (max-width: 899px) {
+  body {
+    padding-bottom: 75px;
+  }
+
+  .sidebar-esquerda {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 290px;
+    max-width: 85vw;
+    height: 100vh;
+    z-index: 10000;
+    box-shadow: 12px 0 32px rgba(15, 23, 42, 0.18);
+    transform: translateX(-100%);
+  }
+
+  .sidebar-esquerda.aberta {
+    transform: translateX(0);
+  }
+
+  .btn-toggle-sidebar {
+    display: inline-flex;
+  }
 }
 
 .sidebar-overlay {
