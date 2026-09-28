@@ -1532,14 +1532,89 @@ function obterPrecoEstimadoMercado(item, redeId) {
   return Number((precoBaseFallback * fatorFallback).toFixed(2));
 }
 
-// Navegação de Abas
+// ========================================================
+// CONTROLE DA SLIDE BAR LATERAL À ESQUERDA (SIDEBAR)
+// ========================================================
+function alternarSidebar(abrir) {
+  const sidebar = document.getElementById('sidebar-esquerda');
+  const overlay = document.getElementById('sidebar-overlay');
+  if (!sidebar) return;
+
+  const estaAberta = sidebar.classList.contains('aberta');
+  const deveAbrir = (abrir !== undefined) ? !!abrir : !estaAberta;
+
+  if (deveAbrir) {
+    sidebar.classList.add('aberta');
+    if (overlay) overlay.classList.add('aberta');
+    document.body.style.overflow = (window.innerWidth <= 768) ? 'hidden' : '';
+  } else {
+    sidebar.classList.remove('aberta');
+    if (overlay) overlay.classList.remove('aberta');
+    document.body.style.overflow = '';
+  }
+}
+
+// Fecha a sidebar ao pressionar Escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    alternarSidebar(false);
+  }
+});
+
+// Atualiza o Card de Economia na Sidebar com o Campeão Real (Movido para cá)
+function atualizarCardEconomiaSidebar(campeaoId, totais, economia) {
+  const elConteudo = document.getElementById('sidebar-eco-conteudo');
+  if (!elConteudo) return;
+
+  if (!campeaoId || !totais || !MERCADOS_DF[campeaoId] || AppState.listaAtiva.length === 0) {
+    elConteudo.innerHTML = `
+      <div class="sidebar-eco-msg" style="color: var(--text-muted); font-size: 0.8rem; line-height: 1.4;">
+        Adicione itens à lista para cotar o mercado mais barato do DF.
+      </div>
+    `;
+    return;
+  }
+
+  const infoCampeao = MERCADOS_DF[campeaoId];
+  const totalCampeaoTxt = (totais[campeaoId] || 0).toFixed(2).replace('.', ',');
+  const economiaTxt = (economia > 0) ? economia.toFixed(2).replace('.', ',') : '0,00';
+  const logo = (typeof obterLogoMercado === 'function' && obterLogoMercado(campeaoId)) || `logos/${campeaoId}.png`;
+
+  elConteudo.innerHTML = `
+    <div class="sidebar-eco-mercado-nome">
+      <img src="${logo}" style="width: 22px; height: 22px; object-fit: contain; border-radius: 4px;" 
+           onerror="this.outerHTML='<span style=\\'font-size:1.1rem;\\'>${infoCampeao.emoji}</span>'" alt="${infoCampeao.nome}">
+      <strong>${infoCampeao.nome}</strong>
+    </div>
+    <div class="sidebar-eco-preco-linha">
+      Carrinho sai por: <span class="sidebar-eco-valor">R$ ${totalCampeaoTxt}</span>
+    </div>
+    ${economia > 0 ? `
+      <div class="sidebar-eco-poupanca">
+        💡 Comprando no <strong>${infoCampeao.nome}</strong> você economiza até <strong>R$ ${economiaTxt}</strong> nesta lista!
+      </div>
+    ` : ''}
+    <button class="btn-sidebar-aplicar-mercado" onclick="selecionarMercadoReferencia('${campeaoId}'); alternarSidebar(false);" title="Cotar a lista inteira no ${infoCampeao.nome}">
+      Cotar no ${infoCampeao.nome}
+    </button>
+  `;
+}
+
+// Navegação de Abas Unificada (Sidebar + Menus)
 function configurarNavegacao() {
-  const botoesNav = document.querySelectorAll('.nav-item');
-  botoesNav.forEach(btn => {
+  const todosBotoesNav = document.querySelectorAll('.nav-item, .sidebar-nav-item');
+  todosBotoesNav.forEach(btn => {
     btn.addEventListener('click', () => {
-      botoesNav.forEach(b => b.classList.remove('ativo'));
-      btn.classList.add('ativo');
-      AppState.abaAtiva = btn.getAttribute('data-aba');
+      const aba = btn.getAttribute('data-aba');
+      if (!aba) return;
+      
+      AppState.abaAtiva = aba;
+      
+      // Sincroniza classes ativas em todos os menus (sidebar e inferior)
+      document.querySelectorAll('.nav-item, .sidebar-nav-item').forEach(b => {
+        if (b.getAttribute('data-aba') === aba) b.classList.add('ativo');
+        else b.classList.remove('ativo');
+      });
       
       document.getElementById('view-lista').style.display = AppState.abaAtiva === 'lista' ? 'block' : 'none';
       document.getElementById('view-despensa').style.display = AppState.abaAtiva === 'despensa' ? 'block' : 'none';
@@ -2085,19 +2160,8 @@ function renderizarListaCompras() {
     `;
   }
 
-  // Bloco de destaque de economia abaixo da tabela (quando mercados visíveis)
-  let destaqueEconomiaHtml = '';
-  if (!ocultarMercados && economia > 0) {
-    destaqueEconomiaHtml = `
-      <div class="destaque-economia-box" style="margin-top: 14px;">
-        <span>💡</span>
-        <div style="flex: 1;">
-          Comprando no <strong>${MERCADOS_DF[campeaoId].nome}</strong> o carrinho sai por <strong>R$ ${totais[campeaoId].toFixed(2).replace('.', ',')}</strong>.
-          Você economiza até <strong>R$ ${economia.toFixed(2).replace('.', ',')}</strong> nesta lista!
-        </div>
-      </div>
-    `;
-  }
+  // Mover a informação de economia e melhor mercado para a Slide Bar à esquerda
+  atualizarCardEconomiaSidebar(campeaoId, totais, economia);
 
   container.innerHTML = `
     <div class="mcol-tabela-scroll">
@@ -2121,7 +2185,6 @@ function renderizarListaCompras() {
         ${tfootHtml}
       </table>
     </div>
-    ${destaqueEconomiaHtml}
   `;
 }
 
@@ -3833,10 +3896,10 @@ function abrirModalOpcoesHeader() {
 }
 
 function navegarParaAba(abaId) {
-  const botoesNav = document.querySelectorAll('.nav-item');
-  botoesNav.forEach(b => {
-    if (b.getAttribute('data-aba') === abaId) b.click();
-  });
+  const btn = document.querySelector(`.sidebar-nav-item[data-aba="${abaId}"], .nav-item[data-aba="${abaId}"]`);
+  if (btn) {
+    btn.click();
+  }
 }
 
 // Alterna e aplica os filtros dinâmicos de cotação:

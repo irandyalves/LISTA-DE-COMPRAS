@@ -16,11 +16,63 @@
 </head>
 <body>
 
+  <!-- SLIDE BAR LATERAL À ESQUERDA (SIDEBAR) -->
+  <aside id="sidebar-esquerda" class="sidebar-esquerda">
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <span class="sidebar-brand-ico">🛒</span>
+        <span class="sidebar-brand-txt">LISTA DE COMPRAS</span>
+      </div>
+      <button class="btn-fechar-sidebar" onclick="alternarSidebar(false)" title="Fechar Menu">✕</button>
+    </div>
+
+    <!-- MENUS PRINCIPAIS DA SLIDE BAR -->
+    <nav class="sidebar-nav">
+      <button class="sidebar-nav-item ativo" data-aba="lista" onclick="navegarParaAba('lista'); alternarSidebar(false);">
+        <span class="sidebar-nav-icon">🛒</span>
+        <span class="sidebar-nav-text">COMPRAR</span>
+      </button>
+      <button class="sidebar-nav-item" data-aba="despensa" onclick="navegarParaAba('despensa'); alternarSidebar(false);">
+        <span class="sidebar-nav-icon">📋</span>
+        <span class="sidebar-nav-text">MONTAR LISTA</span>
+      </button>
+      <button class="sidebar-nav-item" data-aba="historico" onclick="navegarParaAba('historico'); alternarSidebar(false);">
+        <span class="sidebar-nav-icon">📊</span>
+        <span class="sidebar-nav-text">HISTÓRICO</span>
+      </button>
+    </nav>
+
+    <!-- INFORMAÇÃO MOVIDA: COMPRANDO NO ASSAÍ / MELHOR MERCADO E ECONOMIA -->
+    <div class="sidebar-box-economia" id="sidebar-box-economia">
+      <div class="sidebar-eco-badge">
+        <span>💡</span> <span>MELHOR COMPRA DF</span>
+      </div>
+      <div class="sidebar-eco-conteudo" id="sidebar-eco-conteudo">
+        <div class="sidebar-eco-msg">Calculando cotações da sua lista...</div>
+      </div>
+    </div>
+
+    <!-- RODAPÉ DA SIDEBAR -->
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-item">
+        <span>⚡ Cotações atualizadas em Brasília</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- OVERLAY FOSCO PARA QUANDO A SIDEBAR ESTIVER ABERTA -->
+  <div id="sidebar-overlay" class="sidebar-overlay" onclick="alternarSidebar(false)"></div>
+
   <div class="app-container">
     <!-- PAINEL SUPERIOR CONGELADO (STICKY HEADER COM TODAS AS ABAS) -->
     <div class="painel-topo-congelado">
-      <!-- LINHA 1: Ícone do Carrinho + Total Estimado + Barra de Pesquisa Reduzida com Único Botão Adicionar + Ações -->
+      <!-- LINHA 1: Botão Menu Slide Bar + Ícone do Carrinho + Total Estimado + Barra de Pesquisa Reduzida com Único Botão Adicionar + Ações -->
       <header class="header-otimizado-l1">
+        <!-- Botão Menu Slide Bar à Esquerda -->
+        <button id="btn-toggle-sidebar" class="btn-toggle-sidebar" onclick="alternarSidebar()" title="Abrir Menu Lateral (Slide Bar)">
+          ☰
+        </button>
+
         <div class="bloco-carrinho-total" onclick="alternarVisaoTotal()" style="cursor: pointer;" title="Toque para alternar entre Total Geral, Restante e No Carrinho">
           <div class="carrinho-icon-xl">🛒</div>
           <div class="total-estimado-box">
