@@ -3015,17 +3015,30 @@ body.modo-mercado-ativo .item-nome {
   background: #F8FAFC;
 }
 
-/* Linha de Categoria Separadora na Tabela - Título 50% maior e em negrito com sombra projetada por cima dos cards */
+/* Linha de Categoria Separadora na Tabela com Atacadistas Integrados */
+.mcol-tr-categoria-separador {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.mcol-tr-categoria-separador th,
 .mcol-tr-categoria-separador td {
   background: #F1F5F9 !important;
-  padding: 10px 14px !important;
+  padding: 8px 10px !important;
   border-top: 2px solid #CBD5E1;
   border-bottom: 2px solid #CBD5E1;
   box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.12);
+  vertical-align: middle;
   position: relative;
-  z-index: 6;
 }
 
+.mcol-th-categoria-col {
+  padding: 8px 14px !important;
+  text-align: left;
+}
+
+.mcol-tr-categoria-separador th::after,
 .mcol-tr-categoria-separador td::after {
   content: '';
   position: absolute;
@@ -3143,32 +3156,49 @@ body.modo-mercado-ativo .item-nome {
   font-weight: 700 !important;
 }
 
-/* Colunas dos Mercados espremidas */
+/* Colunas dos Mercados espremidas na linha da Categoria */
 .mcol-th-rede {
-  min-width: 82px;
-  max-width: 95px;
-  padding: 6px 3px !important;
+  min-width: 80px;
+  max-width: 98px;
+  padding: 6px 4px !important;
   text-align: center;
+  border-left: 1px solid #CBD5E1 !important;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.mcol-th-rede:hover {
+  background: #EEF2FF !important;
+}
+
+.mcol-th-rede.mcol-coluna-ativa {
+  background: #FEF3C7 !important;
+  border-left: 2px solid #F59E0B !important;
+  border-right: 2px solid #F59E0B !important;
 }
 
 .mcol-rede-header-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
+  display: flex !important;
+  flex-direction: row !important; /* icone a esq e nome a direita */
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  white-space: nowrap !important;
 }
 
 .mcol-rede-logo {
-  width: 18px;
-  height: 18px;
-  object-fit: contain;
-  border-radius: 3px;
+  width: 17px !important;
+  height: 17px !important;
+  object-fit: contain !important;
+  border-radius: 3px !important;
+  flex-shrink: 0 !important;
 }
 
 .mcol-rede-nome {
-  font-size: 0.72rem;
-  font-weight: 800;
-  color: #334155;
+  font-size: 0.72rem !important;
+  font-weight: 800 !important;
+  color: #1E293B !important;
+  white-space: nowrap !important;
 }
 
 .mcol-badge-campeao-topo {

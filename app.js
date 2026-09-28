@@ -1975,7 +1975,6 @@ function renderizarListaCompras() {
           <div class="mcol-rede-header-inner">
             <img src="${logo}" class="mcol-rede-logo" onerror="this.outerHTML='<span style=\\'font-size:1.1rem\\'>${info.emoji}</span>'" alt="${info.nome}">
             <span class="mcol-rede-nome">${info.nome}</span>
-            ${isColunaAtiva ? '<span style="font-size:0.58rem; color:#D97706; font-weight:800; background:#FEF3C7; padding:0 3px; border-radius:3px; border:1px solid #F59E0B; margin-top:2px;">● ATIVO</span>' : ''}
           </div>
         </th>
       `;
@@ -2009,15 +2008,17 @@ function renderizarListaCompras() {
       });
     }
 
-    // Linha de Cabeçalho da Categoria
+    // Linha de Cabeçalho da Categoria com os Atacadistas na mesma linha
     linhasTabelaHtml += `
       <tr class="mcol-tr-categoria-separador">
-        <td colspan="${numColunas}">
+        <th colspan="3" class="mcol-th-categoria-col">
           <div class="categoria-titulo-tabela">
             <span class="categoria-nome-txt">${categoria}</span>
             <span class="categoria-qtd-badge">(${itens.length} ${itens.length === 1 ? 'item' : 'itens'})</span>
           </div>
-        </td>
+        </th>
+        ${colunasCabecalhoMercados}
+        <th class="mcol-th-acoes"></th>
       </tr>
     `;
 
@@ -2166,19 +2167,6 @@ function renderizarListaCompras() {
   container.innerHTML = `
     <div class="mcol-tabela-scroll">
       <table class="mcol-tabela-moderna tabela-lista-compras ${ocultarMercados ? 'mercados-ocultos' : ''}">
-        <thead>
-          <tr>
-            <th class="mcol-th-check">✓</th>
-            <th class="mcol-th-qtde">Qtde</th>
-            <th class="mcol-th-produto">
-              <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
-                <span>Produto (${itensListaParaExibir.length})</span>
-              </div>
-            </th>
-            ${colunasCabecalhoMercados}
-            <th class="mcol-th-acoes">✕</th>
-          </tr>
-        </thead>
         <tbody>
           ${linhasTabelaHtml}
         </tbody>
