@@ -1032,7 +1032,7 @@ async function carregarCotacoesRaspadas() {
 // Configuração dos Mercados de Brasília (Asa Norte / Asa Sul / SIA / Vicente Pires)
 const MERCADOS_DF = {
   atacadao: { id: 'atacadao', nome: 'Atacadão', regiao: 'SIA / DF', emoji: '🟠', logo: 'atacadao', fator: 0.92 },
-  assai: { id: 'assai', nome: 'Assaí Atacadista', regiao: 'SIA / DF', emoji: '🔵', logo: 'assai', fator: 0.93 },
+  assai: { id: 'assai', nome: 'Assaí', regiao: 'SIA / DF', emoji: '🔵', logo: 'assai', fator: 0.93 },
   diaadia: { id: 'diaadia', nome: 'Dia a Dia', regiao: 'SIA / DF', emoji: '🔴', logo: 'diaadia', fator: 0.96 },
   carrefour: { id: 'carrefour', nome: 'Carrefour', regiao: 'Asa Sul / Blvd Norte', emoji: '🟦', logo: 'carrefour', fator: 1.03 },
   bigbox: { id: 'bigbox', nome: 'Big Box', regiao: 'Asa Norte / Asa Sul', emoji: '🟢', logo: 'bigbox', fator: 1.10 },

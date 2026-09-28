@@ -97,11 +97,13 @@ body {
   top: 0 !important;
   left: 0 !important;
   bottom: 0 !important;
-  width: 275px !important;
+  width: 220px !important;
+  min-width: 220px !important;
+  max-width: 220px !important;
   height: 100vh !important;
   background: #FFFFFF !important;
   border-right: 1.5px solid var(--border) !important;
-  box-shadow: 4px 0 16px rgba(15, 23, 42, 0.08) !important;
+  box-shadow: 3px 0 14px rgba(15, 23, 42, 0.08) !important;
   display: flex !important;
   flex-direction: column !important;
   overflow-y: auto !important;
@@ -118,7 +120,7 @@ body {
 .layout-conteudo-principal {
   flex: 1;
   min-width: 0;
-  margin-left: 275px !important;
+  margin-left: 220px !important;
   display: flex;
   flex-direction: column;
 }
@@ -137,8 +139,8 @@ body {
 .sidebar-header {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 16px 14px 14px 14px;
+  gap: 8px;
+  padding: 12px 10px 10px 10px;
   border-bottom: 1.5px solid var(--border);
   background: #F8FAFC;
 }
@@ -146,12 +148,12 @@ body {
 .sidebar-header .bloco-carrinho-total {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
+  gap: 8px;
+  padding: 8px 10px;
   background: #FFFFFF;
   border: 1.5px solid #E2E8F0;
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(15, 23, 42, 0.05);
   cursor: pointer;
   transition: all 0.2s ease;
   width: 100%;
@@ -159,14 +161,15 @@ body {
 
 .sidebar-header .bloco-carrinho-total:hover {
   border-color: #C7D2FE;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.1);
+  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.1);
   transform: translateY(-1px);
 }
 
 .sidebar-header .carrinho-icon-xl {
-  width: 44px;
-  height: 44px;
-  font-size: 24px;
+  width: 36px;
+  height: 36px;
+  font-size: 20px;
+  border-radius: 8px;
   flex-shrink: 0;
 }
 
@@ -175,15 +178,20 @@ body {
   min-width: 0;
 }
 
+.sidebar-header .total-rotulo {
+  font-size: 0.58rem;
+  letter-spacing: 0.4px;
+}
+
 .sidebar-header .total-valor {
-  font-size: 1.35rem;
+  font-size: 1.15rem;
   font-weight: 900;
   line-height: 1.1;
   white-space: nowrap;
 }
 
 .sidebar-header .total-progresso-sub {
-  font-size: 0.72rem;
+  font-size: 0.65rem;
   color: #64748B;
   white-space: nowrap;
   overflow: hidden;
@@ -194,15 +202,15 @@ body {
 .sidebar-brand {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   font-weight: 800;
-  font-size: 0.95rem;
+  font-size: 0.82rem;
   color: var(--text-main);
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4px;
 }
 
 .sidebar-brand-ico {
-  font-size: 1.3rem;
+  font-size: 1.15rem;
 }
 
 .btn-fechar-sidebar {
@@ -225,20 +233,20 @@ body {
 .sidebar-nav {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 14px 12px;
+  gap: 4px;
+  padding: 8px 6px;
 }
 
 .sidebar-nav-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
+  gap: 8px;
+  padding: 8px 10px;
   border: 1px solid transparent;
-  border-radius: 10px;
+  border-radius: 8px;
   background: transparent;
   cursor: pointer;
-  font-size: 0.92rem;
+  font-size: 0.82rem;
   font-weight: 700;
   color: #334155;
   transition: all 0.15s ease;
@@ -261,18 +269,18 @@ body {
 }
 
 .sidebar-nav-icon {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   line-height: 1;
 }
 
 /* Card de Destaque de Economia (Movido para a Sidebar) */
 .sidebar-box-economia {
-  margin: 10px 12px auto 12px;
+  margin: 8px 6px auto 6px;
   background: linear-gradient(135deg, #ECFDF5 0%, #F0FDF4 100%);
   border: 1.5px solid #A7F3D0;
-  border-radius: 12px;
-  padding: 14px;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.08);
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.08);
 }
 
 .sidebar-eco-badge {
@@ -2979,8 +2987,9 @@ body.modo-mercado-ativo .item-nome {
   background: #F8FAFC !important;
   font-weight: 800;
   color: #1E293B;
-  min-width: 235px;
-  padding: 8px 8px 8px 12px !important;
+  min-width: 210px;
+  max-width: 250px;
+  padding: 6px 8px 6px 10px !important;
   box-shadow: 2px 0 6px rgba(0,0,0,0.04), 0 6px 14px -2px rgba(15, 23, 42, 0.16);
 }
 
@@ -3006,8 +3015,9 @@ body.modo-mercado-ativo .item-nome {
   left: 86px !important;
   z-index: 4;
   background: white;
-  padding: 6px 8px 6px 12px !important;
-  min-width: 235px;
+  padding: 5px 6px 5px 10px !important;
+  min-width: 210px;
+  max-width: 250px;
   box-shadow: 2px 0 6px rgba(0,0,0,0.04);
 }
 
@@ -3156,11 +3166,11 @@ body.modo-mercado-ativo .item-nome {
   font-weight: 700 !important;
 }
 
-/* Colunas dos Mercados espremidas na linha da Categoria */
+/* Colunas dos Mercados espremidas na linha da Categoria (-10%) */
 .mcol-th-rede {
-  min-width: 80px;
-  max-width: 98px;
-  padding: 6px 4px !important;
+  min-width: 72px;
+  max-width: 86px;
+  padding: 5px 2px !important;
   text-align: center;
   border-left: 1px solid #CBD5E1 !important;
   cursor: pointer;
@@ -3182,20 +3192,20 @@ body.modo-mercado-ativo .item-nome {
   flex-direction: row !important; /* icone a esq e nome a direita */
   align-items: center !important;
   justify-content: center !important;
-  gap: 4px !important;
+  gap: 3px !important;
   white-space: nowrap !important;
 }
 
 .mcol-rede-logo {
-  width: 17px !important;
-  height: 17px !important;
+  width: 15px !important;
+  height: 15px !important;
   object-fit: contain !important;
   border-radius: 3px !important;
   flex-shrink: 0 !important;
 }
 
 .mcol-rede-nome {
-  font-size: 0.72rem !important;
+  font-size: 0.68rem !important;
   font-weight: 800 !important;
   color: #1E293B !important;
   white-space: nowrap !important;
@@ -3278,11 +3288,11 @@ body.modo-mercado-ativo .item-nome {
   margin-left: auto;
 }
 
-/* Células de Preço Espremidas */
+/* Células de Preço Espremidas (-10%) */
 .mcol-td-preco {
-  padding: 4px 3px !important;
-  min-width: 82px;
-  max-width: 95px;
+  padding: 3px 2px !important;
+  min-width: 72px;
+  max-width: 86px;
   text-align: center;
   vertical-align: middle;
   border-bottom: 1px solid #F1F5F9;
@@ -3297,7 +3307,7 @@ body.modo-mercado-ativo .item-nome {
 }
 
 .mcol-valor {
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   font-weight: 700;
   color: #334155;
   white-space: nowrap;
@@ -3313,17 +3323,17 @@ body.modo-mercado-ativo .item-nome {
 }
 
 .mcol-tag-menor {
-  font-size: 0.58rem;
+  font-size: 0.54rem;
   font-weight: 800;
   background: #DCFCE7;
   color: #15803D;
-  padding: 1px 4px;
+  padding: 1px 3px;
   border-radius: 4px;
   white-space: nowrap;
 }
 
 .mcol-tag-diff {
-  font-size: 0.58rem;
+  font-size: 0.54rem;
   font-weight: 700;
   color: #DC2626;
   white-space: nowrap;
@@ -3373,7 +3383,8 @@ body.modo-mercado-ativo .item-nome {
   background: #F8FAFC !important;
   text-align: left !important;
   padding-left: 10px !important;
-  min-width: 235px;
+  min-width: 210px;
+  max-width: 250px;
   box-shadow: 2px 0 6px rgba(0,0,0,0.04);
 }
 
