@@ -90,120 +90,48 @@ body {
 }
 
 /* ========================================================
-   SLIDE BAR LATERAL À ESQUERDA (SIDEBAR) & OVERLAY
+   SLIDE BAR LATERAL À ESQUERDA (FIXA E PERMANENTE)
    ======================================================== */
-.btn-toggle-sidebar {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  color: var(--text-main);
-  font-size: 1.25rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: var(--shadow-sm);
-  transition: all 0.2s ease;
-  flex-shrink: 0;
-}
-
-.btn-toggle-sidebar:hover {
-  background: #F1F5F9;
-  border-color: #CBD5E1;
-  transform: translateY(-1px);
-}
-
 .sidebar-esquerda {
-  background: #FFFFFF;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  bottom: 0 !important;
+  width: 275px !important;
+  height: 100vh !important;
+  background: #FFFFFF !important;
+  border-right: 1.5px solid var(--border) !important;
+  box-shadow: 4px 0 16px rgba(15, 23, 42, 0.08) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow-y: auto !important;
+  z-index: 1050 !important;
+  transform: none !important;
+}
+
+.layout-geral-app {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.layout-conteudo-principal {
+  flex: 1;
+  min-width: 0;
+  margin-left: 275px !important;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
-  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* NO DESKTOP (telas >= 900px): FIXA, ABERTA E PERMANENTE À ESQUERDA! */
-@media (min-width: 900px) {
-  body {
-    padding-bottom: 0 !important; /* Sem espaço de barra inferior no desktop */
-  }
-
-  .sidebar-esquerda {
-    position: sticky !important;
-    top: 0 !important;
-    height: 100vh !important;
-    width: 275px !important;
-    min-width: 275px !important;
-    max-width: 275px !important;
-    transform: none !important;
-    border-right: 1.5px solid var(--border) !important;
-    box-shadow: 4px 0 16px rgba(15, 23, 42, 0.06) !important;
-    z-index: 1050 !important;
-  }
-
-  .btn-fechar-sidebar {
-    display: none !important;
-  }
-
-  .sidebar-overlay {
-    display: none !important;
-  }
-
-  .btn-toggle-sidebar {
-    display: none !important; /* Oculta botão hambúrguer no PC pois a barra já está aberta */
-  }
-
-  .bottom-nav {
-    display: none !important; /* Oculta a barra de celular no desktop! */
-  }
+body {
+  padding-bottom: 0 !important;
 }
 
-/* NO MOBILE (< 900px): Desliza ao clicar em ☰ */
-@media (max-width: 899px) {
-  body {
-    padding-bottom: 75px;
-  }
-
-  .sidebar-esquerda {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 290px;
-    max-width: 85vw;
-    height: 100vh;
-    z-index: 10000;
-    box-shadow: 12px 0 32px rgba(15, 23, 42, 0.18);
-    transform: translateX(-100%);
-  }
-
-  .sidebar-esquerda.aberta {
-    transform: translateX(0);
-  }
-
-  .btn-toggle-sidebar {
-    display: inline-flex;
-  }
-}
-
-.sidebar-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(15, 23, 42, 0.45);
-  backdrop-filter: blur(2px);
-  z-index: 9999;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s ease;
-}
-
-.sidebar-overlay.aberta {
-  opacity: 1;
-  pointer-events: auto;
+.btn-toggle-sidebar,
+.btn-fechar-sidebar,
+.sidebar-overlay,
+.bottom-nav {
+  display: none !important;
 }
 
 .sidebar-header {
@@ -1844,65 +1772,9 @@ body.modo-mercado-ativo .item-nome {
   color: var(--danger);
 }
 
-/* Navegação Inferior (Bottom Navigation Bar) */
-/* Navegação Inferior (Bottom Navigation Bar) */
+/* Barra inferior permanentemente desativada (menus movidos para a Slide Bar fixa à esquerda) */
 .bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(255, 255, 255, 0.96);
-  backdrop-filter: blur(12px);
-  border-top: 1.5px solid var(--border);
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: 6px 8px;
-  min-height: 65px;
-  z-index: 100;
-  box-shadow: 0 -4px 16px rgba(0,0,0,0.06);
-}
-
-.nav-item {
-  background: none;
-  border: none;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  color: var(--text-muted);
-  font-family: inherit;
-  font-size: 0.75rem;
-  font-weight: 600;
-  cursor: pointer;
-  padding: 6px 12px;
-  border-radius: 12px;
-  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.nav-item .nav-icon {
-  font-size: 1.25rem;
-  line-height: 1;
-  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* Opção Ativa no Rodapé: Ícone DOBRADO à esquerda do nome, fonte +60% e BOLD */
-.nav-item.ativo {
-  flex-direction: row !important;
-  align-items: center !important;
-  gap: 8px !important;
-  color: var(--primary) !important;
-  background: #EEF2FF !important;
-  font-size: 1.20rem !important; /* +60% no tamanho da fonte */
-  font-weight: 800 !important;   /* BOLD */
-  padding: 8px 18px !important;
-  border-radius: 14px !important;
-  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.14) !important;
-}
-
-.nav-item.ativo .nav-icon {
-  font-size: 2.5rem !important; /* DOBRO do tamanho do ícone */
-  line-height: 1 !important;
+  display: none !important;
 }
 
 /* Fundo da Tela Montar Lista (Idêntico a Lista de Compras e Mercados) */

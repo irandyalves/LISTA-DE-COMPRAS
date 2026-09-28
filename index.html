@@ -12,32 +12,31 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>">
   
   <!-- CSS Moderno -->
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=4.0">
 </head>
 <body>
 
   <div class="layout-geral-app">
-    <!-- SLIDE BAR LATERAL À ESQUERDA (SIDEBAR FIXA NO DESKTOP, DESLIZANTE NO MOBILE) -->
+    <!-- SLIDE BAR LATERAL À ESQUERDA (FIXA E PERMANENTE) -->
     <aside id="sidebar-esquerda" class="sidebar-esquerda">
       <div class="sidebar-header">
         <div class="sidebar-brand">
           <span class="sidebar-brand-ico">🛒</span>
           <span class="sidebar-brand-txt">LISTA DE COMPRAS</span>
         </div>
-        <button class="btn-fechar-sidebar" onclick="alternarSidebar(false)" title="Fechar Menu">✕</button>
       </div>
 
-      <!-- MENUS PRINCIPAIS DA SLIDE BAR -->
+      <!-- MENUS PRINCIPAIS DA SLIDE BAR (MOVIDOS PARA A BARRA LATERAL FIXA) -->
       <nav class="sidebar-nav">
-        <button class="sidebar-nav-item ativo" data-aba="lista" onclick="navegarParaAba('lista'); alternarSidebar(false);">
+        <button class="sidebar-nav-item nav-item ativo" data-aba="lista" onclick="navegarParaAba('lista');">
           <span class="sidebar-nav-icon">🛒</span>
           <span class="sidebar-nav-text">COMPRAR</span>
         </button>
-        <button class="sidebar-nav-item" data-aba="despensa" onclick="navegarParaAba('despensa'); alternarSidebar(false);">
+        <button class="sidebar-nav-item nav-item" data-aba="despensa" onclick="navegarParaAba('despensa');">
           <span class="sidebar-nav-icon">📋</span>
           <span class="sidebar-nav-text">MONTAR LISTA</span>
         </button>
-        <button class="sidebar-nav-item" data-aba="historico" onclick="navegarParaAba('historico'); alternarSidebar(false);">
+        <button class="sidebar-nav-item nav-item" data-aba="historico" onclick="navegarParaAba('historico');">
           <span class="sidebar-nav-icon">📊</span>
           <span class="sidebar-nav-text">HISTÓRICO</span>
         </button>
@@ -61,20 +60,13 @@
       </div>
     </aside>
 
-    <!-- OVERLAY FOSCO PARA QUANDO A SIDEBAR ESTIVER ABERTA EM TELAS MOBILE -->
-    <div id="sidebar-overlay" class="sidebar-overlay" onclick="alternarSidebar(false)"></div>
-
-    <!-- CONTEÚDO PRINCIPAL (À DIREITA DA SLIDE BAR) -->
+    <!-- CONTEÚDO PRINCIPAL (À DIREITA DA SLIDE BAR FIXA) -->
     <div class="layout-conteudo-principal">
       <div class="app-container">
     <!-- PAINEL SUPERIOR CONGELADO (STICKY HEADER COM TODAS AS ABAS) -->
     <div class="painel-topo-congelado">
-      <!-- LINHA 1: Botão Menu Slide Bar + Ícone do Carrinho + Total Estimado + Barra de Pesquisa Reduzida com Único Botão Adicionar + Ações -->
+      <!-- LINHA 1: Ícone do Carrinho + Total Estimado + Barra de Pesquisa Reduzida com Único Botão Adicionar + Ações -->
       <header class="header-otimizado-l1">
-        <!-- Botão Menu Slide Bar à Esquerda -->
-        <button id="btn-toggle-sidebar" class="btn-toggle-sidebar" onclick="alternarSidebar()" title="Abrir Menu Lateral (Slide Bar)">
-          ☰
-        </button>
 
         <div class="bloco-carrinho-total" onclick="alternarVisaoTotal()" style="cursor: pointer;" title="Toque para alternar entre Total Geral, Restante e No Carrinho">
           <div class="carrinho-icon-xl">🛒</div>
@@ -200,22 +192,6 @@
   </div> <!-- fim app-container -->
   </div> <!-- fim layout-conteudo-principal -->
   </div> <!-- fim layout-geral-app -->
-
-  <!-- Barra de Navegação Inferior (Mobile Friendly - 3 Abas Unificadas) -->
-  <nav class="bottom-nav">
-    <button class="nav-item ativo" data-aba="lista" onclick="navegarParaAba('lista')">
-      <span class="nav-icon">🛒</span>
-      <span>Comprar</span>
-    </button>
-    <button class="nav-item" data-aba="despensa" onclick="navegarParaAba('despensa')">
-      <span class="nav-icon">📋</span>
-      <span>Montar Lista</span>
-    </button>
-    <button class="nav-item" data-aba="historico" onclick="navegarParaAba('historico')">
-      <span class="nav-icon">📊</span>
-      <span>Histórico</span>
-    </button>
-  </nav>
 
   <!-- MODAL: MENU DE OPÇÕES DO CABEÇALHO -->
   <div id="modal-opcoes-header" class="modal-overlay" style="display: none;" onclick="if(event.target === this) fecharModal('modal-opcoes-header')">
@@ -653,7 +629,7 @@
   <script src="logos_banco.js"></script>
   <script src="icones2d.js"></script>
   <script src="firebase-sync.js"></script>
-  <script src="app.js"></script>
+  <script src="app.js?v=4.0"></script>
 
 </body>
 </html>
