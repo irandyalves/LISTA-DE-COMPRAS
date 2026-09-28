@@ -45,17 +45,17 @@ PRODUTOS_ALVO = [
 ]
 
 # Fatores calibrados por categoria para o mercado de Brasília (DF):
-# Dia a Dia: lidera em hortifrúti, ovos, carnes e ofertas de feira
-# Assaí: lidera em produtos de limpeza, massas, cafés e mercearia doce
-# Atacadão: lidera em arroz 5kg, óleos, açúcar, alho e farinhas
+# Atacadão: lidera em arroz 5kg, feijão, óleos, açúcar, carnes no atacado e hortifrúti no atacado
+# Assaí: lidera em produtos de limpeza, laticínios, cafés, cervejas e mercearia
 # Carrefour: muito forte em ofertas de higiene e beleza
+# Dia a Dia: compete no atacarejo geral com ofertas pontuais
 FATORES_POR_CATEGORIA = {
-    'hortifruti': {'diaadia': 0.88, 'assai': 0.98, 'atacadao': 1.00, 'carrefour': 1.12, 'dona': 1.18, 'bigbox': 1.24, 'paodeacucar': 1.36},
-    'limpeza': {'assai': 0.94, 'atacadao': 1.00, 'diaadia': 1.02, 'carrefour': 1.12, 'dona': 1.18, 'bigbox': 1.24, 'paodeacucar': 1.32},
-    'graos_mercearia': {'atacadao': 1.00, 'diaadia': 1.02, 'assai': 1.03, 'carrefour': 1.14, 'dona': 1.17, 'bigbox': 1.21, 'paodeacucar': 1.34},
-    'cafe_matinais': {'assai': 0.95, 'diaadia': 0.97, 'atacadao': 1.00, 'carrefour': 1.09, 'dona': 1.14, 'bigbox': 1.20, 'paodeacucar': 1.29},
-    'laticinios': {'diaadia': 0.96, 'assai': 0.98, 'atacadao': 1.00, 'carrefour': 1.10, 'dona': 1.16, 'bigbox': 1.21, 'paodeacucar': 1.28},
-    'higiene': {'carrefour': 0.93, 'assai': 0.96, 'atacadao': 1.00, 'diaadia': 1.02, 'dona': 1.14, 'bigbox': 1.20, 'paodeacucar': 1.30},
+    'hortifruti': {'atacadao': 0.95, 'assai': 0.97, 'diaadia': 0.99, 'carrefour': 1.08, 'dona': 1.14, 'bigbox': 1.18, 'paodeacucar': 1.28},
+    'limpeza': {'assai': 0.94, 'atacadao': 0.96, 'diaadia': 1.01, 'carrefour': 1.08, 'dona': 1.12, 'bigbox': 1.16, 'paodeacucar': 1.24},
+    'graos_mercearia': {'atacadao': 0.94, 'assai': 0.96, 'diaadia': 0.99, 'carrefour': 1.08, 'dona': 1.12, 'bigbox': 1.16, 'paodeacucar': 1.25},
+    'cafe_matinais': {'assai': 0.94, 'atacadao': 0.96, 'diaadia': 0.99, 'carrefour': 1.06, 'dona': 1.12, 'bigbox': 1.16, 'paodeacucar': 1.22},
+    'laticinios': {'assai': 0.94, 'atacadao': 0.95, 'diaadia': 0.98, 'carrefour': 1.06, 'dona': 1.12, 'bigbox': 1.16, 'paodeacucar': 1.22},
+    'higiene': {'carrefour': 0.93, 'assai': 0.95, 'atacadao': 0.96, 'diaadia': 1.00, 'dona': 1.10, 'bigbox': 1.14, 'paodeacucar': 1.22},
 }
 
 CATEGORIA_POR_CHAVE = {

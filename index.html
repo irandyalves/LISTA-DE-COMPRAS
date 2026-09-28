@@ -21,11 +21,15 @@
     <div class="painel-topo-congelado">
       <!-- LINHA 1: Ícone do Carrinho + Total Estimado + Barra de Pesquisa Reduzida com Único Botão Adicionar + Ações -->
       <header class="header-otimizado-l1">
-        <div class="bloco-carrinho-total">
+        <div class="bloco-carrinho-total" onclick="alternarVisaoTotal()" style="cursor: pointer;" title="Toque para alternar entre Total Geral, Restante e No Carrinho">
           <div class="carrinho-icon-xl">🛒</div>
           <div class="total-estimado-box">
-            <span class="total-rotulo">TOTAL ESTIMADO</span>
+            <div class="total-rotulo-linha">
+              <span class="total-rotulo" id="resumo-total-rotulo">TOTAL ESTIMADO</span>
+              <span class="badge-mercado-ativo" id="resumo-mercado-tag"></span>
+            </div>
             <span class="total-valor" id="resumo-total-valor">R$ 0,00</span>
+            <span class="total-progresso-sub" id="resumo-progresso-badge">0 de 0 pegos</span>
           </div>
         </div>
 

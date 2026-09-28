@@ -17,9 +17,9 @@
       "data_coleta": "2026-09-09 11:30:00"
     },
     "feijão carioca novo selecionado (1kg)": {
-      "diaadia": 6.99,
+      "diaadia": 7.2,
       "assai": 7.29,
-      "atacadao": 7.49,
+      "atacadao": 6.85,
       "carrefour": 8.19,
       "dona": 8.49,
       "bigbox": 8.69,
@@ -65,9 +65,9 @@
       "data_coleta": "2026-09-09 11:30:00"
     },
     "leite longa vida integral (1 litro)": {
-      "diaadia": 4.29,
-      "atacadao": 4.39,
-      "assai": 4.45,
+      "diaadia": 4.46,
+      "atacadao": 4.25,
+      "assai": 4.2,
       "carrefour": 4.89,
       "dona": 5.19,
       "bigbox": 5.39,
@@ -77,9 +77,9 @@
       "data_coleta": "2026-09-09 11:30:00"
     },
     "leite condensado moça / piracanjuba (395g)": {
-      "assai": 5.49,
-      "diaadia": 5.69,
-      "atacadao": 5.79,
+      "assai": 5.38,
+      "diaadia": 5.71,
+      "atacadao": 5.44,
       "carrefour": 6.29,
       "dona": 6.59,
       "bigbox": 6.89,
@@ -89,9 +89,9 @@
       "data_coleta": "2026-09-09 11:30:00"
     },
     "macarrão espaguete com ovos (500g)": {
-      "assai": 3.59,
-      "diaadia": 3.69,
-      "atacadao": 3.77,
+      "assai": 3.52,
+      "diaadia": 3.73,
+      "atacadao": 3.55,
       "carrefour": 4.18,
       "dona": 4.3,
       "bigbox": 4.43,
@@ -113,8 +113,8 @@
       "data_coleta": "2026-09-09 11:30:00"
     },
     "sal refinado iodado para cozinha (1kg)": {
-      "diaadia": 2.39,
-      "atacadao": 2.59,
+      "diaadia": 2.46,
+      "atacadao": 2.34,
       "assai": 2.65,
       "carrefour": 2.99,
       "dona": 3.15,
@@ -125,7 +125,7 @@
       "data_coleta": "2026-09-09 11:30:00"
     },
     "detergente líquido lava-louças (500ml)": {
-      "assai": 1.89,
+      "assai": 1.83,
       "diaadia": 1.99,
       "atacadao": 2.05,
       "carrefour": 2.35,
@@ -137,7 +137,7 @@
       "data_coleta": "2026-09-09 11:30:00"
     },
     "sabão em pó / líquido para roupas (1.6kg / 2l)": {
-      "assai": 20.9,
+      "assai": 20.27,
       "diaadia": 21.9,
       "atacadao": 22.4,
       "carrefour": 24.5,
@@ -149,7 +149,7 @@
       "data_coleta": "2026-09-09 11:30:00"
     },
     "amaciante toque suave / concentrado (1.5l / 2l)": {
-      "assai": 14.29,
+      "assai": 13.86,
       "atacadao": 14.89,
       "diaadia": 15.19,
       "carrefour": 16.89,
@@ -163,7 +163,7 @@
     "água sanitária desinfetante cloro (2 litros)": {
       "diaadia": 4.39,
       "atacadao": 4.69,
-      "assai": 4.75,
+      "assai": 4.26,
       "carrefour": 5.39,
       "dona": 5.69,
       "bigbox": 5.99,
@@ -173,9 +173,9 @@
       "data_coleta": "2026-09-09 11:30:00"
     },
     "banana prata selecionada (kg)": {
-      "diaadia": 4.89,
-      "assai": 5.6,
-      "atacadao": 5.8,
+      "diaadia": 5.13,
+      "assai": 4.84,
+      "atacadao": 4.74,
       "carrefour": 6.49,
       "dona": 6.89,
       "bigbox": 7.2,
@@ -185,9 +185,9 @@
       "data_coleta": "2026-09-09 11:30:00"
     },
     "tomate longa vida / italiano selecionado (kg)": {
-      "diaadia": 5.89,
-      "assai": 6.39,
-      "atacadao": 6.5,
+      "diaadia": 6.18,
+      "assai": 5.83,
+      "atacadao": 5.71,
       "carrefour": 7.19,
       "dona": 7.69,
       "bigbox": 8.29,
@@ -197,9 +197,9 @@
       "data_coleta": "2026-09-09 11:30:00"
     },
     "batata inglesa lisa lavada especial (kg)": {
-      "diaadia": 4.79,
-      "assai": 5.39,
-      "atacadao": 5.5,
+      "diaadia": 5.03,
+      "assai": 4.74,
+      "atacadao": 4.65,
       "carrefour": 6.19,
       "dona": 6.49,
       "bigbox": 6.89,
@@ -209,9 +209,9 @@
       "data_coleta": "2026-09-09 11:30:00"
     },
     "cebola nacional selecionada (kg)": {
-      "diaadia": 4.19,
-      "assai": 4.49,
-      "atacadao": 4.6,
+      "diaadia": 4.4,
+      "assai": 4.15,
+      "atacadao": 4.06,
       "carrefour": 5.29,
       "dona": 5.59,
       "bigbox": 5.89,
@@ -245,9 +245,9 @@
       "data_coleta": "2026-09-09 11:30:00"
     },
     "ovos brancos médios / grandes (cartela c/ 30)": {
-      "diaadia": 14.5,
-      "assai": 15.2,
-      "atacadao": 15.55,
+      "diaadia": 15.08,
+      "assai": 14.21,
+      "atacadao": 14.36,
       "carrefour": 16.9,
       "dona": 17.5,
       "bigbox": 17.9,
@@ -293,9 +293,9 @@
       "data_coleta": "2026-09-09 11:30:00"
     },
     "manteiga de primeira qualidade com sal (200g)": {
-      "diaadia": 9.89,
-      "assai": 10.29,
-      "atacadao": 10.49,
+      "diaadia": 10.08,
+      "assai": 9.5,
+      "atacadao": 9.59,
       "carrefour": 11.49,
       "dona": 11.99,
       "bigbox": 12.5,
@@ -389,9 +389,9 @@
       "data_coleta": "2026-09-09 11:30:00"
     },
     "leite": {
-      "diaadia": 4.29,
-      "atacadao": 4.39,
-      "assai": 4.45,
+      "diaadia": 4.46,
+      "atacadao": 4.25,
+      "assai": 4.2,
       "carrefour": 4.89,
       "dona": 5.19,
       "bigbox": 5.39,
@@ -401,9 +401,9 @@
       "data_coleta": "2026-09-09 11:30:00"
     },
     "leite_condensado": {
-      "assai": 5.49,
-      "diaadia": 5.69,
-      "atacadao": 5.79,
+      "assai": 5.38,
+      "diaadia": 5.71,
+      "atacadao": 5.44,
       "carrefour": 6.29,
       "dona": 6.59,
       "bigbox": 6.89,
@@ -437,8 +437,8 @@
       "data_coleta": "2026-09-09 11:30:00"
     },
     "sal": {
-      "diaadia": 2.39,
-      "atacadao": 2.59,
+      "diaadia": 2.46,
+      "atacadao": 2.34,
       "assai": 2.65,
       "carrefour": 2.99,
       "dona": 3.15,
@@ -449,7 +449,7 @@
       "data_coleta": "2026-09-09 11:30:00"
     },
     "detergente": {
-      "assai": 1.89,
+      "assai": 1.83,
       "diaadia": 1.99,
       "atacadao": 2.05,
       "carrefour": 2.35,
@@ -473,7 +473,7 @@
       "data_coleta": "2026-09-09 11:30:00"
     },
     "amaciante": {
-      "assai": 14.29,
+      "assai": 13.86,
       "atacadao": 14.89,
       "diaadia": 15.19,
       "carrefour": 16.89,
@@ -497,9 +497,9 @@
       "data_coleta": "2026-09-09 11:30:00"
     },
     "banana": {
-      "diaadia": 4.89,
-      "assai": 5.6,
-      "atacadao": 5.8,
+      "diaadia": 5.13,
+      "assai": 4.84,
+      "atacadao": 4.74,
       "carrefour": 6.49,
       "dona": 6.89,
       "bigbox": 7.2,
@@ -509,9 +509,9 @@
       "data_coleta": "2026-09-09 11:30:00"
     },
     "tomate": {
-      "diaadia": 5.89,
-      "assai": 6.39,
-      "atacadao": 6.5,
+      "diaadia": 6.18,
+      "assai": 5.83,
+      "atacadao": 5.71,
       "carrefour": 7.19,
       "dona": 7.69,
       "bigbox": 8.29,
@@ -521,9 +521,9 @@
       "data_coleta": "2026-09-09 11:30:00"
     },
     "batata": {
-      "diaadia": 4.79,
-      "assai": 5.39,
-      "atacadao": 5.5,
+      "diaadia": 5.03,
+      "assai": 4.74,
+      "atacadao": 4.65,
       "carrefour": 6.19,
       "dona": 6.49,
       "bigbox": 6.89,
@@ -533,9 +533,9 @@
       "data_coleta": "2026-09-09 11:30:00"
     },
     "cebola": {
-      "diaadia": 4.19,
-      "assai": 4.49,
-      "atacadao": 4.6,
+      "diaadia": 4.4,
+      "assai": 4.15,
+      "atacadao": 4.06,
       "carrefour": 5.29,
       "dona": 5.59,
       "bigbox": 5.89,
@@ -569,9 +569,9 @@
       "data_coleta": "2026-09-09 11:30:00"
     },
     "ovos": {
-      "diaadia": 14.5,
-      "assai": 15.2,
-      "atacadao": 15.55,
+      "diaadia": 15.08,
+      "assai": 14.21,
+      "atacadao": 14.36,
       "carrefour": 16.9,
       "dona": 17.5,
       "bigbox": 17.9,
@@ -617,9 +617,9 @@
       "data_coleta": "2026-09-09 11:30:00"
     },
     "manteiga": {
-      "diaadia": 9.89,
-      "assai": 10.29,
-      "atacadao": 10.49,
+      "diaadia": 10.29,
+      "assai": 9.69,
+      "atacadao": 9.79,
       "carrefour": 11.49,
       "dona": 11.99,
       "bigbox": 12.5,

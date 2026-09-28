@@ -367,6 +367,15 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  user-select: none;
+}
+
+.total-rotulo-linha {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1;
+  margin-bottom: 2px;
 }
 
 .total-rotulo {
@@ -375,16 +384,64 @@ body {
   color: var(--primary);
   letter-spacing: 0.6px;
   text-transform: uppercase;
-  line-height: 1;
-  margin-bottom: 2px;
+}
+
+.badge-mercado-ativo {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #1E293B;
+  background: #E2E8F0;
+  padding: 1px 6px;
+  border-radius: 6px;
+  border: 1px solid #CBD5E1;
+  display: none;
+}
+
+.badge-mercado-ativo.visivel {
+  display: inline-block;
 }
 
 .total-valor {
-  font-size: 1.55rem;
+  font-size: 1.45rem;
   font-weight: 900;
   color: var(--text-main);
   letter-spacing: -0.5px;
   line-height: 1.1;
+  transition: color 0.2s;
+}
+
+.total-progresso-sub {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  line-height: 1.2;
+  margin-top: 2px;
+  white-space: nowrap;
+}
+
+.mcol-th-rede.mcol-coluna-ativa,
+.mcol-td-total.mcol-coluna-ativa {
+  background-color: #FEF3C7 !important;
+  border-left: 2px solid #F59E0B !important;
+  border-right: 2px solid #F59E0B !important;
+}
+
+.mcol-th-rede {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.mcol-th-rede:hover {
+  background-color: #F1F5F9;
+}
+
+.mcol-td-total {
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.mcol-td-total:hover {
+  filter: brightness(0.97);
 }
 
 /* Ações Unificadas no Topo */

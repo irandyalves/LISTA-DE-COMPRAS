@@ -926,7 +926,13 @@ function carregarLocalmente() {
 
 // Salvar dados com sincronização automática
 let timeoutSincronizacao = null;
+let timestampUltimaModificacaoLocal = 0;
+
 function salvarEstado(enviarParaNuvem = true) {
+  if (enviarParaNuvem) {
+    timestampUltimaModificacaoLocal = Date.now();
+  }
+
   // Salva no localStorage como cache rápido
   localStorage.setItem('app_compras_irandy_v2', JSON.stringify({
     catalogo: AppState.catalogo,
@@ -938,7 +944,8 @@ function salvarEstado(enviarParaNuvem = true) {
     modoResumido: AppState.modoResumido || false,
     mercadoReferencia: (AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos') ? AppState.mercadoReferencia : 'nenhum',
     modoCotacao: AppState.modoCotacao || 'mais_baratos',
-    ordenacaoMercados: AppState.ordenacaoMercados || 'original'
+    ordenacaoMercados: AppState.ordenacaoMercados || 'original',
+    ultimaModificacao: new Date().toISOString()
   }));
 
   // Sincroniza com o Firebase se estiver conectado
@@ -948,7 +955,11 @@ function salvarEstado(enviarParaNuvem = true) {
       FirebaseSync.sincronizarComNuvem({
         catalogo: AppState.catalogo,
         listaAtiva: AppState.listaAtiva,
-        historico: AppState.historico
+        historico: AppState.historico,
+        mercadoReferencia: AppState.mercadoReferencia || 'nenhum',
+        cotacaoAtiva: AppState.cotacaoAtiva !== false,
+        modoNoMercado: !!AppState.modoNoMercado,
+        modoResumido: !!AppState.modoResumido
       });
     }, 400); // Debounce de 400ms
   }
@@ -958,10 +969,22 @@ function salvarEstado(enviarParaNuvem = true) {
 function inicializarNuvem() {
   FirebaseSync.inicializar(
     (dadosNuvem) => {
+      // Proteção contra eco: se fizemos uma modificação local há menos de 3s e o snapshot é anterior, ignora
+      if (dadosNuvem.ultimaAtualizacao && timestampUltimaModificacaoLocal > 0) {
+        const timeNuvem = new Date(dadosNuvem.ultimaAtualizacao).getTime();
+        if (timeNuvem < (timestampUltimaModificacaoLocal - 500)) {
+          console.log("[Nuvem] Ignorando snapshot antigo para preservar alteração local recente.");
+          return;
+        }
+      }
+
       // Recebeu atualização da Nuvem (ex: esposa acabou de marcar um item no celular)
       if (dadosNuvem.catalogo) AppState.catalogo = dadosNuvem.catalogo;
       if (dadosNuvem.listaAtiva) AppState.listaAtiva = dadosNuvem.listaAtiva;
       if (dadosNuvem.historico) AppState.historico = dadosNuvem.historico;
+      if (dadosNuvem.mercadoReferencia && dadosNuvem.mercadoReferencia !== 'todos') {
+        AppState.mercadoReferencia = dadosNuvem.mercadoReferencia;
+      }
       salvarEstado(false); // Salva local sem retransmitir
       renderizarTudo();
     },
@@ -1008,94 +1031,94 @@ async function carregarCotacoesRaspadas() {
 
 // Configuração dos Mercados de Brasília (Asa Norte / Asa Sul / SIA / Vicente Pires)
 const MERCADOS_DF = {
-  atacadao: { id: 'atacadao', nome: 'Atacadão', regiao: 'SIA / DF', emoji: '🟠', logo: 'atacadao', fator: 0.94 },
-  assai: { id: 'assai', nome: 'Assaí Atacadista', regiao: 'SIA / DF', emoji: '🔵', logo: 'assai', fator: 0.94 },
-  diaadia: { id: 'diaadia', nome: 'Dia a Dia', regiao: 'SIA / DF', emoji: '🔴', logo: 'diaadia', fator: 0.94 },
-  carrefour: { id: 'carrefour', nome: 'Carrefour', regiao: 'Asa Sul / Blvd Norte', emoji: '🟦', logo: 'carrefour', fator: 1.04 },
+  atacadao: { id: 'atacadao', nome: 'Atacadão', regiao: 'SIA / DF', emoji: '🟠', logo: 'atacadao', fator: 0.92 },
+  assai: { id: 'assai', nome: 'Assaí Atacadista', regiao: 'SIA / DF', emoji: '🔵', logo: 'assai', fator: 0.93 },
+  diaadia: { id: 'diaadia', nome: 'Dia a Dia', regiao: 'SIA / DF', emoji: '🔴', logo: 'diaadia', fator: 0.96 },
+  carrefour: { id: 'carrefour', nome: 'Carrefour', regiao: 'Asa Sul / Blvd Norte', emoji: '🟦', logo: 'carrefour', fator: 1.03 },
   bigbox: { id: 'bigbox', nome: 'Big Box', regiao: 'Asa Norte / Asa Sul', emoji: '🟢', logo: 'bigbox', fator: 1.10 },
   dona: { id: 'dona', nome: 'Dona', regiao: 'Asa Norte / Asa Sul / DF', emoji: '🟢', logo: 'dona', fator: 1.08 },
   paodeacucar: { id: 'paodeacucar', nome: 'Pão de Açúcar', regiao: 'Asa Sul / Asa Norte', emoji: '🌿', logo: 'paodeacucar', fator: 1.20 }
 };
 
-// Perfis Competitivos do DF por Categoria (Atacadão, Assaí, Dia a Dia e Carrefour disputam a liderança real)
+// Perfis Competitivos do DF por Categoria (Atacadão e Assaí lideram na escala real, Carrefour em higiene e Dia a Dia em ofertas pontuais)
 const FATORES_COMPETITIVOS_DF = {
   'Hortifrúti': {
-    diaadia: 0.90,   // Dia a Dia é imbatível na Quarta Verde e Feira no DF
-    assai: 0.97,
-    atacadao: 0.98,
-    carrefour: 1.10,
-    dona: 1.12,
-    bigbox: 1.16,
-    paodeacucar: 1.28
+    atacadao: 0.91,   // Atacadão no SIA é fortíssimo no atacado de feira e hortifrúti
+    assai: 0.93,
+    diaadia: 0.95,
+    carrefour: 1.06,
+    dona: 1.10,
+    bigbox: 1.14,
+    paodeacucar: 1.24
   },
   'Carnes e Proteínas': {
-    diaadia: 0.92,   // Dia a Dia muito agressivo no açougue (cortes bovinos e frangos)
-    atacadao: 0.93,  // Atacadão forte em carnes no atacado e friboi
-    assai: 0.95,     // Assaí competitivo em suínos e linguiças
-    carrefour: 1.08,
-    dona: 1.12,
-    bigbox: 1.15,
-    paodeacucar: 1.25
-  },
-  'Limpeza': {
-    assai: 0.91,     // Assaí é referência no DF em sabão em pó, detergentes e amaciantes
-    atacadao: 0.94,
+    atacadao: 0.90,  // Atacadão lidera em cortes bovinos, frangos no atacado e friboi
+    assai: 0.92,     // Assaí muito competitivo em suínos, linguiças e cortes resfriados
     diaadia: 0.95,
-    carrefour: 1.07,
+    carrefour: 1.06,
     dona: 1.10,
     bigbox: 1.14,
     paodeacucar: 1.22
   },
-  'Básicos e Grãos': {
-    atacadao: 0.91,  // Atacadão forte em fardos de arroz 5kg, óleos e farinhas
-    diaadia: 0.93,   // Dia a Dia compete de perto em feijão e arroz
-    assai: 0.94,     // Assaí forte em massas, cafés e açúcar
-    carrefour: 1.06,
+  'Limpeza': {
+    assai: 0.90,     // Assaí é a maior referência do DF em sabão em pó, amaciantes e detergentes
+    atacadao: 0.92,
+    diaadia: 0.96,
+    carrefour: 1.05,
     dona: 1.09,
     bigbox: 1.12,
-    paodeacucar: 1.21
+    paodeacucar: 1.20
   },
-  'Laticínios e Frios': {
-    diaadia: 0.92,   // Dia a Dia forte em ovos e leites
-    assai: 0.93,     // Assaí forte em queijos e achocolatados
-    atacadao: 0.94,
+  'Básicos e Grãos': {
+    atacadao: 0.90,  // Atacadão imbatível no DF em fardos de arroz 5kg, feijão, óleos e farinhas
+    assai: 0.92,     // Assaí compete muito perto em massas, cafés e açúcar
+    diaadia: 0.95,
     carrefour: 1.05,
     dona: 1.08,
     bigbox: 1.12,
     paodeacucar: 1.20
   },
+  'Laticínios e Frios': {
+    assai: 0.91,     // Assaí lidera em queijos fatiados, manteigas e achocolatados
+    atacadao: 0.92,  // Atacadão muito forte em caixas de leite UHT e ovos
+    diaadia: 0.95,
+    carrefour: 1.04,
+    dona: 1.08,
+    bigbox: 1.12,
+    paodeacucar: 1.18
+  },
   'Higiene': {
-    carrefour: 0.92, // Carrefour lidera com frequência ofertas de higiene e beleza no app
-    assai: 0.93,
-    atacadao: 0.95,
+    carrefour: 0.91, // Carrefour lidera com frequência ofertas agressivas de higiene e beleza
+    assai: 0.92,
+    atacadao: 0.93,
     diaadia: 0.96,
     dona: 1.07,
     bigbox: 1.10,
-    paodeacucar: 1.18
+    paodeacucar: 1.16
   },
   'Padaria e Lanches': {
-    assai: 0.92,     // Assaí muito forte em biscoitos e pães de pacote
-    diaadia: 0.93,
-    atacadao: 0.95,
-    carrefour: 1.05,
+    assai: 0.91,     // Assaí muito forte em biscoitos, torradas e pães de forma
+    atacadao: 0.92,
+    diaadia: 0.95,
+    carrefour: 1.04,
     dona: 1.08,
     bigbox: 1.10,
-    paodeacucar: 1.22
+    paodeacucar: 1.20
   },
   'Bebidas': {
-    assai: 0.91,     // Assaí forte em cafés, cervejas e sucos
-    atacadao: 0.93,
-    diaadia: 0.94,
-    carrefour: 1.03,
-    dona: 1.09,
+    assai: 0.90,     // Assaí é referência no DF em cervejas, cafés e refrigerantes
+    atacadao: 0.92,
+    diaadia: 0.95,
+    carrefour: 1.02,
+    dona: 1.08,
     bigbox: 1.12,
-    paodeacucar: 1.19
+    paodeacucar: 1.18
   },
   'Diversos': {
-    atacadao: 0.93,
-    diaadia: 0.94,
-    assai: 0.94,
-    carrefour: 1.05,
+    atacadao: 0.92,
+    assai: 0.93,
+    diaadia: 0.96,
+    carrefour: 1.04,
     dona: 1.08,
     bigbox: 1.12,
     paodeacucar: 1.20
@@ -1109,64 +1132,79 @@ function obterFatorCompetitivoMercado(nomeOuId, categoria, redeId) {
   const perfilCat = FATORES_COMPETITIVOS_DF[cat] || FATORES_COMPETITIVOS_DF['Diversos'];
   const fatorBase = perfilCat[redeId] || (MERCADOS_DF[redeId] ? MERCADOS_DF[redeId].fator : 1.0);
 
-  // Hash determinístico baseado no nome do item e rede
+  // Hash determinístico baseado no nome do produto
   let hash = 0;
-  const s = (String(nomeOuId || '') + '_' + redeId).toLowerCase();
+  const s = String(nomeOuId || '').toLowerCase().trim();
   for (let i = 0; i < s.length; i++) {
     hash = ((hash << 5) - hash) + s.charCodeAt(i);
     hash |= 0;
   }
-  const delta = ((Math.abs(hash) % 7) - 3) * 0.01;
-  return Math.max(0.85, fatorBase + delta);
+  const seed = Math.abs(hash);
+
+  // Variação equilibrada simulando promoções reais de cada supermercado
+  let delta = 0;
+  if (redeId === 'atacadao') {
+    delta = ((seed % 11) - 5) * 0.007; // -0.035 a +0.035
+  } else if (redeId === 'assai') {
+    delta = (((seed >> 2) % 11) - 5) * 0.007;
+  } else if (redeId === 'diaadia') {
+    delta = (((seed >> 4) % 11) - 4) * 0.007;
+  } else if (redeId === 'carrefour') {
+    delta = (((seed >> 3) % 9) - 4) * 0.006;
+  } else {
+    delta = (((seed >> 5) % 7) - 3) * 0.005;
+  }
+
+  return Math.max(0.85, Number((fatorBase + delta).toFixed(3)));
 }
 
 // Cotações específicas de produtos para a região de Brasília (DF) com alternância real de vencedores
 const COTACOES_DF = {
-  'arroz': { atacadao: 22.90, diaadia: 23.50, assai: 23.90, carrefour: 25.90, bigbox: 27.50, dona: 26.50, paodeacucar: 29.50 },
-  'arroz_1kg': { atacadao: 5.90, diaadia: 6.20, assai: 6.30, carrefour: 6.90, bigbox: 7.50, dona: 7.20, paodeacucar: 7.90 },
-  'arroz_integral': { atacadao: 7.50, diaadia: 7.80, assai: 7.90, carrefour: 8.90, bigbox: 9.50, dona: 9.20, paodeacucar: 10.50 },
-  'arroz_parboilizado': { atacadao: 24.50, diaadia: 25.20, assai: 25.50, carrefour: 27.50, bigbox: 29.90, dona: 28.50, paodeacucar: 31.90 },
-  'feijao': { diaadia: 6.99, assai: 7.29, atacadao: 7.49, carrefour: 7.90, bigbox: 8.50, dona: 8.20, paodeacucar: 9.29 },
-  'feijao_preto': { diaadia: 8.29, assai: 8.59, atacadao: 8.79, carrefour: 9.50, bigbox: 10.20, dona: 9.90, paodeacucar: 11.50 },
-  'acucar': { atacadao: 14.90, assai: 15.20, diaadia: 15.10, carrefour: 16.20, bigbox: 16.90, dona: 16.50, paodeacucar: 17.50 },
-  'oleo': { atacadao: 5.29, assai: 5.42, diaadia: 5.49, carrefour: 5.97, bigbox: 6.32, dona: 6.14, paodeacucar: 6.73 },
-  'cafe': { assai: 16.80, diaadia: 17.20, atacadao: 17.40, carrefour: 18.90, bigbox: 20.90, dona: 19.90, paodeacucar: 21.50 },
-  'macarrao': { assai: 3.59, diaadia: 3.69, atacadao: 3.77, carrefour: 4.18, bigbox: 4.43, dona: 4.30, paodeacucar: 4.71 },
-  'farinha': { atacadao: 4.79, assai: 4.89, diaadia: 4.95, carrefour: 5.39, bigbox: 5.69, dona: 5.49, paodeacucar: 6.19 },
-  'sal': { diaadia: 2.39, atacadao: 2.59, assai: 2.65, carrefour: 2.99, bigbox: 3.30, dona: 3.15, paodeacucar: 3.50 },
-  'frango': { diaadia: 16.90, atacadao: 17.90, assai: 17.80, carrefour: 19.90, bigbox: 22.50, dona: 21.50, paodeacucar: 23.90 },
-  'carne': { atacadao: 30.90, diaadia: 31.50, assai: 32.50, carrefour: 34.90, bigbox: 38.90, dona: 36.90, paodeacucar: 41.90 },
-  'costela': { atacadao: 23.90, diaadia: 24.50, assai: 24.90, carrefour: 27.90, bigbox: 29.90, dona: 28.90, paodeacucar: 31.90 },
-  'linguica': { assai: 20.90, diaadia: 21.50, atacadao: 21.90, carrefour: 24.50, bigbox: 26.90, dona: 25.90, paodeacucar: 27.90 },
-  'peixe': { atacadao: 29.90, assai: 31.50, diaadia: 31.00, carrefour: 34.90, bigbox: 38.90, dona: 36.90, paodeacucar: 40.90 },
-  'leite': { diaadia: 4.29, atacadao: 4.39, assai: 4.45, carrefour: 4.89, bigbox: 5.39, dona: 5.19, paodeacucar: 5.69 },
-  'queijo': { diaadia: 8.40, assai: 8.60, atacadao: 8.70, carrefour: 9.50, bigbox: 10.80, dona: 10.20, paodeacucar: 11.50 },
-  'ovos': { diaadia: 14.50, assai: 15.20, atacadao: 15.55, carrefour: 16.90, bigbox: 17.90, dona: 17.50, paodeacucar: 19.40 },
-  'manteiga': { diaadia: 9.89, assai: 10.29, atacadao: 10.49, carrefour: 11.49, bigbox: 12.50, dona: 11.99, paodeacucar: 13.49 },
-  'iogurte': { assai: 7.50, diaadia: 7.80, atacadao: 7.90, carrefour: 9.20, bigbox: 10.50, dona: 9.90, paodeacucar: 11.20 },
-  'detergente': { assai: 1.89, diaadia: 1.99, atacadao: 2.05, carrefour: 2.35, bigbox: 2.69, dona: 2.49, paodeacucar: 2.89 },
-  'amaciante': { assai: 14.29, atacadao: 14.89, diaadia: 15.19, carrefour: 16.89, bigbox: 18.20, dona: 17.50, paodeacucar: 19.90 },
-  'sabao': { assai: 20.90, diaadia: 21.90, atacadao: 22.40, carrefour: 24.50, bigbox: 26.90, dona: 25.90, paodeacucar: 28.90 },
-  'sanitaria': { diaadia: 4.39, atacadao: 4.69, assai: 4.75, carrefour: 5.39, bigbox: 5.99, dona: 5.69, paodeacucar: 6.49 },
-  'desinfetante': { assai: 7.50, diaadia: 7.80, atacadao: 7.90, carrefour: 9.50, bigbox: 10.90, dona: 10.20, paodeacucar: 11.50 },
-  'banana': { diaadia: 4.89, assai: 5.60, atacadao: 5.80, carrefour: 6.49, bigbox: 7.20, dona: 6.89, paodeacucar: 7.90 },
-  'tomate': { diaadia: 5.89, assai: 6.39, atacadao: 6.50, carrefour: 7.19, bigbox: 8.29, dona: 7.69, paodeacucar: 8.90 },
-  'batata': { diaadia: 4.79, assai: 5.39, atacadao: 5.50, carrefour: 6.19, bigbox: 6.89, dona: 6.49, paodeacucar: 7.49 },
-  'cebola': { diaadia: 4.19, assai: 4.49, atacadao: 4.60, carrefour: 5.29, bigbox: 5.89, dona: 5.59, paodeacucar: 6.49 },
-  'alho': { atacadao: 24.90, diaadia: 25.50, assai: 25.90, carrefour: 28.90, bigbox: 31.90, dona: 30.50, paodeacucar: 34.90 },
-  'papel': { assai: 14.89, atacadao: 15.49, diaadia: 15.79, carrefour: 17.50, bigbox: 19.50, dona: 18.50, paodeacucar: 21.20 },
-  'dente': { carrefour: 3.99, assai: 4.29, atacadao: 4.45, diaadia: 4.55, bigbox: 5.40, dona: 5.10, paodeacucar: 5.90 },
-  'fiodental': { assai: 8.50, diaadia: 8.80, atacadao: 8.90, carrefour: 10.50, bigbox: 11.90, dona: 11.20, paodeacucar: 12.50 },
-  'sabonete': { assai: 1.85, diaadia: 1.95, atacadao: 1.99, carrefour: 2.29, bigbox: 2.69, dona: 2.49, paodeacucar: 2.99 },
-  'shampoo': { carrefour: 14.90, assai: 15.50, diaadia: 15.80, atacadao: 15.90, bigbox: 19.90, dona: 18.90, paodeacucar: 21.50 },
-  'pao': { diaadia: 6.90, atacadao: 7.20, assai: 7.30, carrefour: 8.50, bigbox: 9.20, dona: 8.80, paodeacucar: 9.90 },
-  'biscoito': { assai: 3.59, diaadia: 3.75, atacadao: 3.80, carrefour: 4.50, bigbox: 4.90, dona: 4.70, paodeacucar: 5.20 },
-  'achocolatado': { assai: 7.69, diaadia: 7.99, atacadao: 8.29, carrefour: 8.79, bigbox: 9.79, dona: 9.29, paodeacucar: 10.49 },
-  'cabelo': { atacadao: 14.90, assai: 15.20, diaadia: 15.10, carrefour: 17.90, bigbox: 19.90, dona: 18.90, paodeacucar: 21.90 },
-  'cerveja': { assai: 4.39, atacadao: 4.49, diaadia: 4.55, carrefour: 4.99, bigbox: 5.49, dona: 5.29, paodeacucar: 5.89 },
-  'vinho': { atacadao: 31.90, assai: 32.50, diaadia: 33.50, carrefour: 35.90, bigbox: 42.90, dona: 39.90, paodeacucar: 45.90 },
-  'pet': { atacadao: 41.90, assai: 42.90, diaadia: 43.90, carrefour: 48.90, bigbox: 54.90, dona: 51.90, paodeacucar: 58.90 },
-  'utilidades': { atacadao: 9.90, assai: 10.20, diaadia: 10.00, carrefour: 11.90, bigbox: 13.50, dona: 12.80, paodeacucar: 14.50 }
+  'arroz': { atacadao: 22.49, assai: 22.90, diaadia: 23.50, carrefour: 25.90, dona: 26.50, bigbox: 27.50, paodeacucar: 29.50 },
+  'arroz_1kg': { atacadao: 5.89, assai: 5.99, diaadia: 6.20, carrefour: 6.90, dona: 7.20, bigbox: 7.50, paodeacucar: 7.90 },
+  'arroz_integral': { atacadao: 7.39, assai: 7.59, diaadia: 7.80, carrefour: 8.90, dona: 9.20, bigbox: 9.50, paodeacucar: 10.50 },
+  'arroz_parboilizado': { atacadao: 23.90, assai: 24.50, diaadia: 25.20, carrefour: 27.50, dona: 28.50, bigbox: 29.90, paodeacucar: 31.90 },
+  'feijao': { atacadao: 6.79, assai: 6.99, diaadia: 7.29, carrefour: 7.90, dona: 8.20, bigbox: 8.50, paodeacucar: 9.29 },
+  'feijao_preto': { atacadao: 7.99, assai: 8.19, diaadia: 8.49, carrefour: 9.50, dona: 9.90, bigbox: 10.20, paodeacucar: 11.50 },
+  'acucar': { atacadao: 14.79, assai: 14.99, diaadia: 15.20, carrefour: 16.20, dona: 16.50, bigbox: 16.90, paodeacucar: 17.50 },
+  'oleo': { atacadao: 5.19, assai: 5.29, diaadia: 5.49, carrefour: 5.97, dona: 6.14, bigbox: 6.32, paodeacucar: 6.73 },
+  'cafe': { assai: 16.49, atacadao: 16.89, diaadia: 17.20, carrefour: 18.90, dona: 19.90, bigbox: 20.90, paodeacucar: 21.50 },
+  'macarrao': { assai: 3.49, atacadao: 3.59, diaadia: 3.79, carrefour: 4.18, dona: 4.30, bigbox: 4.43, paodeacucar: 4.71 },
+  'farinha': { atacadao: 4.69, assai: 4.79, diaadia: 4.95, carrefour: 5.39, dona: 5.49, bigbox: 5.69, paodeacucar: 6.19 },
+  'sal': { atacadao: 2.29, assai: 2.39, diaadia: 2.59, carrefour: 2.99, dona: 3.15, bigbox: 3.30, paodeacucar: 3.50 },
+  'frango': { atacadao: 16.49, assai: 16.89, diaadia: 17.20, carrefour: 19.90, dona: 21.50, bigbox: 22.50, paodeacucar: 23.90 },
+  'carne': { atacadao: 29.90, assai: 30.90, diaadia: 31.90, carrefour: 34.90, dona: 36.90, bigbox: 38.90, paodeacucar: 41.90 },
+  'costela': { atacadao: 23.50, assai: 23.90, diaadia: 24.50, carrefour: 27.90, dona: 28.90, bigbox: 29.90, paodeacucar: 31.90 },
+  'linguica': { assai: 20.49, atacadao: 20.90, diaadia: 21.50, carrefour: 24.50, dona: 25.90, bigbox: 26.90, paodeacucar: 27.90 },
+  'peixe': { atacadao: 29.50, assai: 30.50, diaadia: 31.50, carrefour: 34.90, dona: 36.90, bigbox: 38.90, paodeacucar: 40.90 },
+  'leite': { atacadao: 4.19, assai: 4.25, diaadia: 4.39, carrefour: 4.89, dona: 5.19, bigbox: 5.39, paodeacucar: 5.69 },
+  'queijo': { assai: 8.29, atacadao: 8.39, diaadia: 8.79, carrefour: 9.50, dona: 10.20, bigbox: 10.80, paodeacucar: 11.50 },
+  'ovos': { atacadao: 14.49, assai: 14.79, diaadia: 15.20, carrefour: 16.90, dona: 17.50, bigbox: 17.90, paodeacucar: 19.40 },
+  'manteiga': { assai: 9.79, atacadao: 9.99, diaadia: 10.39, carrefour: 11.49, dona: 11.99, bigbox: 12.50, paodeacucar: 13.49 },
+  'iogurte': { assai: 7.29, atacadao: 7.49, diaadia: 7.80, carrefour: 9.20, dona: 9.90, bigbox: 10.50, paodeacucar: 11.20 },
+  'detergente': { assai: 1.85, atacadao: 1.89, diaadia: 1.99, carrefour: 2.35, dona: 2.49, bigbox: 2.69, paodeacucar: 2.89 },
+  'amaciante': { assai: 13.99, atacadao: 14.49, diaadia: 15.19, carrefour: 16.89, dona: 17.50, bigbox: 18.20, paodeacucar: 19.90 },
+  'sabao': { assai: 20.49, atacadao: 20.90, diaadia: 21.90, carrefour: 24.50, dona: 25.90, bigbox: 26.90, paodeacucar: 28.90 },
+  'sanitaria': { atacadao: 4.29, assai: 4.35, diaadia: 4.69, carrefour: 5.39, dona: 5.69, bigbox: 5.99, paodeacucar: 6.49 },
+  'desinfetante': { assai: 7.29, atacadao: 7.49, diaadia: 7.80, carrefour: 9.50, dona: 10.20, bigbox: 10.90, paodeacucar: 11.50 },
+  'banana': { atacadao: 4.79, assai: 4.89, diaadia: 5.29, carrefour: 6.49, dona: 6.89, bigbox: 7.20, paodeacucar: 7.90 },
+  'tomate': { atacadao: 5.69, assai: 5.89, diaadia: 6.39, carrefour: 7.19, dona: 7.69, bigbox: 8.29, paodeacucar: 8.90 },
+  'batata': { atacadao: 4.59, assai: 4.79, diaadia: 5.19, carrefour: 6.19, dona: 6.49, bigbox: 6.89, paodeacucar: 7.49 },
+  'cebola': { atacadao: 4.10, assai: 4.25, diaadia: 4.59, carrefour: 5.29, dona: 5.59, bigbox: 5.89, paodeacucar: 6.49 },
+  'alho': { atacadao: 23.90, assai: 24.50, diaadia: 25.90, carrefour: 28.90, dona: 30.50, bigbox: 31.90, paodeacucar: 34.90 },
+  'papel': { assai: 14.49, atacadao: 14.89, diaadia: 15.79, carrefour: 17.50, dona: 18.50, bigbox: 19.50, paodeacucar: 21.20 },
+  'dente': { carrefour: 3.89, assai: 4.19, atacadao: 4.35, diaadia: 4.55, dona: 5.10, bigbox: 5.40, paodeacucar: 5.90 },
+  'fiodental': { assai: 8.29, atacadao: 8.49, diaadia: 8.80, carrefour: 10.50, dona: 11.20, bigbox: 11.90, paodeacucar: 12.50 },
+  'sabonete': { assai: 1.79, atacadao: 1.85, diaadia: 1.95, carrefour: 2.29, dona: 2.49, bigbox: 2.69, paodeacucar: 2.99 },
+  'shampoo': { carrefour: 14.50, assai: 14.90, atacadao: 15.20, diaadia: 15.80, dona: 18.90, bigbox: 19.90, paodeacucar: 21.50 },
+  'pao': { assai: 6.79, atacadao: 6.89, diaadia: 7.20, carrefour: 8.50, dona: 8.80, bigbox: 9.20, paodeacucar: 9.90 },
+  'biscoito': { assai: 3.49, atacadao: 3.59, diaadia: 3.75, carrefour: 4.50, dona: 4.70, bigbox: 4.90, paodeacucar: 5.20 },
+  'achocolatado': { assai: 7.49, atacadao: 7.69, diaadia: 7.99, carrefour: 8.79, dona: 9.29, bigbox: 9.79, paodeacucar: 10.49 },
+  'cabelo': { atacadao: 14.50, assai: 14.90, diaadia: 15.10, carrefour: 17.90, dona: 18.90, bigbox: 19.90, paodeacucar: 21.90 },
+  'cerveja': { assai: 4.29, atacadao: 4.39, diaadia: 4.55, carrefour: 4.99, dona: 5.29, bigbox: 5.49, paodeacucar: 5.89 },
+  'vinho': { atacadao: 31.50, assai: 31.90, diaadia: 33.50, carrefour: 35.90, dona: 39.90, bigbox: 42.90, paodeacucar: 45.90 },
+  'pet': { atacadao: 40.90, assai: 41.90, diaadia: 43.90, carrefour: 48.90, dona: 51.90, bigbox: 54.90, paodeacucar: 58.90 },
+  'utilidades': { atacadao: 9.50, assai: 9.80, diaadia: 10.00, carrefour: 11.90, dona: 12.80, bigbox: 13.50, paodeacucar: 14.50 }
 };
 
 // Catálogo de Marcas Populares e Cotações Específicas em Brasília (DF)
@@ -1574,7 +1612,7 @@ function selecionarMercadoReferencia(mercadoId) {
     atualizarVisualBotaoCotar();
   }
 
-  salvarEstado(false);
+  salvarEstado(true);
   atualizarCardResumo();
 
   if (AppState.abaAtiva === 'lista') {
@@ -1630,14 +1668,33 @@ function atualizarChipsMercadoUI() {
   });
 }
 
-// Atualizar Totais do Carrinho e Estimado
+// Modo de exibição do valor principal no cabeçalho: 'estimado', 'restante', 'carrinho'
+let visaoTotalModo = 'estimado';
+
+function alternarVisaoTotal() {
+  if (visaoTotalModo === 'estimado') {
+    visaoTotalModo = 'restante';
+  } else if (visaoTotalModo === 'restante') {
+    visaoTotalModo = 'carrinho';
+  } else {
+    visaoTotalModo = 'estimado';
+  }
+  atualizarCardResumo();
+}
+
+// Atualizar Totais do Carrinho e Estimado com reatividade total
 function atualizarCardResumo() {
   const elTotal = document.getElementById('resumo-total-valor');
   const elProgresso = document.getElementById('resumo-progresso-badge');
+  const elRotulo = document.getElementById('resumo-total-rotulo');
+  const elTagMercado = document.getElementById('resumo-mercado-tag');
 
   if (!AppState.cotacaoAtiva) {
+    if (elRotulo) elRotulo.textContent = 'TOTAL ESTIMADO';
+    if (elTagMercado) elTagMercado.classList.remove('visivel');
     if (elTotal) {
       elTotal.textContent = 'R$ --';
+      elTotal.style.color = 'var(--text-main)';
     }
     if (elProgresso) {
       const comprados = AppState.listaAtiva.filter(i => i.comprado).length;
@@ -1646,13 +1703,46 @@ function atualizarCardResumo() {
     return;
   }
 
-  let totalEstimado = 0;
+  let totalGeral = 0;
   let totalCarrinho = 0;
+  let totalRestante = 0;
   let totalItens = AppState.listaAtiva.length;
   let itensNoCarrinho = 0;
+
+  let totalCategoria = 0;
+  let totalCarrinhoCategoria = 0;
+  let itensCategoria = 0;
+  let itensNoCarrinhoCat = 0;
+  const temFiltroCat = AppState.filtroCategoria && AppState.filtroCategoria !== 'todas';
+
   const ref = (AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos') ? AppState.mercadoReferencia : 'nenhum';
 
+  // Atualizar Tag do Mercado Ativo no topo
+  if (elTagMercado) {
+    if (ref !== 'nenhum' && MERCADOS_DF[ref]) {
+      elTagMercado.textContent = MERCADOS_DF[ref].nome;
+      elTagMercado.title = `Cotado no ${MERCADOS_DF[ref].nome} (Clique em outro mercado na tabela para alternar)`;
+      elTagMercado.classList.add('visivel');
+    } else {
+      elTagMercado.textContent = 'Melhor Cotação';
+      elTagMercado.title = 'Cotado com os melhores preços encontrados no DF';
+      elTagMercado.classList.add('visivel');
+    }
+  }
+
+  // Deduplicação no modo resumido
+  const nomesResumidosVistos = new Set();
+
   AppState.listaAtiva.forEach(item => {
+    if (AppState.modoResumido) {
+      const nomeRes = typeof obterNomeResumido === 'function' ? obterNomeResumido(item.nome) : item.nome;
+      const chaveDedup = nomeRes.toLowerCase().trim();
+      if (nomesResumidosVistos.has(chaveDedup)) {
+        return; // Pula variedade repetida no modo resumido
+      }
+      nomesResumidosVistos.add(chaveDedup);
+    }
+
     let precoItem = (ref !== 'nenhum') ? obterPrecoEstimadoMercado(item, ref) : 0;
     if (!precoItem || precoItem <= 0) {
       precoItem = item.preco || item.ultimoPreco || item.precoReferencia || 0;
@@ -1663,18 +1753,55 @@ function atualizarCardResumo() {
     }
 
     const subtotal = (item.qtde || 1) * precoItem;
-    totalEstimado += subtotal;
+    totalGeral += subtotal;
+
     if (item.comprado) {
       totalCarrinho += subtotal;
       itensNoCarrinho++;
+    } else {
+      totalRestante += subtotal;
+    }
+
+    if (temFiltroCat && item.categoria === AppState.filtroCategoria) {
+      totalCategoria += subtotal;
+      itensCategoria++;
+      if (item.comprado) {
+        totalCarrinhoCategoria += subtotal;
+        itensNoCarrinhoCat++;
+      }
     }
   });
 
-  if (elTotal) {
-    elTotal.textContent = `R$ ${totalEstimado.toFixed(2).replace('.', ',')}`;
+  // Atualiza Valor e Rótulo com base na visão selecionada
+  if (elTotal && elRotulo) {
+    if (visaoTotalModo === 'restante') {
+      elRotulo.textContent = 'FALTA PEGAR';
+      elTotal.textContent = `R$ ${totalRestante.toFixed(2).replace('.', ',')}`;
+      elTotal.style.color = '#DC2626';
+    } else if (visaoTotalModo === 'carrinho') {
+      elRotulo.textContent = 'NO CARRINHO';
+      elTotal.textContent = `R$ ${totalCarrinho.toFixed(2).replace('.', ',')}`;
+      elTotal.style.color = '#059669';
+    } else {
+      elRotulo.textContent = 'TOTAL ESTIMADO';
+      elTotal.textContent = `R$ ${totalGeral.toFixed(2).replace('.', ',')}`;
+      elTotal.style.color = 'var(--text-main)';
+    }
   }
+
+  // Atualiza Subtítulo de Progresso em Tempo Real
   if (elProgresso) {
-    elProgresso.textContent = `🛒 ${itensNoCarrinho} de ${totalItens} pegos (R$ ${totalCarrinho.toFixed(2).replace('.', ',')})`;
+    if (totalItens === 0) {
+      elProgresso.textContent = 'Nenhum item na lista';
+    } else if (temFiltroCat) {
+      elProgresso.textContent = `📁 ${AppState.filtroCategoria}: R$ ${totalCategoria.toFixed(2).replace('.', ',')} (${itensNoCarrinhoCat}/${itensCategoria} pegos) • Geral: R$ ${totalGeral.toFixed(2).replace('.', ',')}`;
+    } else if (itensNoCarrinho === totalItens) {
+      elProgresso.textContent = `🎉 Todos os ${totalItens} itens pegos no carrinho! (R$ ${totalCarrinho.toFixed(2).replace('.', ',')})`;
+    } else if (itensNoCarrinho === 0) {
+      elProgresso.textContent = `🛒 0 de ${totalItens} pegos • R$ ${totalGeral.toFixed(2).replace('.', ',')} a comprar`;
+    } else {
+      elProgresso.textContent = `🛒 ${itensNoCarrinho} de ${totalItens} no carrinho (R$ ${totalCarrinho.toFixed(2).replace('.', ',')}) • Falta R$ ${totalRestante.toFixed(2).replace('.', ',')}`;
+    }
   }
 }
 
@@ -1765,11 +1892,15 @@ function renderizarListaCompras() {
     colunasCabecalhoMercados = chavesRedes.map(r => {
       const info = MERCADOS_DF[r];
       const logo = (typeof obterLogoMercado === 'function' && obterLogoMercado(r)) || `logos/${r}.png`;
+      const isColunaAtiva = (AppState.mercadoReferencia === r);
       return `
-        <th class="mcol-th-rede">
+        <th class="mcol-th-rede ${isColunaAtiva ? 'mcol-coluna-ativa' : ''}" 
+            onclick="selecionarMercadoReferencia('${r}')" 
+            title="Clique para cotar a lista inteira no ${info.nome}">
           <div class="mcol-rede-header-inner">
             <img src="${logo}" class="mcol-rede-logo" onerror="this.outerHTML='<span style=\\'font-size:1.1rem\\'>${info.emoji}</span>'" alt="${info.nome}">
             <span class="mcol-rede-nome">${info.nome}</span>
+            ${isColunaAtiva ? '<span style="font-size:0.58rem; color:#D97706; font-weight:800; background:#FEF3C7; padding:0 3px; border-radius:3px; border:1px solid #F59E0B; margin-top:2px;">● ATIVO</span>' : ''}
           </div>
         </th>
       `;
@@ -1924,11 +2055,15 @@ function renderizarListaCompras() {
   if (!ocultarMercados) {
     let celulasTotais = chavesRedes.map(r => {
       const isCampeao = r === campeaoId;
+      const isColunaAtiva = (AppState.mercadoReferencia === r);
       return `
-        <td class="mcol-td-total ${isCampeao ? 'mcol-td-total-campeao' : ''}">
+        <td class="mcol-td-total ${isCampeao ? 'mcol-td-total-campeao' : ''} ${isColunaAtiva ? 'mcol-coluna-ativa' : ''}" 
+            onclick="selecionarMercadoReferencia('${r}')" 
+            title="Clique para selecionar o ${MERCADOS_DF[r].nome} como mercado da lista">
           <div class="mcol-total-box">
             <span class="mcol-total-valor">R$ ${totais[r].toFixed(2).replace('.', ',')}</span>
             ${isCampeao ? '<span class="mcol-campeao-tag">⭐ CAMPEÃO</span>' : ''}
+            ${isColunaAtiva ? '<span style="font-size:0.62rem; color:#D97706; font-weight:800;">✓ SELECIONADO</span>' : ''}
           </div>
         </td>
       `;
@@ -3301,11 +3436,11 @@ function alterarPrecoItem(id, novoPrecoStr, redeRef) {
 
 function removerItem(id) {
   // Desmarca no catálogo se for produto do catálogo
-  const prod = AppState.catalogo.find(p => String(p.id) === String(id) || `item_despensa_${p.id}` === String(id));
+  const prod = AppState.catalogo.find(p => String(p.id) === String(id) || String(p.catalogoId) === String(id) || `item_despensa_${p.id}` === String(id));
   if (prod) {
     prod.selecionado = false;
   }
-  AppState.listaAtiva = AppState.listaAtiva.filter(i => String(i.id) !== String(id));
+  AppState.listaAtiva = AppState.listaAtiva.filter(i => String(i.id) !== String(id) && String(i.catalogoId) !== String(id));
   salvarEstado(true);
   renderizarListaCompras();
   renderizarDespensa();
@@ -4530,7 +4665,7 @@ function confirmarZerarTudo() {
   AppState.cotacaoAtiva = true;
   AppState.modoCotacao = 'mais_baratos';
 
-  salvarEstado(false);
+  salvarEstado(true);
   renderizarTudo();
 }
 
