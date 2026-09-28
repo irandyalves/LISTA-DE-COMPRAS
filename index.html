@@ -12,7 +12,7 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>">
   
   <!-- CSS Moderno -->
-  <link rel="stylesheet" href="style.css?v=4.0">
+  <link rel="stylesheet" href="style.css?v=5.0">
 </head>
 <body>
 
@@ -23,6 +23,19 @@
         <div class="sidebar-brand">
           <span class="sidebar-brand-ico">🛒</span>
           <span class="sidebar-brand-txt">LISTA DE COMPRAS</span>
+        </div>
+
+        <!-- BLOCO TOTAL ESTIMADO (MOVIDO PARA O CABEÇALHO DO SLIDE BAR À ESQUERDA) -->
+        <div class="bloco-carrinho-total" onclick="alternarVisaoTotal()" style="cursor: pointer;" title="Toque para alternar entre Total Geral, Restante e No Carrinho">
+          <div class="carrinho-icon-xl">🛒</div>
+          <div class="total-estimado-box">
+            <div class="total-rotulo-linha">
+              <span class="total-rotulo" id="resumo-total-rotulo">TOTAL ESTIMADO</span>
+              <span class="badge-mercado-ativo" id="resumo-mercado-tag"></span>
+            </div>
+            <span class="total-valor" id="resumo-total-valor">R$ 0,00</span>
+            <span class="total-progresso-sub" id="resumo-progresso-badge">0 de 0 pegos</span>
+          </div>
         </div>
       </div>
 
@@ -65,22 +78,10 @@
       <div class="app-container">
     <!-- PAINEL SUPERIOR CONGELADO (STICKY HEADER COM TODAS AS ABAS) -->
     <div class="painel-topo-congelado">
-      <!-- LINHA 1: Ícone do Carrinho + Total Estimado + Barra de Pesquisa Reduzida com Único Botão Adicionar + Ações -->
+      <!-- LINHA 1: Barra de Pesquisa + Ações -->
       <header class="header-otimizado-l1">
 
-        <div class="bloco-carrinho-total" onclick="alternarVisaoTotal()" style="cursor: pointer;" title="Toque para alternar entre Total Geral, Restante e No Carrinho">
-          <div class="carrinho-icon-xl">🛒</div>
-          <div class="total-estimado-box">
-            <div class="total-rotulo-linha">
-              <span class="total-rotulo" id="resumo-total-rotulo">TOTAL ESTIMADO</span>
-              <span class="badge-mercado-ativo" id="resumo-mercado-tag"></span>
-            </div>
-            <span class="total-valor" id="resumo-total-valor">R$ 0,00</span>
-            <span class="total-progresso-sub" id="resumo-progresso-badge">0 de 0 pegos</span>
-          </div>
-        </div>
-
-        <!-- Barra de Pesquisa Reduzida na Frente do Preço Total -->
+        <!-- Barra de Pesquisa Reduzida / Expandida -->
         <div class="busca-topo-reduzida">
           <button id="btn-mic-voz" class="btn-mic-mini" title="Falar o que falta (Microfone)">
             🎙️
@@ -629,7 +630,7 @@
   <script src="logos_banco.js"></script>
   <script src="icones2d.js"></script>
   <script src="firebase-sync.js"></script>
-  <script src="app.js?v=4.0"></script>
+  <script src="app.js?v=5.0"></script>
 
 </body>
 </html>
