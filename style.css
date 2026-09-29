@@ -2414,7 +2414,7 @@ body.tema-escuro .btn-categoria-fav.ativo {
 }
 
 #view-despensa .item-card .item-nome {
-  color: #7C3AED !important; /* Fonte lilás / violeta */
+  color: #000000 !important; /* Fonte preta */
   font-style: normal !important;
   font-weight: 600 !important;
   font-size: var(--fonte-montar, 0.78rem) !important;
