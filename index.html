@@ -62,6 +62,21 @@
           </button>
         </div>
 
+        <button class="sidebar-nav-item nav-item" data-aba="lista_catalogo" id="btn-nav-lista-compra" onclick="navegarParaAba('lista_catalogo');">
+          <span class="sidebar-nav-icon">📝</span>
+          <span class="sidebar-nav-text">LISTA DE COMPRA</span>
+        </button>
+
+        <!-- SUBOPÇÕES DE LISTA DE COMPRA (REVELAÇÃO CORTINA SUAVE IDENTADA) -->
+        <div id="sidebar-subopcoes-lista-catalogo" class="sidebar-subopcoes-cortina">
+          <button class="btn-subopcao-item btn-sub-resumir" onclick="alternarModoResumido()" title="Alternar entre nomes resumidos ou nomes completos">
+            <span class="ico-sub">📝</span> <span class="txt-sub">Resumir nomes</span>
+          </button>
+          <button class="btn-subopcao-item btn-sub-mercados" onclick="alternarModoNoMercado()" title="Ocultar ou exibir colunas de mercados">
+            <span class="ico-sub">👁️</span> <span class="txt-sub">Ocultar Mercados</span>
+          </button>
+        </div>
+
         <button class="sidebar-nav-item nav-item" data-aba="despensa" id="btn-nav-montar-lista" onclick="navegarParaAba('despensa');">
           <span class="sidebar-nav-icon">📋</span>
           <span class="sidebar-nav-text">MONTAR LISTA</span>
@@ -208,6 +223,11 @@
     <!-- VIEW 1: LISTA ATIVA DE COMPRAS -->
     <main id="view-lista">
       <div id="itens-lista-container"></div>
+    </main>
+
+    <!-- VIEW: LISTA DE COMPRA (CÓPIA DA ESTRUTURA DE COMPRAR POVOADA COM TODOS OS ITENS DE MONTAR LISTA) -->
+    <main id="view-lista-catalogo" style="display: none;">
+      <div id="itens-lista-catalogo-container"></div>
     </main>
 
     <!-- VIEW 2: DESPENSA / MONTAR LISTA (CATÁLOGO DETALHADO) -->
@@ -733,6 +753,10 @@
     <button class="mobile-nav-btn ativo" data-aba="lista" onclick="navegarParaAba('lista')">
       <span class="mobile-nav-icon">🛒</span>
       <span class="mobile-nav-label">COMPRAR</span>
+    </button>
+    <button class="mobile-nav-btn" data-aba="lista_catalogo" onclick="navegarParaAba('lista_catalogo')">
+      <span class="mobile-nav-icon">📝</span>
+      <span class="mobile-nav-label">LISTA</span>
     </button>
     <button class="mobile-nav-btn" data-aba="despensa" onclick="navegarParaAba('despensa')">
       <span class="mobile-nav-icon">📋</span>

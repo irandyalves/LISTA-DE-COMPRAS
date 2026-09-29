@@ -2620,7 +2620,7 @@ body.tema-escuro .btn-categoria-fav.ativo,
   border: 1px solid var(--border);
   color: #475569;
   padding: 5px 12px;
-  border-radius: 20px;
+  border-radius: 4px 14px 14px 4px; /* Cantos à esquerda reduzidos */
   font-size: 0.76rem;
   font-weight: 600;
   cursor: pointer;
@@ -2656,6 +2656,7 @@ body.tema-escuro .btn-categoria-fav.ativo,
   justify-content: center;
   min-width: 32px;
   cursor: pointer;
+  border-radius: 4px 14px 14px 4px; /* Cantos à esquerda reduzidos */
   transition: transform 0.2s ease, background 0.2s ease;
 }
 
@@ -4027,29 +4028,45 @@ body.tema-escuro .despensa-aba-tab.btn-aba-favoritos-estrela.ativa,
 }
 
 /* Quando mercados estão ocultos (Modo Mercado / Foco na Compra) */
-.tabela-lista-compras.mercados-ocultos {
+.tabela-lista-compras.mercados-ocultos,
+.tabela-lista-catalogo.mercados-ocultos {
   min-width: 100% !important;
 }
 
 .tabela-lista-compras.mercados-ocultos .col-mercado,
 .tabela-lista-compras.mercados-ocultos .mcol-th-rede,
 .tabela-lista-compras.mercados-ocultos .mcol-td-preco,
-.tabela-lista-compras.mercados-ocultos .mcol-td-total {
+.tabela-lista-compras.mercados-ocultos .mcol-td-total,
+.tabela-lista-catalogo.mercados-ocultos .col-mercado,
+.tabela-lista-catalogo.mercados-ocultos .mcol-th-rede,
+.tabela-lista-catalogo.mercados-ocultos .mcol-td-preco,
+.tabela-lista-catalogo.mercados-ocultos .mcol-td-total {
   display: none !important;
 }
 
 .tabela-lista-compras.mercados-ocultos .mcol-th-produto,
-.tabela-lista-compras.mercados-ocultos .mcol-td-produto {
+.tabela-lista-compras.mercados-ocultos .mcol-td-produto,
+.tabela-lista-catalogo.mercados-ocultos .mcol-th-produto,
+.tabela-lista-catalogo.mercados-ocultos .mcol-td-produto {
   width: 100% !important;
   min-width: 250px !important;
   max-width: none !important;
   box-shadow: none !important;
 }
 
-/* Estilo de item comprado / riscado */
+/* Estilo de item comprado / riscado / selecionado */
 .item-linha-comprado td {
   background: #F8FAFC !important;
   opacity: 0.55;
+}
+
+.item-linha-selecionado td {
+  background-color: #F0FDF4 !important;
+}
+
+.mcol-prod-nome.selecionado-ativo {
+  font-weight: 700;
+  color: #15803D;
 }
 
 .texto-riscado {
@@ -4485,24 +4502,24 @@ body.tema-escuro .despensa-aba-tab.btn-aba-favoritos-estrela.ativa,
 }
 
 /* Compatibilidade para tabelas sem coluna de check (Comparador DF) */
-.mcol-tabela-moderna:not(.tabela-lista-compras) .mcol-th-qtde,
-.mcol-tabela-moderna:not(.tabela-lista-compras) .mcol-td-qtde {
+.mcol-tabela-moderna:not(.tabela-lista-compras):not(.tabela-lista-catalogo) .mcol-th-qtde,
+.mcol-tabela-moderna:not(.tabela-lista-compras):not(.tabela-lista-catalogo) .mcol-td-qtde {
   left: 0 !important;
 }
 
-.mcol-tabela-moderna:not(.tabela-lista-compras) .mcol-th-produto,
-.mcol-tabela-moderna:not(.tabela-lista-compras) .mcol-td-produto {
+.mcol-tabela-moderna:not(.tabela-lista-compras):not(.tabela-lista-catalogo) .mcol-th-produto,
+.mcol-tabela-moderna:not(.tabela-lista-compras):not(.tabela-lista-catalogo) .mcol-td-produto {
   left: 50px !important;
 }
 
-.mcol-tabela-moderna:not(.tabela-lista-compras) .mcol-td-qtde-total {
+.mcol-tabela-moderna:not(.tabela-lista-compras):not(.tabela-lista-catalogo) .mcol-td-qtde-total {
   left: 0 !important;
   width: 50px !important;
   min-width: 50px !important;
   max-width: 50px !important;
 }
 
-.mcol-tabela-moderna:not(.tabela-lista-compras) .mcol-td-totais-label {
+.mcol-tabela-moderna:not(.tabela-lista-compras):not(.tabela-lista-catalogo) .mcol-td-totais-label {
   left: 50px !important;
 }
 
@@ -5738,7 +5755,7 @@ body.tema-escuro .drawer-fechar-btn {
     padding: 3px 6px !important;
     font-size: 0.72rem !important;
     font-weight: 600 !important;
-    border-radius: 12px !important;
+    border-radius: 3px 10px 10px 3px !important; /* Cantos à esquerda reduzidos no mobile */
     flex-shrink: 0 !important;
     letter-spacing: -0.01em !important;
   }
@@ -5751,6 +5768,7 @@ body.tema-escuro .drawer-fechar-btn {
     align-items: center !important;
     justify-content: center !important;
     min-width: 28px !important;
+    border-radius: 3px 10px 10px 3px !important;
   }
 
   .despensa-aba-tab.btn-aba-favoritos-estrela.ativa {
