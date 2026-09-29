@@ -2307,21 +2307,25 @@ body.modo-mercado-ativo .item-nome {
 }
 
 #view-despensa .categoria-titulo {
+  position: sticky !important;
+  top: var(--altura-topo-congelado, 76px) !important;
+  z-index: 50 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
   margin-top: 8px !important;
   margin-bottom: 4px !important;
-  padding: 5px 8px 4px 8px !important;
+  padding: 6px 8px 5px 8px !important;
   font-size: 0.92rem !important; /* Fonte 10% maior */
   font-weight: 800 !important;   /* Negrito forte */
   color: #1E293B !important;
   text-transform: none !important; /* Sem caixa alta, só a primeira maiúscula */
   letter-spacing: 0.1px !important;
   border-top: 1.5px solid #CBD5E1 !important; /* Borda superior */
+  border-bottom: 1px solid #E2E8F0 !important;
   background: #FFFFFF !important;
   border-radius: 6px 6px 0 0 !important;
-  box-shadow: 0 3px 6px rgba(15, 23, 42, 0.06) !important; /* Sombrinha embaixo */
+  box-shadow: 0 3px 8px -2px rgba(15, 23, 42, 0.10) !important; /* Sombrinha embaixo */
 }
 
 #view-despensa .categoria-grupo:first-child .categoria-titulo {
@@ -2622,6 +2626,19 @@ body.tema-escuro .btn-categoria-fav.ativo,
 
 [data-theme="dark"] #view-despensa .item-card .item-nome {
   color: #34D399 !important;
+}
+
+[data-theme="dark"] #view-despensa .categoria-titulo,
+body.tema-escuro #view-despensa .categoria-titulo {
+  background: #1E293B !important;
+  color: #F8FAFC !important;
+  border-top-color: #334155 !important;
+  border-bottom-color: #334155 !important;
+}
+
+[data-theme="dark"] #view-despensa .categoria-titulo .categoria-titulo-info span:first-child,
+body.tema-escuro #view-despensa .categoria-titulo .categoria-titulo-info span:first-child {
+  color: #F8FAFC !important;
 }
 
 [data-theme="dark"] #view-despensa .item-card.na-lista-montar {

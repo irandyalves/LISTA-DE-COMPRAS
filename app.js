@@ -883,6 +883,9 @@ document.addEventListener('DOMContentLoaded', () => {
   atualizarContadorSidebarMontar();
   inicializarEscalaFonteMontar();
   inicializarSwipeDeleteMobile();
+  atualizarAlturaPainelCongeladoCSS();
+  window.addEventListener('resize', atualizarAlturaPainelCongeladoCSS);
+  window.addEventListener('orientationchange', atualizarAlturaPainelCongeladoCSS);
 });
 
 // Carregamento de dados locais
@@ -2291,6 +2294,18 @@ function alternarAbaApp(aba, isUserClick = true) {
   }
 
   renderizarTudo();
+  atualizarAlturaPainelCongeladoCSS();
+}
+
+// Atualiza a variável CSS --altura-topo-congelado para garantir que os títulos de categoria congelados fiquem perfeitamente alinhados
+function atualizarAlturaPainelCongeladoCSS() {
+  const painel = document.querySelector('.painel-topo-congelado');
+  if (painel) {
+    const altura = Math.round(painel.getBoundingClientRect().height || painel.offsetHeight);
+    if (altura > 0) {
+      document.documentElement.style.setProperty('--altura-topo-congelado', `${altura}px`);
+    }
+  }
 }
 
 function configurarNavegacao() {
@@ -4473,6 +4488,7 @@ function alternarFiltroFavoritosCategoria(categoria, event) {
 
     container.appendChild(grupoDiv);
   }
+  atualizarAlturaPainelCongeladoCSS();
 }
 
 // Alterna o status de favorito de um item do catálogo (Estrelinha)
