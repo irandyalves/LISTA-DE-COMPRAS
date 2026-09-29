@@ -4383,10 +4383,6 @@ function alternarFiltroFavoritosCategoria(categoria, event) {
                 </button>
               </div>
             </div>
-
-            <div class="item-acoes-compra">
-              <button class="btn-delete-item" title="Excluir produto do catálogo" onclick="event.stopPropagation(); excluirItemDespensa('${prod.id}', event)">✕</button>
-            </div>
           </div>
         `;
       });
@@ -5806,221 +5802,251 @@ function ajustarFonteMontarLista(direcao) {
 // ARRASTAR PARA A ESQUERDA PARA DELETAR ITEM DA COMPRA (SWIPE TO DELETE)
 // =========================================================================
 function inicializarSwipeDeleteMobile() {
-  const container = document.getElementById('itens-lista-container');
-  if (!container) return;
+  function configurarContainerSwipe(containerId, seletorItem, prefixoId, callbackExcluir) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
 
-  let touchState = null;
+    let touchState = null;
 
-  function resetarTr(tr) {
-    if (!tr) return;
-    tr.classList.remove('arrastando-swipe', 'pronto-deletar-swipe');
-    tr.style.transition = 'transform 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-    tr.style.transform = 'translateX(0)';
-    setTimeout(() => {
-      tr.style.transition = '';
-      tr.style.transform = '';
-    }, 230);
-  }
-
-  // --- SUPORTE A TOQUE NATIVO (CELULAR / MOBILE) ---
-  container.addEventListener('touchstart', (e) => {
-    if (e.touches.length > 1) return;
-    // Ignorar toques diretos em botões de ação ou inputs para não travar cliques rápidos
-    if (e.target.closest('button, input, select, a, .contador-qtde, .btn-mic-preco-verde, .badge-preco-real')) {
-      return;
-    }
-
-    const tr = e.target.closest('.mcol-tr-item');
-    if (!tr) return;
-
-    touchState = {
-      tr: tr,
-      itemId: tr.id ? tr.id.replace('tr-item-', '') : null,
-      startX: e.touches[0].clientX,
-      startY: e.touches[0].clientY,
-      startTime: Date.now(),
-      diffX: 0,
-      diffY: 0,
-      isSwiping: false,
-      directionLocked: false
-    };
-  }, { passive: true });
-
-  container.addEventListener('touchmove', (e) => {
-    if (!touchState || !touchState.tr) return;
-
-    const currentX = e.touches[0].clientX;
-    const currentY = e.touches[0].clientY;
-    touchState.diffX = currentX - touchState.startX;
-    touchState.diffY = currentY - touchState.startY;
-
-    if (!touchState.directionLocked) {
-      if (Math.abs(touchState.diffX) > 8 || Math.abs(touchState.diffY) > 8) {
-        touchState.directionLocked = true;
-        // Se for rolagem vertical ou arrasto para a direita, cancela swipe
-        if (Math.abs(touchState.diffY) >= Math.abs(touchState.diffX) || touchState.diffX > 5) {
-          touchState = null;
-          return;
-        } else if (touchState.diffX < -8) {
-          touchState.isSwiping = true;
-          touchState.tr.classList.add('arrastando-swipe');
-          houveArrastoRecente = true;
-        }
-      }
-    }
-
-    if (touchState && touchState.isSwiping) {
-      if (e.cancelable) e.preventDefault();
-
-      let translateX = touchState.diffX;
-      // Efeito de amortecimento elástico além de -130px
-      if (translateX < -130) {
-        translateX = -130 + (translateX + 130) * 0.35;
-      }
-
-      touchState.tr.style.transform = `translateX(${translateX}px)`;
-
-      if (translateX < -75) {
-        touchState.tr.classList.add('pronto-deletar-swipe');
-      } else {
-        touchState.tr.classList.remove('pronto-deletar-swipe');
-      }
-    }
-  }, { passive: false });
-
-  function finalizarTouch() {
-    if (!touchState || !touchState.tr) return;
-    const { tr, itemId, diffX, startTime, isSwiping } = touchState;
-    touchState = null;
-
-    if (!isSwiping) return;
-
-    setTimeout(() => { houveArrastoRecente = false; }, 150);
-
-    const elapsed = Date.now() - startTime;
-    const velocity = Math.abs(diffX) / (elapsed || 1);
-    const deveExcluir = diffX < -80 || (diffX < -45 && velocity > 0.45);
-
-    if (deveExcluir && itemId) {
-      tr.classList.remove('arrastando-swipe', 'pronto-deletar-swipe');
-      tr.classList.add('deletando-swipe');
-      tr.style.transition = 'transform 0.22s ease-out, opacity 0.22s ease-out';
-      tr.style.transform = 'translateX(-110%)';
-      tr.style.opacity = '0';
-
-      const itemObj = AppState.listaAtiva.find(i => String(i.id) === String(itemId));
-      const nomeItem = itemObj ? itemObj.nome : 'Item';
-
+    function resetarElem(elem) {
+      if (!elem) return;
+      elem.classList.remove('arrastando-swipe', 'pronto-deletar-swipe');
+      elem.style.transition = 'transform 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+      elem.style.transform = 'translateX(0)';
       setTimeout(() => {
-        tr.style.transition = 'all 0.18s ease-in-out';
-        tr.style.maxHeight = '0px';
-        tr.style.height = '0px';
-        tr.style.padding = '0px';
-        tr.style.margin = '0px';
-        tr.style.border = 'none';
-
-        setTimeout(() => {
-          removerItem(itemId);
-          mostrarNotificacaoToast(`🗑️ "${nomeItem}" removido da lista`);
-        }, 180);
-      }, 220);
-    } else {
-      resetarTr(tr);
+        elem.style.transition = '';
+        elem.style.transform = '';
+      }, 230);
     }
-  }
 
-  container.addEventListener('touchend', finalizarTouch);
-  container.addEventListener('touchcancel', finalizarTouch);
-
-  // --- SUPORTE A MOUSE / POINTER (EMULAÇÃO MOBILE E PC) ---
-  let mouseState = null;
-
-  container.addEventListener('mousedown', (e) => {
-    if (e.button !== 0) return;
-    if (e.target.closest('button, input, select, a, .contador-qtde, .btn-mic-preco-verde, .badge-preco-real')) {
-      return;
-    }
-    const tr = e.target.closest('.mcol-tr-item');
-    if (!tr) return;
-
-    mouseState = {
-      tr: tr,
-      itemId: tr.id ? tr.id.replace('tr-item-', '') : null,
-      startX: e.clientX,
-      startY: e.clientY,
-      startTime: Date.now(),
-      diffX: 0,
-      diffY: 0,
-      isSwiping: false
-    };
-  });
-
-  window.addEventListener('mousemove', (e) => {
-    if (!mouseState || !mouseState.tr) return;
-
-    mouseState.diffX = e.clientX - mouseState.startX;
-    mouseState.diffY = e.clientY - mouseState.startY;
-
-    if (!mouseState.isSwiping) {
-      if (mouseState.diffX < -15 && Math.abs(mouseState.diffX) > Math.abs(mouseState.diffY)) {
-        mouseState.isSwiping = true;
-        mouseState.tr.classList.add('arrastando-swipe');
-        houveArrastoRecente = true;
-      } else if (Math.abs(mouseState.diffY) > 15 || mouseState.diffX > 15) {
-        mouseState = null;
+    // --- SUPORTE A TOQUE NATIVO (CELULAR / MOBILE) ---
+    container.addEventListener('touchstart', (e) => {
+      if (e.touches.length > 1) return;
+      if (e.target.closest('button, input, select, a, .contador-qtde, .btn-mic-preco-verde, .badge-preco-real, .btn-favorito-item, .btn-editar-despensa, .item-check-btn')) {
         return;
       }
-    }
 
-    if (mouseState && mouseState.isSwiping) {
-      let translateX = mouseState.diffX;
-      if (translateX < -130) translateX = -130 + (translateX + 130) * 0.35;
-      mouseState.tr.style.transform = `translateX(${translateX}px)`;
-      if (translateX < -75) mouseState.tr.classList.add('pronto-deletar-swipe');
-      else mouseState.tr.classList.remove('pronto-deletar-swipe');
-    }
-  });
+      const elem = e.target.closest(seletorItem);
+      if (!elem) return;
 
-  window.addEventListener('mouseup', () => {
-    if (!mouseState || !mouseState.tr) return;
-    const { tr, itemId, diffX, startTime, isSwiping } = mouseState;
-    mouseState = null;
+      touchState = {
+        elem: elem,
+        itemId: elem.id ? elem.id.replace(prefixoId, '') : null,
+        startX: e.touches[0].clientX,
+        startY: e.touches[0].clientY,
+        startTime: Date.now(),
+        diffX: 0,
+        diffY: 0,
+        isSwiping: false,
+        directionLocked: false
+      };
+    }, { passive: true });
 
-    if (!isSwiping) return;
+    container.addEventListener('touchmove', (e) => {
+      if (!touchState || !touchState.elem) return;
 
-    setTimeout(() => { houveArrastoRecente = false; }, 150);
+      const currentX = e.touches[0].clientX;
+      const currentY = e.touches[0].clientY;
+      touchState.diffX = currentX - touchState.startX;
+      touchState.diffY = currentY - touchState.startY;
 
-    const elapsed = Date.now() - startTime;
-    const velocity = Math.abs(diffX) / (elapsed || 1);
-    const deveExcluir = diffX < -80 || (diffX < -45 && velocity > 0.45);
+      if (!touchState.directionLocked) {
+        if (Math.abs(touchState.diffX) > 8 || Math.abs(touchState.diffY) > 8) {
+          touchState.directionLocked = true;
+          if (Math.abs(touchState.diffY) >= Math.abs(touchState.diffX) || touchState.diffX > 5) {
+            touchState = null;
+            return;
+          } else if (touchState.diffX < -8) {
+            touchState.isSwiping = true;
+            touchState.elem.classList.add('arrastando-swipe');
+            houveArrastoRecente = true;
+          }
+        }
+      }
 
-    if (deveExcluir && itemId) {
-      tr.classList.remove('arrastando-swipe', 'pronto-deletar-swipe');
-      tr.classList.add('deletando-swipe');
-      tr.style.transition = 'transform 0.22s ease-out, opacity 0.22s ease-out';
-      tr.style.transform = 'translateX(-110%)';
-      tr.style.opacity = '0';
+      if (touchState && touchState.isSwiping) {
+        if (e.cancelable) e.preventDefault();
 
-      const itemObj = AppState.listaAtiva.find(i => String(i.id) === String(itemId));
-      const nomeItem = itemObj ? itemObj.nome : 'Item';
+        let translateX = touchState.diffX;
+        if (translateX < -130) {
+          translateX = -130 + (translateX + 130) * 0.35;
+        }
 
-      setTimeout(() => {
-        tr.style.transition = 'all 0.18s ease-in-out';
-        tr.style.maxHeight = '0px';
-        tr.style.height = '0px';
-        tr.style.padding = '0px';
-        tr.style.margin = '0px';
-        tr.style.border = 'none';
+        touchState.elem.style.transform = `translateX(${translateX}px)`;
+
+        if (translateX < -75) {
+          touchState.elem.classList.add('pronto-deletar-swipe');
+        } else {
+          touchState.elem.classList.remove('pronto-deletar-swipe');
+        }
+      }
+    }, { passive: false });
+
+    function finalizarTouch() {
+      if (!touchState || !touchState.elem) return;
+      const { elem, itemId, diffX, startTime, isSwiping } = touchState;
+      touchState = null;
+
+      if (!isSwiping) return;
+
+      setTimeout(() => { houveArrastoRecente = false; }, 150);
+
+      const elapsed = Date.now() - startTime;
+      const velocity = Math.abs(diffX) / (elapsed || 1);
+      const deveExcluir = diffX < -80 || (diffX < -45 && velocity > 0.45);
+
+      if (deveExcluir && itemId) {
+        elem.classList.remove('arrastando-swipe', 'pronto-deletar-swipe');
+        elem.classList.add('deletando-swipe');
+        elem.style.transition = 'transform 0.22s ease-out, opacity 0.22s ease-out';
+        elem.style.transform = 'translateX(-110%)';
+        elem.style.opacity = '0';
 
         setTimeout(() => {
-          removerItem(itemId);
-          mostrarNotificacaoToast(`🗑️ "${nomeItem}" removido da lista`);
-        }, 180);
-      }, 220);
-    } else {
-      resetarTr(tr);
+          elem.style.transition = 'all 0.18s ease-in-out';
+          elem.style.maxHeight = '0px';
+          elem.style.height = '0px';
+          elem.style.padding = '0px';
+          elem.style.margin = '0px';
+          elem.style.border = 'none';
+
+          setTimeout(() => {
+            callbackExcluir(itemId);
+          }, 180);
+        }, 220);
+      } else {
+        resetarElem(elem);
+      }
     }
-  });
+
+    container.addEventListener('touchend', finalizarTouch);
+    container.addEventListener('touchcancel', finalizarTouch);
+
+    // --- SUPORTE A MOUSE / POINTER (EMULAÇÃO MOBILE E PC) ---
+    let mouseState = null;
+
+    container.addEventListener('mousedown', (e) => {
+      if (e.button !== 0) return;
+      if (e.target.closest('button, input, select, a, .contador-qtde, .btn-mic-preco-verde, .badge-preco-real, .btn-favorito-item, .btn-editar-despensa, .item-check-btn')) {
+        return;
+      }
+      const elem = e.target.closest(seletorItem);
+      if (!elem) return;
+
+      mouseState = {
+        elem: elem,
+        itemId: elem.id ? elem.id.replace(prefixoId, '') : null,
+        startX: e.clientX,
+        startY: e.clientY,
+        startTime: Date.now(),
+        diffX: 0,
+        diffY: 0,
+        isSwiping: false
+      };
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!mouseState || !mouseState.elem) return;
+
+      mouseState.diffX = e.clientX - mouseState.startX;
+      mouseState.diffY = e.clientY - mouseState.startY;
+
+      if (!mouseState.isSwiping) {
+        if (mouseState.diffX < -15 && Math.abs(mouseState.diffX) > Math.abs(mouseState.diffY)) {
+          mouseState.isSwiping = true;
+          mouseState.elem.classList.add('arrastando-swipe');
+          houveArrastoRecente = true;
+        } else if (Math.abs(mouseState.diffY) > 15 || mouseState.diffX > 15) {
+          mouseState = null;
+          return;
+        }
+      }
+
+      if (mouseState && mouseState.isSwiping) {
+        let translateX = mouseState.diffX;
+        if (translateX < -130) translateX = -130 + (translateX + 130) * 0.35;
+        mouseState.elem.style.transform = `translateX(${translateX}px)`;
+        if (translateX < -75) mouseState.elem.classList.add('pronto-deletar-swipe');
+        else mouseState.elem.classList.remove('pronto-deletar-swipe');
+      }
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (!mouseState || !mouseState.elem) return;
+      const { elem, itemId, diffX, startTime, isSwiping } = mouseState;
+      mouseState = null;
+
+      if (!isSwiping) return;
+
+      setTimeout(() => { houveArrastoRecente = false; }, 150);
+
+      const elapsed = Date.now() - startTime;
+      const velocity = Math.abs(diffX) / (elapsed || 1);
+      const deveExcluir = diffX < -80 || (diffX < -45 && velocity > 0.45);
+
+      if (deveExcluir && itemId) {
+        elem.classList.remove('arrastando-swipe', 'pronto-deletar-swipe');
+        elem.classList.add('deletando-swipe');
+        elem.style.transition = 'transform 0.22s ease-out, opacity 0.22s ease-out';
+        elem.style.transform = 'translateX(-110%)';
+        elem.style.opacity = '0';
+
+        setTimeout(() => {
+          elem.style.transition = 'all 0.18s ease-in-out';
+          elem.style.maxHeight = '0px';
+          elem.style.height = '0px';
+          elem.style.padding = '0px';
+          elem.style.margin = '0px';
+          elem.style.border = 'none';
+
+          setTimeout(() => {
+            callbackExcluir(itemId);
+          }, 180);
+        }, 220);
+      } else {
+        resetarElem(elem);
+      }
+    });
+  }
+
+  // 1. Container de Compras (Aba Comprar)
+  configurarContainerSwipe(
+    'itens-lista-container',
+    '.mcol-tr-item',
+    'tr-item-',
+    (itemId) => {
+      const itemObj = AppState.listaAtiva.find(i => String(i.id) === String(itemId));
+      const nomeItem = itemObj ? itemObj.nome : 'Item';
+      removerItem(itemId);
+      mostrarNotificacaoToast(`🗑️ "${nomeItem}" removido da lista`);
+    }
+  );
+
+  // 2. Container da Despensa (Aba Montar Lista)
+  configurarContainerSwipe(
+    'despensa-grid-container',
+    '.item-card',
+    'card-despensa-',
+    (itemId) => {
+      excluirItemDespensaDireto(itemId);
+    }
+  );
+}
+
+function excluirItemDespensaDireto(produtoId) {
+  const prod = AppState.catalogo.find(p => String(p.id) === String(produtoId));
+  const nomeItem = prod ? prod.nome : 'Item';
+  if (prod) {
+    if (!AppState.itensExcluidos) AppState.itensExcluidos = [];
+    AppState.itensExcluidos.push(prod.nome.toLowerCase().trim());
+    AppState.catalogo = AppState.catalogo.filter(p => String(p.id) !== String(produtoId));
+    AppState.listaAtiva = AppState.listaAtiva.filter(p => String(p.id) !== String(produtoId) && String(p.catalogoId) !== String(produtoId));
+    salvarEstado(true);
+    renderizarDespensa();
+    renderizarListaCompras();
+    atualizarCardResumo();
+    mostrarNotificacaoToast(`🗑️ "${nomeItem}" excluído do catálogo`);
+  }
 }
 
 // Adicionar Item Manualmente pela barra de entrada unificada no topo

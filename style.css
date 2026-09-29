@@ -2294,18 +2294,18 @@ body.modo-mercado-ativo .item-nome {
 .btn-categoria-fav {
   background: transparent;
   border: 1px solid transparent;
-  border-radius: 5px;
+  border-radius: 6px;
   cursor: pointer;
-  padding: 0 3px;
-  font-size: 0.85rem;
+  padding: 1px 3px;
+  font-size: 0.95rem;
   line-height: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   margin-right: 4px;
-  opacity: 0.55;
-  filter: grayscale(0.85);
-  transition: all 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  opacity: 0.65;
+  filter: grayscale(0.5);
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   outline: none;
   user-select: none;
 }
@@ -2313,20 +2313,37 @@ body.modo-mercado-ativo .item-nome {
 .btn-categoria-fav:hover {
   opacity: 1;
   filter: grayscale(0) drop-shadow(0 1px 4px rgba(245, 158, 11, 0.55));
-  transform: scale(1.25);
+  transform: scale(1.15);
 }
 
 .btn-categoria-fav.ativo {
   opacity: 1;
-  filter: grayscale(0) drop-shadow(0 2px 5px rgba(245, 158, 11, 0.65));
-  transform: scale(1.18);
-  background: #FFFBEB;
+  filter: grayscale(0) drop-shadow(0 2px 6px rgba(245, 158, 11, 0.7));
+  transform: scale(1.15) !important;
+  background: #FEF3C7;
   border-color: #FDE68A;
+  animation: pulsarEstrelaSuave 2s infinite ease-in-out !important;
 }
 
-body.tema-escuro .btn-categoria-fav.ativo {
-  background: #78350F;
-  border-color: #B45309;
+@keyframes pulsarEstrelaSuave {
+  0% {
+    transform: scale(1.15);
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.45);
+  }
+  50% {
+    transform: scale(1.23);
+    box-shadow: 0 0 8px 2px rgba(245, 158, 11, 0.3);
+  }
+  100% {
+    transform: scale(1.15);
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+  }
+}
+
+body.tema-escuro .btn-categoria-fav.ativo,
+[data-theme="dark"] .btn-categoria-fav.ativo {
+  background: #78350F !important;
+  border-color: #B45309 !important;
 }
 
 #view-despensa .itens-lista {
@@ -6484,15 +6501,17 @@ body.tema-escuro .drawer-fechar-btn {
 /* ========================================================
    ARRASTAR PARA A ESQUERDA PARA DELETAR (SWIPE TO DELETE)
 ======================================================== */
-.mcol-tr-item {
+.mcol-tr-item,
+#view-despensa .item-card {
   position: relative;
   will-change: transform;
 }
 
-.mcol-tr-item.arrastando-swipe {
+.mcol-tr-item.arrastando-swipe,
+#view-despensa .item-card.arrastando-swipe {
   transition: none !important;
   background-color: #FEE2E2 !important;
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15) !important;
 }
 
 .mcol-tr-item.arrastando-swipe td {
@@ -6500,13 +6519,16 @@ body.tema-escuro .drawer-fechar-btn {
   transition: none !important;
 }
 
-.mcol-tr-item.pronto-deletar-swipe {
+.mcol-tr-item.pronto-deletar-swipe,
+#view-despensa .item-card.pronto-deletar-swipe {
   background-color: #EF4444 !important;
-  box-shadow: 0 4px 16px rgba(220, 38, 38, 0.35);
+  box-shadow: 0 4px 16px rgba(220, 38, 38, 0.35) !important;
 }
 
-.mcol-tr-item.pronto-deletar-swipe td {
-  background-color: #EF4444 !important;
+.mcol-tr-item.pronto-deletar-swipe td,
+#view-despensa .item-card.pronto-deletar-swipe .item-nome,
+#view-despensa .item-card.pronto-deletar-swipe span {
+  background-color: transparent !important;
   color: #FFFFFF !important;
 }
 
@@ -6521,7 +6543,8 @@ body.tema-escuro .drawer-fechar-btn {
   color: #FFFFFF !important;
 }
 
-.mcol-tr-item.deletando-swipe {
+.mcol-tr-item.deletando-swipe,
+#view-despensa .item-card.deletando-swipe {
   pointer-events: none !important;
   background-color: #DC2626 !important;
 }
