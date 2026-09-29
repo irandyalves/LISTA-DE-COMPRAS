@@ -771,6 +771,11 @@ function sincronizarListaAtivaComCatalogo() {
       const padrao = CATALOGO_PADRAO_EXPANDIDO.find(p => p.id === prod.id || p.nome.toLowerCase().trim() === prod.nome.toLowerCase().trim());
       const precoReferenciaDF = (padrao && padrao.precoMedioDF) || prod.precoMedioDF || prod.preco || 0;
 
+      // Preços registrados de gôndola/mercado vêm zerados por padrão
+      const precoRegistrado = (prod.precoRegistradoMercado && Number(prod.precoRegistradoMercado) > 0) 
+        ? Number(prod.precoRegistradoMercado) 
+        : 0;
+
       return {
         id: prod.id,
         catalogoId: prod.id,
@@ -780,7 +785,8 @@ function sincronizarListaAtivaComCatalogo() {
         marca: prod.marca || null,
         qtde: prod.qtde || 1,
         precoReferencia: precoReferenciaDF,
-        preco: prod.preco || precoReferenciaDF,
+        preco: precoRegistrado, // Valores vêm zerados por padrão
+        precoRegistradoMercado: precoRegistrado,
         ultimoPreco: prod.ultimoPreco || precoReferenciaDF,
         dataUltimoPreco: prod.dataUltimoPreco || new Date().toISOString().slice(0, 10),
         comprado: !!prod.comprado,
@@ -919,6 +925,16 @@ function carregarLocalmente() {
               qtde: itemSalvo.qtde || 1,
               comprado: !!itemSalvo.comprado
             });
+          }
+        });
+      }
+
+      // Garante que todos os valores de gôndola/mercado venham zerados por padrão
+      if (AppState.catalogo) {
+        AppState.catalogo.forEach(p => {
+          if (!p.precoRegistradoMercado) {
+            p.precoRegistradoMercado = 0;
+            p.preco = 0;
           }
         });
       }
@@ -2121,10 +2137,28 @@ function ouvirPrecoItem(itemId, btnEl, ev) {
     try { recognizerPreco.abort(); } catch(e){}
   }
 
+  // Ao clicar no mic, zera os valores do item imediatamente
+  item.preco = 0;
+  item.precoRegistradoMercado = 0;
+  if (item.catalogoId) {
+    const catItem = AppState.catalogo.find(c => String(c.id) === String(item.catalogoId));
+    if (catItem) {
+      catItem.precoRegistradoMercado = 0;
+      catItem.preco = 0;
+    }
+  }
+
+  // Atualiza imediatamente o badge na tela para R$ 0,00
+  const badgeEl = document.getElementById(`badge-preco-${itemId}`);
+  if (badgeEl) {
+    badgeEl.textContent = 'R$ 0,00';
+    badgeEl.className = 'badge-preco-real sem-preco';
+  }
+  salvarEstado(false);
+  atualizarCardResumo();
+
   gravandoPrecoItemId = itemId;
   if (btnEl) btnEl.classList.add('ouvindo');
-
-  exibirToastNuvem(`🎙️ Diga o preço (ex: vinte e três e trinta e nove)`);
 
   recognizerPreco = new SpeechRecognition();
   recognizerPreco.lang = 'pt-BR';
@@ -2141,12 +2175,16 @@ function ouvirPrecoItem(itemId, btnEl, ev) {
       item.preco = precoExtraido;
       item.ultimoPreco = precoExtraido;
       item.precoRegistradoMercado = precoExtraido;
+      if (item.catalogoId) {
+        const catItem = AppState.catalogo.find(c => String(c.id) === String(item.catalogoId));
+        if (catItem) {
+          catItem.precoRegistradoMercado = precoExtraido;
+          catItem.preco = precoExtraido;
+        }
+      }
       salvarEstado(true);
       renderizarListaCompras();
       atualizarCardResumo();
-      exibirToastNuvem(`✅ Preço registrado: R$ ${precoExtraido.toFixed(2).replace('.', ',')}`);
-    } else {
-      exibirToastNuvem(`⚠️ Não entendi "${transcricao}". Toque no preço para digitar.`);
     }
   };
 
@@ -2177,18 +2215,25 @@ function editarPrecoItemManualmente(itemId, ev) {
   const item = AppState.listaAtiva.find(i => String(i.id) === String(itemId));
   if (!item) return;
 
-  const precoAtual = (item.preco && item.preco > 0) ? item.preco.toFixed(2).replace('.', ',') : '';
-  const novoPrecoStr = prompt(`Digite o preço de ${item.nome}:`, precoAtual);
+  const precoAtual = (item.preco && Number(item.preco) > 0) ? Number(item.preco).toFixed(2).replace('.', ',') : '';
+  const novoPrecoStr = prompt(`Digite o preço de ${item.nome} (R$):`, precoAtual);
   if (novoPrecoStr !== null) {
-    const valorNum = parseFloat(novoPrecoStr.replace(',', '.').trim());
+    const limpo = novoPrecoStr.replace('R$', '').replace(/\s+/g, '').replace(',', '.').trim();
+    const valorNum = limpo === '' ? 0 : parseFloat(limpo);
     if (!isNaN(valorNum) && valorNum >= 0) {
       item.preco = valorNum;
       item.ultimoPreco = valorNum;
       item.precoRegistradoMercado = valorNum;
+      if (item.catalogoId) {
+        const catItem = AppState.catalogo.find(c => String(c.id) === String(item.catalogoId));
+        if (catItem) {
+          catItem.precoRegistradoMercado = valorNum;
+          catItem.preco = valorNum;
+        }
+      }
       salvarEstado(true);
       renderizarListaCompras();
       atualizarCardResumo();
-      exibirToastNuvem(`✅ Preço atualizado: R$ ${valorNum.toFixed(2).replace('.', ',')}`);
     }
   }
 }
@@ -2419,7 +2464,7 @@ function renderizarListaCompras() {
         : '';
 
       const precoRegistradoValor = (item.preco && Number(item.preco) > 0) ? Number(item.preco) : 0;
-      const precoFormatadoTxt = precoRegistradoValor > 0 ? `R$ ${precoRegistradoValor.toFixed(2).replace('.', ',')}` : 'R$ —';
+      const precoFormatadoTxt = precoRegistradoValor > 0 ? `R$ ${precoRegistradoValor.toFixed(2).replace('.', ',')}` : 'R$ 0,00';
 
       linhasTabelaHtml += `
         <tr class="mcol-tr-item ${item.comprado ? 'item-linha-comprado' : ''} ${classePendente}" id="tr-item-${item.id}">
@@ -2438,17 +2483,21 @@ function renderizarListaCompras() {
           <td class="mcol-td-produto">
             <div class="mcol-prod-card-cell">
               <div class="mcol-prod-linha-principal">
-                <span class="mcol-prod-nome ${item.comprado && !isPendente ? 'texto-riscado' : ''}" onclick="alternarItemComprado('${item.id}')" title="${item.nome}">${nomeExibicao}</span>
-                ${marcaHtml}
-                <button type="button" class="btn-mic-preco-verde" id="btn-mic-item-${item.id}" onclick="ouvirPrecoItem('${item.id}', this, event)" title="Falar o preço (ex: vinte e três e trinta e nove)">
-                  <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor">
-                    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
-                    <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
-                  </svg>
-                </button>
-                <span class="badge-preco-real ${precoRegistradoValor > 0 ? 'com-preco' : 'sem-preco'}" id="badge-preco-${item.id}" onclick="editarPrecoItemManualmente('${item.id}', event)" title="Preço no mercado (toque para digitar)">
-                  ${precoFormatadoTxt}
-                </span>
+                <div class="mcol-prod-info-esquerda">
+                  <span class="mcol-prod-nome ${item.comprado && !isPendente ? 'texto-riscado' : ''}" onclick="alternarItemComprado('${item.id}')" title="${item.nome}">${nomeExibicao}</span>
+                  ${marcaHtml}
+                </div>
+                <div class="mcol-prod-preco-grupo">
+                  <button type="button" class="btn-mic-preco-verde" id="btn-mic-item-${item.id}" onclick="ouvirPrecoItem('${item.id}', this, event)" title="Falar o preço (ex: vinte e três e trinta e nove)">
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor">
+                      <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                      <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                    </svg>
+                  </button>
+                  <span class="badge-preco-real ${precoRegistradoValor > 0 ? 'com-preco' : 'sem-preco'}" id="badge-preco-${item.id}" onclick="editarPrecoItemManualmente('${item.id}', event)" title="Preço no mercado (toque para digitar)">
+                    ${precoFormatadoTxt}
+                  </span>
+                </div>
               </div>
               ${badgePendente}
             </div>

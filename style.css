@@ -3657,13 +3657,24 @@ body.modo-mercado-ativo .item-nome {
   flex: 1;
 }
 
-/* Linha principal com Nome do item, Botão de Marca, Microfone de Preço e Preço Real encostados */
+/* Linha principal: Nome e Marca à esquerda, Mic e Preço alinhados à direita */
 .mcol-prod-linha-principal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  width: 100%;
+  min-width: 0;
+  line-height: 1.25;
+}
+
+.mcol-prod-info-esquerda {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  flex-wrap: wrap;
-  line-height: 1.25;
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
 }
 
 .mcol-prod-nome {
@@ -3671,9 +3682,21 @@ body.modo-mercado-ativo .item-nome {
   font-weight: 600;
   color: #1E293B;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   line-height: 1.25;
   letter-spacing: -0.01em;
   cursor: pointer;
+}
+
+/* Grupo de Preço Alinhado à Extrema Direita: Mic à esquerda do preço */
+.mcol-prod-preco-grupo {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  flex-shrink: 0;
+  justify-content: flex-end;
 }
 
 /* Microfone Verdinho para Ditar Preço de Gôndola no Mercado */
@@ -3715,20 +3738,24 @@ body.modo-mercado-ativo .item-nome {
   100% { transform: scale(1.22); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
 }
 
-/* Badge do Preço Real Registrado no Mercado */
+/* Badge do Preço Real Registrado no Mercado (Alinhado à Direita) */
 .badge-preco-real {
   display: inline-flex;
   align-items: center;
+  justify-content: flex-end;
+  text-align: right;
+  min-width: 52px;
   font-size: 0.72rem;
   font-weight: 700;
-  padding: 1px 5px;
+  font-variant-numeric: tabular-nums;
+  padding: 1px 6px;
   border-radius: 6px;
   cursor: pointer;
   white-space: nowrap;
   vertical-align: middle;
   user-select: none;
   transition: all 0.15s ease;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 .badge-preco-real.com-preco {
@@ -3744,15 +3771,15 @@ body.modo-mercado-ativo .item-nome {
 
 .badge-preco-real.sem-preco {
   background: #F1F5F9;
-  color: #94A3B8;
+  color: #64748B;
   border: 1px dashed #CBD5E1;
-  font-size: 0.66rem;
+  font-size: 0.68rem;
   font-weight: 600;
 }
 
 .badge-preco-real.sem-preco:hover {
   background: #E2E8F0;
-  color: #475569;
+  color: #1E293B;
 }
 
 /* Botão Listbox de Marca bonito na frente do nome */
