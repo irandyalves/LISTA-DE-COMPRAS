@@ -7890,7 +7890,7 @@ function renderizarComparadorDF() {
 const PRESETS_LISTA = [
   {
     id: 'basica_mes',
-    nome: '🛒 Compra Básica do Mês',
+    nome: 'Compra Básica do Mês',
     descricao: 'Arroz, feijão, óleo, café, carnes, leite, ovos, higiene e limpeza.',
     icone: '🛒',
     ids: [
@@ -7904,7 +7904,7 @@ const PRESETS_LISTA = [
   },
   {
     id: 'hortifruti_semana',
-    nome: '🥬 Hortifrúti Fresco da Semana',
+    nome: 'Hortifrúti Fresco da Semana',
     descricao: 'Frutas selecionadas, verduras hidropônicas, legumes e ovos.',
     icone: '🥬',
     ids: [
@@ -7915,7 +7915,7 @@ const PRESETS_LISTA = [
   },
   {
     id: 'churrasco_fds',
-    nome: '🥩 Churrasco & Fim de Semana',
+    nome: 'Churrasco & Fim de Semana',
     descricao: 'Picanha, alcatra, linguiça toscana, asinha, carvão, sal grosso e petiscos.',
     icone: '🥩',
     ids: [
@@ -7926,7 +7926,7 @@ const PRESETS_LISTA = [
   },
   {
     id: 'limpeza_pesada',
-    nome: '🧹 Faxina & Limpeza Completa',
+    nome: 'Faxina & Limpeza Completa',
     descricao: 'Detergente, sabão em pó, amaciante, Qboa, desinfetante, álcool e esponjas.',
     icone: '🧹',
     ids: [
@@ -7937,7 +7937,7 @@ const PRESETS_LISTA = [
   },
   {
     id: 'cafe_lanches',
-    nome: '🍞 Café da Manhã & Lanches',
+    nome: 'Café da Manhã & Lanches',
     descricao: 'Café, leite, pães, manteiga, mussarela, presunto, requeijão e biscoitos.',
     icone: '🍞',
     ids: [
@@ -8068,7 +8068,7 @@ function renderizarItensDrawerPreset(presetId, termoBusca = '') {
   const subtituloEl = document.getElementById('drawer-subtitulo');
   if (iconeEl) iconeEl.textContent = icone;
   if (tituloEl) tituloEl.textContent = titulo;
-  if (subtituloEl) subtituloEl.textContent = `${itemIds.length} produtos inclusos`;
+  if (subtituloEl) subtituloEl.textContent = `${itemIds.length} produtos`;
 
   const containerLista = document.getElementById('drawer-lista-itens');
   if (!containerLista) return;

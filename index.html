@@ -638,19 +638,20 @@
       <!-- Modal Lateral / Gaveta à Direita: Itens do Preset -->
       <div id="modal-presets-lado-direito" class="modal-presets-drawer" style="display: none;" onclick="event.stopPropagation()">
         <div class="drawer-header">
-          <div style="display: flex; align-items: center; gap: 8px; min-width: 0;">
-            <span id="drawer-icone" style="font-size: 1.4rem;">📋</span>
-            <div style="min-width: 0;">
+          <div class="drawer-header-left">
+            <span id="drawer-icone" class="drawer-icone">📋</span>
+            <div class="drawer-header-info-linha">
               <h4 id="drawer-titulo" class="drawer-titulo">Itens do Preset</h4>
-              <span id="drawer-subtitulo" class="drawer-subtitulo">0 produtos inclusos</span>
+              <span class="drawer-header-divisor">|</span>
+              <span id="drawer-subtitulo" class="drawer-subtitulo">0 produtos</span>
+              <span class="drawer-header-divisor">|</span>
+              <span class="drawer-header-media-wrap">
+                <span class="drawer-media-label">valor médio</span>
+                <span id="drawer-estimativa-valor" class="drawer-media-valor">R$ 0,00</span>
+              </span>
             </div>
           </div>
           <button class="drawer-fechar-btn" onclick="fecharDetalhesPreset()" title="Fechar lista de itens">✕</button>
-        </div>
-
-        <div id="drawer-estimativa-box" class="drawer-estimativa-box">
-          <span style="font-size: 0.72rem; color: #047857; font-weight: 700;">💡 Média Estimada DF:</span>
-          <span id="drawer-estimativa-valor" style="font-size: 0.95rem; font-weight: 900; color: #065F46;">R$ 0,00</span>
         </div>
 
         <!-- Barra de Busca Geral no 2º Modal -->
