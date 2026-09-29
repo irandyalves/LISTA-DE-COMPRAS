@@ -4629,6 +4629,20 @@ function formatarIntervaloMs(diffMs) {
   }
 }
 
+// Reduz o nome do produto para o histórico mantendo legibilidade e evitando quebra de alinhamento
+function reduzirNomeHistorico(nome, maxChars = 28) {
+  if (!nome) return '';
+  const s = String(nome).trim();
+  if (s.length <= maxChars) return s;
+  let sub = s.slice(0, maxChars);
+  const ultimoEspaco = sub.lastIndexOf(' ');
+  if (ultimoEspaco >= 18) {
+    sub = sub.slice(0, ultimoEspaco);
+  }
+  sub = sub.replace(/[\s\(\/\-,;.]+$/, '');
+  return sub + '...';
+}
+
 // Renderizar Histórico Completo de Compras, Duração em Dias/Horas e Comparação %
 function renderizarHistorico() {
   const container = document.getElementById('historico-container');
@@ -4835,7 +4849,7 @@ function renderizarHistorico() {
           <tr>
             <td class="td-hist-item">
               <div class="hist-prod-info">
-                <span class="hist-prod-nome" title="${it.nome}">${it.nome}</span>
+                <span class="hist-prod-nome" title="${it.nome}">${reduzirNomeHistorico(it.nome, 28)}</span>
               </div>
             </td>
             <td class="td-hist-qtd"><span class="hist-qtd-num">${String(qtde).padStart(2, '0')}</span></td>
@@ -5036,7 +5050,7 @@ function renderizarHistorico() {
       htmlGridItens += `
         <div class="card-item-analise">
           <div class="card-item-analise-topo">
-            <div class="card-item-analise-nome">${prod.nome}</div>
+            <div class="card-item-analise-nome" title="${prod.nome}">${reduzirNomeHistorico(prod.nome, 28)}</div>
             ${badgeVariacaoGeral}
           </div>
           <div class="card-item-analise-registros">

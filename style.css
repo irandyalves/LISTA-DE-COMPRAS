@@ -6604,6 +6604,10 @@ body.modo-mercado-ativo .item-nome {
   font-size: 0.92rem;
   font-weight: 800;
   color: #0F172A;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 285px;
 }
 
 .card-item-analise-stats {
