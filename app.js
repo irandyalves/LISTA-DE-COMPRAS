@@ -1227,10 +1227,12 @@ function exibirAvisoPedidoPatroa(autor, itens, icone = '👩') {
   const itensEl = document.getElementById('toast-patroa-itens');
   if (!banner) return;
 
-  const nomeAutor = autor || 'Sioneide';
+  const nomeAutor = (autor || 'Sioneide').toUpperCase();
   const listaTexto = Array.isArray(itens) ? itens.join(', ') : String(itens);
 
-  if (tituloEl) tituloEl.textContent = `${icone} ${nomeAutor} pediu para comprar:`;
+  if (tituloEl) {
+    tituloEl.innerHTML = `<strong class="toast-patroa-nome-autor">${nomeAutor}</strong> | pediu para comprar:`;
+  }
   if (itensEl) itensEl.textContent = listaTexto;
 
   banner.style.display = 'flex';
