@@ -659,12 +659,17 @@
 
         <!-- Barra de Busca Geral no 2º Modal -->
         <div class="drawer-busca-container">
-          <input type="text" id="input-busca-drawer-preset" 
-                 class="input-busca-drawer" 
-                 placeholder="🔍 Pesquisar na lista ou no catálogo geral..." 
-                 autocomplete="off"
-                 oninput="filtrarItensDrawerPreset(this.value)">
-          <button id="btn-limpar-busca-drawer" class="btn-limpar-busca-drawer" onclick="limparBuscaDrawerPreset()" style="display: none;" title="Limpar pesquisa">✕</button>
+          <div class="drawer-busca-input-wrap" style="position: relative; flex: 1; min-width: 0;">
+            <input type="text" id="input-busca-drawer-preset" 
+                   class="input-busca-drawer" 
+                   placeholder="🔍 Pesquisar na lista ou no catálogo geral..." 
+                   autocomplete="off"
+                   oninput="filtrarItensDrawerPreset(this.value)">
+            <button id="btn-limpar-busca-drawer" class="btn-limpar-busca-drawer" onclick="limparBuscaDrawerPreset()" style="display: none;" title="Limpar pesquisa">✕</button>
+          </div>
+          <button id="btn-ordem-alfabetica-drawer" class="btn-acao-mini ativo" onclick="alternarOrdemAlfabeticaDrawer()" title="Ordenar produtos de A a Z" style="flex-shrink: 0; padding: 6px 10px; font-size: 0.76rem; font-weight: 700; height: 33px; border-radius: 8px; margin-left: 6px; display: inline-flex; align-items: center; gap: 3px;">
+            🔤 A-Z
+          </button>
         </div>
 
         <div id="drawer-lista-itens" class="drawer-lista-itens"></div>

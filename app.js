@@ -3822,10 +3822,10 @@ function aoDigitarBuscaTopo(termo) {
     if (containerBusca) containerBusca.classList.add('digitando-ativo');
     if (inputBusca) inputBusca.classList.add('digitando-ativo');
 
-    // Ficou 10 segundos sem digitar, limpa o campo
+    // Ficou 4 segundos sem digitar, limpa o campo
     timerInatividadeBusca = setTimeout(() => {
       limparCampoBuscaInatividade();
-    }, 10000);
+    }, 4000);
   } else {
     if (containerBusca) containerBusca.classList.remove('digitando-ativo');
     if (inputBusca) inputBusca.classList.remove('digitando-ativo');
@@ -8028,6 +8028,22 @@ function renderizarItensDrawerPreset(presetId, termoBusca = '') {
   const containerLista = document.getElementById('drawer-lista-itens');
   if (!containerLista) return;
 
+let ordemAlfabeticaDrawer = true;
+
+function alternarOrdemAlfabeticaDrawer() {
+  ordemAlfabeticaDrawer = !ordemAlfabeticaDrawer;
+  const btn = document.getElementById('btn-ordem-alfabetica-drawer');
+  if (btn) {
+    btn.classList.toggle('ativo', ordemAlfabeticaDrawer);
+  }
+  const inputBusca = document.getElementById('input-busca-drawer-preset');
+  const termo = inputBusca ? inputBusca.value : '';
+  if (presetAbertoDetalhesId) {
+    renderizarItensDrawerPreset(presetAbertoDetalhesId, termo);
+  }
+  mostrarNotificacaoToast(ordemAlfabeticaDrawer ? "🔤 Catálogo ordenado de A a Z" : "📋 Ordem original do catálogo");
+}
+
   const termoNormalizado = (termoBusca || '').trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
   let htmlItens = '';
@@ -8035,39 +8051,48 @@ function renderizarItensDrawerPreset(presetId, termoBusca = '') {
   let itensRenderizados = 0;
 
   // 1. Renderiza itens já pertencentes ao preset
+  let itensDoPreset = [];
   itemIds.forEach(id => {
     const itemCat = (AppState.catalogo && AppState.catalogo.find(p => p.id === id)) || 
                     CATALOGO_PADRAO_EXPANDIDO.find(p => p.id === id);
-    
     if (itemCat) {
-      const precoUnit = itemCat.precoMedioDF || itemCat.ultimoPreco || 0;
-      totalEstimado += precoUnit;
-
-      const nomeNorm = (itemCat.nome || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-      const catNorm = (itemCat.categoria || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
-      // Filtro de busca se houver termo
-      if (termoNormalizado && !nomeNorm.includes(termoNormalizado) && !catNorm.includes(termoNormalizado)) {
-        return;
-      }
-
-      itensRenderizados++;
-      const chaveIcone = itemCat.icone || detectarChaveIcone(itemCat.nome);
-      const iconeSvg = obterIcone2D(itemCat.nome, chaveIcone);
-      const precoFormatado = precoUnit > 0 ? formatarMoeda(precoUnit) : 'R$ --';
-
-      htmlItens += `
-        <div class="drawer-item-row">
-          <div class="drawer-item-icone">${iconeSvg}</div>
-          <div class="drawer-item-info">
-            <div class="drawer-item-nome" title="${itemCat.nome}">${itemCat.nome}</div>
-            <div class="drawer-item-cat">${itemCat.categoria || 'Geral'}</div>
-          </div>
-          <div class="drawer-item-preco">${precoFormatado}</div>
-          <button class="btn-drawer-remover" onclick="removerItemDoPreset('${presetId}', '${id}', event)" title="Excluir item deste preset">🗑️</button>
-        </div>
-      `;
+      itensDoPreset.push(itemCat);
     }
+  });
+
+  if (ordemAlfabeticaDrawer) {
+    itensDoPreset.sort((a, b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR', { sensitivity: 'base' }));
+  }
+
+  itensDoPreset.forEach(itemCat => {
+    const id = itemCat.id;
+    const precoUnit = itemCat.precoMedioDF || itemCat.ultimoPreco || 0;
+    totalEstimado += precoUnit;
+
+    const nomeNorm = (itemCat.nome || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const catNorm = (itemCat.categoria || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+    // Filtro de busca se houver termo
+    if (termoNormalizado && !nomeNorm.includes(termoNormalizado) && !catNorm.includes(termoNormalizado)) {
+      return;
+    }
+
+    itensRenderizados++;
+    const chaveIcone = itemCat.icone || detectarChaveIcone(itemCat.nome);
+    const iconeSvg = obterIcone2D(itemCat.nome, chaveIcone);
+    const precoFormatado = precoUnit > 0 ? formatarMoeda(precoUnit) : 'R$ --';
+
+    htmlItens += `
+      <div class="drawer-item-row">
+        <div class="drawer-item-icone">${iconeSvg}</div>
+        <div class="drawer-item-info">
+          <div class="drawer-item-nome" title="${itemCat.nome}">${itemCat.nome}</div>
+          <div class="drawer-item-cat">${itemCat.categoria || 'Geral'}</div>
+        </div>
+        <div class="drawer-item-preco">${precoFormatado}</div>
+        <button class="btn-drawer-remover" onclick="removerItemDoPreset('${presetId}', '${id}', event)" title="Excluir item deste preset">🗑️</button>
+      </div>
+    `;
   });
 
   // 2. Busca no catálogo geral se o usuário digitou pesquisa (a partir de 1 caractere)
@@ -8089,6 +8114,10 @@ function renderizarItensDrawerPreset(presetId, termoBusca = '') {
       }
     });
 
+    if (ordemAlfabeticaDrawer) {
+      sugestoesGerais.sort((a, b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR', { sensitivity: 'base' }));
+    }
+
     if (sugestoesGerais.length > 0) {
       htmlItens += `
         <div class="drawer-secao-geral-rotulo">
@@ -8096,7 +8125,7 @@ function renderizarItensDrawerPreset(presetId, termoBusca = '') {
         </div>
       `;
 
-      sugestoesGerais.slice(0, 15).forEach(catItem => {
+      sugestoesGerais.slice(0, 25).forEach(catItem => {
         const precoUnit = catItem.precoMedioDF || catItem.ultimoPreco || 0;
         const chaveIcone = catItem.icone || detectarChaveIcone(catItem.nome);
         const iconeSvg = obterIcone2D(catItem.nome, chaveIcone);
@@ -8165,9 +8194,10 @@ function filtrarItensDrawerPreset(termo) {
     if (inputBusca) inputBusca.classList.add('digitando-ativo');
     if (btnLimpar) btnLimpar.style.display = 'block';
 
+    // Ficou 4 segundos sem digitar, limpa a busca
     timerInatividadeBuscaDrawer = setTimeout(() => {
       limparBuscaDrawerPreset();
-    }, 10000);
+    }, 4000);
   } else {
     if (containerBusca) containerBusca.classList.remove('digitando-ativo');
     if (inputBusca) inputBusca.classList.remove('digitando-ativo');
