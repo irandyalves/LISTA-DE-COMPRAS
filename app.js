@@ -5874,7 +5874,6 @@ function executarDesfazerExclusao(event) {
   renderizarListaCompras();
   renderizarDespensa();
   atualizarCardResumo();
-  mostrarNotificacaoToast(`✅ "${nome}" restaurado com sucesso!`);
 }
 
 // =========================================================================
