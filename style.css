@@ -2028,56 +2028,152 @@ body.modo-mercado-ativo .item-nome {
 }
 
 /* =========================================================================
-   ESTILOS DE MONTAR LISTA (INVERTIDO CONFORME SOLICITADO)
-   - Não selecionado: fundo cinza bem claro, fonte lilás
-   - Selecionado: fundo claro, fonte itálica, sem negrito, riscada
+   ESTILOS DE MONTAR LISTA (ESPREMIDO, SEM ÍCONES, FONTE COMPACTA)
+   - Não selecionado: fundo cinza suave, fonte lilás compacta
+   - Selecionado: fundo claro, fonte itálica compacta, sem negrito, riscada
    ========================================================================= */
 
-/* NÃO SELECIONADO: fundo cinza bem claro e suave, fonte lilás */
+/* Espremer grupos e lista de itens em Montar Lista */
+#view-despensa .categoria-grupo {
+  margin-bottom: 6px !important;
+}
+
+#view-despensa .categoria-titulo {
+  margin-bottom: 2px !important;
+  padding: 1px 4px !important;
+  font-size: 0.76rem !important;
+  font-weight: 700 !important;
+  color: #475569 !important;
+  letter-spacing: 0.3px !important;
+}
+
+#view-despensa .itens-lista {
+  gap: 2px !important; /* Espremido verticalmente entre cards */
+  padding-left: 2px !important; /* Sem recuo excessivo à esquerda */
+}
+
+/* CARDS TOTALMENTE ESPREMIDOS */
 #view-despensa .item-card {
-  background: #F1F5F9 !important;
+  background: #F8FAFC !important;
   border: 1px solid #E2E8F0 !important;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-  transition: all 0.2s ease;
+  border-radius: 4px !important;
+  padding: 2px 6px !important; /* Espremido no padding interno */
+  gap: 5px !important; /* Espaço horizontal justo */
+  min-height: 26px !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03) !important;
+  transition: all 0.15s ease;
+}
+
+#view-despensa .item-card:hover {
+  transform: none !important;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.07) !important;
+}
+
+/* Ocultar qualquer ícone em Montar Lista */
+#view-despensa .item-card .item-icone-2d {
+  display: none !important;
+}
+
+/* Checkbox compacto */
+#view-despensa .item-card .item-check-btn {
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
+  border-radius: 4px !important;
+  border: 1.5px solid #CBD5E1 !important;
+  background: #FFFFFF !important;
+  font-size: 0.68rem !important;
+  line-height: 1 !important;
+  flex-shrink: 0 !important;
+}
+
+/* Contador - 1 + compacto e bem encostado */
+#view-despensa .item-card .contador-qtde {
+  background: #E2E8F0 !important;
+  border: 1px solid #CBD5E1 !important;
+  color: #475569 !important;
+  padding: 0 !important;
+  border-radius: 4px !important;
+  gap: 0 !important;
+  flex-shrink: 0 !important;
+}
+
+#view-despensa .item-card .contador-qtde .btn-step {
+  width: 18px !important;
+  height: 18px !important;
+  font-size: 0.76rem !important;
+  font-weight: 700 !important;
+  color: #475569 !important;
+  padding: 0 !important;
+  border-radius: 2px !important;
+}
+
+#view-despensa .item-card .contador-qtde .qtde-valor,
+#view-despensa .item-card .contador-qtde .input-qtde-card {
+  width: 20px !important;
+  height: 18px !important;
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  color: #1E293B !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  line-height: 18px !important;
+}
+
+/* Corpo e Nome: FONTE REDUZIDA */
+#view-despensa .item-card .item-corpo {
+  flex: 1 !important;
+  min-width: 0 !important;
+}
+
+#view-despensa .item-card .item-linha-nome {
+  gap: 4px !important;
+  align-items: center !important;
 }
 
 #view-despensa .item-card .item-nome {
   color: #7C3AED !important; /* Fonte lilás / violeta */
   font-style: normal !important;
-  font-weight: 700 !important;
+  font-weight: 600 !important;
+  font-size: 0.76rem !important; /* FONTE REDUZIDA */
+  line-height: 1.2 !important;
   text-decoration: none !important;
 }
 
-#view-despensa .item-card .contador-qtde {
-  background: #E2E8F0 !important;
-  border-color: #CBD5E1 !important;
-  color: #475569 !important;
+/* Botão Lápis Verde Compacto */
+#view-despensa .item-card .btn-editar-despensa {
+  width: 17px !important;
+  height: 17px !important;
+  min-width: 17px !important;
+  border-radius: 3px !important;
+  padding: 0 !important;
+  flex-shrink: 0 !important;
 }
 
-#view-despensa .item-card .contador-qtde .btn-step,
-#view-despensa .item-card .contador-qtde .qtde-valor,
-#view-despensa .item-card .contador-qtde .input-qtde-card {
-  color: #475569 !important;
+#view-despensa .item-card .btn-editar-despensa svg {
+  width: 10px !important;
+  height: 10px !important;
 }
 
+/* Botão Deletar Compacto */
 #view-despensa .item-card .btn-delete-item {
+  width: 17px !important;
+  height: 17px !important;
+  font-size: 0.65rem !important;
   color: #94A3B8 !important;
+  padding: 0 !important;
+  flex-shrink: 0 !important;
 }
 
 #view-despensa .item-card .btn-delete-item:hover {
   color: #EF4444 !important;
 }
 
-#view-despensa .item-card .item-check-btn {
-  border-color: #CBD5E1 !important;
-  background: #FFFFFF !important;
-}
-
-/* SELECIONADO: fundo claro, fonte itálica, sem negrito, riscada */
+/* SELECIONADO: fundo claro, fonte itálica, sem negrito, riscada, espremido */
 #view-despensa .item-card.na-lista-montar {
   background: #FFFFFF !important;
   border-color: #CBD5E1 !important;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.02) !important;
   opacity: 0.95;
 }
 
@@ -2085,6 +2181,7 @@ body.modo-mercado-ativo .item-nome {
   color: #94A3B8 !important;
   font-style: italic !important;
   font-weight: 400 !important;
+  font-size: 0.76rem !important; /* FONTE REDUZIDA */
   text-decoration: line-through !important;
 }
 
@@ -2095,13 +2192,8 @@ body.modo-mercado-ativo .item-nome {
 }
 
 #view-despensa .item-card.na-lista-montar .contador-qtde .btn-step,
-#view-despensa .item-card.na-lista-montar .contador-qtde .qtde-valor,
 #view-despensa .item-card.na-lista-montar .contador-qtde .input-qtde-card {
   color: #475569 !important;
-}
-
-#view-despensa .item-card.na-lista-montar .btn-delete-item {
-  color: #94A3B8 !important;
 }
 
 #view-despensa .item-card.na-lista-montar .item-check-btn {

@@ -3567,12 +3567,8 @@ function renderizarDespensa() {
             ${checkIcone}
           </div>
 
-          <div class="item-icone-2d">
-            ${iconeSvg}
-          </div>
-
           <!-- Coluna de Quantidade editável na frente do nome -->
-          <div class="contador-qtde" style="margin-right: 4px; ${estaNaLista ? '' : 'opacity: 0.45;'}" onclick="event.stopPropagation()">
+          <div class="contador-qtde" style="margin-right: 2px; ${estaNaLista ? '' : 'opacity: 0.5;'}" onclick="event.stopPropagation()">
             <button class="btn-step" onclick="event.stopPropagation(); alterarQuantidadeMontarLista('${prod.id}', -1, event)">-</button>
             <input type="number" min="1" class="input-qtde-card" value="${qtde}" id="qtde-montar-${prod.id}" onclick="event.stopPropagation()" onchange="definirQuantidadeMontarLista('${prod.id}', this.value, event)" />
             <button class="btn-step" onclick="event.stopPropagation(); alterarQuantidadeMontarLista('${prod.id}', 1, event)">+</button>
@@ -3582,7 +3578,7 @@ function renderizarDespensa() {
             <div class="item-linha-nome">
               <span class="item-nome" title="${prod.nome}">${nomeExibicao}</span>
               <button class="btn-editar-despensa" title="Editar este produto" onclick="event.stopPropagation(); abrirModalEditarNomeDespensa('${prod.id}', event)">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M12 20h9"></path>
                   <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
                 </svg>
