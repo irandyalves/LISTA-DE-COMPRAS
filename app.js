@@ -2335,31 +2335,117 @@ function ouvirPrecoItem(itemId, btnEl, ev) {
   }
 }
 
+let itemEmEdicaoPrecoId = null;
+
 function editarPrecoItemManualmente(itemId, ev) {
   if (ev) ev.stopPropagation();
   const item = AppState.listaAtiva.find(i => String(i.id) === String(itemId));
   if (!item) return;
 
-  const precoAtual = (item.preco && Number(item.preco) > 0) ? Number(item.preco).toFixed(2).replace('.', ',') : '';
-  const novoPrecoStr = prompt(`Digite o preço de ${item.nome} (R$):`, precoAtual);
-  if (novoPrecoStr !== null) {
-    const limpo = novoPrecoStr.replace('R$', '').replace(/\s+/g, '').replace(',', '.').trim();
-    const valorNum = limpo === '' ? 0 : parseFloat(limpo);
-    if (!isNaN(valorNum) && valorNum >= 0) {
-      item.preco = valorNum;
-      item.ultimoPreco = valorNum;
-      item.precoRegistradoMercado = valorNum;
-      if (item.catalogoId) {
-        const catItem = AppState.catalogo.find(c => String(c.id) === String(item.catalogoId));
-        if (catItem) {
-          catItem.precoRegistradoMercado = valorNum;
-          catItem.preco = valorNum;
-        }
-      }
-      salvarEstado(true);
-      renderizarListaCompras();
-      atualizarCardResumo();
+  itemEmEdicaoPrecoId = itemId;
+
+  const modal = document.getElementById('modal-editar-preco');
+  const tituloEl = document.getElementById('modal-preco-prod-nome');
+  const inputEl = document.getElementById('input-modal-preco-valor');
+
+  if (tituloEl) {
+    tituloEl.textContent = item.nome;
+  }
+
+  const precoAtual = (item.preco && Number(item.preco) > 0) 
+    ? Number(item.preco).toFixed(2).replace('.', ',') 
+    : '';
+
+  if (inputEl) {
+    inputEl.value = precoAtual;
+  }
+
+  if (modal) {
+    modal.style.display = 'flex';
+  }
+
+  setTimeout(() => {
+    if (inputEl) {
+      inputEl.focus();
+      inputEl.select();
     }
+  }, 60);
+}
+
+function fecharModalEditarPrecoDireto() {
+  const modal = document.getElementById('modal-editar-preco');
+  if (modal) modal.style.display = 'none';
+  itemEmEdicaoPrecoId = null;
+}
+
+function fecharModalEditarPreco(event) {
+  if (event && event.target && event.target.id === 'modal-editar-preco') {
+    fecharModalEditarPrecoDireto();
+  }
+}
+
+function limparPrecoModal() {
+  if (!itemEmEdicaoPrecoId) return;
+  const item = AppState.listaAtiva.find(i => String(i.id) === String(itemEmEdicaoPrecoId));
+  if (item) {
+    item.preco = 0;
+    item.ultimoPreco = 0;
+    item.precoRegistradoMercado = 0;
+    if (item.catalogoId) {
+      const catItem = AppState.catalogo.find(c => String(c.id) === String(item.catalogoId));
+      if (catItem) {
+        catItem.precoRegistradoMercado = 0;
+        catItem.preco = 0;
+      }
+    }
+    salvarEstado(true);
+    renderizarListaCompras();
+    atualizarCardResumo();
+  }
+  fecharModalEditarPrecoDireto();
+}
+
+function confirmarSalvarPrecoModal() {
+  if (!itemEmEdicaoPrecoId) return;
+  const item = AppState.listaAtiva.find(i => String(i.id) === String(itemEmEdicaoPrecoId));
+  if (!item) {
+    fecharModalEditarPrecoDireto();
+    return;
+  }
+
+  const inputEl = document.getElementById('input-modal-preco-valor');
+  const valorStr = inputEl ? inputEl.value.trim() : '';
+
+  const limpo = valorStr.replace('R$', '').replace(/\s+/g, '').replace(',', '.').trim();
+  const valorNum = limpo === '' ? 0 : parseFloat(limpo);
+
+  if (!isNaN(valorNum) && valorNum >= 0) {
+    const valorFinal = normalizarPrecoMercado(valorNum) || valorNum;
+    item.preco = valorFinal;
+    item.ultimoPreco = valorFinal;
+    item.precoRegistradoMercado = valorFinal;
+    if (item.catalogoId) {
+      const catItem = AppState.catalogo.find(c => String(c.id) === String(item.catalogoId));
+      if (catItem) {
+        catItem.precoRegistradoMercado = valorFinal;
+        catItem.preco = valorFinal;
+      }
+    }
+    salvarEstado(true);
+    renderizarListaCompras();
+    atualizarCardResumo();
+  }
+
+  fecharModalEditarPrecoDireto();
+}
+
+function aoTeclarModalEditarPreco(event) {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    confirmarSalvarPrecoModal();
+  } else if (event.key === 'Escape') {
+    event.preventDefault();
+    fecharModalEditarPrecoDireto();
   }
 }
 

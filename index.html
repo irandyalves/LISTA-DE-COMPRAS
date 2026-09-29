@@ -12,7 +12,7 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>">
   
   <!-- CSS Moderno -->
-  <link rel="stylesheet" href="style.css?v=8.7">
+  <link rel="stylesheet" href="style.css?v=8.9">
 </head>
 <body>
 
@@ -622,6 +622,47 @@
     </div>
   </div>
 
+  <!-- MODAL EDITAR PREÇO DO ITEM (COM BOTÃO LIMPAR) -->
+  <div id="modal-editar-preco" class="modal-overlay" style="display: none;" onclick="fecharModalEditarPreco(event)">
+    <div class="modal-editar-preco-card" onclick="event.stopPropagation()">
+      <div class="modal-preco-header">
+        <div class="modal-preco-icone">🏷️</div>
+        <div class="modal-preco-titulos">
+          <h3 class="modal-preco-titulo" id="modal-preco-prod-nome">Preço do Produto</h3>
+          <p class="modal-preco-subtitulo">Informe o valor de gôndola encontrado no mercado</p>
+        </div>
+        <button class="modal-fechar-btn" onclick="fecharModalEditarPrecoDireto()" title="Fechar">✕</button>
+      </div>
+
+      <div class="modal-preco-corpo">
+        <label for="input-modal-preco-valor" class="modal-preco-label">Valor (R$):</label>
+        <div class="modal-preco-input-wrapper">
+          <span class="modal-preco-cifrao">R$</span>
+          <input type="text" id="input-modal-preco-valor" 
+                 class="modal-preco-input" 
+                 inputmode="decimal" 
+                 placeholder="0,00" 
+                 autocomplete="off" 
+                 onkeydown="aoTeclarModalEditarPreco(event)">
+        </div>
+      </div>
+
+      <div class="modal-preco-acoes">
+        <button type="button" class="btn-preco-limpar" onclick="limparPrecoModal()" title="Zerar valor para 0,00">
+          🗑️ Limpar
+        </button>
+        <div class="modal-preco-acoes-direita">
+          <button type="button" class="btn-preco-cancelar" onclick="fecharModalEditarPrecoDireto()">
+            Cancelar
+          </button>
+          <button type="button" class="btn-preco-salvar" onclick="confirmarSalvarPrecoModal()">
+            ✓ Salvar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- TOAST DE NOTIFICAÇÃO EM TEMPO REAL (QUANDO A ESPOSA ATUALIZAR A LISTA) -->
   <div id="toast-notificacao-nuvem" class="toast-nuvem-realtime" style="display: none;">
     <div class="toast-nuvem-conteudo">
@@ -663,7 +704,7 @@
   <script src="logos_banco.js"></script>
   <script src="icones2d.js"></script>
   <script src="firebase-sync.js"></script>
-  <script src="app.js?v=8.8"></script>
+  <script src="app.js?v=8.9"></script>
 
 </body>
 </html>
