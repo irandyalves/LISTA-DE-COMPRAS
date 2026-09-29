@@ -2244,10 +2244,8 @@ function alternarAbaApp(aba, isUserClick = true) {
 
   // Controles de Aumentar / Reduzir fonte no cabeçalho visíveis apenas na aba Montar Lista
   const ctrlFonteHeader = document.getElementById('controles-fonte-header');
-  const ctrlFonteCat = document.getElementById('controles-fonte-categorias');
   const isMontar = (AppState.abaAtiva === 'despensa');
   if (ctrlFonteHeader) ctrlFonteHeader.style.display = isMontar ? 'inline-flex' : 'none';
-  if (ctrlFonteCat) ctrlFonteCat.style.display = isMontar ? 'inline-flex' : 'none';
 
   if (inputTopo) {
     inputTopo.placeholder = AppState.abaAtiva === 'despensa' 
