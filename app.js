@@ -735,6 +735,7 @@ let AppState = {
   cotacaoAtiva: true, // true = cotado com preços e atacadistas visíveis, false = preços e atacadistas ocultos
   modoNoMercado: ehDispositivoMobile ? true : false, // No celular, por padrão mercados vêm ocultados
   modoResumido: false, // true = exibe nomes simplificados e deduplica variedades
+  modoCotacao: 'alfabetico', // Padrão Alfabético A-Z em todo o app
   mercadoReferencia: 'atacadao',
   ordenacaoMercados: 'original', // 'original', 'alfabetico_az', 'alfabetico_za', 'preco'
   usuarioAtivo: (typeof localStorage !== 'undefined' && localStorage.getItem('usuario_nome_ativo')) || 'Irandy',
@@ -822,6 +823,8 @@ document.addEventListener('DOMContentLoaded', () => {
   carregarCotacoesRaspadas();
   configurarBuscaGlobal();
   renderizarTudo();
+  atualizarVisualBotaoOrdemAlfabetica();
+  atualizarCardResumo();
   atualizarContadorSidebarMontar();
   inicializarEscalaFonteMontar();
   inicializarSwipeDeleteMobile();
@@ -851,7 +854,11 @@ function carregarLocalmente() {
       } else {
         AppState.mercadoReferencia = 'nenhum';
       }
-      if (parsed.modoCotacao) AppState.modoCotacao = parsed.modoCotacao;
+      if (parsed.modoCotacao) {
+        AppState.modoCotacao = parsed.modoCotacao;
+      } else {
+        AppState.modoCotacao = 'alfabetico';
+      }
       if (parsed.ordenacaoMercados) AppState.ordenacaoMercados = parsed.ordenacaoMercados;
       
       const excluidos = new Set((AppState.itensExcluidos || []).map(n => n.toLowerCase().trim()));
@@ -1045,7 +1052,14 @@ function salvarEstado(enviarParaNuvem = true) {
 function inicializarNuvem() {
   FirebaseSync.inicializar(
     (dadosNuvem) => {
-      // Proteção contra eco: se fizemos uma modificação local há menos de 3s e o snapshot é anterior, ignora
+      // Proteção contra eco: se fizemos uma modificação local há menos de 4s, ignora o re-render
+      const modificacaoLocalRecente = timestampUltimaModificacaoLocal > 0 && (Date.now() - timestampUltimaModificacaoLocal) < 4000;
+      if (modificacaoLocalRecente) {
+        console.log("[Nuvem] Modificação local recente (<4s) - preservando renderização local.");
+        salvarEstado(false);
+        return;
+      }
+
       if (dadosNuvem.ultimaAtualizacao && timestampUltimaModificacaoLocal > 0) {
         const timeNuvem = new Date(dadosNuvem.ultimaAtualizacao).getTime();
         if (timeNuvem < (timestampUltimaModificacaoLocal - 500)) {
@@ -2126,7 +2140,14 @@ function alternarAbaApp(aba, isUserClick = true) {
     btnToggleModo.style.display = (AppState.abaAtiva === 'lista') ? 'inline-flex' : 'none';
   }
 
+  const linhaAbasMobile = document.querySelector('.linha-abas-e-total-mobile');
+  if (linhaAbasMobile) {
+    linhaAbasMobile.style.display = (AppState.abaAtiva === 'lista' || AppState.abaAtiva === 'despensa') ? 'flex' : 'none';
+  }
   if (abasCategorias) abasCategorias.style.display = (AppState.abaAtiva === 'lista' || AppState.abaAtiva === 'despensa') ? 'flex' : 'none';
+  if (typeof atualizarVisualBotaoOrdemAlfabetica === 'function') {
+    atualizarVisualBotaoOrdemAlfabetica();
+  }
 
   // Controles de Aumentar / Reduzir fonte no cabeçalho visíveis apenas na aba Montar Lista
   const ctrlFonteHeader = document.getElementById('controles-fonte-header');
@@ -2279,6 +2300,8 @@ function atualizarCardResumo() {
       const comprados = AppState.listaAtiva.filter(i => i.comprado).length;
       elProgresso.textContent = `🛒 ${comprados} de ${AppState.listaAtiva.length} pegos`;
     }
+    const elBadgeMobile = document.getElementById('badge-total-geral-mobile');
+    if (elBadgeMobile) elBadgeMobile.textContent = '--';
     return;
   }
 
@@ -2388,6 +2411,23 @@ function atualizarCardResumo() {
     } else {
       elProgresso.textContent = `🛒 ${itensNoCarrinho} de ${totalItens} no carrinho (${formatarMoeda(totalCarrinho)}) • Falta ${formatarMoeda(totalRestante)}`;
     }
+  }
+
+  // Atualiza Badge do Total Geral no Mobile (Fundo Vermelho Escuro, Letra Branca, SÓ OS NÚMEROS)
+  const elBadgeMobile = document.getElementById('badge-total-geral-mobile');
+  if (elBadgeMobile) {
+    let valorExibicao = totalGeral;
+    if (visaoTotalModo === 'restante') {
+      valorExibicao = totalRestante;
+    } else if (visaoTotalModo === 'carrinho') {
+      valorExibicao = totalCarrinho;
+    }
+    elBadgeMobile.textContent = formatarMoeda(valorExibicao, false);
+    elBadgeMobile.title = (visaoTotalModo === 'restante') 
+      ? `Falta Pegar: ${formatarMoeda(totalRestante)} (Toque para alternar)`
+      : (visaoTotalModo === 'carrinho')
+        ? `No Carrinho: ${formatarMoeda(totalCarrinho)} (Toque para alternar)`
+        : `Total Geral: ${formatarMoeda(totalGeral)} (Toque para alternar)`;
   }
 
   if (typeof atualizarContadorSidebarMontar === 'function') {
@@ -2943,7 +2983,11 @@ function renderizarListaCompras() {
   const container = document.getElementById('itens-lista-container');
   if (!container) return;
   const scrollYAnterior = window.scrollY || document.documentElement.scrollTop || 0;
-  container.innerHTML = '';
+  const scrollXAnterior = window.scrollX || document.documentElement.scrollLeft || 0;
+  const alturaAtual = Math.max(container.offsetHeight, document.documentElement.scrollHeight);
+  if (alturaAtual > 0) {
+    container.style.minHeight = `${alturaAtual}px`;
+  }
 
   if (AppState.listaAtiva.length === 0) {
     container.innerHTML = `
@@ -2955,6 +2999,7 @@ function renderizarListaCompras() {
         </p>
       </div>
     `;
+    container.style.minHeight = '';
     return;
   }
 
@@ -3055,13 +3100,20 @@ function renderizarListaCompras() {
   let linhasTabelaHtml = '';
 
   for (const [categoria, itens] of Object.entries(grupos)) {
-    // Ordenação dinâmica dentro da categoria: apenas alfabética se ativada
-    if (AppState.modoCotacao === 'alfabetico') {
-      itens.sort((a, b) => {
+    // Ordenação dinâmica dentro da categoria:
+    // Itens NÃO pegos primeiro (A-Z ou ordem padrão)
+    // Itens PEGANTE/COMPRADOS vão para o final da seção (A-Z entre os comprados)
+    itens.sort((a, b) => {
+      const aComp = a.comprado ? 1 : 0;
+      const bComp = b.comprado ? 1 : 0;
+      if (aComp !== bComp) {
+        return aComp - bComp; // 0 (não pego) vem antes de 1 (pego)
+      }
+      if (AppState.modoCotacao === 'alfabetico') {
         return (a.nome || '').localeCompare(b.nome || '', 'pt-BR', { sensitivity: 'base' });
-      });
-    }
-    // NOTA: Os itens NÃO mudam de posição ao serem marcados como pego no carrinho. Ficam exatamente onde estão para que o usuário não seja jogado para o topo e possa escolher mais coisas daquela seção!
+      }
+      return (a.indexOriginal || 0) - (b.indexOriginal || 0);
+    });
 
     // Linha de Cabeçalho da Categoria com os Atacadistas na mesma linha
     const iconeOlhoAberto = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
@@ -3289,9 +3341,16 @@ function renderizarListaCompras() {
 
   // Preservar a posição do scroll para JAMAIS jogar o usuário para o topo ao interagir na tabela
   if (scrollYAnterior > 0) {
+    window.scrollTo({ top: scrollYAnterior, left: scrollXAnterior, behavior: 'instant' });
     requestAnimationFrame(() => {
-      window.scrollTo({ top: scrollYAnterior, behavior: 'instant' });
+      window.scrollTo({ top: scrollYAnterior, left: scrollXAnterior, behavior: 'instant' });
+      setTimeout(() => {
+        window.scrollTo({ top: scrollYAnterior, left: scrollXAnterior, behavior: 'instant' });
+        container.style.minHeight = '';
+      }, 50);
     });
+  } else {
+    container.style.minHeight = '';
   }
 }
 
@@ -3527,7 +3586,7 @@ const PRODUTOS_DESPENSA_MARCAS = [
 let termoBuscaTopo = '';
 let termoBuscaDespensa = '';
 let termoBuscaLista = '';
-let ordemAlfabeticaDespensa = false;
+let ordemAlfabeticaDespensa = true;
 let categoriaAtivaDespensa = 'todas';
 
 function configurarBuscaGlobal() {
@@ -3956,21 +4015,35 @@ function alternarOrdemAlfabeticaGeral() {
   } else {
     alternarOrdemAlfabeticaDespensa();
   }
+  atualizarVisualBotaoOrdemAlfabetica();
 }
 
 function alternarOrdemAlfabeticaDespensa() {
   ordemAlfabeticaDespensa = !ordemAlfabeticaDespensa;
-  const btn = document.getElementById('btn-ordem-alfabetica');
-  if (btn) {
-    if (ordemAlfabeticaDespensa) {
-      btn.classList.add('ativo-filtro');
-      btn.title = "Ordenado de A a Z (Clique para voltar à ordem padrão)";
-    } else {
-      btn.classList.remove('ativo-filtro');
-      btn.title = "Ordenar de A a Z";
-    }
-  }
+  atualizarVisualBotaoOrdemAlfabetica();
   renderizarDespensa();
+}
+
+function atualizarVisualBotaoOrdemAlfabetica() {
+  const btn = document.getElementById('btn-ordem-alfabetica');
+  if (!btn) return;
+  let ativo = false;
+  if (AppState.abaAtiva === 'lista') {
+    ativo = (AppState.modoCotacao === 'alfabetico');
+  } else if (AppState.abaAtiva === 'despensa') {
+    ativo = !!ordemAlfabeticaDespensa;
+  } else if (AppState.abaAtiva === 'mercados') {
+    ativo = (AppState.ordenacaoMercados === 'alfabetico_az');
+  }
+  if (ativo) {
+    btn.classList.add('ativo');
+    btn.classList.add('ativo-filtro');
+    btn.title = "Ordenado de A a Z (Ativo - Toque para alternar)";
+  } else {
+    btn.classList.remove('ativo');
+    btn.classList.remove('ativo-filtro');
+    btn.title = "Ordenar de A a Z";
+  }
 }
 
 // Renderizar Aba "Montar Lista" (Estrutura idêntica ao modelo da Lista de Compra, sem preços, item não vai pro final)
@@ -4571,10 +4644,8 @@ function alternarItemComprado(id) {
 
     salvarEstado(true);
 
-    // Atualiza in-place no DOM sem jamais recriar a tabela nem jogar o usuário para o topo
-    if (!atualizarVisualItemLinha(item, false)) {
-      renderizarListaCompras();
-    }
+    // Re-renderiza com scroll travado: o item vai para o fim da seção (ordem A-Z dos comprados) sem mover a tela
+    renderizarListaCompras();
     atualizarCardResumo();
 
     // Finalização Automática quando clicar no check do último item da lista
@@ -4597,9 +4668,7 @@ function alternarItemComprado(id) {
     if (catItem) catItem.comprado = false;
 
     salvarEstado(true);
-    if (!atualizarVisualItemLinha(item, false)) {
-      renderizarListaCompras();
-    }
+    renderizarListaCompras();
     atualizarCardResumo();
   } else {
     // Primeiro clique: entra em estado de aviso/confirmação

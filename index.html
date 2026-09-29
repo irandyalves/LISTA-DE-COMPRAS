@@ -12,7 +12,7 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>">
   
   <!-- CSS Moderno -->
-  <link rel="stylesheet" href="style.css?v=10.2">
+  <link rel="stylesheet" href="style.css?v=10.3">
 </head>
 <body>
 
@@ -142,46 +142,49 @@
       </header>
 
       <!-- Abas de Categorias (Geral, Básicos & Grãos, Hortifrúti, Carnes, Higiene, Limpeza, etc.) -->
-      <div class="despensa-abas-categorias" id="barra-abas-categorias">
-        <button class="despensa-aba-tab ativa" data-categoria="todas" onclick="filtrarCategoriaGeral('todas', this)">
-          🌐 Geral
-        </button>
-        <button class="despensa-aba-tab" data-categoria="Básicos e Grãos" onclick="filtrarCategoriaGeral('Básicos e Grãos', this)">
-          🌾 Básicos & Grãos
-        </button>
-        <button class="despensa-aba-tab" data-categoria="Hortifrúti" onclick="filtrarCategoriaGeral('Hortifrúti', this)">
-          🥬 Hortifrúti
-        </button>
-        <button class="despensa-aba-tab" data-categoria="Carnes e Proteínas" onclick="filtrarCategoriaGeral('Carnes e Proteínas', this)">
-          🥩 Carnes & Aves
-        </button>
-        <button class="despensa-aba-tab" data-categoria="Laticínios e Frios" onclick="filtrarCategoriaGeral('Laticínios e Frios', this)">
-          🧀 Laticínios & Frios
-        </button>
-        <button class="despensa-aba-tab" data-categoria="Higiene" onclick="filtrarCategoriaGeral('Higiene', this)">
-          🪥 Higiene
-        </button>
-        <button class="despensa-aba-tab" data-categoria="Limpeza" onclick="filtrarCategoriaGeral('Limpeza', this)">
-          🧹 Limpeza
-        </button>
-        <button class="despensa-aba-tab" data-categoria="Padaria e Lanches" onclick="filtrarCategoriaGeral('Padaria e Lanches', this)">
-          🍞 Padaria & Lanches
-        </button>
-        <button class="despensa-aba-tab" data-categoria="Bebidas" onclick="filtrarCategoriaGeral('Bebidas', this)">
-          🥤 Bebidas
-        </button>
-        <button class="despensa-aba-tab" data-categoria="Diversos" onclick="filtrarCategoriaGeral('Diversos', this)">
-          📦 Diversos
-        </button>
-        <div class="acoes-end-barra" style="margin-left: auto; display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0;">
-          <div id="controles-fonte-categorias" class="controles-fonte-categorias" style="display: none;">
-            <button type="button" class="btn-acao-mini btn-fonte-mini" onclick="ajustarFonteMontarLista(-1)" title="Diminuir fonte em Montar Lista">A−</button>
-            <button type="button" class="btn-acao-mini btn-fonte-mini" onclick="ajustarFonteMontarLista(1)" title="Aumentar fonte em Montar Lista">A+</button>
-          </div>
-          <button id="btn-ordem-alfabetica" class="btn-acao-mini" onclick="alternarOrdemAlfabeticaGeral()" title="Ordenar de A a Z">
-            🔤 A-Z
+      <div class="linha-abas-e-total-mobile">
+        <div class="despensa-abas-categorias" id="barra-abas-categorias">
+          <button class="despensa-aba-tab ativa" data-categoria="todas" onclick="filtrarCategoriaGeral('todas', this)">
+            🌐 Geral
           </button>
+          <button class="despensa-aba-tab" data-categoria="Básicos e Grãos" onclick="filtrarCategoriaGeral('Básicos e Grãos', this)">
+            🌾 Básicos & Grãos
+          </button>
+          <button class="despensa-aba-tab" data-categoria="Hortifrúti" onclick="filtrarCategoriaGeral('Hortifrúti', this)">
+            🥬 Hortifrúti
+          </button>
+          <button class="despensa-aba-tab" data-categoria="Carnes e Proteínas" onclick="filtrarCategoriaGeral('Carnes e Proteínas', this)">
+            🥩 Carnes & Aves
+          </button>
+          <button class="despensa-aba-tab" data-categoria="Laticínios e Frios" onclick="filtrarCategoriaGeral('Laticínios e Frios', this)">
+            🧀 Laticínios & Frios
+          </button>
+          <button class="despensa-aba-tab" data-categoria="Higiene" onclick="filtrarCategoriaGeral('Higiene', this)">
+            🪥 Higiene
+          </button>
+          <button class="despensa-aba-tab" data-categoria="Limpeza" onclick="filtrarCategoriaGeral('Limpeza', this)">
+            🧹 Limpeza
+          </button>
+          <button class="despensa-aba-tab" data-categoria="Padaria e Lanches" onclick="filtrarCategoriaGeral('Padaria e Lanches', this)">
+            🍞 Padaria & Lanches
+          </button>
+          <button class="despensa-aba-tab" data-categoria="Bebidas" onclick="filtrarCategoriaGeral('Bebidas', this)">
+            🥤 Bebidas
+          </button>
+          <button class="despensa-aba-tab" data-categoria="Diversos" onclick="filtrarCategoriaGeral('Diversos', this)">
+            📦 Diversos
+          </button>
+          <div class="acoes-end-barra" style="margin-left: auto; display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0;">
+            <div id="controles-fonte-categorias" class="controles-fonte-categorias" style="display: none;">
+              <button type="button" class="btn-acao-mini btn-fonte-mini" onclick="ajustarFonteMontarLista(-1)" title="Diminuir fonte em Montar Lista">A−</button>
+              <button type="button" class="btn-acao-mini btn-fonte-mini" onclick="ajustarFonteMontarLista(1)" title="Aumentar fonte em Montar Lista">A+</button>
+            </div>
+            <button id="btn-ordem-alfabetica" class="btn-acao-mini ativo" onclick="alternarOrdemAlfabeticaGeral()" title="Ordenar de A a Z">
+              🔤 A-Z
+            </button>
+          </div>
         </div>
+        <div id="badge-total-geral-mobile" class="badge-total-geral-mobile" onclick="alternarVisaoTotal()" title="Total Geral da Compra (Toque para alternar Total/Falta/Pego)">0,00</div>
       </div>
     </div>
     <!-- FIM DO PAINEL SUPERIOR CONGELADO -->
@@ -813,7 +816,7 @@
   <script src="logos_banco.js"></script>
   <script src="icones2d.js"></script>
   <script src="firebase-sync.js"></script>
-  <script src="app.js?v=10.2"></script>
+  <script src="app.js?v=10.3"></script>
 
 </body>
 </html>
