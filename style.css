@@ -2360,7 +2360,7 @@ body.tema-escuro .btn-categoria-fav.ativo,
   gap: 5px !important; /* Espaço horizontal justo */
   min-height: 26px !important;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03) !important;
-  transition: all 0.15s ease;
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 #view-despensa .item-card:hover {
@@ -6643,94 +6643,94 @@ body.tema-escuro .drawer-fechar-btn {
 }
 
 /* ========================================================
-   TOAST DE RE.UNDO (DESFAZER EXCLUSÃO COM 2 SEGUNDOS)
+   TOAST DE RE.UNDO (DESFAZER EXCLUSÃO COM 3 SEGUNDOS)
 ======================================================== */
 .toast-desfazer-flutuante {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
+  position: fixed !important;
+  bottom: 24px !important;
+  left: 50% !important;
   transform: translateX(-50%) translateY(50px) scale(0.92);
-  background: #0F172A;
-  color: #FFFFFF;
-  padding: 10px 16px 8px 16px;
-  border-radius: 12px;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.12);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  z-index: 100000;
+  background: #0F172A !important;
+  color: #FFFFFF !important;
+  padding: 10px 16px 8px 16px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6), 0 0 0 1.5px rgba(255, 255, 255, 0.18) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  z-index: 999999999 !important;
   opacity: 0;
   pointer-events: none;
   transition: transform 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.18s ease;
   min-width: 290px;
-  max-width: 90vw;
-  box-sizing: border-box;
+  max-width: 92vw;
+  box-sizing: border-box !important;
 }
 
 .toast-desfazer-flutuante.visivel {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateX(-50%) translateY(0) scale(1);
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  transform: translateX(-50%) translateY(0) scale(1) !important;
 }
 
 .toast-desfazer-conteudo {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
 }
 
 .toast-desfazer-msg {
-  font-size: 0.86rem;
-  font-weight: 600;
-  color: #F8FAFC;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  flex: 1;
+  font-size: 0.86rem !important;
+  font-weight: 600 !important;
+  color: #F8FAFC !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  flex: 1 !important;
 }
 
 .btn-toast-desfazer {
-  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
-  color: #FFFFFF;
-  border: none;
-  padding: 6px 14px;
-  border-radius: 8px;
-  font-size: 0.82rem;
-  font-weight: 800;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.45);
-  transition: all 0.15s ease;
-  flex-shrink: 0;
-  user-select: none;
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%) !important;
+  color: #FFFFFF !important;
+  border: none !important;
+  padding: 6px 14px !important;
+  border-radius: 8px !important;
+  font-size: 0.82rem !important;
+  font-weight: 800 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.45) !important;
+  transition: all 0.15s ease !important;
+  flex-shrink: 0 !important;
+  user-select: none !important;
 }
 
 .btn-toast-desfazer:hover {
-  background: linear-gradient(135deg, #FBBF24 0%, #B45309 100%);
-  transform: scale(1.06);
+  background: linear-gradient(135deg, #FBBF24 0%, #B45309 100%) !important;
+  transform: scale(1.06) !important;
 }
 
 .btn-toast-desfazer:active {
-  transform: scale(0.95);
+  transform: scale(0.95) !important;
 }
 
 .ico-voltar-undo {
-  font-size: 1rem;
-  line-height: 1;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+  font-size: 1rem !important;
+  line-height: 1 !important;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3)) !important;
 }
 
-/* Barra de contagem regressiva de 2 segundos */
+/* Barra de contagem regressiva de 3 segundos */
 .toast-desfazer-barra-tempo {
-  height: 3px;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 2px;
-  overflow: hidden;
-  position: relative;
-  width: 100%;
+  height: 3px !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-radius: 2px !important;
+  overflow: hidden !important;
+  position: relative !important;
+  width: 100% !important;
 }
 
 .toast-desfazer-barra-tempo::after {
@@ -6744,7 +6744,7 @@ body.tema-escuro .drawer-fechar-btn {
 }
 
 .toast-desfazer-flutuante.visivel .toast-desfazer-barra-tempo::after {
-  animation: barraContagemRegressiva 2s linear forwards;
+  animation: barraContagemRegressiva 3s linear forwards !important;
 }
 
 @keyframes barraContagemRegressiva {
@@ -6756,18 +6756,20 @@ body.tema-escuro .drawer-fechar-btn {
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 850px) {
   .toast-desfazer-flutuante {
-    bottom: 78px; /* Fica acima da barra inferior no mobile */
-    padding: 8px 12px 6px 12px;
-    min-width: 270px;
+    bottom: 74px !important; /* Fica visível acima da barra inferior no celular */
+    padding: 8px 12px 6px 12px !important;
+    min-width: 270px !important;
+    max-width: 94vw !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7), 0 0 0 1.5px rgba(255, 255, 255, 0.2) !important;
   }
   .toast-desfazer-msg {
-    font-size: 0.80rem;
+    font-size: 0.80rem !important;
   }
   .btn-toast-desfazer {
-    padding: 5px 12px;
-    font-size: 0.78rem;
+    padding: 5px 12px !important;
+    font-size: 0.78rem !important;
   }
 }
 

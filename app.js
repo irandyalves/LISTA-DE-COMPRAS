@@ -4149,6 +4149,11 @@ function filtrarItensDespensa(termo) {
 }
 
 function filtrarCategoriaGeral(categoria, botaoEl) {
+  // Se clicou na estrela de favoritos e ela já está ativa, desmarca e ativa Geral ('todas')
+  if (categoria === 'favoritos' && (AppState.filtroCategoria === 'favoritos' || categoriaAtivaDespensa === 'favoritos')) {
+    categoria = 'todas';
+  }
+
   AppState.filtroCategoria = categoria;
   categoriaAtivaDespensa = categoria;
   
@@ -5795,15 +5800,15 @@ function exibirToastDesfazer(nomeItem, tipo, payload) {
   `;
 
   toast.classList.remove('visivel');
-  void toast.offsetWidth; // Força reflow para reiniciar a animação de contagem de 2s
+  void toast.offsetWidth; // Força reflow para reiniciar a animação de contagem de 3s
   toast.classList.add('visivel');
 
-  // Se não clicar em até 2 segundos, cancela o desfazer ("já era")
+  // Se não clicar em até 3 segundos, cancela o desfazer ("já era")
   timerDesfazer = setTimeout(() => {
     toast.classList.remove('visivel');
     itemParaDesfazer = null;
     timerDesfazer = null;
-  }, 2000);
+  }, 3000);
 }
 
 function executarDesfazerExclusao(event) {
