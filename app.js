@@ -790,6 +790,7 @@ function sincronizarListaAtivaComCatalogo() {
 // Inicialização da Aplicação
 document.addEventListener('DOMContentLoaded', () => {
   carregarLocalmente();
+  sanearTodaListaHortifruti();
   atualizarUIModoNoMercado();
   atualizarUIModoResumido();
   configurarNavegacao();
@@ -798,6 +799,7 @@ document.addEventListener('DOMContentLoaded', () => {
   carregarCotacoesRaspadas();
   configurarBuscaGlobal();
   renderizarTudo();
+  atualizarContadorSidebarMontar();
 });
 
 // Carregamento de dados locais
@@ -922,6 +924,33 @@ function carregarLocalmente() {
     AppState.catalogo = [...CATALOGO_PADRAO_EXPANDIDO];
     sincronizarListaAtivaComCatalogo();
   }
+}
+
+// Saneamento automático para desvincular marcas incorretas de laticínios em hortaliças (ex: Couve Manteiga)
+function sanearItemHortifrutiSeCorrompido(item) {
+  if (!item || !item.nome) return;
+  const nomeNorm = item.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const isHorti = item.categoria === 'Hortifrúti' || item.icone === 'folhas' || nomeNorm.includes('couve') || nomeNorm.includes('alface');
+  const marcasLaticinios = ['itambe', 'itambé', 'batavo', 'aviacao', 'aviação', 'tirolez', 'qualy', 'doriana', 'vigor', 'piracanjuba'];
+  
+  if (isHorti && item.marca) {
+    const marcaNorm = item.marca.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    if (marcasLaticinios.includes(marcaNorm)) {
+      console.warn(`[Auto-Correção] Removendo marca indevida '${item.marca}' de hortifrúti '${item.nome}'`);
+      item.marca = null;
+      const padrao = CATALOGO_PADRAO_EXPANDIDO.find(p => p.id === item.id || p.nome.toLowerCase() === item.nome.toLowerCase());
+      const precoCerto = padrao && padrao.precoMedioDF > 0 ? padrao.precoMedioDF : 3.00;
+      item.preco = precoCerto;
+      item.precoReferencia = precoCerto;
+      item.ultimoPreco = precoCerto;
+      if (item.precosMercados) delete item.precosMercados;
+    }
+  }
+}
+
+function sanearTodaListaHortifruti() {
+  if (Array.isArray(AppState.listaAtiva)) AppState.listaAtiva.forEach(sanearItemHortifrutiSeCorrompido);
+  if (Array.isArray(AppState.catalogo)) AppState.catalogo.forEach(sanearItemHortifrutiSeCorrompido);
 }
 
 // Salvar dados com sincronização automática
@@ -1600,67 +1629,102 @@ function atualizarCardEconomiaSidebar(campeaoId, totais, economia) {
   `;
 }
 
-// Navegação de Abas Unificada (Sidebar + Menus)
+// Navegação de Abas Unificada (Sidebar + Menus) com Cortinas Identadas
+function alternarAbaApp(aba, isUserClick = true) {
+  if (!aba) return;
+
+  const abaAnterior = AppState.abaAtiva;
+  AppState.abaAtiva = aba;
+
+  // Sincroniza classes ativas em todos os menus (sidebar e inferior)
+  document.querySelectorAll('.nav-item, .sidebar-nav-item').forEach(b => {
+    if (b.getAttribute('data-aba') === aba) b.classList.add('ativo');
+    else b.classList.remove('ativo');
+  });
+
+  const vLista = document.getElementById('view-lista');
+  const vDespensa = document.getElementById('view-despensa');
+  const vMercados = document.getElementById('view-mercados');
+  const vHistorico = document.getElementById('view-historico');
+
+  if (vLista) vLista.style.display = AppState.abaAtiva === 'lista' ? 'block' : 'none';
+  if (vDespensa) vDespensa.style.display = AppState.abaAtiva === 'despensa' ? 'block' : 'none';
+  if (vMercados) vMercados.style.display = AppState.abaAtiva === 'mercados' ? 'block' : 'none';
+  if (vHistorico) vHistorico.style.display = AppState.abaAtiva === 'historico' ? 'block' : 'none';
+
+  // Submenu de COMPRAR com cortina suave identada
+  const subComprar = document.getElementById('sidebar-subopcoes-comprar');
+  if (subComprar) {
+    if (aba === 'lista') {
+      if (abaAnterior === 'lista' && isUserClick) {
+        subComprar.classList.toggle('aberto');
+      } else {
+        subComprar.classList.add('aberto');
+      }
+    } else {
+      subComprar.classList.remove('aberto');
+    }
+  }
+
+  // Submenu de MONTAR LISTA com cortina suave identada
+  const subMontar = document.getElementById('sidebar-subopcoes-montar');
+  if (subMontar) {
+    if (aba === 'despensa') {
+      if (abaAnterior === 'despensa' && isUserClick) {
+        subMontar.classList.toggle('aberto');
+      } else {
+        subMontar.classList.add('aberto');
+      }
+    } else {
+      subMontar.classList.remove('aberto');
+    }
+  }
+
+  // Alternar abas do painel superior congelado
+  const abasCategorias = document.getElementById('barra-abas-categorias');
+  const inputTopo = document.getElementById('input-novo-item');
+  const barraMercados = document.querySelector('.barra-mercados-filtro');
+  const btnToggleModo = document.getElementById('btn-toggle-modo-mercado');
+
+  // Em Montar Lista e Histórico, retira a linha com supermercados!
+  if (barraMercados) {
+    barraMercados.style.display = (AppState.abaAtiva === 'despensa' || AppState.abaAtiva === 'historico' || AppState.modoNoMercado) ? 'none' : 'flex';
+  }
+  if (btnToggleModo) {
+    btnToggleModo.style.display = (AppState.abaAtiva === 'lista') ? 'inline-flex' : 'none';
+  }
+
+  if (abasCategorias) abasCategorias.style.display = (AppState.abaAtiva === 'lista' || AppState.abaAtiva === 'despensa') ? 'flex' : 'none';
+  if (inputTopo) {
+    inputTopo.placeholder = AppState.abaAtiva === 'despensa' 
+      ? 'Pesquisar ou cadastrar em Montar Lista...' 
+      : 'Pesquisar ou adicionar à Lista de Compra...';
+  }
+
+  // Ao entrar em Lista de Compra ou Mercados, sincroniza e reseta o filtro para ver tudo!
+  if (AppState.abaAtiva === 'lista') {
+    sincronizarListaAtivaComCatalogo();
+    AppState.filtroCategoria = 'todas';
+    const abas = document.querySelectorAll('.despensa-aba-tab');
+    abas.forEach(b => {
+      if (b.getAttribute('data-categoria') === 'todas') b.classList.add('ativa');
+      else b.classList.remove('ativa');
+    });
+  } else if (AppState.abaAtiva === 'mercados') {
+    sincronizarListaAtivaComCatalogo();
+  }
+
+  renderizarTudo();
+}
+
 function configurarNavegacao() {
   const todosBotoesNav = document.querySelectorAll('.nav-item, .sidebar-nav-item');
   todosBotoesNav.forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.onclick = (e) => {
+      e.preventDefault();
       const aba = btn.getAttribute('data-aba');
-      if (!aba) return;
-      
-      AppState.abaAtiva = aba;
-      
-      // Sincroniza classes ativas em todos os menus (sidebar e inferior)
-      document.querySelectorAll('.nav-item, .sidebar-nav-item').forEach(b => {
-        if (b.getAttribute('data-aba') === aba) b.classList.add('ativo');
-        else b.classList.remove('ativo');
-      });
-      
-      document.getElementById('view-lista').style.display = AppState.abaAtiva === 'lista' ? 'block' : 'none';
-      document.getElementById('view-despensa').style.display = AppState.abaAtiva === 'despensa' ? 'block' : 'none';
-      document.getElementById('view-mercados').style.display = AppState.abaAtiva === 'mercados' ? 'block' : 'none';
-      document.getElementById('view-historico').style.display = AppState.abaAtiva === 'historico' ? 'block' : 'none';
-
-      // Alternar abas do painel superior congelado
-      const abasCategorias = document.getElementById('barra-abas-categorias');
-      const inputTopo = document.getElementById('input-novo-item');
-      const barraMercados = document.querySelector('.barra-mercados-filtro');
-      const btnToggleModo = document.getElementById('btn-toggle-modo-mercado');
-      const btnToggleResumir = document.getElementById('btn-toggle-resumir');
-
-      // Em Montar Lista e Histórico, retira a linha com supermercados!
-      if (barraMercados) {
-        barraMercados.style.display = (AppState.abaAtiva === 'despensa' || AppState.abaAtiva === 'historico' || AppState.modoNoMercado) ? 'none' : 'flex';
-      }
-      if (btnToggleModo) {
-        btnToggleModo.style.display = (AppState.abaAtiva === 'lista') ? 'inline-flex' : 'none';
-      }
-      if (btnToggleResumir) {
-        btnToggleResumir.style.display = (AppState.abaAtiva === 'lista' || AppState.abaAtiva === 'despensa') ? 'inline-flex' : 'none';
-      }
-
-      if (abasCategorias) abasCategorias.style.display = (AppState.abaAtiva === 'lista' || AppState.abaAtiva === 'despensa') ? 'flex' : 'none';
-      if (inputTopo) {
-        inputTopo.placeholder = AppState.abaAtiva === 'despensa' 
-          ? 'Pesquisar ou cadastrar em Montar Lista...' 
-          : 'Pesquisar ou adicionar à Lista de Compra...';
-      }
-
-      // Ao entrar em Lista de Compra ou Mercados, sincroniza e reseta o filtro para ver tudo!
-      if (AppState.abaAtiva === 'lista') {
-        sincronizarListaAtivaComCatalogo();
-        AppState.filtroCategoria = 'todas';
-        const abas = document.querySelectorAll('.despensa-aba-tab');
-        abas.forEach(b => {
-          if (b.getAttribute('data-categoria') === 'todas') b.classList.add('ativa');
-          else b.classList.remove('ativa');
-        });
-      } else if (AppState.abaAtiva === 'mercados') {
-        sincronizarListaAtivaComCatalogo();
-      }
-
-      renderizarTudo();
-    });
+      if (aba) alternarAbaApp(aba, true);
+    };
   });
 }
 
@@ -1878,6 +1942,10 @@ function atualizarCardResumo() {
       elProgresso.textContent = `🛒 ${itensNoCarrinho} de ${totalItens} no carrinho (R$ ${totalCarrinho.toFixed(2).replace('.', ',')}) • Falta R$ ${totalRestante.toFixed(2).replace('.', ',')}`;
     }
   }
+
+  if (typeof atualizarContadorSidebarMontar === 'function') {
+    atualizarContadorSidebarMontar();
+  }
 }
 
 // Renderizar a Lista de Compras Ativa (com Ícones 2D Coloridos)
@@ -2009,6 +2077,19 @@ function renderizarListaCompras() {
     }
 
     // Linha de Cabeçalho da Categoria com os Atacadistas na mesma linha
+    const iconeOlhoAberto = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
+    const iconeOlhoFechado = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
+
+    const botaoOlhoHtml = `
+      <button type="button" 
+              class="btn-olho-tabela ${ocultarMercados ? 'mercados-ocultos' : ''}" 
+              onclick="alternarModoNoMercado()" 
+              title="${ocultarMercados ? 'Exibir colunas de supermercados' : 'Ocultar colunas de mercados'}" 
+              data-hint="${ocultarMercados ? 'Exibir mercados e cotações' : 'Ocultar mercados'}">
+        ${ocultarMercados ? iconeOlhoFechado : iconeOlhoAberto}
+      </button>
+    `;
+
     linhasTabelaHtml += `
       <tr class="mcol-tr-categoria-separador">
         <th colspan="3" class="mcol-th-categoria-col">
@@ -2018,7 +2099,7 @@ function renderizarListaCompras() {
           </div>
         </th>
         ${colunasCabecalhoMercados}
-        <th class="mcol-th-acoes"></th>
+        <th class="mcol-th-acoes">${botaoOlhoHtml}</th>
       </tr>
     `;
 
@@ -2041,9 +2122,9 @@ function renderizarListaCompras() {
 
       let marcaHtml = '';
       if (item.marca) {
-        marcaHtml = `<span class="tag-marca" onclick="alterarMarcaItem('${item.id}')" title="Marca: ${item.marca} (Clique para alterar)">${item.marca}</span>`;
+        marcaHtml = `<button type="button" class="btn-marca-listbox-tag com-marca" onclick="alterarMarcaItem('${item.id}', this, event)" title="Marca: ${item.marca} (Clique para alterar)">🏷️ ${item.marca} <span class="ico-caret">▾</span></button>`;
       } else {
-        marcaHtml = `<span class="tag-marca" style="background:#F1F5F9; color:#64748B; border-color:#E2E8F0; font-weight:normal;" onclick="alterarMarcaItem('${item.id}')" title="Clique para definir marca">+ Marca</span>`;
+        marcaHtml = `<button type="button" class="btn-marca-listbox-tag" onclick="alterarMarcaItem('${item.id}', this, event)" title="Clique para escolher a marca">+ Marca <span class="ico-caret">▾</span></button>`;
       }
 
       let celulasPrecos = '';
@@ -2111,9 +2192,11 @@ function renderizarListaCompras() {
             <div class="mcol-prod-card-cell">
               <div class="mcol-prod-icone">${iconeSvg}</div>
               <div class="mcol-prod-textos">
-                <span class="mcol-prod-nome ${item.comprado && !isPendente ? 'texto-riscado' : ''}" onclick="alternarItemComprado('${item.id}')" title="${item.nome}">${nomeExibicao}</span>
+                <div class="mcol-prod-linha-principal">
+                  <span class="mcol-prod-nome ${item.comprado && !isPendente ? 'texto-riscado' : ''}" onclick="alternarItemComprado('${item.id}')" title="${item.nome}">${nomeExibicao}</span>
+                  ${marcaHtml}
+                </div>
                 ${badgePendente}
-                ${marcaHtml}
               </div>
             </div>
           </td>
@@ -3748,6 +3831,7 @@ function alternarModoNoMercado() {
 
 function atualizarUIModoNoMercado() {
   const btn = document.getElementById('btn-toggle-modo-mercado');
+  const btnSubMercados = document.getElementById('btn-sidebar-comprar-mercados');
   const rotuloTotal = document.getElementById('total-rotulo-texto');
   if (AppState.modoNoMercado) {
     document.body.classList.add('modo-mercado-ativo');
@@ -3756,6 +3840,10 @@ function atualizarUIModoNoMercado() {
       btn.innerHTML = '<span class="ico-modo">🏢</span> <span class="txt-modo">Exibir Mercados</span>';
       btn.title = 'Mostrar colunas de supermercados e cotações';
     }
+    if (btnSubMercados) {
+      btnSubMercados.innerHTML = '<span class="ico-sub">🏢</span> <span class="txt-sub">Exibir Mercados</span>';
+      btnSubMercados.title = 'Mostrar colunas de supermercados e cotações';
+    }
     if (rotuloTotal) rotuloTotal.textContent = 'NO CARRINHO';
   } else {
     document.body.classList.remove('modo-mercado-ativo');
@@ -3763,6 +3851,10 @@ function atualizarUIModoNoMercado() {
       btn.classList.remove('modo-mercado-on');
       btn.innerHTML = '<span class="ico-modo">👁️</span> <span class="txt-modo">Ocultar Mercados</span>';
       btn.title = 'Ocultar colunas de mercados para facilitar a compra';
+    }
+    if (btnSubMercados) {
+      btnSubMercados.innerHTML = '<span class="ico-sub">👁️</span> <span class="txt-sub">Ocultar Mercados</span>';
+      btnSubMercados.title = 'Ocultar colunas de mercados para facilitar a compra';
     }
     if (rotuloTotal) rotuloTotal.textContent = 'TOTAL ESTIMADO';
   }
@@ -3842,10 +3934,23 @@ function alternarModoResumido() {
 }
 
 function atualizarUIModoResumido() {
-  const btnHeader = document.getElementById('btn-toggle-resumir');
-  const btnDespensa = document.getElementById('btn-resumir-despensa');
   const ativo = !!AppState.modoResumido;
 
+  // Sincroniza todos os botões de Resumir nomes nas cortinas de Comprar e Montar Lista
+  const botoesSub = document.querySelectorAll('.btn-sub-resumir, #btn-sidebar-comprar-resumir, #btn-sidebar-modo-resumido');
+  botoesSub.forEach(b => {
+    if (ativo) {
+      b.classList.add('modo-resumido-on');
+      b.innerHTML = '<span class="ico-sub">📄</span> <span class="txt-sub">Completo</span>';
+      b.title = 'Alternar para nomes completos e todas as variedades';
+    } else {
+      b.classList.remove('modo-resumido-on');
+      b.innerHTML = '<span class="ico-sub">📝</span> <span class="txt-sub">Resumir nomes</span>';
+      b.title = 'Alternar para nomes resumidos e simplificados';
+    }
+  });
+
+  const btnHeader = document.getElementById('btn-toggle-resumir');
   if (btnHeader) {
     if (ativo) {
       btnHeader.classList.add('modo-resumido-on');
@@ -3853,11 +3958,12 @@ function atualizarUIModoResumido() {
       btnHeader.title = 'Alternar para nomes completos e todas as variedades';
     } else {
       btnHeader.classList.remove('modo-resumido-on');
-      btnHeader.innerHTML = '<span class="ico-modo">📝</span> <span class="txt-modo">Resumir</span>';
+      btnHeader.innerHTML = '<span class="ico-modo">📝</span> <span class="txt-modo">Resumir nomes</span>';
       btnHeader.title = 'Alternar para nomes resumidos e simplificados';
     }
   }
 
+  const btnDespensa = document.getElementById('btn-resumir-despensa');
   if (btnDespensa) {
     if (ativo) {
       btnDespensa.classList.add('modo-resumido-on');
@@ -3865,10 +3971,20 @@ function atualizarUIModoResumido() {
       btnDespensa.title = 'Alternar para nomes completos e todas as variedades';
     } else {
       btnDespensa.classList.remove('modo-resumido-on');
-      btnDespensa.innerHTML = '📝 Resumir';
+      btnDespensa.innerHTML = '📝 Resumir nomes';
       btnDespensa.title = 'Alternar para nomes resumidos e simplificados';
     }
   }
+}
+
+// Atualiza a contagem 'xxx itens' na frente do botão MONTAR LISTA na sidebar
+function atualizarContadorSidebarMontar() {
+  const badge = document.getElementById('sidebar-montar-itens-badge');
+  if (!badge) return;
+  const selecionados = (AppState.listaAtiva && AppState.listaAtiva.length > 0) 
+    ? AppState.listaAtiva.length 
+    : (AppState.catalogo ? AppState.catalogo.filter(i => i.selecionado).length : 0);
+  badge.textContent = `${selecionados} itens`;
 }
 
 function abrirModalOpcoesHeader() {
@@ -3884,10 +4000,7 @@ function abrirModalOpcoesHeader() {
 }
 
 function navegarParaAba(abaId) {
-  const btn = document.querySelector(`.sidebar-nav-item[data-aba="${abaId}"], .nav-item[data-aba="${abaId}"]`);
-  if (btn) {
-    btn.click();
-  }
+  alternarAbaApp(abaId, true);
 }
 
 // Alterna e aplica os filtros dinâmicos de cotação:
@@ -4111,29 +4224,47 @@ function adicionarProdutoPorTexto(textoCompleto) {
   atualizarCardResumo();
 }
 
-// Gerenciamento de Marcas com Busca e Filtro em Tempo Real
+// Gerenciamento de Marcas com Busca e Filtro em Tempo Real (Cortina Popover)
 let itemEmEdicaoMarcaId = null;
 let marcasDisponiveisAtuais = [];
+let cortinaMarcasItemAbertoId = null;
 
-function alterarMarcaItem(id) {
-  abrirModalMarcas(id);
+function alterarMarcaItem(id, btnEl, ev) {
+  if (ev) {
+    ev.stopPropagation();
+  }
+  const modal = document.getElementById('modal-marcas');
+  // Efeito toggle: se já estiver aberto para este mesmo item, fecha a cortina
+  if (modal && modal.style.display !== 'none' && cortinaMarcasItemAbertoId === id) {
+    fecharCortinaMarcas();
+    return;
+  }
+  abrirCortinaMarcas(id, btnEl);
 }
 
-function abrirModalMarcas(id) {
+function abrirModalMarcas(id, btnEl) {
+  abrirCortinaMarcas(id, btnEl);
+}
+
+function abrirCortinaMarcas(id, btnEl) {
   let item = AppState.listaAtiva.find(i => String(i.id) === String(id));
   if (!item) {
     item = AppState.catalogo.find(i => String(i.id) === String(id));
   }
   if (!item) return;
 
+  // Saneamento preventivo para hortifrúti
+  sanearItemHortifrutiSeCorrompido(item);
+
   itemEmEdicaoMarcaId = item.id;
+  cortinaMarcasItemAbertoId = item.id;
 
   const modal = document.getElementById('modal-marcas');
   const iconeBox = document.getElementById('modal-marca-icone');
   const titulo = document.getElementById('modal-marca-titulo');
   const inputCustom = document.getElementById('input-marca-custom');
 
-  const iconeSvg = obterIcone2D(item.nome, item.icone);
+  const iconeSvg = (typeof obterIcone2D === 'function') ? obterIcone2D(item.nome, item.icone) : '';
   if (iconeBox) iconeBox.innerHTML = iconeSvg;
   if (titulo) titulo.textContent = item.nome.toUpperCase();
   if (inputCustom) inputCustom.value = '';
@@ -4144,11 +4275,68 @@ function abrirModalMarcas(id) {
   // Renderiza a lista de marcas completa inicial
   filtrarMarcasRealtime('');
 
-  if (modal) modal.style.display = 'flex';
-  setTimeout(() => {
-    if (inputCustom) inputCustom.focus();
-  }, 100);
+  if (modal) {
+    modal.style.display = 'flex';
+    // Reinicia animação de cortina descendo
+    modal.style.animation = 'none';
+    void modal.offsetHeight; // Força reflow
+    modal.style.animation = 'cortinaDescerSuave 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+
+    if (btnEl && typeof btnEl.getBoundingClientRect === 'function') {
+      const rect = btnEl.getBoundingClientRect();
+      const larguraPopover = Math.min(340, window.innerWidth - 24);
+      let left = rect.left;
+      
+      // Ajuste se ultrapassar a borda direita da tela
+      if (left + larguraPopover > window.innerWidth - 12) {
+        left = window.innerWidth - larguraPopover - 12;
+      }
+      if (left < 12) left = 12;
+
+      let top = rect.bottom + 6;
+      const alturaEstimada = 330;
+      // Se não couber embaixo, projeta para cima do botão
+      if (top + alturaEstimada > window.innerHeight - 10 && rect.top > alturaEstimada) {
+        top = Math.max(10, rect.top - alturaEstimada - 6);
+      }
+
+      modal.style.top = `${top}px`;
+      modal.style.left = `${left}px`;
+    } else {
+      modal.style.top = '100px';
+      modal.style.left = 'calc(50% - 170px)';
+    }
+
+    setTimeout(() => {
+      if (inputCustom) inputCustom.focus();
+    }, 60);
+  }
 }
+
+function fecharCortinaMarcas() {
+  const modal = document.getElementById('modal-marcas');
+  if (!modal || modal.style.display === 'none') return;
+  cortinaMarcasItemAbertoId = null;
+  modal.style.display = 'none';
+}
+
+// Fechar cortina ao clicar fora
+document.addEventListener('click', (ev) => {
+  const modal = document.getElementById('modal-marcas');
+  if (!modal || modal.style.display === 'none') return;
+  if (modal.contains(ev.target) || (ev.target.closest && ev.target.closest('.btn-marca-listbox-tag'))) {
+    return;
+  }
+  fecharCortinaMarcas();
+});
+
+// Fechar cortina ao rolar a página para não ficar flutuando desencaixada
+window.addEventListener('scroll', () => {
+  const modal = document.getElementById('modal-marcas');
+  if (modal && modal.style.display !== 'none') {
+    fecharCortinaMarcas();
+  }
+}, { passive: true });
 
 // Filtra e exibe marcas em tempo real conforme o usuário digita
 function filtrarMarcasRealtime(texto) {
@@ -4162,9 +4350,23 @@ function filtrarMarcasRealtime(texto) {
   let html = '';
 
   // 1. Preço base sem marca
-  const precoBasePadrao = (COTACOES_DF[chaveIcone] && COTACOES_DF[chaveIcone].atacadao) 
-    ? COTACOES_DF[chaveIcone].atacadao 
-    : (item && item.preco ? item.preco : 5.0);
+  let precoBasePadrao = 0;
+  if (item) {
+    const padrao = CATALOGO_PADRAO_EXPANDIDO.find(p => p.id === item.id || p.id === item.catalogoId || p.nome.toLowerCase().trim() === item.nome.toLowerCase().trim())
+                || AppState.catalogo.find(c => c.id === item.id || c.id === item.catalogoId || c.nome.toLowerCase().trim() === item.nome.toLowerCase().trim());
+    if (padrao && padrao.precoMedioDF > 0) {
+      precoBasePadrao = padrao.precoMedioDF;
+    } else if (COTACOES_DF[chaveIcone] && COTACOES_DF[chaveIcone].atacadao) {
+      precoBasePadrao = COTACOES_DF[chaveIcone].atacadao;
+    } else if (item.precoPadraoOriginal && Number(item.precoPadraoOriginal) > 0) {
+      precoBasePadrao = Number(item.precoPadraoOriginal);
+    } else if (!item.marca && item.preco > 0) {
+      precoBasePadrao = Number(item.preco);
+    }
+  }
+  if (!precoBasePadrao || precoBasePadrao <= 0) {
+    precoBasePadrao = (COTACOES_DF[chaveIcone] && COTACOES_DF[chaveIcone].atacadao) ? COTACOES_DF[chaveIcone].atacadao : 3.00;
+  }
 
   if (!termo) {
     const isSemMarca = !item || !item.marca;
@@ -4252,6 +4454,31 @@ function obterMarcasParaProduto(chaveIcone, nomeItem) {
   const marcasVistas = new Set();
   const nomeNorm = (nomeItem || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
+  // IDENTIFICAÇÃO CRÍTICA DE HORTIFRÚTI / VERDURAS / FOLHAS / LEGUMES / FRUTAS
+  const isHortifruti = chaveIcone === 'folhas' || chaveIcone === 'legumes' || chaveIcone === 'fruta' ||
+    nomeNorm.includes('couve') || nomeNorm.includes('alface') || nomeNorm.includes('rucula') ||
+    nomeNorm.includes('espinafre') || nomeNorm.includes('cheiro verde') || nomeNorm.includes('agriao') ||
+    nomeNorm.includes('repolho') || nomeNorm.includes('acelga') || nomeNorm.includes('hortela') ||
+    nomeNorm.includes('tomate') || nomeNorm.includes('cebola') || nomeNorm.includes('batata') ||
+    nomeNorm.includes('banana') || nomeNorm.includes('melancia') || nomeNorm.includes('maca') ||
+    nomeNorm.includes('laranja') || nomeNorm.includes('abacaxi') || nomeNorm.includes('cenoura') ||
+    nomeNorm.includes('chuchu') || nomeNorm.includes('abobrinha') || nomeNorm.includes('berinjela');
+
+  // HORTIFRÚTI NÃO PODE NUNCA CASAR COM LATICÍNIOS OU PRODUTOS INDUSTRIALIZADOS!
+  // (Impede o absurdo de Couve Manteiga receber marcas de laticínio como Itambé, Batavo ou Aviação)
+  if (isHortifruti) {
+    const padraoItem = CATALOGO_PADRAO_EXPANDIDO.find(p => p.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === nomeNorm)
+                    || AppState.catalogo.find(c => c.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === nomeNorm);
+    const precoRef = padraoItem && padraoItem.precoMedioDF > 0 ? padraoItem.precoMedioDF : 3.00;
+
+    return [
+      { nome: 'Produtor Local DF', preco: Number((precoRef * 0.95).toFixed(2)), mercado: 'Atacadão', emoji: '🟠' },
+      { nome: 'Feira / Ceasa DF', preco: Number((precoRef * 0.90).toFixed(2)), mercado: 'Dia a Dia', emoji: '🔴' },
+      { nome: 'Orgânico Certificado', preco: Number((precoRef * 1.35).toFixed(2)), mercado: 'Big Box', emoji: '🟢' },
+      { nome: 'Hidropônico', preco: Number((precoRef * 1.20).toFixed(2)), mercado: 'Assaí', emoji: '🔵' }
+    ];
+  }
+
   // 1. Marcas da Despensa — prioriza correspondência mais específica
   let pDespensa = null;
   if (nomeNorm.includes('integral') || chaveIcone === 'arroz_integral') {
@@ -4265,10 +4492,18 @@ function obterMarcasParaProduto(chaveIcone, nomeItem) {
   }
 
   if (!pDespensa) {
-    pDespensa = PRODUTOS_DESPENSA_MARCAS.find(p => 
-      p.icone === chaveIcone || 
-      nomeNorm.includes(p.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""))
-    );
+    pDespensa = PRODUTOS_DESPENSA_MARCAS.find(p => {
+      // Bloqueio rigoroso: p_manteiga só casa se NÃO for verdura nem feijão
+      if (p.id === 'p_manteiga' && (nomeNorm.includes('couve') || nomeNorm.includes('feijao') || chaveIcone === 'folhas')) {
+        return false;
+      }
+      if (p.icone && p.icone === chaveIcone && chaveIcone !== 'padrao') {
+        return true;
+      }
+      const pNomeNorm = p.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      const regexPalavra = new RegExp(`(^|\\s)${pNomeNorm}(\\s|$)`, 'i');
+      return regexPalavra.test(nomeNorm);
+    });
   }
 
   if (pDespensa && pDespensa.marcas) {
@@ -4618,7 +4853,12 @@ function abrirModalNuvem() {
 }
 
 function fecharModal(id) {
-  document.getElementById(id).style.display = 'none';
+  if (id === 'modal-marcas') {
+    fecharCortinaMarcas();
+    return;
+  }
+  const el = document.getElementById(id);
+  if (el) el.style.display = 'none';
 }
 
 function salvarConfigNuvem() {
@@ -5575,3 +5815,72 @@ function mostrarNotificacaoToast(mensagem) {
     toast.classList.remove('visivel');
   }, 3200);
 }
+
+// Atualização Manual de Cotação de Preços dos Supermercados do DF
+async function atualizarCotacaoManual() {
+  const btn = document.getElementById('btn-atualizar-cotacao');
+  const icone = btn ? btn.querySelector('.btn-cotacao-icone') : null;
+  const texto = btn ? btn.querySelector('.btn-cotacao-texto') : null;
+  
+  if (btn) btn.classList.add('atualizando');
+  if (texto) texto.textContent = 'VARRENDO MERCADOS...';
+
+  try {
+    // 1. Tenta acionar a raspagem real via servidor Python
+    let raspagemAoVivo = false;
+    try {
+      const respApi = await fetch('/api/atualizar-cotacao', { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      if (respApi.ok) {
+        const resJson = await respApi.json();
+        if (resJson.sucesso) {
+          raspagemAoVivo = true;
+          console.log('[Raspagem DF] Coleta executada com sucesso:', resJson);
+        }
+      }
+    } catch(errApi) {
+      console.log('[Raspagem DF] Servidor estático ativo, recarregando base local de cotações.');
+    }
+
+    // 2. Recarrega o arquivo precos_mercados_df.json atualizado
+    const timestamp = Date.now();
+    const resp = await fetch('precos_mercados_df.json?_t=' + timestamp);
+    if (resp.ok) {
+      const dados = await resp.json();
+      if (dados && dados.cotacoes) {
+        window.COTACOES_REAIS_DF = dados.cotacoes;
+        window.COTACOES_REAIS_META = {
+          data: dados.ultima_atualizacao,
+          total: dados.total_produtos
+        };
+      }
+    }
+
+    // 3. Atualizar tela e interfaces
+    if (typeof atualizarCardResumo === 'function') atualizarCardResumo();
+    if (typeof renderizarListaCompras === 'function' && AppState.abaAtiva === 'lista') renderizarListaCompras();
+    if (typeof renderizarComparadorDF === 'function' && AppState.abaAtiva === 'mercados') renderizarComparadorDF();
+    if (typeof renderizarCatalogoDespensa === 'function' && AppState.abaAtiva === 'despensa') renderizarCatalogoDespensa();
+
+    if (raspagemAoVivo) {
+      mostrarNotificacaoToast('🚀 Preços raspados e atualizados em tempo real!');
+    } else {
+      mostrarNotificacaoToast('✨ Cotações da base recarregadas com sucesso!');
+    }
+    if (texto) texto.textContent = '✓ ATUALIZADO!';
+  } catch (err) {
+    console.error('Erro ao atualizar cotações:', err);
+    if (typeof atualizarCardResumo === 'function') atualizarCardResumo();
+    if (typeof renderizarListaCompras === 'function') renderizarListaCompras();
+    mostrarNotificacaoToast('⚡ Cotação recalculada!');
+    if (texto) texto.textContent = '✓ ATUALIZADO!';
+  } finally {
+    setTimeout(() => {
+      if (btn) btn.classList.remove('atualizando');
+      if (texto) texto.textContent = 'ATUALIZAR COTAÇÃO';
+    }, 2200);
+  }
+}
+

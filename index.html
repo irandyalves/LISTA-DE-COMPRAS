@@ -12,7 +12,7 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>">
   
   <!-- CSS Moderno -->
-  <link rel="stylesheet" href="style.css?v=7.0">
+  <link rel="stylesheet" href="style.css?v=8.0">
 </head>
 <body>
 
@@ -41,15 +41,44 @@
 
       <!-- MENUS PRINCIPAIS DA SLIDE BAR (MOVIDOS PARA A BARRA LATERAL FIXA) -->
       <nav class="sidebar-nav">
-        <button class="sidebar-nav-item nav-item ativo" data-aba="lista" onclick="navegarParaAba('lista');">
+        <!-- BOTÃO ATUALIZAR COTAÇÃO (VERDE COM BRILHO) -->
+        <button id="btn-atualizar-cotacao" class="btn-atualizar-cotacao-verde" onclick="atualizarCotacaoManual()" title="Atualizar cotações dos supermercados">
+          <span class="btn-cotacao-icone">⚡</span>
+          <span class="btn-cotacao-texto">ATUALIZAR COTAÇÃO</span>
+        </button>
+
+        <button class="sidebar-nav-item nav-item ativo" data-aba="lista" id="btn-nav-comprar" onclick="navegarParaAba('lista');">
           <span class="sidebar-nav-icon">🛒</span>
           <span class="sidebar-nav-text">COMPRAR</span>
         </button>
-        <button class="sidebar-nav-item nav-item" data-aba="despensa" onclick="navegarParaAba('despensa');">
+
+        <!-- SUBOPÇÕES DE COMPRAR (REVELAÇÃO CORTINA SUAVE IDENTADA) -->
+        <div id="sidebar-subopcoes-comprar" class="sidebar-subopcoes-cortina aberto">
+          <button id="btn-sidebar-comprar-resumir" class="btn-subopcao-item btn-sub-resumir" onclick="alternarModoResumido()" title="Alternar entre nomes resumidos ou nomes completos">
+            <span class="ico-sub">📝</span> <span class="txt-sub">Resumir nomes</span>
+          </button>
+          <button id="btn-sidebar-comprar-mercados" class="btn-subopcao-item btn-sub-mercados" onclick="alternarModoNoMercado()" title="Ocultar ou exibir colunas de mercados">
+            <span class="ico-sub">👁️</span> <span class="txt-sub">Ocultar Mercados</span>
+          </button>
+        </div>
+
+        <button class="sidebar-nav-item nav-item" data-aba="despensa" id="btn-nav-montar-lista" onclick="navegarParaAba('despensa');">
           <span class="sidebar-nav-icon">📋</span>
           <span class="sidebar-nav-text">MONTAR LISTA</span>
+          <span class="sidebar-nav-badge" id="sidebar-montar-itens-badge">0 itens</span>
         </button>
-        <button class="sidebar-nav-item nav-item" data-aba="historico" onclick="navegarParaAba('historico');">
+
+        <!-- SUBOPÇÕES DE MONTAR LISTA (REVELAÇÃO CORTINA SUAVE IDENTADA) -->
+        <div id="sidebar-subopcoes-montar" class="sidebar-subopcoes-cortina">
+          <button id="btn-sidebar-modo-resumido" class="btn-subopcao-item btn-sub-resumir" onclick="alternarModoResumido()" title="Alternar entre nomes resumidos ou nomes completos">
+            <span class="ico-sub">📝</span> <span class="txt-sub">Resumir nomes</span>
+          </button>
+          <button class="btn-subopcao-item btn-sub-presets" onclick="abrirModalPresets()" title="Carregar lista pré-montada ou meu preset">
+            <span class="ico-sub">⭐</span> <span class="txt-sub">Minha Lista (Presets)</span>
+          </button>
+        </div>
+
+        <button class="sidebar-nav-item nav-item" data-aba="historico" id="btn-nav-historico" onclick="navegarParaAba('historico');">
           <span class="sidebar-nav-icon">📊</span>
           <span class="sidebar-nav-text">HISTÓRICO</span>
         </button>
@@ -98,12 +127,6 @@
         </div>
 
         <div class="header-acoes-unificadas">
-          <button id="btn-toggle-resumir" class="btn-toggle-modo-mercado btn-toggle-resumir" onclick="alternarModoResumido()" title="Alternar entre nomes resumidos ou nomes completos dos produtos">
-            <span class="ico-modo">📝</span> <span class="txt-modo">Resumir</span>
-          </button>
-          <button id="btn-toggle-modo-mercado" class="btn-toggle-modo-mercado" onclick="alternarModoNoMercado()" title="Ocultar ou exibir colunas de mercados para facilitar a compra">
-            <span class="ico-modo">👁️</span> <span class="txt-modo">Ocultar Mercados</span>
-          </button>
           <button class="btn-menu-opcoes" onclick="abrirModalOpcoesHeader()" title="Mais opções (Zerar, Importar, CSV, Nuvem)">
             ⚙️
           </button>
@@ -156,21 +179,6 @@
 
     <!-- VIEW 2: DESPENSA / MONTAR LISTA (CATÁLOGO DETALHADO) -->
     <main id="view-despensa" style="display: none;">
-      <!-- Barra de Ação Rápida em Montar Lista -->
-      <div class="despensa-topo-acoes-bar">
-        <div class="despensa-topo-info">
-          <span class="despensa-badge-contador" id="despensa-contador-badge">0 itens</span>
-          <span style="font-size: 0.78rem; color: var(--text-muted);">Marque o que falta em casa</span>
-        </div>
-        <div class="despensa-topo-botoes-grupo">
-          <button id="btn-resumir-despensa" class="btn-minha-lista-acao" onclick="alternarModoResumido()" title="Alternar entre nomes resumidos ou nomes completos">
-            📝 Resumir
-          </button>
-          <button class="btn-minha-lista-acao" onclick="abrirModalPresets()" title="Carregar lista pré-montada ou meu preset">
-            ⭐ Minha Lista (Presets)
-          </button>
-        </div>
-      </div>
       <div id="despensa-grid-container" class="despensa-grid"></div>
     </main>
 
@@ -309,36 +317,27 @@
     </div>
   </div>
 
-  <!-- MODAL: ESCOLHER MARCA (LISTBOX COM BUSCA REALTIME) -->
-  <div id="modal-marcas" class="modal-overlay" style="display: none;" onclick="if(event.target === this) fecharModal('modal-marcas')">
-    <div class="modal-content modal-content-sm">
-      <div class="modal-header" style="margin-bottom: 8px;">
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <div id="modal-marca-icone" class="item-icone-2d" style="width: 26px; height: 26px; border-radius: 6px; padding: 2px;"></div>
-          <h3 id="modal-marca-titulo" style="font-size: 0.95rem; margin: 0; font-weight: 800; text-transform: uppercase;">Escolher Marca</h3>
-        </div>
-        <button class="btn-fechar" onclick="fecharModal('modal-marcas')" title="Fechar (ESC)">&times;</button>
+  <!-- POPOVER CORTINA DE MARCAS (SEM OVERLAY ESCURO) -->
+  <div id="modal-marcas" class="cortina-marcas-popover" style="display: none;">
+    <div class="cortina-marcas-header">
+      <div class="cortina-header-info">
+        <div id="modal-marca-icone" class="cortina-icone-mini"></div>
+        <span id="modal-marca-titulo" class="cortina-titulo-txt">ESCOLHER MARCA</span>
       </div>
+      <button class="cortina-btn-fechar" onclick="fecharCortinaMarcas()" title="Fechar cortina">&times;</button>
+    </div>
 
-      <!-- Campo de Busca / Digitação em Tempo Real -->
-      <div style="margin-bottom: 8px;">
-        <input type="text" id="input-marca-custom" placeholder="🔍 Digite a marca (ex: Emegê, Sol, Dona Benta)..." 
-               style="width: 100%; padding: 7px 10px; font-size: 0.82rem; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; outline: none; background: #F8FAFC;"
-               oninput="filtrarMarcasRealtime(this.value)"
-               onkeydown="if(event.key === 'Enter') confirmarSalvarMarcaModal()">
-      </div>
+    <!-- Campo de Busca / Digitação em Tempo Real -->
+    <div class="cortina-busca-box">
+      <input type="text" id="input-marca-custom" placeholder="🔍 Digite ou selecione a marca..." 
+             autocomplete="off"
+             oninput="filtrarMarcasRealtime(this.value)"
+             onkeydown="if(event.key === 'Enter') confirmarSalvarMarcaModal()">
+    </div>
 
-      <!-- Listbox de Marcas (Atualizado em tempo real enquanto digita) -->
-      <div id="modal-marca-listbox" class="listbox-marcas">
-        <!-- Injetado dinamicamente via JS -->
-      </div>
-
-      <!-- Botão Confirmar e Salvar -->
-      <div style="margin-top: 8px;">
-        <button class="btn-adicionar" style="width: 100%; padding: 8px; font-size: 0.82rem; font-weight: 700;" onclick="confirmarSalvarMarcaModal()">
-          ✓ Salvar Marca no Produto
-        </button>
-      </div>
+    <!-- Listbox de Marcas (Atualizado em tempo real enquanto digita) -->
+    <div id="modal-marca-listbox" class="listbox-marcas">
+      <!-- Injetado dinamicamente via JS -->
     </div>
   </div>
 
@@ -630,7 +629,7 @@
   <script src="logos_banco.js"></script>
   <script src="icones2d.js"></script>
   <script src="firebase-sync.js"></script>
-  <script src="app.js?v=7.0"></script>
+  <script src="app.js?v=7.8"></script>
 
 </body>
 </html>

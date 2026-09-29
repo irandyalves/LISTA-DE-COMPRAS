@@ -65,7 +65,7 @@ body {
   padding: 12px;
 }
 
-/* Painel Superior Congelado (Sticky Header com Abas) - Sombra pronunciada sobre a lista */
+/* Painel Superior Congelado (Sticky Header com Abas) - Sem linha abaixo das abas */
 .painel-topo-congelado {
   position: sticky;
   top: 0;
@@ -73,20 +73,12 @@ body {
   background: var(--bg-app);
   padding: 8px 12px 6px 12px;
   margin: -12px -12px 10px -12px;
-  border-bottom: 1.5px solid #CBD5E1;
-  box-shadow: 0 8px 24px -3px rgba(15, 23, 42, 0.18), 0 3px 8px -2px rgba(15, 23, 42, 0.10);
+  border-bottom: none !important;
+  box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.06);
 }
 
 .painel-topo-congelado::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -10px;
-  height: 10px;
-  background: linear-gradient(to bottom, rgba(15, 23, 42, 0.18), rgba(15, 23, 42, 0.04) 70%, transparent);
-  pointer-events: none;
-  z-index: 1001;
+  display: none !important;
 }
 
 /* ========================================================
@@ -233,8 +225,12 @@ body {
 .sidebar-nav {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   padding: 8px 6px;
+}
+
+#btn-nav-comprar {
+  margin-top: 20px; /* Desce COMPRAR, MONTAR LISTA e HISTÓRICO 20px para baixo */
 }
 
 .sidebar-nav-item {
@@ -273,9 +269,188 @@ body {
   line-height: 1;
 }
 
-/* Card de Destaque de Economia (Movido para a Sidebar) */
+/* Badge de contagem de itens na frente de MONTAR LISTA */
+.sidebar-nav-badge {
+  margin-left: auto;
+  font-size: 0.70rem;
+  font-weight: 800;
+  color: var(--primary);
+  background: #E0E7FF;
+  padding: 2px 7px;
+  border-radius: 10px;
+  white-space: nowrap;
+  letter-spacing: 0.2px;
+  transition: all 0.2s ease;
+}
+
+.sidebar-nav-item.ativo .sidebar-nav-badge {
+  background: var(--primary);
+  color: #FFFFFF;
+}
+
+/* Submenu de opções ao clicar em COMPRAR ou MONTAR LISTA (Revelação Cortina Suave e Identada) */
+.sidebar-subopcoes-cortina,
+.sidebar-subopcoes-montar {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  margin: 0 4px;
+  padding: 0;
+  transform: translateY(-8px);
+  transition: max-height 0.38s cubic-bezier(0.25, 1, 0.5, 1),
+              opacity 0.28s ease,
+              transform 0.32s cubic-bezier(0.25, 1, 0.5, 1),
+              margin 0.3s ease,
+              padding 0.3s ease;
+  pointer-events: none;
+}
+
+.sidebar-subopcoes-cortina.aberto,
+.sidebar-subopcoes-montar.aberto {
+  max-height: 140px;
+  opacity: 1;
+  transform: translateY(0);
+  margin: 4px 4px 8px 14px; /* Identado embaixo do menu pai */
+  padding: 2px 0 4px 0;
+  pointer-events: auto;
+}
+
+.btn-subopcao-item {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 5px 8px 5px 10px;
+  background: transparent !important; /* Sem fundo */
+  border: none;
+  border-left: 3px solid #94A3B8; /* Bordinha à esquerda de cada botão */
+  border-radius: 0 8px 8px 0;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  width: 100%;
+  color: #334155;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+.btn-subopcao-item .ico-sub {
+  font-size: 0.85rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Borda em volta do nome (ex: RESUMIR) */
+.btn-subopcao-item .txt-sub {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid #CBD5E1; /* Borda em volta do nome */
+  background: #FFFFFF;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  transition: all 0.18s ease;
+  line-height: 1.2;
+}
+
+/* Botão Resumir nomes (Índigo) */
+.btn-subopcao-item.btn-sub-resumir {
+  border-left-color: #4F46E5;
+  color: #312E81;
+}
+
+.btn-subopcao-item.btn-sub-resumir .txt-sub {
+  border-color: #C7D2FE;
+  color: #4338CA;
+  background: #F5F3FF;
+}
+
+.btn-subopcao-item.btn-sub-resumir:hover {
+  background: rgba(79, 70, 229, 0.05) !important;
+  transform: translateX(3px);
+}
+
+.btn-subopcao-item.btn-sub-resumir:hover .txt-sub {
+  border-color: #6366F1;
+  color: #3730A3;
+  box-shadow: 0 1px 4px rgba(79, 70, 229, 0.15);
+}
+
+.btn-subopcao-item.btn-sub-resumir.modo-resumido-on {
+  border-left-color: #059669;
+}
+
+.btn-subopcao-item.btn-sub-resumir.modo-resumido-on .txt-sub {
+  border-color: #A7F3D0;
+  color: #047857;
+  background: #ECFDF5;
+}
+
+/* Botão Minha Lista (Presets) (Laranja) */
+.btn-subopcao-item.btn-sub-presets {
+  border-left-color: #EA580C;
+  color: #9A3412;
+}
+
+.btn-subopcao-item.btn-sub-presets .txt-sub {
+  border-color: #FED7AA;
+  color: #C2410C;
+  background: #FFF7ED;
+}
+
+.btn-subopcao-item.btn-sub-presets:hover {
+  background: rgba(234, 88, 12, 0.05) !important;
+  transform: translateX(3px);
+}
+
+.btn-subopcao-item.btn-sub-presets:hover .txt-sub {
+  border-color: #FB923C;
+  color: #9A3412;
+  box-shadow: 0 1px 4px rgba(234, 88, 12, 0.15);
+}
+
+/* Botão Ocultar Mercados (Esmeralda) */
+.btn-subopcao-item.btn-sub-mercados {
+  border-left-color: #059669;
+  color: #065F46;
+}
+
+.btn-subopcao-item.btn-sub-mercados .txt-sub {
+  border-color: #A7F3D0;
+  color: #047857;
+  background: #ECFDF5;
+}
+
+.btn-subopcao-item.btn-sub-mercados:hover {
+  background: rgba(5, 150, 105, 0.05) !important;
+  transform: translateX(3px);
+}
+
+.btn-subopcao-item.btn-sub-mercados:hover .txt-sub {
+  border-color: #34D399;
+  color: #065F46;
+  box-shadow: 0 1px 4px rgba(5, 150, 105, 0.15);
+}
+
+.btn-subopcao-item:active {
+  transform: scale(0.98);
+}
+
+
+/* Card de Destaque de Economia (Movido 40px para baixo dos botões de navegação) */
 .sidebar-box-economia {
-  margin: 8px 6px auto 6px;
+  margin: 40px 6px auto 6px;
   background: linear-gradient(135deg, #ECFDF5 0%, #F0FDF4 100%);
   border: 1.5px solid #A7F3D0;
   border-radius: 10px;
@@ -2337,52 +2512,56 @@ body.modo-mercado-ativo .item-nome {
   box-shadow: 0 4px 12px rgba(220, 38, 38, 0.45);
 }
 
-/* Listbox de Marcas (Modal Ultra-Compacto) */
+/* Listbox de Marcas (Design Moderno e Bonitinho) */
 .listbox-marcas {
   display: flex;
   flex-direction: column;
-  gap: 4px; /* Reduzido */
-  max-height: 220px; /* Reduzido em 20% */
+  gap: 6px;
+  max-height: 250px;
   overflow-y: auto;
-  margin-bottom: 8px;
-  padding-right: 2px;
+  margin-bottom: 10px;
+  padding: 2px 4px 4px 2px;
+  scrollbar-width: thin;
 }
 
 .listbox-opcao {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6px 10px; /* Redução de 20% na altura */
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  background: #F8FAFC;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1.5px solid #E2E8F0;
+  background: #FFFFFF;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
   user-select: none;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
 }
 
 .listbox-opcao:hover {
-  background: #EEF2FF;
-  border-color: #C7D2FE;
-  transform: translateX(2px);
+  background: #F8FAFC;
+  border-color: #CBD5E1;
+  transform: translateX(3px);
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.07);
 }
 
 .listbox-opcao.selecionada {
-  background: #ECFDF5;
+  background: linear-gradient(135deg, #ECFDF5 0%, #F0FDF4 100%);
   border-color: #10B981;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.15);
 }
 
 .listbox-opcao-nome {
   display: flex;
   align-items: center;
-  gap: 5px;
-  font-size: 0.82rem;
-  color: var(--text-main);
-  font-weight: 600;
+  gap: 6px;
+  font-size: 0.84rem;
+  color: #1E293B;
+  font-weight: 700;
 }
 
 .listbox-check-ico {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   color: #10B981;
   font-weight: 800;
 }
@@ -2390,35 +2569,166 @@ body.modo-mercado-ativo .item-nome {
 .listbox-opcao-preco {
   display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: 0.78rem;
-  font-weight: 700;
+  gap: 6px;
+  font-size: 0.80rem;
+  font-weight: 800;
   color: #0F172A;
 }
 
 .listbox-mercado-tag {
   font-size: 0.68rem;
-  color: var(--text-muted);
+  font-weight: 700;
+  color: #475569;
+  background: #F1F5F9;
+  padding: 2px 7px;
+  border-radius: 6px;
   display: inline-flex;
   align-items: center;
-  gap: 2px;
+  gap: 3px;
+  border: 1px solid #E2E8F0;
 }
 
 .listbox-opcao.sem-marca {
-  background: #F1F5F9;
-  border-style: dashed;
+  background: #F8FAFC;
+  border: 1.5px dashed #CBD5E1;
   color: #64748B;
 }
 
 .listbox-opcao.sem-marca:hover {
-  background: #E2E8F0;
+  background: #F1F5F9;
   border-color: #94A3B8;
+  color: #334155;
 }
 
 .box-marca-customizada {
   border-top: 1px solid #F1F5F9;
   padding-top: 8px;
   margin-top: 4px;
+}
+
+/* POPOVER CORTINA DE MARCAS (REVELA SUAVE PARA BAIXO) */
+.cortina-marcas-popover {
+  position: fixed;
+  z-index: 999999;
+  width: 340px;
+  max-width: calc(100vw - 20px);
+  background: #FFFFFF;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 14px;
+  box-shadow: 0 20px 42px -6px rgba(15, 23, 42, 0.3), 0 4px 12px rgba(15, 23, 42, 0.08);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transform-origin: top center;
+  animation: cortinaDescerSuave 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes cortinaDescerSuave {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px) scaleY(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+  }
+}
+
+.cortina-marcas-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #F1F5F9;
+}
+
+.cortina-header-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.cortina-icone-mini {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cortina-icone-mini svg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.cortina-titulo-txt {
+  font-size: 0.80rem;
+  font-weight: 800;
+  color: #0F172A;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 240px;
+}
+
+.cortina-btn-fechar {
+  background: #F1F5F9;
+  border: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  color: #64748B;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  line-height: 1;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.cortina-btn-fechar:hover {
+  background: #E2E8F0;
+  color: #0F172A;
+}
+
+.cortina-busca-box {
+  width: 100%;
+}
+
+.cortina-busca-box input {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 0.80rem;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 8px;
+  outline: none;
+  background: #F8FAFC;
+  transition: all 0.15s ease;
+  color: #0F172A;
+  box-sizing: border-box;
+}
+
+.cortina-busca-box input:focus {
+  background: #FFFFFF;
+  border-color: #6366F1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.cortina-marcas-popover .listbox-marcas {
+  max-height: 260px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-right: 2px;
+  margin-bottom: 0;
 }
 
 .card-resultado-realtime {
@@ -3080,7 +3390,7 @@ body.modo-mercado-ativo .item-nome {
   color: #64748B !important;
 }
 
-/* Ações (botão delete) */
+/* Ações (botão delete e botão do olho no cabeçalho) */
 .mcol-th-acoes {
   position: sticky;
   top: 0;
@@ -3089,7 +3399,91 @@ body.modo-mercado-ativo .item-nome {
   width: 44px;
   min-width: 44px;
   text-align: center;
+  vertical-align: middle;
+  padding: 0 !important;
   box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.08);
+}
+
+/* Botão do Olho no Canto Superior Direito da Tabela (Ocultar/Exibir Mercados) */
+.btn-olho-tabela {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1.5px solid transparent;
+  background: transparent;
+  color: #64748B;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 0;
+  outline: none;
+}
+
+.btn-olho-tabela:hover {
+  background: #E2E8F0;
+  color: #0F172A;
+  border-color: #CBD5E1;
+  transform: scale(1.08);
+}
+
+.btn-olho-tabela.mercados-ocultos {
+  color: #4F46E5;
+  background: #EEF2FF;
+  border-color: #C7D2FE;
+}
+
+.btn-olho-tabela.mercados-ocultos:hover {
+  background: #E0E7FF;
+  color: #3730A3;
+}
+
+/* Tooltip / Hint Bonito projetado à esquerda */
+.btn-olho-tabela::before {
+  content: attr(data-hint);
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 8px);
+  transform: translateY(-50%) scale(0.92);
+  background: #0F172A;
+  color: #FFFFFF;
+  font-size: 0.73rem;
+  font-weight: 700;
+  white-space: nowrap;
+  padding: 6px 11px;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px -2px rgba(15, 23, 42, 0.35);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 999999;
+}
+
+/* Setinha do Hint */
+.btn-olho-tabela::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 2px);
+  transform: translateY(-50%) scale(0.92);
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent transparent #0F172A;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 999999;
+}
+
+.btn-olho-tabela:hover::before,
+.btn-olho-tabela:hover::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(-50%) scale(1);
 }
 
 .mcol-td-acoes {
@@ -3263,11 +3657,77 @@ body.modo-mercado-ativo .item-nome {
   flex: 1;
 }
 
+/* Linha principal com Nome do item e Botão de Marca alinhados horizontalmente */
+.mcol-prod-linha-principal {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  line-height: 1.3;
+}
+
 .mcol-prod-nome {
   font-size: 0.82rem;
   color: #1E293B;
   white-space: normal;
   line-height: 1.25;
+}
+
+/* Botão Listbox de Marca bonito na frente do nome */
+.btn-marca-listbox-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 0.69rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid #CBD5E1;
+  background: #F8FAFC;
+  color: #64748B;
+  line-height: 1.3;
+  vertical-align: middle;
+  white-space: nowrap;
+  user-select: none;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.btn-marca-listbox-tag:hover {
+  background: #EEF2FF;
+  color: var(--primary);
+  border-color: #A5B4FC;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.12);
+}
+
+.btn-marca-listbox-tag.com-marca {
+  background: #EFF6FF;
+  color: #1D4ED8;
+  border-color: #BFDBFE;
+  font-weight: 800;
+}
+
+.btn-marca-listbox-tag.com-marca:hover {
+  background: #DBEAFE;
+  border-color: #93C5FD;
+}
+
+.btn-marca-listbox-tag .ico-caret {
+  font-size: 0.60rem;
+  color: #94A3B8;
+  transition: transform 0.2s ease;
+}
+
+.btn-marca-listbox-tag:hover .ico-caret {
+  color: currentColor;
+  transform: translateY(1px);
+}
+
+.item-linha-comprado .btn-marca-listbox-tag {
+  opacity: 0.65;
 }
 
 .mcol-prod-marca {
@@ -4203,5 +4663,110 @@ body.modo-mercado-ativo .item-nome {
 .toast-notificacao-flutuante.visivel {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
+}
+
+/* =========================================================================
+   BOTÃO ATUALIZAR COTAÇÃO (VERDE COM BRILHO VIBRANTE)
+   ========================================================================= */
+
+.btn-atualizar-cotacao-verde {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, #10B981 0%, #059669 50%, #047857 100%);
+  color: #FFFFFF !important;
+  border: 1.5px solid #34D399;
+  border-radius: 10px;
+  font-size: 0.80rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  overflow: hidden;
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.5), 0 4px 10px rgba(5, 150, 105, 0.35);
+  animation: pulsoBrilhoVerde 2.8s infinite ease-in-out;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  z-index: 1;
+}
+
+/* Reflexo de brilho passando pelo botão */
+.btn-atualizar-cotacao-verde::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -75%;
+  width: 45%;
+  height: 200%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(25deg);
+  animation: sweepBrilhoVerde 4s infinite cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.btn-atualizar-cotacao-verde:hover {
+  transform: translateY(-1.5px) scale(1.02);
+  filter: brightness(1.08);
+  box-shadow: 0 0 22px rgba(52, 211, 153, 0.85), 0 6px 14px rgba(5, 150, 105, 0.45);
+}
+
+.btn-atualizar-cotacao-verde:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+}
+
+.btn-atualizar-cotacao-verde .btn-cotacao-icone {
+  font-size: 1.05rem;
+  line-height: 1;
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+/* Estado quando está atualizando */
+.btn-atualizar-cotacao-verde.atualizando {
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.btn-atualizar-cotacao-verde.atualizando .btn-cotacao-icone {
+  animation: giroCotacao 0.75s linear infinite;
+}
+
+@keyframes pulsoBrilhoVerde {
+  0%, 100% {
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.45), 0 3px 8px rgba(5, 150, 105, 0.3);
+    border-color: #34D399;
+  }
+  50% {
+    box-shadow: 0 0 24px rgba(52, 211, 153, 0.9), 0 0 35px rgba(16, 185, 129, 0.55), 0 4px 12px rgba(5, 150, 105, 0.45);
+    border-color: #A7F3D0;
+  }
+}
+
+@keyframes sweepBrilhoVerde {
+  0% {
+    left: -75%;
+  }
+  25%, 100% {
+    left: 140%;
+  }
+}
+
+@keyframes giroCotacao {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
