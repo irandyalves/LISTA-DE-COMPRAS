@@ -2276,18 +2276,45 @@ body.modo-mercado-ativo .item-nome {
    - Selecionado: fundo claro, fonte itálica compacta, sem negrito, riscada
    ========================================================================= */
 
-/* Espremer grupos e lista de itens em Montar Lista */
+/* Espremer grupos e lista de itens em Organizar Lista */
 #view-despensa .categoria-grupo {
-  margin-bottom: 6px !important;
+  margin-bottom: 8px !important;
 }
 
 #view-despensa .categoria-titulo {
-  margin-bottom: 2px !important;
-  padding: 1px 4px !important;
-  font-size: 0.76rem !important;
-  font-weight: 700 !important;
-  color: #475569 !important;
-  letter-spacing: 0.3px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-top: 8px !important;
+  margin-bottom: 4px !important;
+  padding: 5px 8px 4px 8px !important;
+  font-size: 0.92rem !important; /* Fonte 10% maior */
+  font-weight: 800 !important;   /* Negrito forte */
+  color: #1E293B !important;
+  text-transform: none !important; /* Sem caixa alta, só a primeira maiúscula */
+  letter-spacing: 0.1px !important;
+  border-top: 1.5px solid #CBD5E1 !important; /* Borda superior */
+  background: #FFFFFF !important;
+  border-radius: 6px 6px 0 0 !important;
+  box-shadow: 0 3px 6px rgba(15, 23, 42, 0.06) !important; /* Sombrinha embaixo */
+}
+
+#view-despensa .categoria-grupo:first-child .categoria-titulo {
+  margin-top: 2px !important;
+}
+
+#view-despensa .categoria-titulo .categoria-titulo-info span:first-child {
+  font-weight: 800 !important;
+  color: #1E293B !important;
+  font-size: 0.92rem !important;
+  text-transform: none !important;
+}
+
+#view-despensa .categoria-titulo .categoria-qtd-badge {
+  font-size: 0.78rem !important;
+  font-weight: 600 !important;
+  color: #64748B !important;
+  text-transform: lowercase !important;
 }
 
 /* Botão Estrela Amarela na frente do Título da Categoria */
@@ -6674,22 +6701,23 @@ body.tema-escuro .drawer-fechar-btn {
 ======================================================== */
 .toast-desfazer-flutuante {
   position: fixed !important;
-  bottom: 24px !important;
+  top: 50% !important;
   left: 50% !important;
-  transform: translateX(-50%) translateY(50px) scale(0.92);
+  bottom: auto !important;
+  transform: translate(-50%, -50%) scale(0.85);
   background: #0F172A !important;
   color: #FFFFFF !important;
-  padding: 10px 16px 8px 16px !important;
-  border-radius: 12px !important;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6), 0 0 0 1.5px rgba(255, 255, 255, 0.18) !important;
+  padding: 12px 18px 10px 18px !important;
+  border-radius: 14px !important;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.75), 0 0 0 2px rgba(255, 255, 255, 0.22) !important;
   display: flex !important;
   flex-direction: column !important;
-  gap: 8px !important;
+  gap: 10px !important;
   z-index: 999999999 !important;
   opacity: 0;
   pointer-events: none;
   transition: transform 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.18s ease;
-  min-width: 290px;
+  min-width: 300px;
   max-width: 92vw;
   box-sizing: border-box !important;
 }
@@ -6697,7 +6725,7 @@ body.tema-escuro .drawer-fechar-btn {
 .toast-desfazer-flutuante.visivel {
   opacity: 1 !important;
   pointer-events: auto !important;
-  transform: translateX(-50%) translateY(0) scale(1) !important;
+  transform: translate(-50%, -50%) scale(1) !important;
 }
 
 .toast-desfazer-conteudo {
@@ -6785,18 +6813,20 @@ body.tema-escuro .drawer-fechar-btn {
 
 @media (max-width: 850px) {
   .toast-desfazer-flutuante {
-    bottom: 74px !important; /* Fica visível acima da barra inferior no celular */
-    padding: 8px 12px 6px 12px !important;
-    min-width: 270px !important;
-    max-width: 94vw !important;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7), 0 0 0 1.5px rgba(255, 255, 255, 0.2) !important;
+    top: 50% !important;
+    left: 50% !important;
+    bottom: auto !important;
+    padding: 10px 14px 8px 14px !important;
+    min-width: 280px !important;
+    max-width: 90vw !important;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.8), 0 0 0 2px rgba(255, 255, 255, 0.25) !important;
   }
   .toast-desfazer-msg {
-    font-size: 0.80rem !important;
+    font-size: 0.82rem !important;
   }
   .btn-toast-desfazer {
-    padding: 5px 12px !important;
-    font-size: 0.78rem !important;
+    padding: 6px 12px !important;
+    font-size: 0.80rem !important;
   }
 }
 
@@ -6834,18 +6864,6 @@ body.tema-escuro .drawer-fechar-btn {
 .balao-total-categoria .balao-valor {
   font-weight: 900;
   font-size: 0.78rem;
-}
-
-#view-despensa .categoria-titulo {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  margin-bottom: 3px !important;
-  padding: 2px 4px !important;
-  font-size: 0.76rem !important;
-  font-weight: 700 !important;
-  color: #475569 !important;
-  letter-spacing: 0.3px !important;
 }
 
 .categoria-titulo-info {

@@ -2249,7 +2249,7 @@ function alternarAbaApp(aba, isUserClick = true) {
 
   if (inputTopo) {
     inputTopo.placeholder = AppState.abaAtiva === 'despensa' 
-      ? 'Pesquisar ou cadastrar em Montar Lista...' 
+      ? 'Pesquisar ou cadastrar em Organizar Lista...' 
       : 'Pesquisar ou adicionar à Lista de Compra...';
   }
 
@@ -3112,7 +3112,7 @@ function renderizarListaCompras() {
         <div style="width: 64px; height: 64px; margin: 0 auto 12px;">${ICONS_2D.padrao}</div>
         <h3 style="font-weight: 700; color: var(--text-main);">Sua lista está vazia!</h3>
         <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">
-          Digite um item acima, use o microfone por voz ou escolha itens frequentes na aba <strong>Montar Lista</strong>.
+          Digite um item acima, use o microfone por voz ou escolha itens frequentes na aba <strong>Organizar Lista</strong>.
         </p>
       </div>
     `;
@@ -5906,7 +5906,7 @@ function aplicarEscalaFonteMontar(mostrarToast = false) {
 
   if (mostrarToast) {
     const labels = ['Muito Pequena (65%)', 'Pequena (72%)', 'Padrão (78%)', 'Média (86%)', 'Grande (96%)', 'Muito Grande (108%)'];
-    mostrarNotificacaoToast(`🔤 Fonte Montar Lista: ${labels[indiceFonteMontar]}`);
+    mostrarNotificacaoToast(`🔤 Fonte Organizar Lista: ${labels[indiceFonteMontar]}`);
   }
 }
 
@@ -7864,7 +7864,7 @@ function renderizarComparadorDF() {
   if (AppState.listaAtiva.length === 0) {
     if (badgeProdutos) badgeProdutos.textContent = '0 itens';
     if (containerEconomia) containerEconomia.style.display = 'none';
-    container.innerHTML = '<p style="color: var(--text-muted); font-size: 0.88rem; text-align: center; padding: 40px 15px; background: white; border-radius: 12px; border: 1px dashed var(--border);">Vá em <strong>Montar Lista</strong> e selecione os produtos. Eles aparecerão aqui com todas as cotações.</p>';
+    container.innerHTML = '<p style="color: var(--text-muted); font-size: 0.88rem; text-align: center; padding: 40px 15px; background: white; border-radius: 12px; border: 1px dashed var(--border);">Vá em <strong>Organizar Lista</strong> e selecione os produtos. Eles aparecerão aqui com todas as cotações.</p>';
     return;
   }
 
@@ -8578,7 +8578,7 @@ function aplicarPreset(presetId, modo = 'substituir') {
 function salvarComoMeuPreset() {
   const selecionados = AppState.catalogo.filter(p => p.selecionado).map(p => p.id);
   if (selecionados.length === 0) {
-    alert('⚠️ Selecione pelo menos 1 produto em "Montar Lista" antes de salvar seu favorito!');
+    alert('⚠️ Selecione pelo menos 1 produto em "Organizar Lista" antes de salvar seu favorito!');
     return;
   }
 
