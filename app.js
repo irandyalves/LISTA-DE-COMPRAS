@@ -2230,10 +2230,12 @@ function interpretarPrecoFalado(texto) {
   if (!texto) return null;
   let t = texto.toLowerCase().trim();
 
-  // Limpeza de ruídos comuns no Speech Recognition do Google
+  // Limpeza de ruídos comuns e palavras de apoio no Speech Recognition do Google
   t = t.replace(/^r\$\s*/i, '');
   t = t.replace(/\s*(da tarde|da manhã|da noite|horas?|hrs?)\s*$/i, '');
   t = t.replace(/\b(cinto|sinto)\b/gi, 'cinco');
+  t = t.replace(/\b(apenas|só|somente|custa|está|sai por|de|por)\b/gi, '');
+  t = t.replace(/\s{2,}/g, ' ').trim();
 
   // Converte formato de hora que o Google Speech às vezes gera (ex: 3:25 -> 3,25)
   t = t.replace(/(\d{1,4})[:hH](\d{1,2})/g, '$1,$2');
@@ -2242,7 +2244,7 @@ function interpretarPrecoFalado(texto) {
   t = t.replace(/(\d+)\.(\d{3}),(\d{1,2})/g, '$1$2.$3');
   t = t.replace(/(\d+)\.(\d{3})/g, '$1$2');
 
-  // 1. Dígitos diretos com vírgula ou ponto (ex: '3,25', '235,00', '1222,00', '4.35')
+  // 1. Dígitos diretos com vírgula ou ponto (ex: '3,25', '235,00', '1222,00', '4.35', '0,55', '0.55')
   const matchNumVirgula = t.match(/^(\d+)[,.](\d{1,2})$/);
   if (matchNumVirgula) {
     const inteira = parseInt(matchNumVirgula[1]);
@@ -2256,19 +2258,19 @@ function interpretarPrecoFalado(texto) {
     return parseFloat(parseInt(matchNumPuro[1]).toFixed(2));
   }
 
-  // 3. Dígito com 'e' ou 'com' e centavos em dígito (ex: '3 e 25', '235 e 50', '3 com 25')
-  const matchDigitoE = t.match(/^(\d+)\s*(?:e|com|vírgula)\s*(\d{1,2})$/);
+  // 3. Dígito com 'e' ou 'com' e centavos em dígito (ex: '3 e 25', '235 e 50', '3 com 25', '1 e 10', '1 e 10 centavos')
+  const matchDigitoE = t.match(/^(\d+)\s*(?:e|com|vírgula|virgula)\s*(\d{1,2})(?:\s*centavos?)?$/);
   if (matchDigitoE) {
     const inteira = parseInt(matchDigitoE[1]);
     const centStr = matchDigitoE[2].length === 1 ? matchDigitoE[2] + '0' : matchDigitoE[2];
     return parseFloat(inteira + '.' + centStr);
   }
 
-  // 4. Frase contendo 'reais' / 'real' (ex: 'duzentos e trinta e cinco reais e vinte centavos')
-  if (/\breais?\b/.test(t)) {
-    const partes = t.split(/\breais?\b/);
+  // 4. Frase contendo 'reais' ou 'real' (ex: 'um real e 10', 'um real e dez', '1 real e 10', 'duzentos e trinta e cinco reais e vinte centavos')
+  if (/\b(?:reais|real)\b/.test(t)) {
+    const partes = t.split(/\b(?:reais|real)\b/);
     const tokensInt = partes[0].replace(/[^a-zá-ú0-9\s]/g, '').split(/\s+/).filter(Boolean);
-    const inteira = parseNumeroInteiroPt(tokensInt) || 0;
+    const inteira = parseNumeroInteiroPt(tokensInt) !== null ? parseNumeroInteiroPt(tokensInt) : 0;
     let centavos = 0;
     if (partes[1]) {
       const centTexto = partes[1].replace(/\bcentavos?\b/g, '').replace(/[^a-zá-ú0-9\s]/g, '').trim();
@@ -2279,9 +2281,51 @@ function interpretarPrecoFalado(texto) {
     return parseFloat(inteira + '.' + centStr);
   }
 
-  // 5. Frase com conector explícito de centavos: 'com' ou 'vírgula'
-  if (/\s+(?:com|vírgula)\s+/.test(t)) {
-    const partes = t.split(/\s+(?:com|vírgula)\s+/);
+  // 5. Frase com apenas CENTAVOS (sem a palavra real/reais): ex: 'cinquenta e cinco centavos', '55 centavos', 'dez centavos', '5 centavos'
+  if (/\bcentavos?\b/.test(t)) {
+    const centTexto = t.replace(/\bcentavos?\b/g, '').replace(/[^a-zá-ú0-9\s]/g, '').trim();
+
+    // Se tiver formato tipo 'um e dez centavos' ou '1 e 10 centavos'
+    const matchEDigitos = centTexto.match(/^(\d+)\s*(?:e|com)\s*(\d+)$/);
+    if (matchEDigitos) {
+      const inteira = parseInt(matchEDigitos[1]);
+      const centavos = parseInt(matchEDigitos[2]);
+      const centStr = centavos < 10 ? '0' + centavos : String(centavos).slice(0, 2);
+      return parseFloat(inteira + '.' + centStr);
+    }
+
+    const tokensCentBruto = centTexto.split(/\s+/).filter(Boolean);
+    const idxE = tokensCentBruto.indexOf('e');
+    if (idxE > 0 && idxE < tokensCentBruto.length - 1) {
+      const prev = tokensCentBruto[idxE - 1];
+      const next = tokensCentBruto[idxE + 1];
+      const ehDezenaComUnidade = DEZENAS_PT_VOZ.has(prev) && UNIDADES_PT_VOZ.has(next);
+      if (!ehDezenaComUnidade) {
+        const p1 = tokensCentBruto.slice(0, idxE);
+        const p2 = tokensCentBruto.slice(idxE + 1);
+        const n1 = parseNumeroInteiroPt(p1);
+        const n2 = parseNumeroInteiroPt(p2);
+        if (n1 !== null && n2 !== null && n2 >= 0 && n2 < 100) {
+          const centStr = n2 < 10 ? '0' + n2 : String(n2).slice(0, 2);
+          return parseFloat(n1 + '.' + centStr);
+        }
+      }
+    }
+
+    const tokensCent = centTexto.split(/\s+/).filter(Boolean);
+    const centavos = parseNumeroInteiroPt(tokensCent);
+    if (centavos !== null) {
+      if (centavos >= 100) {
+        return parseFloat((centavos / 100).toFixed(2));
+      }
+      const centStr = centavos < 10 ? '0' + centavos : String(centavos).slice(0, 2);
+      return parseFloat('0.' + centStr);
+    }
+  }
+
+  // 6. Frase com conector explícito de centavos: 'com' ou 'vírgula' (ex: 'zero vírgula cinquenta e cinco', '3 vírgula 25')
+  if (/\s+(?:com|vírgula|virgula)\s+/.test(t)) {
+    const partes = t.split(/\s+(?:com|vírgula|virgula)\s+/);
     const tokensInt = partes[0].replace(/[^a-zá-ú0-9\s]/g, '').split(/\s+/).filter(Boolean);
     const tokensCent = partes[1].replace(/\bcentavos?\b/g, '').replace(/[^a-zá-ú0-9\s]/g, '').split(/\s+/).filter(Boolean);
     const inteira = parseNumeroInteiroPt(tokensInt);
@@ -2292,7 +2336,7 @@ function interpretarPrecoFalado(texto) {
     }
   }
 
-  // 6. Tokens por extenso (ex: 'duzentos e trinta e cinco', 'mil duzentos e vinte e dois', 'três e vinte e cinco')
+  // 7. Tokens por extenso (ex: 'duzentos e trinta e cinco', 'mil duzentos e vinte e dois', 'três e vinte e cinco', 'um e dez', 'quatro e trinta e cinco')
   const tokens = t.replace(/[.,]/g, '').split(/\s+/).filter(Boolean);
 
   let melhorDivisao = -1;
@@ -2387,7 +2431,7 @@ function ouvirPrecoItem(itemId, btnEl, ev) {
 
   gravandoPrecoItemId = itemId;
   if (btnEl) btnEl.classList.add('ouvindo');
-  mostrarNotificacaoToast(`🎙️ Ouvindo preço de "${item.nome}"... Diga o valor (ex: 4,35 ou 23 e 39)`);
+  mostrarNotificacaoToast(`🎙️ Ouvindo preço de "${item.nome}"... Diga o valor (ex: 1,10, 55 centavos ou 4 e 35)`);
 
   try {
     recognizerPreco = new SpeechRecognition();
@@ -2867,7 +2911,7 @@ function renderizarListaCompras() {
                   ${marcaHtml}
                 </div>
                 <div class="mcol-prod-preco-grupo">
-                  <button type="button" class="btn-mic-preco-verde" id="btn-mic-item-${item.id}" onclick="ouvirPrecoItem('${item.id}', this, event)" title="Ditar preço por voz no PC ou Celular (fale ex: 4 e 35)">
+                  <button type="button" class="btn-mic-preco-verde" id="btn-mic-item-${item.id}" onclick="ouvirPrecoItem('${item.id}', this, event)" title="Ditar preço por voz no PC ou Celular (fale ex: 1,10, 55 centavos ou 4 e 35)">
                     <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor">
                       <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
                       <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
