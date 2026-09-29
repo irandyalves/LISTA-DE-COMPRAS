@@ -2647,6 +2647,33 @@ body.tema-escuro .btn-categoria-fav.ativo,
   box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
 }
 
+.despensa-aba-tab.btn-aba-favoritos-estrela {
+  padding: 4px 10px;
+  font-size: 0.95rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.despensa-aba-tab.btn-aba-favoritos-estrela.ativa {
+  background: #FEF3C7 !important;
+  border-color: #FDE68A !important;
+  color: #D97706 !important;
+  transform: scale(1.15) !important;
+  animation: pulsarEstrelaSuave 2s infinite ease-in-out !important;
+}
+
+body.tema-escuro .despensa-aba-tab.btn-aba-favoritos-estrela.ativa,
+[data-theme="dark"] .despensa-aba-tab.btn-aba-favoritos-estrela.ativa {
+  background: #78350F !important;
+  border-color: #B45309 !important;
+  color: #FCD34D !important;
+}
+
 .btn-acao-mini.ativo-filtro,
 .btn-acao-mini.ativo {
   background: var(--primary) !important;
@@ -5713,6 +5740,21 @@ body.tema-escuro .drawer-fechar-btn {
     border-radius: 12px !important;
     flex-shrink: 0 !important;
     letter-spacing: -0.01em !important;
+  }
+
+  .despensa-aba-tab.btn-aba-favoritos-estrela {
+    padding: 2px 7px !important;
+    font-size: 0.85rem !important;
+    line-height: 1 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 28px !important;
+  }
+
+  .despensa-aba-tab.btn-aba-favoritos-estrela.ativa {
+    transform: scale(1.15) !important;
+    animation: pulsarEstrelaSuave 2s infinite ease-in-out !important;
   }
 
   .linha-abas-e-total-mobile .acoes-end-barra {

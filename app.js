@@ -4399,12 +4399,6 @@ function alternarFiltroFavoritosCategoria(categoria, event) {
     grupoDiv.innerHTML = `
       <div class="categoria-titulo">
         <div class="categoria-titulo-info">
-          <button type="button" 
-                  class="btn-categoria-fav ${filtrandoFavCat ? 'ativo' : ''}" 
-                  onclick="alternarFiltroFavoritosCategoria('${categoria}', event)"
-                  title="${filtrandoFavCat ? `Exibir todos os produtos de ${categoria}` : `Mostrar apenas os favoritos de ${categoria}`}">
-            ⭐
-          </button>
           <span>${categoria}</span>
           <span class="categoria-qtd-badge" style="font-size: 0.8rem; font-weight: 500; opacity: 0.85;">(${qtdExibida} ${qtdExibida === 1 ? 'item' : 'itens'}${filtrandoFavCat ? ' favoritos' : ''})</span>
         </div>
@@ -4459,6 +4453,7 @@ function alternarFavoritoItem(produtoId, event) {
 
 // Alterna em TEMPO REAL a inclusão ou remoção em Montar Lista (O item NÃO vai pro final)
 function alternarItemDespensaEmTempoReal(produtoId, event) {
+  if (houveArrastoRecente) return;
   if (event && event.stopPropagation) event.stopPropagation();
 
   const prod = AppState.catalogo.find(p => String(p.id) === String(produtoId));
@@ -5889,7 +5884,7 @@ function inicializarSwipeDeleteMobile() {
 
       if (!isSwiping) return;
 
-      setTimeout(() => { houveArrastoRecente = false; }, 150);
+      setTimeout(() => { houveArrastoRecente = false; }, 350);
 
       const elapsed = Date.now() - startTime;
       const velocity = Math.abs(diffX) / (elapsed || 1);
@@ -5978,7 +5973,7 @@ function inicializarSwipeDeleteMobile() {
 
       if (!isSwiping) return;
 
-      setTimeout(() => { houveArrastoRecente = false; }, 150);
+      setTimeout(() => { houveArrastoRecente = false; }, 350);
 
       const elapsed = Date.now() - startTime;
       const velocity = Math.abs(diffX) / (elapsed || 1);
