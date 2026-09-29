@@ -5739,16 +5739,24 @@ body.tema-escuro .drawer-fechar-btn {
     border: 1.5px solid #FFFFFF;
   }
 
-  /* 3. Topo Congelado Adaptado para Celular */
+  /* 3. Topo Congelado Adaptado para Celular - Encosta 100% de ponta a ponta */
   .painel-topo-congelado {
     padding: 0 0 4px 0 !important;
+    margin: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
     width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .header-otimizado-l1 {
     gap: 6px !important;
     border-radius: 0 !important;
-    margin-top: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   #view-lista, #view-despensa, #view-historico {
@@ -7731,6 +7739,16 @@ body.tema-escuro .card-ranking-stats {
 
 /* Responsividade Mobile - Barra de Menu com Fundo Escuro e Informações Claras */
 @media (max-width: 820px) {
+  .painel-topo-congelado {
+    margin: 0 !important;
+    padding: 0 0 4px 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    box-sizing: border-box !important;
+  }
+
   .header-otimizado-l1 {
     background: #0F172A !important;
     border: none !important;
@@ -7739,6 +7757,7 @@ body.tema-escuro .card-ranking-stats {
     padding: 6px 12px !important;
     margin: 0 !important;
     width: 100% !important;
+    max-width: 100% !important;
     box-sizing: border-box !important;
     gap: 6px !important;
     flex-wrap: nowrap !important;
