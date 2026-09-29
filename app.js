@@ -4997,20 +4997,6 @@ function renderizarHistorico() {
               <span class="intervalo-val">${intervaloTxt}</span>
             </div>
           </div>
-          <div class="card-item-analise-stats">
-            <div class="item-stat-linha">
-              <span class="item-stat-rotulo">Preço Anterior</span>
-              <span class="item-stat-val">${precoAnterior > 0 ? formatarMoeda(precoAnterior) : '—'}</span>
-            </div>
-            <div class="item-stat-linha">
-              <span class="item-stat-rotulo">Último Preço</span>
-              <span class="item-stat-val">${ultimoPreco > 0 ? formatarMoeda(ultimoPreco) : '—'}</span>
-            </div>
-            <div class="item-stat-linha">
-              <span class="item-stat-rotulo">Total Gasto</span>
-              <span class="item-stat-val" style="color: #059669;">${totalGastoProd > 0 ? formatarMoeda(totalGastoProd) : '—'}</span>
-            </div>
-          </div>
         </div>
       `;
     });
