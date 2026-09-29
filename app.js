@@ -2146,13 +2146,11 @@ function alternarAbaApp(aba, isUserClick = true) {
   });
 
   const vLista = document.getElementById('view-lista');
-  const vListaCat = document.getElementById('view-lista-catalogo');
   const vDespensa = document.getElementById('view-despensa');
   const vMercados = document.getElementById('view-mercados');
   const vHistorico = document.getElementById('view-historico');
 
   if (vLista) vLista.style.display = AppState.abaAtiva === 'lista' ? 'block' : 'none';
-  if (vListaCat) vListaCat.style.display = AppState.abaAtiva === 'lista_catalogo' ? 'block' : 'none';
   if (vDespensa) vDespensa.style.display = AppState.abaAtiva === 'despensa' ? 'block' : 'none';
   if (vMercados) vMercados.style.display = AppState.abaAtiva === 'mercados' ? 'block' : 'none';
   if (vHistorico) vHistorico.style.display = AppState.abaAtiva === 'historico' ? 'block' : 'none';
@@ -2168,20 +2166,6 @@ function alternarAbaApp(aba, isUserClick = true) {
       }
     } else {
       subComprar.classList.remove('aberto');
-    }
-  }
-
-  // Submenu de LISTA DE COMPRA com cortina suave identada
-  const subListaCat = document.getElementById('sidebar-subopcoes-lista-catalogo');
-  if (subListaCat) {
-    if (aba === 'lista_catalogo') {
-      if (abaAnterior === 'lista_catalogo' && isUserClick) {
-        subListaCat.classList.toggle('aberto');
-      } else {
-        subListaCat.classList.add('aberto');
-      }
-    } else {
-      subListaCat.classList.remove('aberto');
     }
   }
 
@@ -2248,12 +2232,12 @@ function alternarAbaApp(aba, isUserClick = true) {
     histTopoIntegrado.style.display = (AppState.abaAtiva === 'historico') ? 'flex' : 'none';
   }
   if (linhaAbasMobile) {
-    linhaAbasMobile.style.display = (AppState.abaAtiva === 'lista' || AppState.abaAtiva === 'lista_catalogo' || AppState.abaAtiva === 'despensa') ? 'flex' : 'none';
+    linhaAbasMobile.style.display = (AppState.abaAtiva === 'lista' || AppState.abaAtiva === 'despensa') ? 'flex' : 'none';
   }
   if (elBadgeMobile) {
     elBadgeMobile.style.display = (AppState.abaAtiva === 'historico' || AppState.abaAtiva === 'mercados') ? 'none' : '';
   }
-  if (abasCategorias) abasCategorias.style.display = (AppState.abaAtiva === 'lista' || AppState.abaAtiva === 'lista_catalogo' || AppState.abaAtiva === 'despensa') ? 'flex' : 'none';
+  if (abasCategorias) abasCategorias.style.display = (AppState.abaAtiva === 'lista' || AppState.abaAtiva === 'despensa') ? 'flex' : 'none';
   if (typeof atualizarVisualBotaoOrdemAlfabetica === 'function') {
     atualizarVisualBotaoOrdemAlfabetica();
   }
@@ -2270,7 +2254,7 @@ function alternarAbaApp(aba, isUserClick = true) {
   }
 
   // Ao entrar em Lista de Compra ou Mercados, sincroniza e reseta o filtro para ver tudo!
-  if (AppState.abaAtiva === 'lista' || AppState.abaAtiva === 'lista_catalogo') {
+  if (AppState.abaAtiva === 'lista') {
     sincronizarListaAtivaComCatalogo();
     AppState.filtroCategoria = 'todas';
     const abas = document.querySelectorAll('.despensa-aba-tab');
@@ -2324,8 +2308,6 @@ function selecionarMercadoReferencia(mercadoId) {
 
   if (AppState.abaAtiva === 'lista') {
     renderizarListaCompras();
-  } else if (AppState.abaAtiva === 'lista_catalogo') {
-    renderizarListaCatalogo();
   } else if (AppState.abaAtiva === 'mercados') {
     renderizarComparadorDF();
   } else if (AppState.abaAtiva === 'despensa') {
@@ -2354,8 +2336,6 @@ function renderizarTudo() {
   atualizarChipsMercadoUI();
   if (AppState.abaAtiva === 'lista') {
     renderizarListaCompras();
-  } else if (AppState.abaAtiva === 'lista_catalogo') {
-    renderizarListaCatalogo();
   } else if (AppState.abaAtiva === 'despensa') {
     renderizarDespensa();
   } else if (AppState.abaAtiva === 'mercados') {
@@ -3495,361 +3475,6 @@ function renderizarListaCompras() {
   }
 }
 
-// -----------------------------------------------------------------------------
-// LISTA DE COMPRA (Estrutura idêntica a Comprar com todos os itens do Catálogo)
-// -----------------------------------------------------------------------------
-function renderizarListaCatalogo() {
-  const container = document.getElementById('itens-lista-catalogo-container');
-  if (!container) return;
-  const scrollYAnterior = window.scrollY || document.documentElement.scrollTop || 0;
-  const scrollXAnterior = window.scrollX || document.documentElement.scrollLeft || 0;
-  const alturaAtual = Math.max(container.offsetHeight, document.documentElement.scrollHeight);
-  if (alturaAtual > 0) {
-    container.style.minHeight = `${alturaAtual}px`;
-  }
-
-  if (!AppState.catalogo || AppState.catalogo.length === 0) {
-    container.innerHTML = `
-      <div style="text-align: center; padding: 40px 20px; background: white; border-radius: 16px; border: 1px dashed var(--border);">
-        <div style="width: 64px; height: 64px; margin: 0 auto 12px;">${ICONS_2D.padrao}</div>
-        <h3 style="font-weight: 700; color: var(--text-main);">Nenhum item no catálogo!</h3>
-        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">
-          Adicione produtos pelo campo de busca ou cadastre novos itens.
-        </p>
-      </div>
-    `;
-    container.style.minHeight = '';
-    return;
-  }
-
-  // Filtragem por categoria e busca
-  let itensCatalogoParaExibir = [...AppState.catalogo];
-
-  if (AppState.filtroCategoria === 'favoritos') {
-    itensCatalogoParaExibir = itensCatalogoParaExibir.filter(item => !!item.favorito);
-  } else if (AppState.filtroCategoria && AppState.filtroCategoria !== 'todas') {
-    itensCatalogoParaExibir = itensCatalogoParaExibir.filter(item => (item.categoria || 'Diversos') === AppState.filtroCategoria);
-  }
-
-  if (termoBuscaLista) {
-    itensCatalogoParaExibir = itensCatalogoParaExibir.filter(item => {
-      const nomeNorm = (item.nome || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-      const catNorm = (item.categoria || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-      const marcaNorm = (item.marca || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-      return nomeNorm.includes(termoBuscaLista) || catNorm.includes(termoBuscaLista) || marcaNorm.includes(termoBuscaLista);
-    });
-  }
-
-  if (itensCatalogoParaExibir.length === 0) {
-    if (AppState.filtroCategoria && AppState.filtroCategoria !== 'todas') {
-      container.innerHTML = `
-        <div style="text-align: center; padding: 30px 15px; background: white; border-radius: 12px; border: 1px dashed var(--border);">
-          <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 10px;">
-            Nenhum item no catálogo dentro da categoria <strong>${AppState.filtroCategoria}</strong>.
-          </p>
-          <button type="button" class="btn btn-secondary btn-sm" onclick="filtrarCategoriaGeral('todas')">
-            Ver todas as categorias
-          </button>
-        </div>
-      `;
-      container.style.minHeight = '';
-      return;
-    }
-
-    if (termoBuscaLista) {
-      const inputTopo = document.getElementById('input-novo-item');
-      const valorDigitado = inputTopo ? inputTopo.value.trim() : termoBuscaLista;
-      container.innerHTML = `
-        <div style="text-align: center; padding: 25px 15px; background: white; border-radius: 12px; border: 1px dashed var(--border);">
-          <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 8px;">
-            Nenhum item no catálogo corresponde a "<strong>${valorDigitado}</strong>".
-          </p>
-        </div>
-      `;
-      container.style.minHeight = '';
-      return;
-    }
-  }
-
-  const isMobile = window.innerWidth <= 768;
-  const chavesRedes = Object.keys(MERCADOS_DF);
-  const ocultarMercados = (typeof AppState.modoNoMercado !== 'undefined') ? AppState.modoNoMercado : false;
-
-  // Totais por supermercado
-  const totais = {};
-  chavesRedes.forEach(r => {
-    totais[r] = itensCatalogoParaExibir.reduce((acc, item) => {
-      const p = obterPrecoEstimadoMercado(item, r);
-      return acc + ((item.qtde || 1) * p);
-    }, 0);
-  });
-
-  const redesOrdenadas = [...chavesRedes].sort((a, b) => totais[a] - totais[b]);
-  const campeaoId = redesOrdenadas[0];
-  const maisCaroId = redesOrdenadas[redesOrdenadas.length - 1];
-  const economia = totais[maisCaroId] - totais[campeaoId];
-
-  // Cabeçalho dos Mercados DF
-  let colunasCabecalhoMercados = '';
-  if (!ocultarMercados) {
-    colunasCabecalhoMercados = chavesRedes.map(r => {
-      const info = MERCADOS_DF[r];
-      const logo = (typeof obterLogoMercado === 'function' && obterLogoMercado(r)) || `logos/${r}.png`;
-      const isColunaAtiva = (AppState.mercadoReferencia === r);
-      return `
-        <th class="mcol-th-rede ${isColunaAtiva ? 'mcol-coluna-ativa' : ''}" 
-            onclick="selecionarMercadoReferencia('${r}')" 
-            title="Clique para cotar a lista inteira no ${info.nome}">
-          <div class="mcol-rede-header-inner">
-            <img src="${logo}" class="mcol-rede-logo" onerror="this.outerHTML='<span style=\\'font-size:1.1rem\\'>${info.emoji}</span>'" alt="${info.nome}">
-            <span class="mcol-rede-nome">${info.nome}</span>
-          </div>
-        </th>
-      `;
-    }).join('');
-  }
-
-  // Agrupar itens por Categoria
-  const grupos = {};
-  itensCatalogoParaExibir.forEach((item, index) => {
-    const cat = item.categoria || 'Diversos';
-    if (!grupos[cat]) grupos[cat] = [];
-    grupos[cat].push({ ...item, indexOriginal: index });
-  });
-
-  let linhasTabelaHtml = '';
-
-  for (const [categoria, itens] of Object.entries(grupos)) {
-    itens.sort((a, b) => {
-      if (AppState.modoCotacao === 'alfabetico') {
-        return (a.nome || '').localeCompare(b.nome || '', 'pt-BR', { sensitivity: 'base' });
-      }
-      return (a.indexOriginal || 0) - (b.indexOriginal || 0);
-    });
-
-    const iconeOlhoAberto = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
-    const iconeOlhoFechado = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
-
-    let botaoOlhoHtml = '';
-    if (!isMobile) {
-      botaoOlhoHtml = `
-        <button type="button" 
-                class="btn-olho-tabela ${ocultarMercados ? 'mercados-ocultos' : ''}" 
-                onclick="alternarModoNoMercado()" 
-                title="${ocultarMercados ? 'Exibir colunas de supermercados' : 'Ocultar colunas de mercados'}" 
-                data-hint="${ocultarMercados ? 'Exibir mercados e cotações' : 'Ocultar mercados'}">
-          ${ocultarMercados ? iconeOlhoFechado : iconeOlhoAberto}
-        </button>
-      `;
-    }
-
-    const catChave = sanitizarChaveId(categoria);
-    const totalCatComprar = itens.reduce((acc, i) => {
-      const p = (Number(i.precoRegistradoMercado) > 0) ? Number(i.precoRegistradoMercado) : (Number(i.preco) || Number(i.precoMedioDF) || 0);
-      return acc + ((i.qtde || 1) * p);
-    }, 0);
-    const temValorComprar = totalCatComprar > 0;
-    const thAcoesHtml = isMobile ? '' : `<th class="mcol-th-acoes">${botaoOlhoHtml}</th>`;
-
-    linhasTabelaHtml += `
-      <tr class="mcol-tr-categoria-separador">
-        <th colspan="3" class="mcol-th-categoria-col">
-          <div class="categoria-titulo-tabela">
-            <span class="categoria-nome-txt">${categoria}</span>
-            <span class="categoria-qtd-badge">(${itens.length} ${itens.length === 1 ? 'item' : 'itens'})</span>
-            <div class="balao-total-categoria ${temValorComprar ? '' : 'vazio'}" id="balao-total-catalogo-${catChave}" title="Total da Categoria">
-              <span class="balao-valor">${formatarMoeda(totalCatComprar)}</span>
-            </div>
-          </div>
-        </th>
-        ${colunasCabecalhoMercados}
-        ${thAcoesHtml}
-      </tr>
-    `;
-
-    // Linhas de Itens
-    const nomesResumidosVistos = new Set();
-    itens.forEach(item => {
-      let nomeExibicao = formatarNomeExibicaoCompacto(item.nome);
-      if (AppState.modoResumido) {
-        nomeExibicao = obterNomeResumido(item.nome);
-        const chaveDeduplicacao = nomeExibicao.toLowerCase().trim();
-        if (nomesResumidosVistos.has(chaveDeduplicacao)) {
-          return;
-        }
-        nomesResumidosVistos.add(chaveDeduplicacao);
-      }
-
-      const qtde = item.qtde || 1;
-
-      let marcaHtml = '';
-      if (item.marca) {
-        marcaHtml = `<button type="button" class="btn-marca-listbox-tag com-marca" onclick="alterarMarcaItem('${item.id}', this, event)" title="Marca: ${item.marca} (Clique para alterar)">🏷️ ${item.marca} <span class="ico-caret">▾</span></button>`;
-      } else {
-        marcaHtml = `<button type="button" class="btn-marca-listbox-tag" onclick="alterarMarcaItem('${item.id}', this, event)" title="Clique para escolher a marca">+ Marca <span class="ico-caret">▾</span></button>`;
-      }
-
-      let celulasPrecos = '';
-      if (!ocultarMercados) {
-        const precos = {};
-        const precosValidos = [];
-        chavesRedes.forEach(r => {
-          const p = obterPrecoEstimadoMercado(item, r);
-          precos[r] = p;
-          if (p > 0) precosValidos.push(p);
-        });
-
-        const menorPreco = precosValidos.length > 0 ? Math.min(...precosValidos) : -1;
-
-        celulasPrecos = chavesRedes.map(r => {
-          const p = precos[r];
-          const isMenor = p > 0 && p === menorPreco;
-
-          let diffHtml = '';
-          if (p > 0 && !isMenor && menorPreco > 0) {
-            const diffPct = ((p - menorPreco) / menorPreco) * 100;
-            const pctTxt = diffPct < 1 ? `+${diffPct.toFixed(1).replace('.', ',')}%` : `+${Math.round(diffPct)}%`;
-            diffHtml = `<span class="mcol-tag-diff">${pctTxt}</span>`;
-          } else if (isMenor) {
-            diffHtml = `<span class="mcol-tag-menor">✓ Menor</span>`;
-          }
-
-          const precoTxt = p > 0 ? formatarMoeda(p) : '<span class="mcol-a-cotar">—</span>';
-
-          return `
-            <td class="mcol-td-preco ${isMenor ? 'mcol-td-menor-bg' : ''}">
-              <div class="mcol-preco-linha-box">
-                <span class="mcol-valor ${isMenor ? 'mcol-valor-menor' : ''}">${precoTxt}</span>
-                ${diffHtml}
-              </div>
-            </td>
-          `;
-        }).join('');
-      }
-
-      let precoRegistradoValor = 0;
-      if (ehDispositivoMobile) {
-        precoRegistradoValor = (item.precoRegistradoMercado && Number(item.precoRegistradoMercado) > 0)
-          ? Number(item.precoRegistradoMercado)
-          : 0;
-      } else {
-        precoRegistradoValor = (item.precoRegistradoMercado && Number(item.precoRegistradoMercado) > 0)
-          ? Number(item.precoRegistradoMercado)
-          : (Number(item.preco) || Number(item.precoMedioDF) || 0);
-      }
-      const precoFormatadoTxt = precoRegistradoValor > 0 ? formatarMoeda(precoRegistradoValor) : 'R$ 0,00';
-
-      const estaSelecionado = !!item.selecionado;
-
-      linhasTabelaHtml += `
-        <tr class="mcol-tr-item ${estaSelecionado ? 'item-linha-selecionado' : ''}" id="tr-item-cat-${item.id}">
-          <td class="mcol-td-check">
-            <input type="checkbox" class="check-item-comprado" ${estaSelecionado ? 'checked' : ''} 
-                   onclick="alternarItemDespensaEmTempoReal('${item.id}', event)" 
-                   title="${estaSelecionado ? 'Item incluído na Lista de Compra (clique para remover)' : 'Adicionar à Lista de Compra'}" />
-          </td>
-          <td class="mcol-td-qtde">
-            <div class="contador-qtde-tabela">
-              <button class="btn-step-tabela" onclick="alterarQuantidadeMontarLista('${item.id}', -1, event)" title="Diminuir">-</button>
-              <input type="number" min="1" id="qtde-cat-${item.id}" class="input-qtde-tabela" value="${qtde}" onchange="definirQuantidadeMontarLista('${item.id}', this.value, event)" title="Editar quantidade" />
-              <button class="btn-step-tabela" onclick="alterarQuantidadeMontarLista('${item.id}', 1, event)" title="Aumentar">+</button>
-            </div>
-          </td>
-          <td class="mcol-td-produto">
-            <div class="mcol-prod-card-cell">
-              <div class="mcol-prod-linha-principal">
-                <div class="mcol-prod-info-esquerda">
-                  <span class="mcol-prod-nome ${estaSelecionado ? 'selecionado-ativo' : ''}" onclick="alternarItemDespensaEmTempoReal('${item.id}', event)" title="${item.nome}">${nomeExibicao}</span>
-                  ${marcaHtml}
-                </div>
-                <div class="mcol-prod-preco-grupo">
-                  <button type="button" class="btn-mic-preco-verde" id="btn-mic-item-cat-${item.id}" onclick="ouvirPrecoItem('${item.id}', this, event)" title="Ditar preço por voz no PC ou Celular (fale ex: 1,10, 55 centavos ou 4 e 35)">
-                    <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor">
-                      <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
-                      <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
-                    </svg>
-                  </button>
-                  <span class="badge-preco-real ${precoRegistradoValor > 0 ? 'com-preco' : 'sem-preco'}" id="badge-preco-cat-${item.id}" onclick="editarPrecoItemManualmente('${item.id}', event)" title="Preço do produto (Clique para digitar no teclado ou Limpar)">
-                    ${precoFormatadoTxt}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </td>
-          ${celulasPrecos}
-          ${isMobile ? '' : `
-            <td class="mcol-td-acoes">
-              <button class="btn-delete-item-tabela" onclick="excluirItemDespensaDireto('${item.id}', true)" title="Excluir item do catálogo">✕</button>
-            </td>
-          `}
-        </tr>
-      `;
-    });
-  }
-
-  // Rodapé com Totais dos Mercados
-  let tfootHtml = '';
-  if (!ocultarMercados) {
-    let celulasTotais = chavesRedes.map(r => {
-      const isCampeao = r === campeaoId;
-      const isColunaAtiva = (AppState.mercadoReferencia === r);
-      return `
-        <td class="mcol-td-total ${isCampeao ? 'mcol-td-total-campeao' : ''} ${isColunaAtiva ? 'mcol-coluna-ativa' : ''}" 
-            onclick="selecionarMercadoReferencia('${r}')" 
-            title="Clique para selecionar o ${MERCADOS_DF[r].nome} como mercado da lista">
-          <div class="mcol-total-box">
-            <span class="mcol-total-valor">${formatarMoeda(totais[r])}</span>
-            ${isCampeao ? '<span class="mcol-campeao-tag">⭐ CAMPEÃO</span>' : ''}
-            ${isColunaAtiva ? '<span style="font-size:0.62rem; color:#D97706; font-weight:800;">✓ SELECIONADO</span>' : ''}
-          </div>
-        </td>
-      `;
-    }).join('');
-
-    tfootHtml = `
-      <tfoot>
-        <tr class="mcol-tr-totais">
-          <td class="mcol-td-check-total"></td>
-          <td class="mcol-td-qtde-total"></td>
-          <td class="mcol-td-totais-label">
-            <div style="font-weight: 800; font-size: 0.92rem;">TOTAL DO CATÁLOGO</div>
-            <small style="color: var(--text-muted); font-size: 0.72rem;">Soma dos ${AppState.catalogo.length} itens</small>
-          </td>
-          ${celulasTotais}
-          ${isMobile ? '' : '<td class="mcol-td-acoes-total"></td>'}
-        </tr>
-      </tfoot>
-    `;
-  }
-
-  // Atualizar Card de Economia na Sidebar
-  atualizarCardEconomiaSidebar(campeaoId, totais, economia);
-
-  container.innerHTML = `
-    <div class="mcol-tabela-scroll">
-      <table class="mcol-tabela-moderna tabela-lista-catalogo ${ocultarMercados ? 'mercados-ocultos' : ''}">
-        <tbody>
-          ${linhasTabelaHtml}
-        </tbody>
-        ${tfootHtml}
-      </table>
-    </div>
-  `;
-
-  if (scrollYAnterior > 0) {
-    window.scrollTo({ top: scrollYAnterior, left: scrollXAnterior, behavior: 'instant' });
-    requestAnimationFrame(() => {
-      window.scrollTo({ top: scrollYAnterior, left: scrollXAnterior, behavior: 'instant' });
-      setTimeout(() => {
-        window.scrollTo({ top: scrollYAnterior, left: scrollXAnterior, behavior: 'instant' });
-        container.style.minHeight = '';
-      }, 50);
-    });
-  } else {
-    container.style.minHeight = '';
-  }
-}
-
 // Catálogo Especial da Despensa com Marcas e Menor Preço (8 Cards Lado a Lado)
 const PRODUTOS_DESPENSA_MARCAS = [
   {
@@ -4891,29 +4516,11 @@ function alternarItemDespensaEmTempoReal(produtoId, event) {
     }
   }
 
-  // Atualiza diretamente a linha da tabela se estiver na visualização Lista de Compra
-  const rowCatEl = document.getElementById(`tr-item-cat-${prod.id}`);
-  if (rowCatEl) {
-    const chk = rowCatEl.querySelector('.check-item-comprado');
-    if (chk) chk.checked = !!prod.selecionado;
-    const nomeEl = rowCatEl.querySelector('.mcol-prod-nome');
-    if (prod.selecionado) {
-      rowCatEl.classList.add('item-linha-selecionado');
-      if (nomeEl) nomeEl.classList.add('selecionado-ativo');
-    } else {
-      rowCatEl.classList.remove('item-linha-selecionado');
-      if (nomeEl) nomeEl.classList.remove('selecionado-ativo');
-    }
-  }
-
   // Atualiza imediatamente o balão de total da categoria correspondente
   atualizarBalaoTotalCategoria(prod.categoria || 'Diversos');
 
   // Monta em tempo real na Lista de Compra (aqui recebe o que eu faço em Montar Lista)
   renderizarListaCompras();
-  if (AppState.abaAtiva === 'lista_catalogo') {
-    renderizarListaCatalogo();
-  }
   atualizarCardResumo();
 }
 
@@ -4924,8 +4531,7 @@ function alterarQuantidadeMontarLista(produtoId, delta, event) {
   if (!prod) return;
 
   const qtdeEl = document.getElementById(`qtde-montar-${prod.id}`);
-  const qtdeCatEl = document.getElementById(`qtde-cat-${prod.id}`);
-  let atual = prod.qtde || (qtdeEl ? parseInt(qtdeEl.value || qtdeEl.textContent, 10) : (qtdeCatEl ? parseInt(qtdeCatEl.value, 10) : 1));
+  let atual = prod.qtde || (qtdeEl ? parseInt(qtdeEl.value || qtdeEl.textContent, 10) : 1);
   if (isNaN(atual) || atual < 1) atual = 1;
   let novaQtde = atual + delta;
   if (novaQtde < 1) novaQtde = 1;
@@ -4934,9 +4540,6 @@ function alterarQuantidadeMontarLista(produtoId, delta, event) {
   if (qtdeEl) {
     if (qtdeEl.tagName === 'INPUT') qtdeEl.value = novaQtde;
     else qtdeEl.textContent = novaQtde;
-  }
-  if (qtdeCatEl) {
-    qtdeCatEl.value = novaQtde;
   }
 
   const itemNaLista = AppState.listaAtiva.find(it => String(it.id) === String(prod.id));
@@ -4947,9 +4550,6 @@ function alterarQuantidadeMontarLista(produtoId, delta, event) {
   salvarEstado(true);
   atualizarBalaoTotalCategoria(prod.categoria || 'Diversos');
   renderizarListaCompras();
-  if (AppState.abaAtiva === 'lista_catalogo') {
-    renderizarListaCatalogo();
-  }
   atualizarCardResumo();
 }
 
@@ -4965,8 +4565,6 @@ function definirQuantidadeMontarLista(produtoId, novoValor, event) {
   prod.qtde = val;
   const qtdeEl = document.getElementById(`qtde-montar-${prod.id}`);
   if (qtdeEl && qtdeEl.tagName === 'INPUT') qtdeEl.value = val;
-  const qtdeCatEl = document.getElementById(`qtde-cat-${prod.id}`);
-  if (qtdeCatEl) qtdeCatEl.value = val;
 
   const itemNaLista = AppState.listaAtiva.find(it => String(it.id) === String(prod.id));
   if (itemNaLista) {
@@ -4976,9 +4574,6 @@ function definirQuantidadeMontarLista(produtoId, novoValor, event) {
   salvarEstado(true);
   atualizarBalaoTotalCategoria(prod.categoria || 'Diversos');
   renderizarListaCompras();
-  if (AppState.abaAtiva === 'lista_catalogo') {
-    renderizarListaCatalogo();
-  }
   atualizarCardResumo();
 }
 
@@ -6337,20 +5932,48 @@ function inicializarSwipeDeleteMobile() {
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    let touchState = null;
+    let gestureState = null;
 
     function resetarElem(elem) {
       if (!elem) return;
       elem.classList.remove('arrastando-swipe', 'pronto-deletar-swipe');
-      elem.style.transition = 'transform 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+      elem.style.transition = 'transform 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.22s ease';
       elem.style.transform = 'translateX(0)';
       setTimeout(() => {
-        elem.style.transition = '';
-        elem.style.transform = '';
+        if (elem) {
+          elem.style.transition = '';
+          elem.style.transform = '';
+        }
       }, 230);
     }
 
-    // --- SUPORTE A TOQUE NATIVO (CELULAR / MOBILE) ---
+    function executarExclusaoAnimada(elem, itemId) {
+      if (!elem || !itemId) return;
+      elem.classList.remove('arrastando-swipe', 'pronto-deletar-swipe');
+      elem.classList.add('deletando-swipe');
+      elem.style.transition = 'transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.2s ease-out';
+      elem.style.transform = 'translateX(-115%)';
+      elem.style.opacity = '0';
+
+      setTimeout(() => {
+        elem.style.transition = 'max-height 0.18s ease-in-out, height 0.18s ease-in-out, padding 0.18s ease-in-out, margin 0.18s ease-in-out';
+        elem.style.maxHeight = '0px';
+        elem.style.height = '0px';
+        elem.style.minHeight = '0px';
+        elem.style.paddingTop = '0px';
+        elem.style.paddingBottom = '0px';
+        elem.style.marginTop = '0px';
+        elem.style.marginBottom = '0px';
+        elem.style.border = 'none';
+        elem.style.overflow = 'hidden';
+
+        setTimeout(() => {
+          callbackExcluir(itemId);
+        }, 180);
+      }, 200);
+    }
+
+    // --- SUPORTE A TOQUE MOBILE ---
     container.addEventListener('touchstart', (e) => {
       if (e.touches.length > 1) return;
       if (e.target.closest('button, input, select, a, .contador-qtde, .contador-qtde-tabela, .btn-mic-preco-verde, .badge-preco-real, .btn-favorito-item, .btn-editar-despensa, .item-check-btn, .check-item-comprado')) {
@@ -6360,7 +5983,7 @@ function inicializarSwipeDeleteMobile() {
       const elem = e.target.closest(seletorItem);
       if (!elem) return;
 
-      touchState = {
+      gestureState = {
         elem: elem,
         itemId: elem.id ? elem.id.replace(prefixoId, '') : null,
         startX: e.touches[0].clientX,
@@ -6374,49 +5997,53 @@ function inicializarSwipeDeleteMobile() {
     }, { passive: true });
 
     container.addEventListener('touchmove', (e) => {
-      if (!touchState || !touchState.elem) return;
+      if (!gestureState || !gestureState.elem) return;
 
       const currentX = e.touches[0].clientX;
       const currentY = e.touches[0].clientY;
-      touchState.diffX = currentX - touchState.startX;
-      touchState.diffY = currentY - touchState.startY;
+      gestureState.diffX = currentX - gestureState.startX;
+      gestureState.diffY = currentY - gestureState.startY;
 
-      if (!touchState.directionLocked) {
-        if (Math.abs(touchState.diffX) > 8 || Math.abs(touchState.diffY) > 8) {
-          touchState.directionLocked = true;
-          if (Math.abs(touchState.diffY) >= Math.abs(touchState.diffX) || touchState.diffX > 5) {
-            touchState = null;
-            return;
-          } else if (touchState.diffX < -8) {
-            touchState.isSwiping = true;
-            touchState.elem.classList.add('arrastando-swipe');
+      if (!gestureState.directionLocked) {
+        const absX = Math.abs(gestureState.diffX);
+        const absY = Math.abs(gestureState.diffY);
+
+        if (absX > 6 || absY > 6) {
+          if (gestureState.diffX < -5 && absX >= absY * 0.55) {
+            gestureState.directionLocked = true;
+            gestureState.isSwiping = true;
+            gestureState.elem.classList.add('arrastando-swipe');
             houveArrastoRecente = true;
+          } else if (absY > 12 && absY > absX * 1.5) {
+            gestureState = null;
+            return;
           }
         }
       }
 
-      if (touchState && touchState.isSwiping) {
+      if (gestureState && gestureState.isSwiping) {
         if (e.cancelable) e.preventDefault();
 
-        let translateX = touchState.diffX;
+        let translateX = gestureState.diffX;
+        if (translateX > 0) translateX = 0;
         if (translateX < -130) {
-          translateX = -130 + (translateX + 130) * 0.35;
+          translateX = -130 + (translateX + 130) * 0.3;
         }
 
-        touchState.elem.style.transform = `translateX(${translateX}px)`;
+        gestureState.elem.style.transform = `translateX(${translateX}px)`;
 
-        if (translateX < -75) {
-          touchState.elem.classList.add('pronto-deletar-swipe');
+        if (translateX < -65) {
+          gestureState.elem.classList.add('pronto-deletar-swipe');
         } else {
-          touchState.elem.classList.remove('pronto-deletar-swipe');
+          gestureState.elem.classList.remove('pronto-deletar-swipe');
         }
       }
     }, { passive: false });
 
     function finalizarTouch() {
-      if (!touchState || !touchState.elem) return;
-      const { elem, itemId, diffX, startTime, isSwiping } = touchState;
-      touchState = null;
+      if (!gestureState || !gestureState.elem) return;
+      const { elem, itemId, diffX, startTime, isSwiping } = gestureState;
+      gestureState = null;
 
       if (!isSwiping) return;
 
@@ -6424,27 +6051,10 @@ function inicializarSwipeDeleteMobile() {
 
       const elapsed = Date.now() - startTime;
       const velocity = Math.abs(diffX) / (elapsed || 1);
-      const deveExcluir = diffX < -75 || (diffX < -40 && velocity > 0.45);
+      const deveExcluir = diffX < -65 || (diffX < -32 && velocity > 0.38);
 
       if (deveExcluir && itemId) {
-        elem.classList.remove('arrastando-swipe', 'pronto-deletar-swipe');
-        elem.classList.add('deletando-swipe');
-        elem.style.transition = 'transform 0.22s ease-out, opacity 0.22s ease-out';
-        elem.style.transform = 'translateX(-110%)';
-        elem.style.opacity = '0';
-
-        setTimeout(() => {
-          elem.style.transition = 'all 0.18s ease-in-out';
-          elem.style.maxHeight = '0px';
-          elem.style.height = '0px';
-          elem.style.padding = '0px';
-          elem.style.margin = '0px';
-          elem.style.border = 'none';
-
-          setTimeout(() => {
-            callbackExcluir(itemId);
-          }, 180);
-        }, 220);
+        executarExclusaoAnimada(elem, itemId);
       } else {
         resetarElem(elem);
       }
@@ -6453,7 +6063,7 @@ function inicializarSwipeDeleteMobile() {
     container.addEventListener('touchend', finalizarTouch);
     container.addEventListener('touchcancel', finalizarTouch);
 
-    // --- SUPORTE A MOUSE / POINTER (EMULAÇÃO MOBILE E PC) ---
+    // --- SUPORTE A MOUSE NO PC ---
     let mouseState = null;
 
     container.addEventListener('mousedown', (e) => {
@@ -6472,7 +6082,8 @@ function inicializarSwipeDeleteMobile() {
         startTime: Date.now(),
         diffX: 0,
         diffY: 0,
-        isSwiping: false
+        isSwiping: false,
+        directionLocked: false
       };
     });
 
@@ -6482,23 +6093,36 @@ function inicializarSwipeDeleteMobile() {
       mouseState.diffX = e.clientX - mouseState.startX;
       mouseState.diffY = e.clientY - mouseState.startY;
 
-      if (!mouseState.isSwiping) {
-        if (mouseState.diffX < -10 && Math.abs(mouseState.diffX) > Math.abs(mouseState.diffY)) {
-          mouseState.isSwiping = true;
-          mouseState.elem.classList.add('arrastando-swipe');
-          houveArrastoRecente = true;
-        } else if (Math.abs(mouseState.diffY) > 15 || mouseState.diffX > 15) {
-          mouseState = null;
-          return;
+      if (!mouseState.directionLocked) {
+        const absX = Math.abs(mouseState.diffX);
+        const absY = Math.abs(mouseState.diffY);
+
+        if (absX > 6 || absY > 6) {
+          if (mouseState.diffX < -5 && absX >= absY * 0.55) {
+            mouseState.directionLocked = true;
+            mouseState.isSwiping = true;
+            mouseState.elem.classList.add('arrastando-swipe');
+            houveArrastoRecente = true;
+          } else if (absY > 15 && absY > absX * 1.5) {
+            mouseState = null;
+            return;
+          }
         }
       }
 
       if (mouseState && mouseState.isSwiping) {
         let translateX = mouseState.diffX;
-        if (translateX < -130) translateX = -130 + (translateX + 130) * 0.35;
+        if (translateX > 0) translateX = 0;
+        if (translateX < -130) {
+          translateX = -130 + (translateX + 130) * 0.3;
+        }
         mouseState.elem.style.transform = `translateX(${translateX}px)`;
-        if (translateX < -75) mouseState.elem.classList.add('pronto-deletar-swipe');
-        else mouseState.elem.classList.remove('pronto-deletar-swipe');
+
+        if (translateX < -65) {
+          mouseState.elem.classList.add('pronto-deletar-swipe');
+        } else {
+          mouseState.elem.classList.remove('pronto-deletar-swipe');
+        }
       }
     });
 
@@ -6513,27 +6137,10 @@ function inicializarSwipeDeleteMobile() {
 
       const elapsed = Date.now() - startTime;
       const velocity = Math.abs(diffX) / (elapsed || 1);
-      const deveExcluir = diffX < -75 || (diffX < -40 && velocity > 0.45);
+      const deveExcluir = diffX < -65 || (diffX < -32 && velocity > 0.38);
 
       if (deveExcluir && itemId) {
-        elem.classList.remove('arrastando-swipe', 'pronto-deletar-swipe');
-        elem.classList.add('deletando-swipe');
-        elem.style.transition = 'transform 0.22s ease-out, opacity 0.22s ease-out';
-        elem.style.transform = 'translateX(-110%)';
-        elem.style.opacity = '0';
-
-        setTimeout(() => {
-          elem.style.transition = 'all 0.18s ease-in-out';
-          elem.style.maxHeight = '0px';
-          elem.style.height = '0px';
-          elem.style.padding = '0px';
-          elem.style.margin = '0px';
-          elem.style.border = 'none';
-
-          setTimeout(() => {
-            callbackExcluir(itemId);
-          }, 180);
-        }, 220);
+        executarExclusaoAnimada(elem, itemId);
       } else {
         resetarElem(elem);
       }
@@ -6559,16 +6166,6 @@ function inicializarSwipeDeleteMobile() {
       excluirItemDespensaDireto(itemId, true);
     }
   );
-
-  // 3. Container da Lista de Compra (Catálogo Completo)
-  configurarContainerSwipe(
-    'itens-lista-catalogo-container',
-    '.mcol-tr-item',
-    'tr-item-cat-',
-    (itemId) => {
-      excluirItemDespensaDireto(itemId, true);
-    }
-  );
 }
 
 function excluirItemDespensaDireto(produtoId, dispararUndo = true) {
@@ -6586,9 +6183,6 @@ function excluirItemDespensaDireto(produtoId, dispararUndo = true) {
   salvarEstado(true);
   renderizarDespensa();
   renderizarListaCompras();
-  if (typeof renderizarListaCatalogo === 'function') {
-    renderizarListaCatalogo();
-  }
   atualizarCardResumo();
 
   if (dispararUndo) {

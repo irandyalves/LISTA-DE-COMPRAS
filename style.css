@@ -6573,6 +6573,12 @@ body.tema-escuro .drawer-fechar-btn {
   will-change: transform;
   touch-action: pan-y;
   user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+#view-despensa .itens-lista {
+  overflow-x: hidden;
 }
 
 /* 1. Estado Arrastando (Vermelho Claro Suave) */
@@ -6654,6 +6660,8 @@ body.tema-escuro .drawer-fechar-btn {
   pointer-events: none !important;
   background-color: #DC2626 !important;
   border-color: #B91C1C !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
 }
 
 .mcol-tr-item.deletando-swipe td {
