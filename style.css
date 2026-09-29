@@ -2015,6 +2015,7 @@ body.modo-mercado-ativo .item-nome {
 
 /* Fundo da Tela Montar Lista (Idêntico a Lista de Compras e Mercados) */
 #view-despensa {
+  --fonte-montar: 0.78rem;
   background: transparent;
   border: none;
   box-shadow: none;
@@ -2135,7 +2136,7 @@ body.modo-mercado-ativo .item-nome {
   color: #7C3AED !important; /* Fonte lilás / violeta */
   font-style: normal !important;
   font-weight: 600 !important;
-  font-size: 0.76rem !important; /* FONTE REDUZIDA */
+  font-size: var(--fonte-montar, 0.78rem) !important;
   line-height: 1.2 !important;
   text-decoration: none !important;
 }
@@ -2181,7 +2182,7 @@ body.modo-mercado-ativo .item-nome {
   color: #94A3B8 !important;
   font-style: italic !important;
   font-weight: 400 !important;
-  font-size: 0.76rem !important; /* FONTE REDUZIDA */
+  font-size: var(--fonte-montar, 0.78rem) !important;
   text-decoration: line-through !important;
 }
 
@@ -5827,5 +5828,113 @@ body.modo-mercado-ativo .item-nome {
   background: rgba(16, 185, 129, 0.28);
   transform: scale(0.95);
 }
+
+/* ========================================================
+   CONTROLES DE FONTE NO CABEÇALHO (ABA MONTAR LISTA)
+======================================================== */
+.controles-fonte-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: #F1F5F9;
+  padding: 2px;
+  border-radius: 8px;
+  border: 1px solid #CBD5E1;
+}
+
+.btn-fonte-header {
+  background: white;
+  border: 1px solid #E2E8F0;
+  color: #4F46E5;
+  font-weight: 800;
+  font-size: 0.74rem;
+  line-height: 1;
+  padding: 5px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.btn-fonte-header:hover {
+  background: #EEF2FF;
+  border-color: #4F46E5;
+  color: #3730A3;
+  transform: translateY(-1px);
+}
+
+.btn-fonte-header:active {
+  transform: scale(0.94);
+}
+
+.controles-fonte-categorias {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.btn-fonte-mini {
+  font-weight: 800 !important;
+  padding: 4px 7px !important;
+  color: #4F46E5 !important;
+  background: #EEF2FF !important;
+  border-color: #C7D2FE !important;
+}
+
+.btn-fonte-mini:hover {
+  background: #E0E7FF !important;
+  color: #3730A3 !important;
+}
+
+/* ========================================================
+   ARRASTAR PARA A ESQUERDA PARA DELETAR (SWIPE TO DELETE)
+======================================================== */
+.mcol-tr-item {
+  position: relative;
+  will-change: transform;
+}
+
+.mcol-tr-item.arrastando-swipe {
+  transition: none !important;
+  background-color: #FEE2E2 !important;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+}
+
+.mcol-tr-item.arrastando-swipe td {
+  background-color: #FEE2E2 !important;
+  transition: none !important;
+}
+
+.mcol-tr-item.pronto-deletar-swipe {
+  background-color: #EF4444 !important;
+  box-shadow: 0 4px 16px rgba(220, 38, 38, 0.35);
+}
+
+.mcol-tr-item.pronto-deletar-swipe td {
+  background-color: #EF4444 !important;
+  color: #FFFFFF !important;
+}
+
+.mcol-tr-item.pronto-deletar-swipe .mcol-prod-nome,
+.mcol-tr-item.pronto-deletar-swipe .badge-preco-real,
+.mcol-tr-item.pronto-deletar-swipe .btn-delete-item-tabela {
+  color: #FFFFFF !important;
+}
+
+.mcol-tr-item.pronto-deletar-swipe .btn-delete-item-tabela {
+  transform: scale(1.35);
+  color: #FFFFFF !important;
+}
+
+.mcol-tr-item.deletando-swipe {
+  pointer-events: none !important;
+  background-color: #DC2626 !important;
+}
+
+.mcol-tr-item.deletando-swipe td {
+  background-color: #DC2626 !important;
+  color: #FFFFFF !important;
+}
+
 
 

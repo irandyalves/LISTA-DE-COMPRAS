@@ -823,6 +823,8 @@ document.addEventListener('DOMContentLoaded', () => {
   configurarBuscaGlobal();
   renderizarTudo();
   atualizarContadorSidebarMontar();
+  inicializarEscalaFonteMontar();
+  inicializarSwipeDeleteMobile();
 });
 
 // Carregamento de dados locais
@@ -2125,6 +2127,14 @@ function alternarAbaApp(aba, isUserClick = true) {
   }
 
   if (abasCategorias) abasCategorias.style.display = (AppState.abaAtiva === 'lista' || AppState.abaAtiva === 'despensa') ? 'flex' : 'none';
+
+  // Controles de Aumentar / Reduzir fonte no cabeçalho visíveis apenas na aba Montar Lista
+  const ctrlFonteHeader = document.getElementById('controles-fonte-header');
+  const ctrlFonteCat = document.getElementById('controles-fonte-categorias');
+  const isMontar = (AppState.abaAtiva === 'despensa');
+  if (ctrlFonteHeader) ctrlFonteHeader.style.display = isMontar ? 'inline-flex' : 'none';
+  if (ctrlFonteCat) ctrlFonteCat.style.display = isMontar ? 'inline-flex' : 'none';
+
   if (inputTopo) {
     inputTopo.placeholder = AppState.abaAtiva === 'despensa' 
       ? 'Pesquisar ou cadastrar em Montar Lista...' 
@@ -4406,8 +4416,10 @@ function renderizarHistorico() {
 // 2 cliques (confirmação em até 3 segundos) para desmarcar.
 let itemPendenteDesmarcarId = null;
 let timerPendenteDesmarcar = null;
+let houveArrastoRecente = false;
 
 function alternarItemComprado(id) {
+  if (houveArrastoRecente) return;
   const item = AppState.listaAtiva.find(i => String(i.id) === String(id));
   if (!item) return;
 
@@ -4548,6 +4560,275 @@ function removerItem(id) {
   renderizarListaCompras();
   renderizarDespensa();
   atualizarCardResumo();
+}
+
+// =========================================================================
+// ESCALA DE FONTE NA ABA MONTAR LISTA (BOTÕES A- E A+ NO CABEÇALHO)
+// =========================================================================
+const ESCALAS_FONTE_MONTAR = ['0.65rem', '0.72rem', '0.78rem', '0.86rem', '0.96rem', '1.08rem'];
+let indiceFonteMontar = 2; // Padrão: 0.78rem
+
+function inicializarEscalaFonteMontar() {
+  const salvo = localStorage.getItem('escala_fonte_montar');
+  if (salvo !== null) {
+    const idx = parseInt(salvo, 10);
+    if (!isNaN(idx) && idx >= 0 && idx < ESCALAS_FONTE_MONTAR.length) {
+      indiceFonteMontar = idx;
+    }
+  }
+  aplicarEscalaFonteMontar(false);
+}
+
+function aplicarEscalaFonteMontar(mostrarToast = false) {
+  const tamanhoRem = ESCALAS_FONTE_MONTAR[indiceFonteMontar];
+  const vDespensa = document.getElementById('view-despensa');
+  if (vDespensa) {
+    vDespensa.style.setProperty('--fonte-montar', tamanhoRem);
+  }
+  document.documentElement.style.setProperty('--fonte-montar', tamanhoRem);
+  try {
+    localStorage.setItem('escala_fonte_montar', indiceFonteMontar);
+  } catch (e) {}
+
+  if (mostrarToast) {
+    const labels = ['Muito Pequena (65%)', 'Pequena (72%)', 'Padrão (78%)', 'Média (86%)', 'Grande (96%)', 'Muito Grande (108%)'];
+    mostrarNotificacaoToast(`🔤 Fonte Montar Lista: ${labels[indiceFonteMontar]}`);
+  }
+}
+
+function ajustarFonteMontarLista(direcao) {
+  const novoIndice = indiceFonteMontar + direcao;
+  if (novoIndice < 0) {
+    mostrarNotificacaoToast('Tamanho mínimo de fonte atingido');
+    return;
+  }
+  if (novoIndice >= ESCALAS_FONTE_MONTAR.length) {
+    mostrarNotificacaoToast('Tamanho máximo de fonte atingido');
+    return;
+  }
+  indiceFonteMontar = novoIndice;
+  aplicarEscalaFonteMontar(true);
+}
+
+// =========================================================================
+// ARRASTAR PARA A ESQUERDA PARA DELETAR ITEM DA COMPRA (SWIPE TO DELETE)
+// =========================================================================
+function inicializarSwipeDeleteMobile() {
+  const container = document.getElementById('itens-lista-container');
+  if (!container) return;
+
+  let touchState = null;
+
+  function resetarTr(tr) {
+    if (!tr) return;
+    tr.classList.remove('arrastando-swipe', 'pronto-deletar-swipe');
+    tr.style.transition = 'transform 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+    tr.style.transform = 'translateX(0)';
+    setTimeout(() => {
+      tr.style.transition = '';
+      tr.style.transform = '';
+    }, 230);
+  }
+
+  // --- SUPORTE A TOQUE NATIVO (CELULAR / MOBILE) ---
+  container.addEventListener('touchstart', (e) => {
+    if (e.touches.length > 1) return;
+    // Ignorar toques diretos em botões de ação ou inputs para não travar cliques rápidos
+    if (e.target.closest('button, input, select, a, .contador-qtde, .btn-mic-preco-verde, .badge-preco-real')) {
+      return;
+    }
+
+    const tr = e.target.closest('.mcol-tr-item');
+    if (!tr) return;
+
+    touchState = {
+      tr: tr,
+      itemId: tr.id ? tr.id.replace('tr-item-', '') : null,
+      startX: e.touches[0].clientX,
+      startY: e.touches[0].clientY,
+      startTime: Date.now(),
+      diffX: 0,
+      diffY: 0,
+      isSwiping: false,
+      directionLocked: false
+    };
+  }, { passive: true });
+
+  container.addEventListener('touchmove', (e) => {
+    if (!touchState || !touchState.tr) return;
+
+    const currentX = e.touches[0].clientX;
+    const currentY = e.touches[0].clientY;
+    touchState.diffX = currentX - touchState.startX;
+    touchState.diffY = currentY - touchState.startY;
+
+    if (!touchState.directionLocked) {
+      if (Math.abs(touchState.diffX) > 8 || Math.abs(touchState.diffY) > 8) {
+        touchState.directionLocked = true;
+        // Se for rolagem vertical ou arrasto para a direita, cancela swipe
+        if (Math.abs(touchState.diffY) >= Math.abs(touchState.diffX) || touchState.diffX > 5) {
+          touchState = null;
+          return;
+        } else if (touchState.diffX < -8) {
+          touchState.isSwiping = true;
+          touchState.tr.classList.add('arrastando-swipe');
+          houveArrastoRecente = true;
+        }
+      }
+    }
+
+    if (touchState && touchState.isSwiping) {
+      if (e.cancelable) e.preventDefault();
+
+      let translateX = touchState.diffX;
+      // Efeito de amortecimento elástico além de -130px
+      if (translateX < -130) {
+        translateX = -130 + (translateX + 130) * 0.35;
+      }
+
+      touchState.tr.style.transform = `translateX(${translateX}px)`;
+
+      if (translateX < -75) {
+        touchState.tr.classList.add('pronto-deletar-swipe');
+      } else {
+        touchState.tr.classList.remove('pronto-deletar-swipe');
+      }
+    }
+  }, { passive: false });
+
+  function finalizarTouch() {
+    if (!touchState || !touchState.tr) return;
+    const { tr, itemId, diffX, startTime, isSwiping } = touchState;
+    touchState = null;
+
+    if (!isSwiping) return;
+
+    setTimeout(() => { houveArrastoRecente = false; }, 150);
+
+    const elapsed = Date.now() - startTime;
+    const velocity = Math.abs(diffX) / (elapsed || 1);
+    const deveExcluir = diffX < -80 || (diffX < -45 && velocity > 0.45);
+
+    if (deveExcluir && itemId) {
+      tr.classList.remove('arrastando-swipe', 'pronto-deletar-swipe');
+      tr.classList.add('deletando-swipe');
+      tr.style.transition = 'transform 0.22s ease-out, opacity 0.22s ease-out';
+      tr.style.transform = 'translateX(-110%)';
+      tr.style.opacity = '0';
+
+      const itemObj = AppState.listaAtiva.find(i => String(i.id) === String(itemId));
+      const nomeItem = itemObj ? itemObj.nome : 'Item';
+
+      setTimeout(() => {
+        tr.style.transition = 'all 0.18s ease-in-out';
+        tr.style.maxHeight = '0px';
+        tr.style.height = '0px';
+        tr.style.padding = '0px';
+        tr.style.margin = '0px';
+        tr.style.border = 'none';
+
+        setTimeout(() => {
+          removerItem(itemId);
+          mostrarNotificacaoToast(`🗑️ "${nomeItem}" removido da lista`);
+        }, 180);
+      }, 220);
+    } else {
+      resetarTr(tr);
+    }
+  }
+
+  container.addEventListener('touchend', finalizarTouch);
+  container.addEventListener('touchcancel', finalizarTouch);
+
+  // --- SUPORTE A MOUSE / POINTER (EMULAÇÃO MOBILE E PC) ---
+  let mouseState = null;
+
+  container.addEventListener('mousedown', (e) => {
+    if (e.button !== 0) return;
+    if (e.target.closest('button, input, select, a, .contador-qtde, .btn-mic-preco-verde, .badge-preco-real')) {
+      return;
+    }
+    const tr = e.target.closest('.mcol-tr-item');
+    if (!tr) return;
+
+    mouseState = {
+      tr: tr,
+      itemId: tr.id ? tr.id.replace('tr-item-', '') : null,
+      startX: e.clientX,
+      startY: e.clientY,
+      startTime: Date.now(),
+      diffX: 0,
+      diffY: 0,
+      isSwiping: false
+    };
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!mouseState || !mouseState.tr) return;
+
+    mouseState.diffX = e.clientX - mouseState.startX;
+    mouseState.diffY = e.clientY - mouseState.startY;
+
+    if (!mouseState.isSwiping) {
+      if (mouseState.diffX < -15 && Math.abs(mouseState.diffX) > Math.abs(mouseState.diffY)) {
+        mouseState.isSwiping = true;
+        mouseState.tr.classList.add('arrastando-swipe');
+        houveArrastoRecente = true;
+      } else if (Math.abs(mouseState.diffY) > 15 || mouseState.diffX > 15) {
+        mouseState = null;
+        return;
+      }
+    }
+
+    if (mouseState && mouseState.isSwiping) {
+      let translateX = mouseState.diffX;
+      if (translateX < -130) translateX = -130 + (translateX + 130) * 0.35;
+      mouseState.tr.style.transform = `translateX(${translateX}px)`;
+      if (translateX < -75) mouseState.tr.classList.add('pronto-deletar-swipe');
+      else mouseState.tr.classList.remove('pronto-deletar-swipe');
+    }
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (!mouseState || !mouseState.tr) return;
+    const { tr, itemId, diffX, startTime, isSwiping } = mouseState;
+    mouseState = null;
+
+    if (!isSwiping) return;
+
+    setTimeout(() => { houveArrastoRecente = false; }, 150);
+
+    const elapsed = Date.now() - startTime;
+    const velocity = Math.abs(diffX) / (elapsed || 1);
+    const deveExcluir = diffX < -80 || (diffX < -45 && velocity > 0.45);
+
+    if (deveExcluir && itemId) {
+      tr.classList.remove('arrastando-swipe', 'pronto-deletar-swipe');
+      tr.classList.add('deletando-swipe');
+      tr.style.transition = 'transform 0.22s ease-out, opacity 0.22s ease-out';
+      tr.style.transform = 'translateX(-110%)';
+      tr.style.opacity = '0';
+
+      const itemObj = AppState.listaAtiva.find(i => String(i.id) === String(itemId));
+      const nomeItem = itemObj ? itemObj.nome : 'Item';
+
+      setTimeout(() => {
+        tr.style.transition = 'all 0.18s ease-in-out';
+        tr.style.maxHeight = '0px';
+        tr.style.height = '0px';
+        tr.style.padding = '0px';
+        tr.style.margin = '0px';
+        tr.style.border = 'none';
+
+        setTimeout(() => {
+          removerItem(itemId);
+          mostrarNotificacaoToast(`🗑️ "${nomeItem}" removido da lista`);
+        }, 180);
+      }, 220);
+    } else {
+      resetarTr(tr);
+    }
+  });
 }
 
 // Adicionar Item Manualmente pela barra de entrada unificada no topo

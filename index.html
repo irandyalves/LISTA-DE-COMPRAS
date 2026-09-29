@@ -12,7 +12,7 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>">
   
   <!-- CSS Moderno -->
-  <link rel="stylesheet" href="style.css?v=9.9">
+  <link rel="stylesheet" href="style.css?v=10.0">
 </head>
 <body>
 
@@ -127,6 +127,10 @@
         </div>
 
         <div class="header-acoes-unificadas">
+          <div id="controles-fonte-header" class="controles-fonte-header" style="display: none;">
+            <button type="button" class="btn-fonte-header" onclick="ajustarFonteMontarLista(-1)" title="Diminuir fonte em Montar Lista">A−</button>
+            <button type="button" class="btn-fonte-header" onclick="ajustarFonteMontarLista(1)" title="Aumentar fonte em Montar Lista">A+</button>
+          </div>
           <button id="btn-perfil-usuario" class="btn-perfil-usuario-header" onclick="abrirModalPerfilUsuario()" title="Identificar quem está enviando itens (Irandy / Sioneide)">
             <span id="ico-perfil-header" class="ico-perfil-header">👨</span>
             <span id="nome-perfil-header" class="nome-perfil-header">Irandy</span>
@@ -169,9 +173,15 @@
         <button class="despensa-aba-tab" data-categoria="Diversos" onclick="filtrarCategoriaGeral('Diversos', this)">
           📦 Diversos
         </button>
-        <button id="btn-ordem-alfabetica" class="btn-acao-mini" onclick="alternarOrdemAlfabeticaGeral()" title="Ordenar de A a Z" style="margin-left: auto;">
-          🔤 A-Z
-        </button>
+        <div class="acoes-end-barra" style="margin-left: auto; display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0;">
+          <div id="controles-fonte-categorias" class="controles-fonte-categorias" style="display: none;">
+            <button type="button" class="btn-acao-mini btn-fonte-mini" onclick="ajustarFonteMontarLista(-1)" title="Diminuir fonte em Montar Lista">A−</button>
+            <button type="button" class="btn-acao-mini btn-fonte-mini" onclick="ajustarFonteMontarLista(1)" title="Aumentar fonte em Montar Lista">A+</button>
+          </div>
+          <button id="btn-ordem-alfabetica" class="btn-acao-mini" onclick="alternarOrdemAlfabeticaGeral()" title="Ordenar de A a Z">
+            🔤 A-Z
+          </button>
+        </div>
       </div>
     </div>
     <!-- FIM DO PAINEL SUPERIOR CONGELADO -->
@@ -803,7 +813,7 @@
   <script src="logos_banco.js"></script>
   <script src="icones2d.js"></script>
   <script src="firebase-sync.js"></script>
-  <script src="app.js?v=9.9"></script>
+  <script src="app.js?v=10.0"></script>
 
 </body>
 </html>
