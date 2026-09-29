@@ -1020,7 +1020,7 @@ body {
   font-size: 16px;
   cursor: pointer;
   padding: 2px 4px;
-  color: var(--primary);
+  color: #94A3B8;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1031,29 +1031,44 @@ body {
   -webkit-tap-highlight-color: transparent !important;
 }
 
+.btn-mic-mini .icone-mic-topo {
+  width: 17px;
+  height: 17px;
+  color: currentColor;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
 .btn-mic-mini:hover {
   background: transparent !important;
+  color: #38BDF8;
   transform: scale(1.15);
   box-shadow: none !important;
 }
 
 .btn-mic-mini.gravando {
   background: transparent !important;
-  color: #EF4444 !important;
+  color: #FF0000 !important;
   border: none !important;
   box-shadow: none !important;
-  animation: pulsoSuaveMic 1s infinite alternate ease-in-out !important;
+  animation: pulsoMicVermelhoVivo 0.8s infinite alternate ease-in-out !important;
 }
 
-@keyframes pulsoSuaveMic {
+.btn-mic-mini.gravando .icone-mic-topo {
+  color: #FF0000 !important;
+  fill: #FF0000 !important;
+}
+
+@keyframes pulsoMicVermelhoVivo {
   0% {
     transform: scale(1);
-    filter: drop-shadow(0 0 2px rgba(239, 68, 68, 0.5));
-    opacity: 0.85;
+    color: #EF4444 !important;
+    filter: drop-shadow(0 0 3px rgba(239, 68, 68, 0.7)) !important;
+    opacity: 0.9;
   }
   100% {
-    transform: scale(1.22);
-    filter: drop-shadow(0 0 7px rgba(239, 68, 68, 0.9));
+    transform: scale(1.28);
+    color: #FF0000 !important;
+    filter: drop-shadow(0 0 10px rgba(255, 0, 0, 1)) !important;
     opacity: 1;
   }
 }
@@ -8010,9 +8025,14 @@ body.tema-escuro .card-ranking-stats {
   .busca-topo-reduzida .btn-mic-mini.gravando {
     background: transparent !important;
     border: none !important;
-    color: #EF4444 !important;
+    color: #FF0000 !important;
     box-shadow: none !important;
-    animation: pulsoSuaveMic 1s infinite alternate ease-in-out !important;
+    animation: pulsoMicVermelhoVivo 0.8s infinite alternate ease-in-out !important;
+  }
+
+  .busca-topo-reduzida .btn-mic-mini.gravando .icone-mic-topo {
+    color: #FF0000 !important;
+    fill: #FF0000 !important;
   }
 
   .busca-topo-reduzida .input-busca-topo {

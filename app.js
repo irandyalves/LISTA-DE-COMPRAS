@@ -7851,10 +7851,10 @@ function configurarReconhecimentoVoz() {
       recognition.start();
       gravando = true;
       btnMic.classList.add('gravando');
-      btnMic.title = "🔴 Ouvindo... Diga o nome do item no microfone";
+      btnMic.title = "Ouvindo... Diga o nome do item no microfone";
       if (inputBusca) {
         placeholderOriginal = inputBusca.placeholder;
-        inputBusca.placeholder = "🎙️ Ouvindo... Diga o produto a pesquisar...";
+        inputBusca.placeholder = "Ouvindo... Diga o produto a pesquisar...";
       }
     } catch (e) {
       console.error("Erro ao iniciar microfone:", e);
