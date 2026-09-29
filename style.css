@@ -6682,11 +6682,12 @@ body.modo-mercado-ativo .item-nome {
   border: 1px solid #C7D2FE;
 }
 
-/* Data e Hora no Cabeçalho da Compra */
+/* Data, Hora e Supermercado no Cabeçalho da Compra */
 .historico-compra-data-hora {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .hist-data-negrito {
@@ -6700,6 +6701,37 @@ body.modo-mercado-ativo .item-nome {
   color: #EA580C;
   font-weight: 400;
   font-size: 0.95rem;
+}
+
+.hist-mercado-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  padding: 2px 8px;
+  border-radius: 6px;
+  vertical-align: middle;
+}
+
+.hist-mercado-badge.sem-logo {
+  background: #F1F5F9;
+  border-color: #CBD5E1;
+}
+
+.hist-mercado-logo {
+  height: 20px;
+  max-width: 38px;
+  object-fit: contain;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.hist-mercado-nome {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #334155;
+  letter-spacing: -0.1px;
 }
 
 /* Responsividade Mobile para Histórico */
@@ -6745,6 +6777,20 @@ body.modo-mercado-ativo .item-nome {
   .historico-detalhes-compra {
     padding: 6px 8px 10px;
     overflow-x: auto;
+  }
+
+  .hist-mercado-badge {
+    padding: 1px 6px;
+    gap: 4px;
+  }
+
+  .hist-mercado-logo {
+    height: 18px;
+    max-width: 32px;
+  }
+
+  .hist-mercado-nome {
+    font-size: 0.78rem;
   }
 }
 

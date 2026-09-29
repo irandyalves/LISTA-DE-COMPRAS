@@ -4847,6 +4847,30 @@ function renderizarHistorico() {
         `;
       });
 
+      // Supermercado registrado na compra (com logo se for mercado cadastrado)
+      const nomeMercado = (compra.mercado || '').trim();
+      let mercadoBadgeHtml = '';
+      if (nomeMercado) {
+        let logoSrc = null;
+        if (typeof obterLogoMercado === 'function') {
+          logoSrc = obterLogoMercado(nomeMercado);
+        }
+        if (logoSrc && (logoSrc.startsWith('data:') || logoSrc.endsWith('.png') || logoSrc.endsWith('.svg'))) {
+          mercadoBadgeHtml = `
+            <span class="hist-mercado-badge" title="Supermercado: ${nomeMercado}">
+              <img src="${logoSrc}" alt="${nomeMercado}" class="hist-mercado-logo" onerror="this.style.display='none'" />
+              <span class="hist-mercado-nome">${nomeMercado}</span>
+            </span>
+          `;
+        } else {
+          mercadoBadgeHtml = `
+            <span class="hist-mercado-badge sem-logo" title="Supermercado: ${nomeMercado}">
+              <span class="hist-mercado-nome">${nomeMercado}</span>
+            </span>
+          `;
+        }
+      }
+
       htmlCards += `
         <div class="historico-compra-card ${isAberta ? 'aberto' : ''}" id="card-hist-${compra.id}">
           <div class="historico-compra-cabecalho" onclick="alternarCardCompraHistorico('${compra.id}')">
@@ -4854,6 +4878,7 @@ function renderizarHistorico() {
               <div class="historico-compra-data-hora">
                 <span class="hist-data-negrito">${diaStr}</span>
                 <span class="hist-hora-laranja">${horaStr}</span>
+                ${mercadoBadgeHtml}
               </div>
             </div>
             <div class="historico-compra-info-dir">

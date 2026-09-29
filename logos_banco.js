@@ -13,10 +13,18 @@ const BANCO_LOGOS = {
 // Função para recuperar logo por identificador ou nome
 function obterLogoMercado(chave) {
   if (!chave) return null;
-  const k = chave.toLowerCase().replace(/[^a-z0-9]/g, '');
-  if (BANCO_LOGOS[k]) return BANCO_LOGOS[k];
-  for (let bKey in BANCO_LOGOS) {
-    if (k.includes(bKey) || bKey.includes(k)) return BANCO_LOGOS[bKey];
+  const k = chave.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  if (!k) return null;
+  if (typeof BANCO_LOGOS !== 'undefined' && BANCO_LOGOS[k]) return BANCO_LOGOS[k];
+  if (typeof BANCO_LOGOS !== 'undefined') {
+    for (let bKey in BANCO_LOGOS) {
+      if (bKey.length >= 3 && (k.includes(bKey) || bKey.includes(k))) return BANCO_LOGOS[bKey];
+    }
   }
-  return `logos/${k}.png`;
+  const conhecidos = ['assai', 'atacadao', 'bigbox', 'carrefour', 'diaadia', 'dona', 'paodeacucar'];
+  for (let c of conhecidos) {
+    if (k.includes(c) || c.includes(k)) return `logos/${c}.png`;
+  }
+  return null;
 }
+
