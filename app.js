@@ -5172,11 +5172,39 @@ function salvarNovaCompraHistorico() {
   renderizarHistorico();
 }
 
+let compraParaExcluirId = null;
+
 function excluirCompraHistorico(compraId) {
-  if (!confirm('Deseja realmente excluir esta compra do histórico?')) return;
-  AppState.historico = AppState.historico.filter(c => String(c.id) !== String(compraId));
+  compraParaExcluirId = compraId;
+  const compra = AppState.historico.find(c => String(c.id) === String(compraId));
+  
+  const modal = document.getElementById('modal-confirm-excluir-compra');
+  const dataEl = document.getElementById('modal-confirm-compra-data');
+  const detEl = document.getElementById('modal-confirm-compra-detalhes');
+  
+  if (compra) {
+    const d = new Date(compra.data);
+    const dataFmt = d.toLocaleDateString('pt-BR');
+    const horaFmt = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    const merc = compra.mercado ? ` no ${compra.mercado}` : '';
+    const tot = compra.total > 0 ? ` (${formatarMoeda(compra.total)})` : '';
+    const qtdItens = (compra.itens || []).length;
+    
+    if (dataEl) dataEl.textContent = `${dataFmt} às ${horaFmt}`;
+    if (detEl) detEl.textContent = `Compra${merc}${tot} com ${qtdItens} ${qtdItens === 1 ? 'item' : 'itens'}. Essa ação não pode ser desfeita.`;
+  }
+  
+  if (modal) modal.style.display = 'flex';
+}
+
+function executarExclusaoCompraConfirmada() {
+  if (!compraParaExcluirId) return;
+  AppState.historico = AppState.historico.filter(c => String(c.id) !== String(compraParaExcluirId));
   salvarEstado(true);
+  fecharModal('modal-confirm-excluir-compra');
+  compraParaExcluirId = null;
   renderizarHistorico();
+  mostrarNotificacaoToast("🗑️ Compra excluída do histórico com sucesso!");
 }
 
 // Ações nos Itens da Lista de Compras
@@ -6807,6 +6835,8 @@ window.addEventListener('keydown', (e) => {
     fecharModal('modal-novo-item-despensa');
     fecharModal('modal-editar-nome-despensa');
     fecharModal('modal-confirmar-zerar');
+    fecharModal('modal-nova-compra-historico');
+    fecharModal('modal-confirm-excluir-compra');
   }
 });
 
