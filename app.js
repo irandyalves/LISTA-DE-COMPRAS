@@ -2078,21 +2078,35 @@ function interpretarPrecoFalado(texto) {
   if (!texto) return null;
   let t = texto.toLowerCase().trim();
 
-  // 1. Dígitos diretos com vírgula ou ponto (ex: '23,39', '23.39', 'R$ 23,39')
+  // Limpeza de ruídos comuns no Speech Recognition do Google
+  t = t.replace(/^r\$\s*/i, '');
+  t = t.replace(/\s*(da tarde|da manhã|da noite|horas?|hrs?)\s*$/i, '');
+  
+  // Converte formato de hora que o Google Speech adora gerar (ex: 4:35, 04:35, 4h35 -> 4,35)
+  t = t.replace(/(\d{1,3})[:hH](\d{1,2})/g, (m, g1, g2) => `${parseInt(g1)},${g2}`);
+
+  // 1. Dígitos diretos com vírgula ou ponto (ex: '4,35', '4.35', '04,35')
   const matchNumVirgula = t.match(/(\d+)[,.](\d{1,2})/);
   if (matchNumVirgula) {
     const cent = matchNumVirgula[2].length === 1 ? matchNumVirgula[2] + '0' : matchNumVirgula[2];
-    return parseFloat(matchNumVirgula[1] + '.' + cent);
+    return parseFloat(parseInt(matchNumVirgula[1]) + '.' + cent);
   }
 
-  // 2. Dígitos com 'e' ou 'com' (ex: '23 e 39', '23 com 39')
+  // 2. Dígitos com 'e' ou 'com' (ex: '4 e 35', '4 com 35')
   const matchNumE = t.match(/(\d+)\s*(?:e|com)\s*(\d{1,2})/);
   if (matchNumE) {
     const cent = matchNumE[2].length === 1 ? matchNumE[2] + '0' : matchNumE[2];
-    return parseFloat(matchNumE[1] + '.' + cent);
+    return parseFloat(parseInt(matchNumE[1]) + '.' + cent);
   }
 
-  // 3. Dígito inteiro direto (ex: '23', '23 reais')
+  // 3. Dois números separados por espaço simples (ex: '4 35')
+  const matchDoisNumeros = t.match(/^(\d{1,3})\s+(\d{1,2})$/);
+  if (matchDoisNumeros) {
+    const cent = matchDoisNumeros[2].length === 1 ? matchDoisNumeros[2] + '0' : matchDoisNumeros[2];
+    return parseFloat(parseInt(matchDoisNumeros[1]) + '.' + cent);
+  }
+
+  // 4. Dígito inteiro direto (ex: '23', '23 reais')
   const matchNumSozinho = t.match(/^(\d+)(?:\s*reais?)?$/);
   if (matchNumSozinho) {
     return parseFloat(matchNumSozinho[1]);
@@ -2100,7 +2114,7 @@ function interpretarPrecoFalado(texto) {
 
   t = t.replace(/centavos?/g, '').trim();
 
-  // 4. Divisão por 'reais' (ex: 'vinte e três reais e trinta e nove')
+  // 5. Divisão por 'reais' (ex: 'quatro reais e trinta e cinco', '4 reais e 35')
   if (t.includes('reais')) {
     const partes = t.split('reais');
     const inteira = converterPalavrasEmNumeroVoz(partes[0]);
@@ -2108,7 +2122,7 @@ function interpretarPrecoFalado(texto) {
     return parseFloat(inteira + '.' + (centavos < 10 ? '0' + centavos : centavos));
   }
 
-  // 5. Divisão por 'com' ou 'vírgula'
+  // 6. Divisão por 'com' ou 'vírgula' (ex: 'quatro vírgula trinta e cinco', 'quatro com trinta e cinco')
   if (/\s+(?:com|vírgula)\s+/.test(t)) {
     const partes = t.split(/\s+(?:com|vírgula)\s+/);
     const inteira = converterPalavrasEmNumeroVoz(partes[0]);
@@ -2116,13 +2130,15 @@ function interpretarPrecoFalado(texto) {
     return parseFloat(inteira + '.' + (centavos < 10 ? '0' + centavos : centavos));
   }
 
-  // 6. Separação por 'e' (ex: 'vinte e três e trinta e nove')
-  const tokens = t.split(/\s+/).filter(Boolean);
+  // 7. Separação por 'e' (ex: 'quatro e trinta e cinco')
+  // Divide a string em tokens sem pontuações finais
+  const tokens = t.replace(/[.,]/g, '').split(/\s+/).filter(Boolean);
   let idxDivisor = -1;
   for (let i = 0; i < tokens.length; i++) {
     if (tokens[i] === 'e') {
       const prev = tokens[i - 1];
       const next = tokens[i + 1];
+      // Ignora o 'e' que liga dezenas a unidades (ex: 'trinta e cinco', 'quarenta e dois')
       if (prev && DEZENAS_PT_VOZ.has(prev) && next && UNIDADES_PT_VOZ.has(next)) {
         continue;
       }
@@ -2138,6 +2154,17 @@ function interpretarPrecoFalado(texto) {
     const n2 = converterPalavrasEmNumeroVoz(parte2);
     if (n1 > 0 && n2 >= 0 && n2 < 100) {
       return parseFloat(n1 + '.' + (n2 < 10 ? '0' + n2 : n2));
+    }
+  }
+
+  // 8. Fala rápida sem 'e' (ex: 'quatro trinta e cinco')
+  if (tokens.length >= 2) {
+    const primeiro = tokens[0];
+    const resto = tokens.slice(1).join(' ');
+    const nPrimeiro = converterPalavrasEmNumeroVoz(primeiro);
+    const nResto = converterPalavrasEmNumeroVoz(resto);
+    if (nPrimeiro > 0 && nPrimeiro <= 99 && nResto > 0 && nResto < 100) {
+      return parseFloat(nPrimeiro + '.' + (nResto < 10 ? '0' + nResto : nResto));
     }
   }
 
@@ -2199,14 +2226,30 @@ function ouvirPrecoItem(itemId, btnEl, ev) {
   recognizerPreco.lang = 'pt-BR';
   recognizerPreco.continuous = false;
   recognizerPreco.interimResults = false;
-  recognizerPreco.maxAlternatives = 1;
+  recognizerPreco.maxAlternatives = 3;
 
   recognizerPreco.onresult = (event) => {
-    const transcricao = event.results[0][0].transcript;
-    console.log("[Voz Preço] Ouvido:", transcricao);
-    const precoExtraido = interpretarPrecoFalado(transcricao);
+    let precoExtraido = null;
+    let melhorTexto = '';
+
+    // Avalia todas as hipóteses transcritas para pegar a interpretação correta de preço
+    for (let i = 0; i < event.results.length; i++) {
+      const res = event.results[i];
+      for (let j = 0; j < res.length; j++) {
+        const trans = res[j].transcript;
+        console.log(`[Voz Preço] Hipótese [${i}][${j}]:`, trans);
+        const preco = interpretarPrecoFalado(trans);
+        if (preco && preco > 0) {
+          precoExtraido = preco;
+          melhorTexto = trans;
+          break;
+        }
+      }
+      if (precoExtraido) break;
+    }
 
     if (precoExtraido && precoExtraido > 0) {
+      console.log(`[Voz Preço] Preço extraído com sucesso: ${precoExtraido} (texto: "${melhorTexto}")`);
       item.preco = precoExtraido;
       item.ultimoPreco = precoExtraido;
       item.precoRegistradoMercado = precoExtraido;
