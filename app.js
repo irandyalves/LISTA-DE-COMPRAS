@@ -2839,19 +2839,28 @@ function ouvirPrecoItem(itemId, btnEl, ev) {
       mostrarNotificacaoToast(`⚠️ Não identifiquei o valor falado ("${melhorTexto || 'silêncio'}"). Tente novamente ou clique no valor para digitar.`);
     }
 
-    // Após concluir, aguarda 2 segundos para voltar à cor normal
-    setTimeout(() => {
-      if (btnEl) btnEl.classList.remove('ouvindo');
-      gravandoPrecoItemId = null;
-    }, 2000);
+    // Após concluir, mantém verde por 2 segundos e depois volta à cor normal
+    if (btnEl) {
+      btnEl.classList.remove('ouvindo');
+      btnEl.classList.add('mic-concluido-verde');
+      setTimeout(() => {
+        btnEl.classList.remove('mic-concluido-verde');
+        btnEl.blur();
+        gravandoPrecoItemId = null;
+      }, 2000);
+    }
   };
 
   recognizerPreco.onerror = (e) => {
     console.warn("[Voz Preço] Erro:", e.error);
-    setTimeout(() => {
-      if (btnEl) btnEl.classList.remove('ouvindo');
-      gravandoPrecoItemId = null;
-    }, 2000);
+    if (btnEl) {
+      setTimeout(() => {
+        btnEl.classList.remove('ouvindo');
+        btnEl.classList.remove('mic-concluido-verde');
+        btnEl.blur();
+        gravandoPrecoItemId = null;
+      }, 2000);
+    }
     if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
       mostrarNotificacaoToast("⚠️ Microfone bloqueado no navegador do PC. Abrindo teclado...");
       setTimeout(() => editarPrecoItemManualmente(itemId), 400);
@@ -2864,10 +2873,14 @@ function ouvirPrecoItem(itemId, btnEl, ev) {
   };
 
   recognizerPreco.onend = () => {
-    setTimeout(() => {
-      if (btnEl) btnEl.classList.remove('ouvindo');
-      gravandoPrecoItemId = null;
-    }, 2000);
+    if (btnEl) {
+      setTimeout(() => {
+        btnEl.classList.remove('ouvindo');
+        btnEl.classList.remove('mic-concluido-verde');
+        btnEl.blur();
+        gravandoPrecoItemId = null;
+      }, 2000);
+    }
   };
 
   try {
@@ -4720,31 +4733,31 @@ function renderizarHistorico() {
     }
 
     containerResumo.innerHTML = `
-      <div class="card-resumo-hist">
+      <div class="card-resumo-hist" title="Total Gasto: ${formatarMoeda(totalGastoGeral)}">
         <div class="card-resumo-hist-ico" style="background: #ECFDF5; color: #059669;">💰</div>
         <div class="card-resumo-hist-info">
-          <span class="card-resumo-hist-rotulo">Total Gasto</span>
+          <span class="card-resumo-hist-rotulo">Total</span>
           <span class="card-resumo-hist-valor" style="color: #059669;">${totalGastoGeral > 0 ? formatarMoeda(totalGastoGeral) : 'R$ 0,00'}</span>
         </div>
       </div>
-      <div class="card-resumo-hist">
+      <div class="card-resumo-hist" title="Idas ao Mercado: ${totalComprasQtd} compras">
         <div class="card-resumo-hist-ico" style="background: #EEF2FF; color: #4F46E5;">🛒</div>
         <div class="card-resumo-hist-info">
-          <span class="card-resumo-hist-rotulo">Idas ao Mercado</span>
+          <span class="card-resumo-hist-rotulo">Idas</span>
           <span class="card-resumo-hist-valor">${totalComprasQtd} ${totalComprasQtd === 1 ? 'compra' : 'compras'}</span>
         </div>
       </div>
-      <div class="card-resumo-hist">
+      <div class="card-resumo-hist" title="Ticket Médio: ${formatarMoeda(ticketMedio)}">
         <div class="card-resumo-hist-ico" style="background: #FFFBEB; color: #D97706;">📊</div>
         <div class="card-resumo-hist-info">
-          <span class="card-resumo-hist-rotulo">Ticket Médio</span>
+          <span class="card-resumo-hist-rotulo">Ticket</span>
           <span class="card-resumo-hist-valor">${ticketMedio > 0 ? formatarMoeda(ticketMedio) : 'R$ 0,00'}</span>
         </div>
       </div>
-      <div class="card-resumo-hist">
+      <div class="card-resumo-hist" title="Intervalo Médio: ${mediaIntervaloTxt}">
         <div class="card-resumo-hist-ico" style="background: #F0FDF4; color: #16A34A;">⏱️</div>
         <div class="card-resumo-hist-info">
-          <span class="card-resumo-hist-rotulo">Intervalo Médio</span>
+          <span class="card-resumo-hist-rotulo">Intervalo</span>
           <span class="card-resumo-hist-valor">${mediaIntervaloTxt}</span>
         </div>
       </div>

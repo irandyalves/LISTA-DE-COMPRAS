@@ -4018,13 +4018,22 @@ body.modo-mercado-ativo .item-nome {
   vertical-align: middle;
   flex-shrink: 0;
   outline: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.btn-mic-preco-verde:hover {
-  background: #10B981;
-  color: #FFFFFF;
-  transform: scale(1.15);
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.45);
+@media (hover: hover) and (pointer: fine) {
+  .btn-mic-preco-verde:hover {
+    background: #10B981;
+    color: #FFFFFF;
+    transform: scale(1.15);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.45);
+  }
+}
+
+.btn-mic-preco-verde.mic-concluido-verde {
+  background: #10B981 !important;
+  color: #FFFFFF !important;
+  border-color: #059669 !important;
 }
 
 .btn-mic-preco-verde.ouvindo {
@@ -7104,39 +7113,68 @@ body.tema-escuro .card-ranking-stats {
 /* Responsividade Mobile para Histórico */
 @media (max-width: 820px) {
   .historico-topo-integrado {
-    flex-wrap: wrap;
-    gap: 6px;
-    width: 100%;
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    width: auto !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+    flex-wrap: nowrap !important;
   }
 
   .historico-titulo {
-    font-size: 0.85rem;
+    display: none !important; /* Retira o título no mobile conforme solicitado */
   }
 
   .historico-cards-resumo {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 3px;
-    width: 100%;
+    display: flex !important;
+    align-items: center !important;
+    gap: 3px !important;
+    width: 100% !important;
+    flex-wrap: nowrap !important;
+    min-width: 0 !important;
   }
 
   .card-resumo-hist {
-    padding: 3px 4px;
-    gap: 3px;
-    border-radius: 6px;
-    min-width: 0;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 4px 5px !important;
+    gap: 3px !important;
+    border-radius: 6px !important;
+    flex: 1 !important;
+    min-width: 0 !important;
   }
 
   .card-resumo-hist-ico {
-    display: none;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: auto !important;
+    height: auto !important;
+    font-size: 0.82rem !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .card-resumo-hist-info {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
   }
 
   .card-resumo-hist-rotulo {
-    font-size: 0.52rem;
+    display: none !important; /* Substitui a escrita do rótulo por ícone */
   }
 
   .card-resumo-hist-valor {
-    font-size: 0.74rem;
+    font-size: 0.72rem !important;
+    font-weight: 800 !important;
+    white-space: nowrap !important;
+    letter-spacing: -0.02em !important;
   }
 
   .historico-compra-cabecalho {
