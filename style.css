@@ -6383,29 +6383,31 @@ body.tema-escuro .drawer-fechar-btn {
   display: inline-flex;
   align-items: center;
   gap: 2px;
-  background: #F1F5F9;
-  padding: 2px;
-  border-radius: 8px;
-  border: 1px solid #CBD5E1;
+  background: transparent !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  border: none !important;
 }
 
 .btn-fonte-header {
-  background: white;
-  border: 1px solid #E2E8F0;
+  background: transparent !important;
+  border: none !important;
   color: #4F46E5;
   font-weight: 800;
-  font-size: 0.74rem;
+  font-size: 0.78rem;
   line-height: 1;
-  padding: 5px 8px;
+  padding: 4px 6px;
   border-radius: 6px;
   cursor: pointer;
+  box-shadow: none !important;
+  outline: none !important;
   transition: all 0.15s ease;
   user-select: none;
 }
 
 .btn-fonte-header:hover {
-  background: #EEF2FF;
-  border-color: #4F46E5;
+  background: rgba(79, 70, 229, 0.1) !important;
+  border: none !important;
   color: #3730A3;
   transform: translateY(-1px);
 }
@@ -7519,9 +7521,15 @@ body.tema-escuro .card-ranking-stats {
   }
 
   .btn-fonte-header {
-    background: #1E293B !important;
-    border: 1px solid #334155 !important;
+    background: transparent !important;
+    border: none !important;
     color: #F8FAFC !important;
+  }
+
+  .btn-fonte-header:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: none !important;
+    color: #FFFFFF !important;
   }
 
   /* Campo de Pesquisa no Mobile (Reduzido em 80% na largura) */
