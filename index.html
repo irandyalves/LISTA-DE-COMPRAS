@@ -12,7 +12,7 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>">
   
   <!-- CSS Moderno -->
-  <link rel="stylesheet" href="style.css?v=9.3">
+  <link rel="stylesheet" href="style.css?v=9.4">
 </head>
 <body>
 
@@ -640,9 +640,10 @@
           <span class="modal-preco-cifrao">R$</span>
           <input type="text" id="input-modal-preco-valor" 
                  class="modal-preco-input" 
-                 inputmode="decimal" 
+                 inputmode="numeric" 
                  placeholder="0,00" 
                  autocomplete="off" 
+                 oninput="aoDigitarMascaraPrecoModal(this)"
                  onkeydown="aoTeclarModalEditarPreco(event)">
         </div>
       </div>
@@ -704,7 +705,7 @@
   <script src="logos_banco.js"></script>
   <script src="icones2d.js"></script>
   <script src="firebase-sync.js"></script>
-  <script src="app.js?v=9.3"></script>
+  <script src="app.js?v=9.4"></script>
 
 </body>
 </html>

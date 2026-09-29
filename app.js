@@ -2338,6 +2338,20 @@ function ouvirPrecoItem(itemId, btnEl, ev) {
   }
 }
 
+// Máscara Monetária Automática em Tempo Real (estilo PDV / Caixa Eletrônico)
+function formatarMascaraMoeda(val) {
+  const digitos = String(val || '').replace(/\D/g, '');
+  if (!digitos || parseInt(digitos, 10) === 0) return '';
+  const centavos = parseInt(digitos, 10);
+  return (centavos / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function aoDigitarMascaraPrecoModal(input) {
+  if (!input) return;
+  const formatado = formatarMascaraMoeda(input.value);
+  input.value = formatado;
+}
+
 let itemEmEdicaoPrecoId = null;
 
 function editarPrecoItemManualmente(itemId, ev) {
@@ -2356,7 +2370,7 @@ function editarPrecoItemManualmente(itemId, ev) {
   }
 
   const precoAtual = (item.preco && Number(item.preco) > 0) 
-    ? Number(item.preco).toFixed(2).replace('.', ',') 
+    ? Number(item.preco).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) 
     : '';
 
   if (inputEl) {
@@ -2388,6 +2402,9 @@ function fecharModalEditarPreco(event) {
 }
 
 function limparPrecoModal() {
+  const inputEl = document.getElementById('input-modal-preco-valor');
+  if (inputEl) inputEl.value = '';
+
   if (!itemEmEdicaoPrecoId) return;
   const item = AppState.listaAtiva.find(i => String(i.id) === String(itemEmEdicaoPrecoId));
   if (item) {
@@ -2419,25 +2436,25 @@ function confirmarSalvarPrecoModal() {
   const inputEl = document.getElementById('input-modal-preco-valor');
   const valorStr = inputEl ? inputEl.value.trim() : '';
 
-  const limpo = valorStr.replace('R$', '').replace(/\s+/g, '').replace(',', '.').trim();
-  const valorNum = limpo === '' ? 0 : parseFloat(limpo);
+  // Converte os dígitos da máscara em centavos e divide por 100 (ex: 2365 -> 23.65)
+  const digitos = valorStr.replace(/\D/g, '');
+  const valorFinal = (!digitos || parseInt(digitos, 10) === 0)
+    ? 0
+    : parseFloat((parseInt(digitos, 10) / 100).toFixed(2));
 
-  if (!isNaN(valorNum) && valorNum >= 0) {
-    const valorFinal = normalizarPrecoMercado(valorNum) || valorNum;
-    item.preco = valorFinal;
-    item.ultimoPreco = valorFinal;
-    item.precoRegistradoMercado = valorFinal;
-    if (item.catalogoId) {
-      const catItem = AppState.catalogo.find(c => String(c.id) === String(item.catalogoId));
-      if (catItem) {
-        catItem.precoRegistradoMercado = valorFinal;
-        catItem.preco = valorFinal;
-      }
+  item.preco = valorFinal;
+  item.ultimoPreco = valorFinal;
+  item.precoRegistradoMercado = valorFinal;
+  if (item.catalogoId) {
+    const catItem = AppState.catalogo.find(c => String(c.id) === String(item.catalogoId));
+    if (catItem) {
+      catItem.precoRegistradoMercado = valorFinal;
+      catItem.preco = valorFinal;
     }
-    salvarEstado(true);
-    renderizarListaCompras();
-    atualizarCardResumo();
   }
+  salvarEstado(true);
+  renderizarListaCompras();
+  atualizarCardResumo();
 
   fecharModalEditarPrecoDireto();
 }
