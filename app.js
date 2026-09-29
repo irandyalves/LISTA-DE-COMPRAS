@@ -5726,12 +5726,17 @@ function alterarPrecoItem(id, novoPrecoStr, redeRef) {
   }
 }
 
-function removerItem(id) {
-  const itemRemovido = AppState.listaAtiva.find(i => String(i.id) === String(id) || String(i.catalogoId) === String(id));
-  const catItem = itemRemovido ? (itemRemovido.categoria || 'Diversos') : null;
+function removerItem(id, dispararUndo = true) {
+  const index = AppState.listaAtiva.findIndex(i => String(i.id) === String(id) || String(i.catalogoId) === String(id));
+  const itemRemovido = index >= 0 ? AppState.listaAtiva[index] : null;
+  if (!itemRemovido) return;
+
+  const nomeItem = itemRemovido.nome || 'Item';
+  const catItem = itemRemovido.categoria || 'Diversos';
+  const catId = itemRemovido.catalogoId || itemRemovido.id;
 
   // Desmarca no catálogo se for produto do catálogo
-  const prod = AppState.catalogo.find(p => String(p.id) === String(id) || String(p.catalogoId) === String(id) || `item_despensa_${p.id}` === String(id));
+  const prod = AppState.catalogo.find(p => String(p.id) === String(catId) || `item_despensa_${p.id}` === String(id));
   if (prod) {
     prod.selecionado = false;
     prod.comprado = false;
@@ -5743,6 +5748,128 @@ function removerItem(id) {
   renderizarDespensa();
   atualizarCardResumo();
   if (catItem) atualizarBalaoTotalCategoria(catItem);
+
+  if (dispararUndo) {
+    exibirToastDesfazer(nomeItem, 'compras', {
+      item: { ...itemRemovido },
+      index: index,
+      catalogoId: catId
+    });
+  }
+}
+
+// =========================================================================
+// SISTEMA DE RE.UNDO / DESFAZER EXCLUSÃO (BOTÃO VOLTAR ↩️ COM 2 SEGUNDOS)
+// =========================================================================
+let itemParaDesfazer = null;
+let timerDesfazer = null;
+
+function exibirToastDesfazer(nomeItem, tipo, payload) {
+  itemParaDesfazer = {
+    tipo: tipo, // 'compras' ou 'catalogo'
+    payload: payload,
+    nome: nomeItem
+  };
+
+  let toast = document.getElementById('toast-desfazer-flutuante');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast-desfazer-flutuante';
+    toast.className = 'toast-desfazer-flutuante';
+    document.body.appendChild(toast);
+  }
+
+  if (timerDesfazer) {
+    clearTimeout(timerDesfazer);
+    timerDesfazer = null;
+  }
+
+  toast.innerHTML = `
+    <div class="toast-desfazer-conteudo">
+      <span class="toast-desfazer-msg">🗑️ "${nomeItem}" apagado</span>
+      <button type="button" class="btn-toast-desfazer" onclick="executarDesfazerExclusao(event)" title="Recuperar item apagado">
+        <span class="ico-voltar-undo">↩️</span> Desfazer
+      </button>
+    </div>
+    <div class="toast-desfazer-barra-tempo"></div>
+  `;
+
+  toast.classList.remove('visivel');
+  void toast.offsetWidth; // Força reflow para reiniciar a animação de contagem de 2s
+  toast.classList.add('visivel');
+
+  // Se não clicar em até 2 segundos, cancela o desfazer ("já era")
+  timerDesfazer = setTimeout(() => {
+    toast.classList.remove('visivel');
+    itemParaDesfazer = null;
+    timerDesfazer = null;
+  }, 2000);
+}
+
+function executarDesfazerExclusao(event) {
+  if (event) {
+    event.stopPropagation();
+    event.preventDefault();
+  }
+
+  if (!itemParaDesfazer) return;
+
+  if (timerDesfazer) {
+    clearTimeout(timerDesfazer);
+    timerDesfazer = null;
+  }
+
+  const toast = document.getElementById('toast-desfazer-flutuante');
+  if (toast) toast.classList.remove('visivel');
+
+  const { tipo, payload, nome } = itemParaDesfazer;
+  itemParaDesfazer = null;
+
+  if (tipo === 'compras') {
+    if (payload.item) {
+      const existe = AppState.listaAtiva.some(i => String(i.id) === String(payload.item.id));
+      if (!existe) {
+        if (typeof payload.index === 'number' && payload.index >= 0 && payload.index <= AppState.listaAtiva.length) {
+          AppState.listaAtiva.splice(payload.index, 0, payload.item);
+        } else {
+          AppState.listaAtiva.push(payload.item);
+        }
+      }
+    }
+    if (payload.catalogoId) {
+      const prod = AppState.catalogo.find(p => String(p.id) === String(payload.catalogoId));
+      if (prod) {
+        prod.selecionado = true;
+        if (payload.item && payload.item.qtde) prod.qtde = payload.item.qtde;
+      }
+    }
+  } else if (tipo === 'catalogo') {
+    if (payload.produto) {
+      if (AppState.itensExcluidos) {
+        AppState.itensExcluidos = AppState.itensExcluidos.filter(n => n !== payload.produto.nome.toLowerCase().trim());
+      }
+      const existeCat = AppState.catalogo.some(p => String(p.id) === String(payload.produto.id));
+      if (!existeCat) {
+        if (typeof payload.index === 'number' && payload.index >= 0 && payload.index <= AppState.catalogo.length) {
+          AppState.catalogo.splice(payload.index, 0, payload.produto);
+        } else {
+          AppState.catalogo.push(payload.produto);
+        }
+      }
+      if (payload.estavaNaLista && payload.itemLista) {
+        const existeLista = AppState.listaAtiva.some(i => String(i.id) === String(payload.itemLista.id));
+        if (!existeLista) {
+          AppState.listaAtiva.push(payload.itemLista);
+        }
+      }
+    }
+  }
+
+  salvarEstado(true);
+  renderizarListaCompras();
+  renderizarDespensa();
+  atualizarCardResumo();
+  mostrarNotificacaoToast(`✅ "${nome}" restaurado com sucesso!`);
 }
 
 // =========================================================================
@@ -5817,7 +5944,7 @@ function inicializarSwipeDeleteMobile() {
     // --- SUPORTE A TOQUE NATIVO (CELULAR / MOBILE) ---
     container.addEventListener('touchstart', (e) => {
       if (e.touches.length > 1) return;
-      if (e.target.closest('button, input, select, a, .contador-qtde, .btn-mic-preco-verde, .badge-preco-real, .btn-favorito-item, .btn-editar-despensa, .item-check-btn')) {
+      if (e.target.closest('button, input, select, a, .contador-qtde, .contador-qtde-tabela, .btn-mic-preco-verde, .badge-preco-real, .btn-favorito-item, .btn-editar-despensa, .item-check-btn, .check-item-comprado')) {
         return;
       }
 
@@ -5888,7 +6015,7 @@ function inicializarSwipeDeleteMobile() {
 
       const elapsed = Date.now() - startTime;
       const velocity = Math.abs(diffX) / (elapsed || 1);
-      const deveExcluir = diffX < -80 || (diffX < -45 && velocity > 0.45);
+      const deveExcluir = diffX < -75 || (diffX < -40 && velocity > 0.45);
 
       if (deveExcluir && itemId) {
         elem.classList.remove('arrastando-swipe', 'pronto-deletar-swipe');
@@ -5922,7 +6049,7 @@ function inicializarSwipeDeleteMobile() {
 
     container.addEventListener('mousedown', (e) => {
       if (e.button !== 0) return;
-      if (e.target.closest('button, input, select, a, .contador-qtde, .btn-mic-preco-verde, .badge-preco-real, .btn-favorito-item, .btn-editar-despensa, .item-check-btn')) {
+      if (e.target.closest('button, input, select, a, .contador-qtde, .contador-qtde-tabela, .btn-mic-preco-verde, .badge-preco-real, .btn-favorito-item, .btn-editar-despensa, .item-check-btn, .check-item-comprado')) {
         return;
       }
       const elem = e.target.closest(seletorItem);
@@ -5947,7 +6074,7 @@ function inicializarSwipeDeleteMobile() {
       mouseState.diffY = e.clientY - mouseState.startY;
 
       if (!mouseState.isSwiping) {
-        if (mouseState.diffX < -15 && Math.abs(mouseState.diffX) > Math.abs(mouseState.diffY)) {
+        if (mouseState.diffX < -10 && Math.abs(mouseState.diffX) > Math.abs(mouseState.diffY)) {
           mouseState.isSwiping = true;
           mouseState.elem.classList.add('arrastando-swipe');
           houveArrastoRecente = true;
@@ -5977,7 +6104,7 @@ function inicializarSwipeDeleteMobile() {
 
       const elapsed = Date.now() - startTime;
       const velocity = Math.abs(diffX) / (elapsed || 1);
-      const deveExcluir = diffX < -80 || (diffX < -45 && velocity > 0.45);
+      const deveExcluir = diffX < -75 || (diffX < -40 && velocity > 0.45);
 
       if (deveExcluir && itemId) {
         elem.classList.remove('arrastando-swipe', 'pronto-deletar-swipe');
@@ -6010,10 +6137,7 @@ function inicializarSwipeDeleteMobile() {
     '.mcol-tr-item',
     'tr-item-',
     (itemId) => {
-      const itemObj = AppState.listaAtiva.find(i => String(i.id) === String(itemId));
-      const nomeItem = itemObj ? itemObj.nome : 'Item';
-      removerItem(itemId);
-      mostrarNotificacaoToast(`🗑️ "${nomeItem}" removido da lista`);
+      removerItem(itemId, true);
     }
   );
 
@@ -6023,24 +6147,35 @@ function inicializarSwipeDeleteMobile() {
     '.item-card',
     'card-despensa-',
     (itemId) => {
-      excluirItemDespensaDireto(itemId);
+      excluirItemDespensaDireto(itemId, true);
     }
   );
 }
 
-function excluirItemDespensaDireto(produtoId) {
-  const prod = AppState.catalogo.find(p => String(p.id) === String(produtoId));
-  const nomeItem = prod ? prod.nome : 'Item';
-  if (prod) {
-    if (!AppState.itensExcluidos) AppState.itensExcluidos = [];
-    AppState.itensExcluidos.push(prod.nome.toLowerCase().trim());
-    AppState.catalogo = AppState.catalogo.filter(p => String(p.id) !== String(produtoId));
-    AppState.listaAtiva = AppState.listaAtiva.filter(p => String(p.id) !== String(produtoId) && String(p.catalogoId) !== String(produtoId));
-    salvarEstado(true);
-    renderizarDespensa();
-    renderizarListaCompras();
-    atualizarCardResumo();
-    mostrarNotificacaoToast(`🗑️ "${nomeItem}" excluído do catálogo`);
+function excluirItemDespensaDireto(produtoId, dispararUndo = true) {
+  const index = AppState.catalogo.findIndex(p => String(p.id) === String(produtoId));
+  const prod = index >= 0 ? AppState.catalogo[index] : null;
+  if (!prod) return;
+
+  const nomeItem = prod.nome || 'Item';
+  const itemNaLista = AppState.listaAtiva.find(p => String(p.id) === String(produtoId) || String(p.catalogoId) === String(produtoId));
+
+  if (!AppState.itensExcluidos) AppState.itensExcluidos = [];
+  AppState.itensExcluidos.push(prod.nome.toLowerCase().trim());
+  AppState.catalogo = AppState.catalogo.filter(p => String(p.id) !== String(produtoId));
+  AppState.listaAtiva = AppState.listaAtiva.filter(p => String(p.id) !== String(produtoId) && String(p.catalogoId) !== String(produtoId));
+  salvarEstado(true);
+  renderizarDespensa();
+  renderizarListaCompras();
+  atualizarCardResumo();
+
+  if (dispararUndo) {
+    exibirToastDesfazer(nomeItem, 'catalogo', {
+      produto: { ...prod },
+      index: index,
+      estavaNaLista: !!itemNaLista,
+      itemLista: itemNaLista ? { ...itemNaLista } : null
+    });
   }
 }
 
