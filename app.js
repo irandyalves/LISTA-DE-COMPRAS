@@ -2879,10 +2879,62 @@ function aoTeclarModalEditarPreco(event) {
   }
 }
 
+function sanitizarChaveId(str) {
+  return String(str || '')
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]/g, "_");
+}
+
+function atualizarBalaoTotalCategoria(categoria) {
+  if (!categoria) return;
+  const chaveId = sanitizarChaveId(categoria);
+
+  // 1. Atualizar balão em Montar Lista (view-despensa)
+  const balaoDespensa = document.getElementById(`balao-total-despensa-${chaveId}`);
+  if (balaoDespensa) {
+    const itensCat = AppState.catalogo.filter(p => (p.categoria || 'Diversos') === categoria && p.selecionado);
+    const totalCat = itensCat.reduce((acc, p) => {
+      const precoP = Number(p.precoMedioDF) || Number(p.ultimoPreco) || Number(p.preco) || 10;
+      return acc + (p.qtde || 1) * precoP;
+    }, 0);
+
+    const valorEl = balaoDespensa.querySelector('.balao-valor');
+    if (valorEl) valorEl.textContent = formatarMoeda(totalCat);
+    if (totalCat > 0) {
+      balaoDespensa.classList.remove('vazio');
+    } else {
+      balaoDespensa.classList.add('vazio');
+    }
+  }
+
+  // 2. Atualizar balão em Comprar (view-lista)
+  const balaoComprar = document.getElementById(`balao-total-comprar-${chaveId}`);
+  if (balaoComprar) {
+    const itensListaCat = AppState.listaAtiva.filter(i => (i.categoria || 'Diversos') === categoria);
+    const totalComprar = itensListaCat.reduce((acc, i) => {
+      const precoI = (ehDispositivoMobile && Number(i.precoRegistradoMercado) > 0)
+        ? Number(i.precoRegistradoMercado)
+        : (Number(i.precoRegistradoMercado) > 0 ? Number(i.precoRegistradoMercado) : (Number(i.preco) || Number(i.precoMedioDF) || 0));
+      return acc + (i.qtde || 1) * precoI;
+    }, 0);
+
+    const valorEl = balaoComprar.querySelector('.balao-valor');
+    if (valorEl) valorEl.textContent = formatarMoeda(totalComprar);
+    if (totalComprar > 0) {
+      balaoComprar.classList.remove('vazio');
+    } else {
+      balaoComprar.classList.add('vazio');
+    }
+  }
+}
+
 // Renderizar a Lista de Compras Ativa (com Ícones 2D Coloridos)
 function renderizarListaCompras() {
   const container = document.getElementById('itens-lista-container');
   if (!container) return;
+  const scrollYAnterior = window.scrollY || document.documentElement.scrollTop || 0;
   container.innerHTML = '';
 
   if (AppState.listaAtiva.length === 0) {
@@ -2995,19 +3047,13 @@ function renderizarListaCompras() {
   let linhasTabelaHtml = '';
 
   for (const [categoria, itens] of Object.entries(grupos)) {
-    // Ordenação dinâmica dentro da categoria
+    // Ordenação dinâmica dentro da categoria: apenas alfabética se ativada
     if (AppState.modoCotacao === 'alfabetico') {
       itens.sort((a, b) => {
-        if (a.comprado !== b.comprado) return a.comprado ? 1 : -1;
         return (a.nome || '').localeCompare(b.nome || '', 'pt-BR', { sensitivity: 'base' });
       });
-    } else {
-      // Itens não comprados primeiro
-      itens.sort((a, b) => {
-        if (a.comprado === b.comprado) return 0;
-        return a.comprado ? 1 : -1;
-      });
     }
+    // NOTA: Os itens NÃO mudam de posição ao serem marcados como pego no carrinho. Ficam exatamente onde estão para que o usuário não seja jogado para o topo e possa escolher mais coisas daquela seção!
 
     // Linha de Cabeçalho da Categoria com os Atacadistas na mesma linha
     const iconeOlhoAberto = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
@@ -3027,16 +3073,30 @@ function renderizarListaCompras() {
       `;
     }
 
+    const catChave = sanitizarChaveId(categoria);
+    const totalCatComprar = itens.reduce((acc, i) => {
+      const p = (ehDispositivoMobile && Number(i.precoRegistradoMercado) > 0)
+        ? Number(i.precoRegistradoMercado)
+        : (Number(i.precoRegistradoMercado) > 0 ? Number(i.precoRegistradoMercado) : (Number(i.preco) || Number(i.precoMedioDF) || 0));
+      return acc + (i.qtde || 1) * p;
+    }, 0);
+    const temValorComprar = totalCatComprar > 0;
+    const thAcoesHtml = isMobile ? '' : `<th class="mcol-th-acoes">${botaoOlhoHtml}</th>`;
+
     linhasTabelaHtml += `
       <tr class="mcol-tr-categoria-separador">
         <th colspan="3" class="mcol-th-categoria-col">
           <div class="categoria-titulo-tabela">
             <span class="categoria-nome-txt">${categoria}</span>
             <span class="categoria-qtd-badge">(${itens.length} ${itens.length === 1 ? 'item' : 'itens'})</span>
+            <div class="balao-total-categoria ${temValorComprar ? '' : 'vazio'}" id="balao-total-comprar-${catChave}">
+              <span class="balao-rotulo">Total:</span>
+              <span class="balao-valor">${formatarMoeda(totalCatComprar)}</span>
+            </div>
           </div>
         </th>
         ${colunasCabecalhoMercados}
-        <th class="mcol-th-acoes">${botaoOlhoHtml}</th>
+        ${thAcoesHtml}
       </tr>
     `;
 
@@ -3160,9 +3220,11 @@ function renderizarListaCompras() {
             </div>
           </td>
           ${celulasPrecos}
-          <td class="mcol-td-acoes">
-            <button class="btn-delete-item-tabela" onclick="removerItem('${item.id}')" title="Remover item da lista">✕</button>
-          </td>
+          ${isMobile ? '' : `
+            <td class="mcol-td-acoes">
+              <button class="btn-delete-item-tabela" onclick="removerItem('${item.id}')" title="Remover item da lista">✕</button>
+            </td>
+          `}
         </tr>
       `;
     });
@@ -3197,7 +3259,7 @@ function renderizarListaCompras() {
             <small style="color: var(--text-muted); font-size: 0.72rem;">Soma dos ${AppState.listaAtiva.length} itens</small>
           </td>
           ${celulasTotais}
-          <td class="mcol-td-acoes-total"></td>
+          ${isMobile ? '' : '<td class="mcol-td-acoes-total"></td>'}
         </tr>
       </tfoot>
     `;
@@ -3216,6 +3278,13 @@ function renderizarListaCompras() {
       </table>
     </div>
   `;
+
+  // Preservar a posição do scroll para JAMAIS jogar o usuário para o topo ao interagir na tabela
+  if (scrollYAnterior > 0) {
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: scrollYAnterior, behavior: 'instant' });
+    });
+  }
 }
 
 // Catálogo Especial da Despensa com Marcas e Menor Preço (8 Cards Lado a Lado)
@@ -4019,10 +4088,23 @@ function renderizarDespensa() {
       `;
     });
 
+    const totalEscolhidoCat = itens.filter(p => p.selecionado).reduce((acc, p) => {
+      const precoP = Number(p.precoMedioDF) || Number(p.ultimoPreco) || Number(p.preco) || 10;
+      return acc + (p.qtde || 1) * precoP;
+    }, 0);
+    const temEscolhido = totalEscolhidoCat > 0;
+    const catChave = sanitizarChaveId(categoria);
+
     grupoDiv.innerHTML = `
       <div class="categoria-titulo">
-        <span>${categoria}</span>
-        <span style="font-size: 0.8rem; font-weight: 500;">${itensVisiveisContador} ${itensVisiveisContador === 1 ? 'item' : 'itens'}</span>
+        <div class="categoria-titulo-info">
+          <span>${categoria}</span>
+          <span class="categoria-qtd-badge" style="font-size: 0.8rem; font-weight: 500; opacity: 0.85;">(${itensVisiveisContador} ${itensVisiveisContador === 1 ? 'item' : 'itens'})</span>
+        </div>
+        <div class="balao-total-categoria ${temEscolhido ? '' : 'vazio'}" id="balao-total-despensa-${catChave}">
+          <span class="balao-rotulo">Total:</span>
+          <span class="balao-valor">${formatarMoeda(totalEscolhidoCat)}</span>
+        </div>
       </div>
       <div class="itens-lista">${htmlItens}</div>
     `;
@@ -4087,6 +4169,9 @@ function alternarItemDespensaEmTempoReal(produtoId, event) {
     }
   }
 
+  // Atualiza imediatamente o balão de total da categoria correspondente
+  atualizarBalaoTotalCategoria(prod.categoria || 'Diversos');
+
   // Monta em tempo real na Lista de Compra (aqui recebe o que eu faço em Montar Lista)
   renderizarListaCompras();
   atualizarCardResumo();
@@ -4116,6 +4201,7 @@ function alterarQuantidadeMontarLista(produtoId, delta, event) {
   }
 
   salvarEstado(true);
+  atualizarBalaoTotalCategoria(prod.categoria || 'Diversos');
   renderizarListaCompras();
   atualizarCardResumo();
 }
@@ -4139,6 +4225,7 @@ function definirQuantidadeMontarLista(produtoId, novoValor, event) {
   }
 
   salvarEstado(true);
+  atualizarBalaoTotalCategoria(prod.categoria || 'Diversos');
   renderizarListaCompras();
   atualizarCardResumo();
 }
@@ -4418,6 +4505,49 @@ let itemPendenteDesmarcarId = null;
 let timerPendenteDesmarcar = null;
 let houveArrastoRecente = false;
 
+function atualizarVisualItemLinha(item, isPendente = false) {
+  if (!item) return false;
+  const tr = document.getElementById(`tr-item-${item.id}`);
+  if (!tr) return false;
+
+  tr.className = `mcol-tr-item ${item.comprado ? 'item-linha-comprado' : ''} ${isPendente ? 'pendente-desmarcar' : ''}`;
+
+  const chk = tr.querySelector('.check-item-comprado');
+  if (chk) {
+    chk.checked = !!item.comprado;
+    chk.title = item.comprado 
+      ? (isPendente ? 'Clique novamente para confirmar' : 'Clique 2x para desmarcar') 
+      : 'Marcar como pego no carrinho';
+  }
+
+  const nomeEl = tr.querySelector('.mcol-prod-nome');
+  if (nomeEl) {
+    if (item.comprado && !isPendente) {
+      nomeEl.classList.add('texto-riscado');
+    } else {
+      nomeEl.classList.remove('texto-riscado');
+    }
+  }
+
+  const cardCell = tr.querySelector('.mcol-prod-card-cell');
+  if (cardCell) {
+    let badgePendenteEl = cardCell.querySelector('.badge-confirmar-desmarcar');
+    if (isPendente) {
+      if (!badgePendenteEl) {
+        badgePendenteEl = document.createElement('span');
+        badgePendenteEl.className = 'badge-confirmar-desmarcar';
+        badgePendenteEl.title = 'Clique mais uma vez para desmarcar';
+        badgePendenteEl.textContent = '⚠️ Toque novamente para desmarcar';
+        cardCell.appendChild(badgePendenteEl);
+      }
+    } else if (badgePendenteEl) {
+      badgePendenteEl.remove();
+    }
+  }
+
+  return true;
+}
+
 function alternarItemComprado(id) {
   if (houveArrastoRecente) return;
   const item = AppState.listaAtiva.find(i => String(i.id) === String(id));
@@ -4432,7 +4562,11 @@ function alternarItemComprado(id) {
     if (catItem) catItem.comprado = true;
 
     salvarEstado(true);
-    renderizarListaCompras();
+
+    // Atualiza in-place no DOM sem jamais recriar a tabela nem jogar o usuário para o topo
+    if (!atualizarVisualItemLinha(item, false)) {
+      renderizarListaCompras();
+    }
     atualizarCardResumo();
 
     // Finalização Automática quando clicar no check do último item da lista
@@ -4455,18 +4589,21 @@ function alternarItemComprado(id) {
     if (catItem) catItem.comprado = false;
 
     salvarEstado(true);
-    renderizarListaCompras();
+    if (!atualizarVisualItemLinha(item, false)) {
+      renderizarListaCompras();
+    }
     atualizarCardResumo();
   } else {
     // Primeiro clique: entra em estado de aviso/confirmação
     cancelarPendenteDesmarcar();
     itemPendenteDesmarcarId = id;
-    renderizarListaCompras();
+    if (!atualizarVisualItemLinha(item, true)) {
+      renderizarListaCompras();
+    }
 
     // Timer de 3 segundos para expirar a confirmação se não houver o 2º clique
     timerPendenteDesmarcar = setTimeout(() => {
       cancelarPendenteDesmarcar();
-      renderizarListaCompras();
     }, 3000);
   }
 }
@@ -4476,7 +4613,13 @@ function cancelarPendenteDesmarcar() {
     clearTimeout(timerPendenteDesmarcar);
     timerPendenteDesmarcar = null;
   }
-  itemPendenteDesmarcarId = null;
+  if (itemPendenteDesmarcarId) {
+    const pendenteItem = AppState.listaAtiva.find(i => String(i.id) === String(itemPendenteDesmarcarId));
+    itemPendenteDesmarcarId = null;
+    if (pendenteItem) {
+      atualizarVisualItemLinha(pendenteItem, false);
+    }
+  }
 }
 
 function alterarQuantidade(id, delta) {
@@ -4493,7 +4636,12 @@ function alterarQuantidade(id, delta) {
 
     salvarEstado(true);
     atualizarCardResumo();
-    if (AppState.abaAtiva === 'mercados') {
+    atualizarBalaoTotalCategoria(item.categoria || 'Diversos');
+
+    const inputQtde = document.querySelector(`#tr-item-${id} .input-qtde-tabela`);
+    if (inputQtde) {
+      inputQtde.value = novaQtde;
+    } else if (AppState.abaAtiva === 'mercados') {
       renderizarComparadorDF();
     } else {
       renderizarListaCompras();
@@ -4515,7 +4663,12 @@ function definirQuantidadeDireta(id, novoValor) {
 
     salvarEstado(true);
     atualizarCardResumo();
-    if (AppState.abaAtiva === 'mercados') {
+    atualizarBalaoTotalCategoria(item.categoria || 'Diversos');
+
+    const inputQtde = document.querySelector(`#tr-item-${id} .input-qtde-tabela`);
+    if (inputQtde) {
+      inputQtde.value = val;
+    } else if (AppState.abaAtiva === 'mercados') {
       renderizarComparadorDF();
     } else {
       renderizarListaCompras();
@@ -4550,6 +4703,9 @@ function alterarPrecoItem(id, novoPrecoStr, redeRef) {
 }
 
 function removerItem(id) {
+  const itemRemovido = AppState.listaAtiva.find(i => String(i.id) === String(id) || String(i.catalogoId) === String(id));
+  const catItem = itemRemovido ? (itemRemovido.categoria || 'Diversos') : null;
+
   // Desmarca no catálogo se for produto do catálogo
   const prod = AppState.catalogo.find(p => String(p.id) === String(id) || String(p.catalogoId) === String(id) || `item_despensa_${p.id}` === String(id));
   if (prod) {
@@ -4560,6 +4716,7 @@ function removerItem(id) {
   renderizarListaCompras();
   renderizarDespensa();
   atualizarCardResumo();
+  if (catItem) atualizarBalaoTotalCategoria(catItem);
 }
 
 // =========================================================================

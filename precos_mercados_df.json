@@ -1,7 +1,7 @@
 {
   "versao": "2.0",
   "regiao": "Brasília - DF",
-  "ultima_atualizacao": "29/09/2026 01:08",
+  "ultima_atualizacao": "29/09/2026 01:09",
   "total_produtos": 52,
   "cotacoes": {
     "arroz branco / agulhinha tipo 1 (5kg)": {
@@ -14,7 +14,7 @@
       "paodeacucar": 23.86,
       "produto_referencia": "Arroz Bulnez Agulhinha Tipo 1 5kg",
       "marca_referencia": "Bulnez",
-      "data_coleta": "2026-09-29 01:07:59"
+      "data_coleta": "2026-09-29 01:09:15"
     },
     "arroz": {
       "atacadao": 17.94,
@@ -26,7 +26,7 @@
       "paodeacucar": 23.86,
       "produto_referencia": "Arroz Bulnez Agulhinha Tipo 1 5kg",
       "marca_referencia": "Bulnez",
-      "data_coleta": "2026-09-29 01:07:59"
+      "data_coleta": "2026-09-29 01:09:15"
     },
     "feijão carioca novo selecionado (1kg)": {
       "atacadao": 7.21,
@@ -38,7 +38,7 @@
       "paodeacucar": 9.26,
       "produto_referencia": "Feijão Carioca Bulnez Tipo 1 1kg",
       "marca_referencia": "Bulnez",
-      "data_coleta": "2026-09-29 01:08:00"
+      "data_coleta": "2026-09-29 01:09:16"
     },
     "feijao": {
       "atacadao": 7.21,
@@ -50,7 +50,7 @@
       "paodeacucar": 9.26,
       "produto_referencia": "Feijão Carioca Bulnez Tipo 1 1kg",
       "marca_referencia": "Bulnez",
-      "data_coleta": "2026-09-29 01:08:00"
+      "data_coleta": "2026-09-29 01:09:16"
     },
     "açúcar branco refinado especial (1kg)": {
       "atacadao": 2.72,
@@ -62,7 +62,7 @@
       "paodeacucar": 3.61,
       "produto_referencia": "Açúcar Refinado Bulnez 1kg",
       "marca_referencia": "Bulnez",
-      "data_coleta": "2026-09-29 01:08:02"
+      "data_coleta": "2026-09-29 01:09:17"
     },
     "acucar": {
       "atacadao": 2.72,
@@ -74,7 +74,7 @@
       "paodeacucar": 3.61,
       "produto_referencia": "Açúcar Refinado Bulnez 1kg",
       "marca_referencia": "Bulnez",
-      "data_coleta": "2026-09-29 01:08:02"
+      "data_coleta": "2026-09-29 01:09:17"
     },
     "óleo de soja puro refinado (900ml)": {
       "atacadao": 9.38,
@@ -86,7 +86,7 @@
       "paodeacucar": 12.48,
       "produto_referencia": "Óleo de Milho Veleiro 900ml",
       "marca_referencia": "Veleiro",
-      "data_coleta": "2026-09-29 01:08:03"
+      "data_coleta": "2026-09-29 01:09:18"
     },
     "oleo": {
       "atacadao": 9.38,
@@ -98,7 +98,7 @@
       "paodeacucar": 12.48,
       "produto_referencia": "Óleo de Milho Veleiro 900ml",
       "marca_referencia": "Veleiro",
-      "data_coleta": "2026-09-29 01:08:03"
+      "data_coleta": "2026-09-29 01:09:18"
     },
     "café torrado e moído tradicional (500g)": {
       "atacadao": 18.14,
@@ -110,7 +110,7 @@
       "paodeacucar": 23.06,
       "produto_referencia": "Café Bulnez Tradicional 500g",
       "marca_referencia": "Bulnez",
-      "data_coleta": "2026-09-29 01:08:04"
+      "data_coleta": "2026-09-29 01:09:19"
     },
     "cafe": {
       "atacadao": 18.14,
@@ -122,7 +122,7 @@
       "paodeacucar": 23.06,
       "produto_referencia": "Café Bulnez Tradicional 500g",
       "marca_referencia": "Bulnez",
-      "data_coleta": "2026-09-29 01:08:04"
+      "data_coleta": "2026-09-29 01:09:19"
     },
     "leite longa vida integral (1 litro)": {
       "atacadao": 8.46,
@@ -134,7 +134,7 @@
       "paodeacucar": 10.86,
       "produto_referencia": "Leite Xandô Integral A2 1L",
       "marca_referencia": "Xandô",
-      "data_coleta": "2026-09-29 01:08:05"
+      "data_coleta": "2026-09-29 01:09:20"
     },
     "leite": {
       "atacadao": 8.46,
@@ -146,7 +146,7 @@
       "paodeacucar": 10.86,
       "produto_referencia": "Leite Xandô Integral A2 1L",
       "marca_referencia": "Xandô",
-      "data_coleta": "2026-09-29 01:08:05"
+      "data_coleta": "2026-09-29 01:09:20"
     },
     "leite condensado moça / piracanjuba (395g)": {
       "atacadao": 8.16,
@@ -158,7 +158,7 @@
       "paodeacucar": 10.37,
       "produto_referencia": "Leite Condensado Piracanjuba Seleção Integral 395g",
       "marca_referencia": "Piracanjuba",
-      "data_coleta": "2026-09-29 01:08:07"
+      "data_coleta": "2026-09-29 01:09:22"
     },
     "leite_condensado": {
       "atacadao": 8.16,
@@ -170,7 +170,7 @@
       "paodeacucar": 10.37,
       "produto_referencia": "Leite Condensado Piracanjuba Seleção Integral 395g",
       "marca_referencia": "Piracanjuba",
-      "data_coleta": "2026-09-29 01:08:07"
+      "data_coleta": "2026-09-29 01:09:22"
     },
     "macarrão espaguete com ovos (500g)": {
       "atacadao": 1.91,
@@ -182,7 +182,7 @@
       "paodeacucar": 2.43,
       "produto_referencia": "Macarrão com Ovos Floriani Espaguete 500g",
       "marca_referencia": "Floriani",
-      "data_coleta": "2026-09-29 01:08:08"
+      "data_coleta": "2026-09-29 01:09:23"
     },
     "macarrao": {
       "atacadao": 1.91,
@@ -194,7 +194,7 @@
       "paodeacucar": 2.43,
       "produto_referencia": "Macarrão com Ovos Floriani Espaguete 500g",
       "marca_referencia": "Floriani",
-      "data_coleta": "2026-09-29 01:08:08"
+      "data_coleta": "2026-09-29 01:09:23"
     },
     "farinha de trigo especial tipo 1 (1kg)": {
       "atacadao": 6.57,
@@ -206,7 +206,7 @@
       "paodeacucar": 8.74,
       "produto_referencia": "Farinha de Rosca Delamarie 1kg",
       "marca_referencia": "Delamarie",
-      "data_coleta": "2026-09-29 01:08:09"
+      "data_coleta": "2026-09-29 01:09:24"
     },
     "farinha": {
       "atacadao": 6.57,
@@ -218,7 +218,7 @@
       "paodeacucar": 8.74,
       "produto_referencia": "Farinha de Rosca Delamarie 1kg",
       "marca_referencia": "Delamarie",
-      "data_coleta": "2026-09-29 01:08:09"
+      "data_coleta": "2026-09-29 01:09:24"
     },
     "sal refinado iodado para cozinha (1kg)": {
       "atacadao": 16.05,
@@ -230,7 +230,7 @@
       "paodeacucar": 21.63,
       "produto_referencia": "Sal Lebre Churrasco 1,1kg",
       "marca_referencia": "Lebre",
-      "data_coleta": "2026-09-29 01:08:10"
+      "data_coleta": "2026-09-29 01:09:25"
     },
     "sal": {
       "atacadao": 16.05,
@@ -242,7 +242,7 @@
       "paodeacucar": 21.63,
       "produto_referencia": "Sal Lebre Churrasco 1,1kg",
       "marca_referencia": "Lebre",
-      "data_coleta": "2026-09-29 01:08:10"
+      "data_coleta": "2026-09-29 01:09:25"
     },
     "detergente líquido lava-louças (500ml)": {
       "atacadao": 1.87,
@@ -254,7 +254,7 @@
       "paodeacucar": 2.42,
       "produto_referencia": "Detergente Líquido Bulnez Coco 500ml",
       "marca_referencia": "Bulnez",
-      "data_coleta": "2026-09-29 01:08:11"
+      "data_coleta": "2026-09-29 01:09:26"
     },
     "detergente": {
       "atacadao": 1.87,
@@ -266,7 +266,7 @@
       "paodeacucar": 2.42,
       "produto_referencia": "Detergente Líquido Bulnez Coco 500ml",
       "marca_referencia": "Bulnez",
-      "data_coleta": "2026-09-29 01:08:11"
+      "data_coleta": "2026-09-29 01:09:26"
     },
     "sabão em pó / líquido para roupas (1.6kg / 2l)": {
       "atacadao": 5.07,
@@ -278,7 +278,7 @@
       "paodeacucar": 6.55,
       "produto_referencia": "Sabão em Pó Tixan Ypê Primavera 400g",
       "marca_referencia": "Tixan",
-      "data_coleta": "2026-09-29 01:08:13"
+      "data_coleta": "2026-09-29 01:09:27"
     },
     "sabao": {
       "atacadao": 5.07,
@@ -290,7 +290,7 @@
       "paodeacucar": 6.55,
       "produto_referencia": "Sabão em Pó Tixan Ypê Primavera 400g",
       "marca_referencia": "Tixan",
-      "data_coleta": "2026-09-29 01:08:13"
+      "data_coleta": "2026-09-29 01:09:27"
     },
     "amaciante toque suave / concentrado (1.5l / 2l)": {
       "atacadao": 67.1,
@@ -302,7 +302,7 @@
       "paodeacucar": 86.68,
       "produto_referencia": "Amaciante para Roupas Concentrado Comfort 5L",
       "marca_referencia": "Comfort",
-      "data_coleta": "2026-09-29 01:08:14"
+      "data_coleta": "2026-09-29 01:09:28"
     },
     "amaciante": {
       "atacadao": 67.1,
@@ -314,7 +314,7 @@
       "paodeacucar": 86.68,
       "produto_referencia": "Amaciante para Roupas Concentrado Comfort 5L",
       "marca_referencia": "Comfort",
-      "data_coleta": "2026-09-29 01:08:14"
+      "data_coleta": "2026-09-29 01:09:28"
     },
     "água sanitária desinfetante cloro (2 litros)": {
       "atacadao": 2.39,
@@ -326,7 +326,7 @@
       "paodeacucar": 3.09,
       "produto_referencia": "Água Sanitária Tay 1L",
       "marca_referencia": "Tay",
-      "data_coleta": "2026-09-29 01:08:15"
+      "data_coleta": "2026-09-29 01:09:30"
     },
     "sanitaria": {
       "atacadao": 2.39,
@@ -338,7 +338,7 @@
       "paodeacucar": 3.09,
       "produto_referencia": "Água Sanitária Tay 1L",
       "marca_referencia": "Tay",
-      "data_coleta": "2026-09-29 01:08:15"
+      "data_coleta": "2026-09-29 01:09:30"
     },
     "banana prata selecionada (kg)": {
       "atacadao": 10.36,
@@ -350,7 +350,7 @@
       "paodeacucar": 13.95,
       "produto_referencia": "Banana Prata Quilo",
       "marca_referencia": "Atacadão S/A",
-      "data_coleta": "2026-09-29 01:08:16"
+      "data_coleta": "2026-09-29 01:09:31"
     },
     "banana": {
       "atacadao": 10.36,
@@ -362,7 +362,7 @@
       "paodeacucar": 13.95,
       "produto_referencia": "Banana Prata Quilo",
       "marca_referencia": "Atacadão S/A",
-      "data_coleta": "2026-09-29 01:08:16"
+      "data_coleta": "2026-09-29 01:09:31"
     },
     "tomate longa vida / italiano selecionado (kg)": {
       "atacadao": 46.45,
@@ -374,7 +374,7 @@
       "paodeacucar": 62.59,
       "produto_referencia": "Tomate Pelado Arcobello 2,5kg",
       "marca_referencia": "Arcobello",
-      "data_coleta": "2026-09-29 01:08:19"
+      "data_coleta": "2026-09-29 01:09:33"
     },
     "tomate": {
       "atacadao": 46.45,
@@ -386,7 +386,7 @@
       "paodeacucar": 62.59,
       "produto_referencia": "Tomate Pelado Arcobello 2,5kg",
       "marca_referencia": "Arcobello",
-      "data_coleta": "2026-09-29 01:08:19"
+      "data_coleta": "2026-09-29 01:09:33"
     },
     "batata inglesa lisa lavada especial (kg)": {
       "atacadao": 16.62,
@@ -398,7 +398,7 @@
       "paodeacucar": 22.4,
       "produto_referencia": "Nhoque de Batata Batiê 1kg",
       "marca_referencia": "Batiê",
-      "data_coleta": "2026-09-29 01:08:20"
+      "data_coleta": "2026-09-29 01:09:34"
     },
     "batata": {
       "atacadao": 16.62,
@@ -410,7 +410,7 @@
       "paodeacucar": 22.4,
       "produto_referencia": "Nhoque de Batata Batiê 1kg",
       "marca_referencia": "Batiê",
-      "data_coleta": "2026-09-29 01:08:20"
+      "data_coleta": "2026-09-29 01:09:34"
     },
     "cebola nacional selecionada (kg)": {
       "atacadao": 118.66,
@@ -422,7 +422,7 @@
       "paodeacucar": 159.87,
       "produto_referencia": "Cebola Roxa 19kg",
       "marca_referencia": "Atacadão S/A",
-      "data_coleta": "2026-09-29 01:08:21"
+      "data_coleta": "2026-09-29 01:09:35"
     },
     "cebola": {
       "atacadao": 118.66,
@@ -434,7 +434,7 @@
       "paodeacucar": 159.87,
       "produto_referencia": "Cebola Roxa 19kg",
       "marca_referencia": "Atacadão S/A",
-      "data_coleta": "2026-09-29 01:08:21"
+      "data_coleta": "2026-09-29 01:09:35"
     },
     "alho roxo inteiro selecionado (kg)": {
       "atacadao": 28.01,
@@ -446,7 +446,7 @@
       "paodeacucar": 37.25,
       "produto_referencia": "Alho Descascado 1kg",
       "marca_referencia": "Atacadão S/A",
-      "data_coleta": "2026-09-29 01:08:22"
+      "data_coleta": "2026-09-29 01:09:36"
     },
     "alho": {
       "atacadao": 28.01,
@@ -458,7 +458,7 @@
       "paodeacucar": 37.25,
       "produto_referencia": "Alho Descascado 1kg",
       "marca_referencia": "Atacadão S/A",
-      "data_coleta": "2026-09-29 01:08:22"
+      "data_coleta": "2026-09-29 01:09:36"
     },
     "chuchu verde especial (kg)": {
       "atacadao": 65.55,
@@ -470,7 +470,7 @@
       "paodeacucar": 88.32,
       "produto_referencia": "Chuchu 19kg",
       "marca_referencia": "Atacadão S/A",
-      "data_coleta": "2026-09-29 01:08:23"
+      "data_coleta": "2026-09-29 01:09:37"
     },
     "chuchu": {
       "atacadao": 65.55,
@@ -482,7 +482,7 @@
       "paodeacucar": 88.32,
       "produto_referencia": "Chuchu 19kg",
       "marca_referencia": "Atacadão S/A",
-      "data_coleta": "2026-09-29 01:08:23"
+      "data_coleta": "2026-09-29 01:09:37"
     },
     "ovos brancos médios / grandes (cartela c/ 30)": {
       "atacadao": 22.7,
@@ -494,7 +494,7 @@
       "paodeacucar": 30.59,
       "produto_referencia": "Ovo Grande Granja Lobo Branco Pvc 30 un",
       "marca_referencia": "Granja Lobo",
-      "data_coleta": "2026-09-29 01:08:27"
+      "data_coleta": "2026-09-29 01:09:41"
     },
     "ovos": {
       "atacadao": 22.7,
@@ -506,7 +506,7 @@
       "paodeacucar": 30.59,
       "produto_referencia": "Ovo Grande Granja Lobo Branco Pvc 30 un",
       "marca_referencia": "Granja Lobo",
-      "data_coleta": "2026-09-29 01:08:27"
+      "data_coleta": "2026-09-29 01:09:41"
     },
     "papel higiênico folha dupla leve (pacote c/ 12)": {
       "atacadao": 16.61,
@@ -518,7 +518,7 @@
       "paodeacucar": 21.45,
       "produto_referencia": "Papel Higiênico Bulnez Folha Dupla 30m 12 rolos",
       "marca_referencia": "Bulnez",
-      "data_coleta": "2026-09-29 01:08:28"
+      "data_coleta": "2026-09-29 01:09:42"
     },
     "papel": {
       "atacadao": 16.61,
@@ -530,7 +530,7 @@
       "paodeacucar": 21.45,
       "produto_referencia": "Papel Higiênico Bulnez Folha Dupla 30m 12 rolos",
       "marca_referencia": "Bulnez",
-      "data_coleta": "2026-09-29 01:08:28"
+      "data_coleta": "2026-09-29 01:09:42"
     },
     "creme dental proteção anticáries (90g)": {
       "atacadao": 8.54,
@@ -542,7 +542,7 @@
       "paodeacucar": 10.86,
       "produto_referencia": "Creme Dental Colgate Total Original Mint 90g",
       "marca_referencia": "Colgate",
-      "data_coleta": "2026-09-29 01:08:29"
+      "data_coleta": "2026-09-29 01:09:43"
     },
     "dente": {
       "atacadao": 8.54,
@@ -554,7 +554,7 @@
       "paodeacucar": 10.86,
       "produto_referencia": "Creme Dental Colgate Total Original Mint 90g",
       "marca_referencia": "Colgate",
-      "data_coleta": "2026-09-29 01:08:29"
+      "data_coleta": "2026-09-29 01:09:43"
     },
     "sabonete em barra hidratante (85g / 90g)": {
       "atacadao": 2.16,
@@ -566,7 +566,7 @@
       "paodeacucar": 2.79,
       "produto_referencia": "Sabonete em Barra Nivea Aveia 85g",
       "marca_referencia": "Nivea",
-      "data_coleta": "2026-09-29 01:08:31"
+      "data_coleta": "2026-09-29 01:09:44"
     },
     "sabonete": {
       "atacadao": 2.16,
@@ -578,7 +578,7 @@
       "paodeacucar": 2.79,
       "produto_referencia": "Sabonete em Barra Nivea Aveia 85g",
       "marca_referencia": "Nivea",
-      "data_coleta": "2026-09-29 01:08:31"
+      "data_coleta": "2026-09-29 01:09:44"
     },
     "manteiga de primeira qualidade com sal (200g)": {
       "atacadao": 10.25,
@@ -590,7 +590,7 @@
       "paodeacucar": 13.16,
       "produto_referencia": "Manteiga Teixeira Com Sal 200g",
       "marca_referencia": "Teixeira",
-      "data_coleta": "2026-09-29 01:08:32"
+      "data_coleta": "2026-09-29 01:09:46"
     },
     "manteiga": {
       "atacadao": 10.25,
@@ -602,7 +602,7 @@
       "paodeacucar": 13.16,
       "produto_referencia": "Manteiga Teixeira Com Sal 200g",
       "marca_referencia": "Teixeira",
-      "data_coleta": "2026-09-29 01:08:32"
+      "data_coleta": "2026-09-29 01:09:46"
     },
     "achocolatado em pó nescau / toddy (370g / 400g)": {
       "atacadao": 22.92,
@@ -614,7 +614,7 @@
       "paodeacucar": 29.12,
       "produto_referencia": "Achocolatado em Pó Nescau 990g",
       "marca_referencia": "Nescau",
-      "data_coleta": "2026-09-29 01:08:33"
+      "data_coleta": "2026-09-29 01:09:47"
     },
     "achocolatado": {
       "atacadao": 22.92,
@@ -626,7 +626,7 @@
       "paodeacucar": 29.12,
       "produto_referencia": "Achocolatado em Pó Nescau 990g",
       "marca_referencia": "Nescau",
-      "data_coleta": "2026-09-29 01:08:33"
+      "data_coleta": "2026-09-29 01:09:47"
     }
   }
 }
