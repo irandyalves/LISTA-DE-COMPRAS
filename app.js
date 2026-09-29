@@ -3783,7 +3783,48 @@ function resetarEstadoDigitacaoBusca() {
   if (inputBusca) inputBusca.classList.remove('digitando-ativo');
 }
 
-// Limpa o campo após 10 segundos sem digitar
+// Verifica se o termo digitado existe no catálogo e controla a exibição do botão "Adicionar"
+function verificarExibicaoBotaoAdicionar(termoOriginal) {
+  const btnAdicionar = document.getElementById('btn-adicionar-topo-header') || document.querySelector('.busca-topo-reduzida .btn-adicionar-topo');
+  if (!btnAdicionar) return;
+
+  const termoLimpo = (termoOriginal || '').trim();
+  if (termoLimpo.length === 0) {
+    btnAdicionar.style.display = 'none';
+    return;
+  }
+
+  const termoNorm = termoLimpo.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+  // Verifica se o item já existe no catálogo
+  const itemExisteNoCatalogo = (AppState.catalogo || []).some(p => {
+    const nomeNorm = (p.nome || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    return nomeNorm === termoNorm;
+  });
+
+  // Também verifica se a busca encontrou itens na listagem ativa
+  let encontrouItens = false;
+  if (AppState.abaAtiva === 'despensa') {
+    encontrouItens = (AppState.catalogo || []).some(p => {
+      const nomeNorm = (p.nome || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      return nomeNorm.includes(termoNorm);
+    });
+  } else {
+    encontrouItens = (AppState.listaAtiva || []).some(p => {
+      const nomeNorm = (p.nome || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      return nomeNorm.includes(termoNorm);
+    });
+  }
+
+  // O botão "Adicionar" SÓ APARECE se começar a digitar algo que NÃO exista!
+  if (!itemExisteNoCatalogo && !encontrouItens) {
+    btnAdicionar.style.display = 'inline-flex';
+  } else {
+    btnAdicionar.style.display = 'none';
+  }
+}
+
+// Limpa o campo após 4 segundos sem digitar
 function limparCampoBuscaInatividade() {
   resetarEstadoDigitacaoBusca();
   const input = document.getElementById('input-novo-item');
@@ -3794,6 +3835,7 @@ function limparCampoBuscaInatividade() {
   termoBuscaDespensa = '';
   termoBuscaLista = '';
   fecharDropdownSugestoesTopo();
+  verificarExibicaoBotaoAdicionar('');
 
   if (AppState.abaAtiva === 'despensa') {
     renderizarDespensa();
@@ -3828,6 +3870,9 @@ function aoDigitarBuscaTopo(termo) {
     if (containerBusca) containerBusca.classList.remove('digitando-ativo');
     if (inputBusca) inputBusca.classList.remove('digitando-ativo');
   }
+
+  // Regra: O botão "Adicionar" SÓ APARECE se começar a digitar algo que NÃO exista
+  verificarExibicaoBotaoAdicionar(termoLimpo);
 
   // 1. Atualiza visualização na aba ativa embaixo
   if (AppState.abaAtiva === 'despensa') {
@@ -6032,6 +6077,7 @@ function adicionarItemRapido() {
     termoBuscaDespensa = '';
     termoBuscaTopo = '';
     input.value = '';
+    verificarExibicaoBotaoAdicionar('');
     salvarEstado(true);
     renderizarDespensa();
     renderizarListaCompras();
@@ -6041,6 +6087,7 @@ function adicionarItemRapido() {
     termoBuscaTopo = '';
     adicionarProdutoPorTexto(texto);
     input.value = '';
+    verificarExibicaoBotaoAdicionar('');
     renderizarListaCompras();
     renderizarDespensa();
   }

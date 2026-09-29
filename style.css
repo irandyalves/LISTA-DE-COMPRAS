@@ -3219,14 +3219,15 @@ body.tema-escuro .btn-categoria-fav.ativo {
 }
 
 /* Telas Responsivas */
+/* Telas Responsivas */
 @media (max-width: 600px) {
   .app-container {
     padding: 8px;
   }
 
   .header-otimizado-l1 {
-    flex-wrap: wrap;
-    gap: 6px;
+    flex-wrap: nowrap !important;
+    gap: 4px !important;
   }
 
   .carrinho-icon-xl {
@@ -3274,13 +3275,14 @@ body.tema-escuro .btn-categoria-fav.ativo {
 
 @media (max-width: 380px) {
   .header-otimizado-l1 {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 3px !important;
   }
 
   .header-acoes-espremidas {
-    width: 100%;
-    justify-content: space-between;
+    width: auto;
   }
 }
 
