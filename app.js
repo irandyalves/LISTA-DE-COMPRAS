@@ -4953,52 +4953,51 @@ function renderizarHistorico() {
           badgeVariacaoGeral = `<span class="tag-comparativo-aumento">🔺 +${pctPreco.toFixed(1).replace('.', ',')}% vs anterior</span>`;
         } else if (pctPreco < -0.05) {
           badgeVariacaoGeral = `<span class="tag-comparativo-reducao">🔻 ${pctPreco.toFixed(1).replace('.', ',')}% vs anterior</span>`;
-        } else {
-          badgeVariacaoGeral = `<span class="tag-comparativo-estavel">= Estável</span>`;
         }
-      } else if (totalVezes === 1) {
-        badgeVariacaoGeral = `<span class="tag-comparativo-base">⭐ 1ª compra</span>`;
       }
 
-      // Cálculo da duração média (intervalo entre compra atual e a anterior)
-      let duracaoMediaTxt = '—';
+      // Cálculo do intervalo entre compras
+      let intervaloTxt = '—';
       if (totalVezes > 1) {
         let somaMs = 0;
         for (let i = 1; i < prod.compras.length; i++) {
           somaMs += Math.max(0, prod.compras[i].data.getTime() - prod.compras[i - 1].data.getTime());
         }
         const mediaMs = Math.round(somaMs / (totalVezes - 1));
-        duracaoMediaTxt = formatarIntervaloMs(mediaMs);
-      } else {
-        duracaoMediaTxt = '—';
+        intervaloTxt = formatarIntervaloMs(mediaMs);
       }
 
-      // Histórico rápido das compras daquele produto
-      let timelinePrecosHtml = prod.compras.slice(-4).reverse().map(c => `
-        <div style="display: flex; justify-content: space-between; padding: 2px 0;">
-          <span>📅 ${c.dataStr} (${c.mercado})</span>
-          <span><strong>${c.preco > 0 ? formatarMoeda(c.preco) : '—'}</strong> | <span style="color: #EA580C; font-weight: 700;">${String(c.qtde).padStart(2, '0')} und</span></span>
-        </div>
-      `).join('');
+      // Histórico das compras do produto em ordem cronológica (mais antiga para mais recente)
+      const comprasExibidas = prod.compras.slice(-5);
+      let registrosHtml = comprasExibidas.map(c => {
+        const partes = (c.dataStr || '').split('/');
+        const dataCurta = partes.length === 3 ? `${partes[0]}/${partes[1]}/${partes[2].slice(-2)}` : c.dataStr;
+        const qtdeFmt = `${String(c.qtde).padStart(2, '0')} und`;
+        const precoFmt = c.preco > 0 ? formatarMoeda(c.preco) : '—';
+
+        return `
+          <div class="linha-hist-registro">
+            <span class="hist-reg-data">${dataCurta}</span>
+            <span class="hist-reg-qtd">${qtdeFmt}</span>
+            <span class="hist-reg-preco">${precoFmt}</span>
+          </div>
+        `;
+      }).join('');
 
       htmlGridItens += `
         <div class="card-item-analise">
           <div class="card-item-analise-topo">
-            <div>
-              <div class="card-item-analise-nome">${prod.nome} | <span style="color: #EA580C; font-weight: 800;">${String(totalUnidades).padStart(2, '0')} und</span></div>
-              <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 2px;">${totalVezes} ${totalVezes === 1 ? 'compra registrada' : 'compras registradas'}</div>
-            </div>
+            <div class="card-item-analise-nome">${prod.nome}</div>
             ${badgeVariacaoGeral}
           </div>
+          <div class="card-item-analise-registros">
+            ${registrosHtml}
+            <div class="linha-intervalo-compras">
+              <span class="intervalo-rotulo">Intervalo entre compras</span>
+              <span class="intervalo-val">${intervaloTxt}</span>
+            </div>
+          </div>
           <div class="card-item-analise-stats">
-            <div class="item-stat-linha">
-              <span class="item-stat-rotulo">Duração Média</span>
-              <span class="item-stat-val" style="color: #1D4ED8;">⏱️ ${duracaoMediaTxt}</span>
-            </div>
-            <div class="item-stat-linha">
-              <span class="item-stat-rotulo">Total Gasto</span>
-              <span class="item-stat-val" style="color: #059669;">${totalGastoProd > 0 ? formatarMoeda(totalGastoProd) : '—'}</span>
-            </div>
             <div class="item-stat-linha">
               <span class="item-stat-rotulo">Preço Anterior</span>
               <span class="item-stat-val">${precoAnterior > 0 ? formatarMoeda(precoAnterior) : '—'}</span>
@@ -5007,10 +5006,10 @@ function renderizarHistorico() {
               <span class="item-stat-rotulo">Último Preço</span>
               <span class="item-stat-val">${ultimoPreco > 0 ? formatarMoeda(ultimoPreco) : '—'}</span>
             </div>
-          </div>
-          <div class="card-item-analise-historico-precos">
-            <span style="font-weight: 700; color: #475569; font-size: 0.68rem; text-transform: uppercase;">Últimos Registros:</span>
-            ${timelinePrecosHtml}
+            <div class="item-stat-linha">
+              <span class="item-stat-rotulo">Total Gasto</span>
+              <span class="item-stat-val" style="color: #059669;">${totalGastoProd > 0 ? formatarMoeda(totalGastoProd) : '—'}</span>
+            </div>
           </div>
         </div>
       `;

@@ -6527,39 +6527,78 @@ body.modo-mercado-ativo .item-nome {
 
 .card-item-analise-stats {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 8px;
   background: #F8FAFC;
   padding: 8px 10px;
   border-radius: 8px;
 }
 
-.item-stat-linha {
-  display: flex;
-  flex-direction: column;
-}
-
-.item-stat-rotulo {
-  font-size: 0.66rem;
-  color: var(--text-muted);
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-.item-stat-val {
-  font-size: 0.84rem;
-  font-weight: 800;
-  color: #1E293B;
-}
-
-.card-item-analise-historico-precos {
+.card-item-analise-registros {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  font-size: 0.72rem;
-  color: #64748B;
-  border-top: 1px dashed #E2E8F0;
-  padding-top: 8px;
+  padding: 8px 10px;
+  background: #F8FAFC;
+  border-radius: 8px;
+  border: 1px solid #E2E8F0;
+}
+
+.linha-hist-registro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  padding: 4px 0;
+  border-bottom: 1px dashed #E2E8F0;
+}
+
+.linha-hist-registro:last-of-type {
+  border-bottom: none;
+}
+
+.hist-reg-data {
+  color: #475569;
+  font-weight: 600;
+  font-family: monospace, inherit;
+  font-size: 0.82rem;
+}
+
+.hist-reg-qtd {
+  color: #EA580C;
+  font-weight: 800;
+  font-size: 0.82rem;
+}
+
+.hist-reg-preco {
+  color: #0F172A;
+  font-weight: 800;
+  font-size: 0.84rem;
+}
+
+.linha-intervalo-compras {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  padding-top: 6px;
+  margin-top: 4px;
+  border-top: 1px solid #CBD5E1;
+  color: #334155;
+}
+
+.linha-intervalo-compras .intervalo-rotulo {
+  font-weight: 700;
+  color: #475569;
+}
+
+.linha-intervalo-compras .intervalo-val {
+  font-weight: 800;
+  color: #1D4ED8;
+  background: #EFF6FF;
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid #BFDBFE;
 }
 
 /* Modal Registrar Compra no Histórico */
