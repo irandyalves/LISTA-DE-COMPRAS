@@ -5413,3 +5413,204 @@ body.modo-mercado-ativo .item-nome {
   box-shadow: 0 4px 8px rgba(16, 185, 129, 0.35);
 }
 
+/* ========================================================
+   IDENTIFICAÇÃO DE USUÁRIO (PERFIL IRANDY / SIONEIDE)
+======================================================== */
+.btn-perfil-usuario-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #FFFFFF;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #1E293B;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.btn-perfil-usuario-header:hover {
+  background: #F8FAFC;
+  border-color: #6366F1;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(99, 102, 241, 0.12);
+}
+
+.btn-perfil-usuario-header .ico-perfil-header {
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+.btn-perfil-usuario-header .nome-perfil-header {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* Modal Seleção de Perfil */
+.modal-perfil-content {
+  max-width: 440px;
+}
+
+.perfil-opcoes-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.btn-perfil-card-opcao {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 12px;
+  background: #F8FAFC;
+  border: 2px solid #E2E8F0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  gap: 4px;
+}
+
+.btn-perfil-card-opcao:hover {
+  border-color: #6366F1;
+  background: #EEF2FF;
+  transform: translateY(-2px);
+}
+
+.btn-perfil-card-opcao.selecionado {
+  border-color: #4F46E5;
+  background: #EEF2FF;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+}
+
+.btn-perfil-card-opcao .perfil-avatar {
+  font-size: 2.2rem;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.btn-perfil-card-opcao .perfil-nome {
+  font-size: 1rem;
+  color: #0F172A;
+}
+
+.btn-perfil-card-opcao .perfil-desc {
+  font-size: 0.72rem;
+  color: #64748B;
+  font-weight: 500;
+}
+
+/* ========================================================
+   BANNER FLUTUANTE DE PEDIDO DA PATROA (SIONEIDE)
+======================================================== */
+.toast-aviso-patroa {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  z-index: 100000;
+  width: calc(100% - 32px);
+  max-width: 480px;
+  opacity: 0;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.toast-aviso-patroa.visivel,
+.toast-aviso-patroa[style*="display: flex"] {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+
+.toast-patroa-conteudo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+  border: 2px solid #F59E0B;
+  border-radius: 14px;
+  padding: 12px 16px;
+  box-shadow: 0 10px 25px -3px rgba(245, 158, 11, 0.35), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  animation: pulseAvisoPatroa 2.5s infinite ease-in-out;
+}
+
+@keyframes pulseAvisoPatroa {
+  0%, 100% { box-shadow: 0 10px 25px -3px rgba(245, 158, 11, 0.35); }
+  50% { box-shadow: 0 12px 30px 2px rgba(245, 158, 11, 0.55); }
+}
+
+.toast-patroa-icone {
+  font-size: 1.8rem;
+  line-height: 1;
+  animation: balancarSino 1s ease infinite alternate;
+}
+
+@keyframes balancarSino {
+  0% { transform: rotate(-15deg); }
+  100% { transform: rotate(15deg); }
+}
+
+.toast-patroa-corpo {
+  flex: 1;
+  min-width: 0;
+}
+
+.toast-patroa-titulo {
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: #92400E;
+  margin-bottom: 2px;
+}
+
+.toast-patroa-itens {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #78350F;
+  word-break: break-word;
+}
+
+.toast-patroa-fechar {
+  background: rgba(180, 83, 9, 0.15);
+  border: none;
+  color: #92400E;
+  font-size: 1.1rem;
+  font-weight: 700;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.toast-patroa-fechar:hover {
+  background: rgba(180, 83, 9, 0.3);
+  color: #451A03;
+}
+
+/* ========================================================
+   BOTÃO FINALIZAR COMPRA NA BARRA INFERIOR MOBILE
+======================================================== */
+.mobile-nav-btn.mobile-nav-btn-finalizar {
+  background: rgba(16, 185, 129, 0.14);
+  border-radius: 10px;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  margin: 2px;
+  transition: all 0.15s ease;
+}
+
+.mobile-nav-btn.mobile-nav-btn-finalizar:active {
+  background: rgba(16, 185, 129, 0.28);
+  transform: scale(0.95);
+}
+
+

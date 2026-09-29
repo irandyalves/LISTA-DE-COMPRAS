@@ -737,6 +737,9 @@ let AppState = {
   modoResumido: false, // true = exibe nomes simplificados e deduplica variedades
   mercadoReferencia: 'atacadao',
   ordenacaoMercados: 'original', // 'original', 'alfabetico_az', 'alfabetico_za', 'preco'
+  usuarioAtivo: (typeof localStorage !== 'undefined' && localStorage.getItem('usuario_nome_ativo')) || 'Irandy',
+  usuarioIcone: (typeof localStorage !== 'undefined' && localStorage.getItem('usuario_icone_ativo')) || '👨',
+  ultimoEvento: null,
   itensExcluidos: [],
   catalogo: [...CATALOGO_PADRAO_EXPANDIDO],
 
@@ -806,6 +809,7 @@ function sincronizarListaAtivaComCatalogo() {
 document.addEventListener('DOMContentLoaded', () => {
   carregarLocalmente();
   sanearTodaListaHortifruti();
+  atualizarBadgeUsuarioHeader();
   atualizarUIModoNoMercado();
   atualizarUIModoResumido();
   configurarNavegacao();
@@ -1021,7 +1025,8 @@ function salvarEstado(enviarParaNuvem = true) {
         mercadoReferencia: AppState.mercadoReferencia || 'nenhum',
         cotacaoAtiva: AppState.cotacaoAtiva !== false,
         modoNoMercado: !!AppState.modoNoMercado,
-        modoResumido: !!AppState.modoResumido
+        modoResumido: !!AppState.modoResumido,
+        ultimoEvento: AppState.ultimoEvento || null
       });
     }, 400); // Debounce de 400ms
   }
@@ -1040,7 +1045,27 @@ function inicializarNuvem() {
         }
       }
 
-      // Recebeu atualização da Nuvem (ex: esposa acabou de marcar um item no celular)
+      // Verifica se houve novo pedido vindo da outra pessoa (ex: Patroa Sioneide mandando itens)
+      if (dadosNuvem.ultimoEvento && dadosNuvem.ultimoEvento.timestamp) {
+        const evento = dadosNuvem.ultimoEvento;
+        const agora = Date.now();
+        const ultimoProcessado = Number(localStorage.getItem('ultimo_evento_notificado_ts') || 0);
+
+        // Se o evento foi criado há menos de 90 segundos e ainda não foi mostrado
+        if (evento.timestamp > ultimoProcessado && (agora - evento.timestamp) < 90000) {
+          const meuNome = (AppState.usuarioAtivo || 'Irandy').toLowerCase().trim();
+          const autorEvento = (evento.autor || '').toLowerCase().trim();
+
+          // Se quem enviou o item NÃO foi este aparelho (veio do cônjuge/patroa)
+          if (autorEvento && autorEvento !== meuNome) {
+            localStorage.setItem('ultimo_evento_notificado_ts', String(evento.timestamp));
+            tocarAvisoSonoroNotificacao();
+            exibirAvisoPedidoPatroa(evento.autor, evento.itens, evento.icone || '👩');
+          }
+        }
+      }
+
+      // Recebeu atualização da Nuvem (ex: esposa acabou de marcar ou adicionar um item no celular)
       if (dadosNuvem.catalogo) AppState.catalogo = dadosNuvem.catalogo;
       if (dadosNuvem.listaAtiva) AppState.listaAtiva = dadosNuvem.listaAtiva;
       if (dadosNuvem.historico) AppState.historico = dadosNuvem.historico;
@@ -1076,6 +1101,113 @@ function inicializarNuvem() {
       atualizarBadgeStatus(status);
     }
   );
+}
+
+// Reproduz aviso sonoro (Ding-Dong harmônico) via Web Audio API nativa
+function tocarAvisoSonoroNotificacao() {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    
+    const tocarNota = (freq, start, duration) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + start);
+      gain.gain.setValueAtTime(0.28, ctx.currentTime + start);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + duration);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(ctx.currentTime + start);
+      osc.stop(ctx.currentTime + start + duration);
+    };
+
+    // Ding-Dong de alerta (587Hz -> 880Hz)
+    tocarNota(587.33, 0, 0.28);
+    tocarNota(880.00, 0.18, 0.48);
+  } catch(e) {
+    console.warn("Áudio não executado:", e);
+  }
+}
+
+// Banner Flutuante de Pedido da Patroa (Sioneide)
+let timerAvisoPatroa = null;
+function exibirAvisoPedidoPatroa(autor, itens, icone = '👩') {
+  const banner = document.getElementById('toast-aviso-patroa');
+  const tituloEl = document.getElementById('toast-patroa-titulo');
+  const itensEl = document.getElementById('toast-patroa-itens');
+  if (!banner) return;
+
+  const nomeAutor = autor || 'Sioneide';
+  const listaTexto = Array.isArray(itens) ? itens.join(', ') : String(itens);
+
+  if (tituloEl) tituloEl.textContent = `${icone} ${nomeAutor} pediu para comprar:`;
+  if (itensEl) itensEl.textContent = listaTexto;
+
+  banner.style.display = 'flex';
+  banner.classList.add('visivel');
+
+  // Vibração suave no celular
+  if (typeof navigator !== 'undefined' && navigator.vibrate) {
+    try { navigator.vibrate([250, 100, 250]); } catch(e){}
+  }
+
+  // Permanece aberto na tela (com botão fechar manual e auto-dismiss de 25s)
+  clearTimeout(timerAvisoPatroa);
+  timerAvisoPatroa = setTimeout(() => {
+    fecharAvisoPatroa();
+  }, 25000);
+}
+
+function fecharAvisoPatroa() {
+  const banner = document.getElementById('toast-aviso-patroa');
+  if (banner) {
+    banner.style.display = 'none';
+    banner.classList.remove('visivel');
+  }
+  clearTimeout(timerAvisoPatroa);
+}
+
+// Gerenciamento de Perfil de Usuário Ativo (Irandy / Sioneide)
+function atualizarBadgeUsuarioHeader() {
+  const icoEl = document.getElementById('ico-perfil-header');
+  const nomeEl = document.getElementById('nome-perfil-header');
+  const nomeAtivo = AppState.usuarioAtivo || 'Irandy';
+  const iconeAtivo = AppState.usuarioIcone || (nomeAtivo.toLowerCase().includes('sioneide') ? '👩' : '👨');
+
+  if (icoEl) icoEl.textContent = iconeAtivo;
+  if (nomeEl) nomeEl.textContent = nomeAtivo;
+
+  const btnIrandy = document.getElementById('btn-opcao-irandy');
+  const btnSioneide = document.getElementById('btn-opcao-sioneide');
+  if (btnIrandy) btnIrandy.classList.toggle('selecionado', nomeAtivo.toLowerCase() === 'irandy');
+  if (btnSioneide) btnSioneide.classList.toggle('selecionado', nomeAtivo.toLowerCase() === 'sioneide');
+}
+
+function abrirModalPerfilUsuario() {
+  const modal = document.getElementById('modal-perfil-usuario');
+  if (!modal) return;
+  atualizarBadgeUsuarioHeader();
+  modal.style.display = 'flex';
+}
+
+function selecionarPerfilUsuario(nome, icone) {
+  AppState.usuarioAtivo = nome;
+  AppState.usuarioIcone = icone;
+  localStorage.setItem('usuario_nome_ativo', nome);
+  localStorage.setItem('usuario_icone_ativo', icone);
+  atualizarBadgeUsuarioHeader();
+  fecharModal('modal-perfil-usuario');
+  mostrarNotificacaoToast(`👤 Perfil ativo: ${icone} ${nome}`);
+}
+
+function salvarPerfilCustomUsuario() {
+  const input = document.getElementById('input-nome-custom-usuario');
+  const nome = input ? input.value.trim() : '';
+  if (!nome) return;
+  selecionarPerfilUsuario(nome, '👤');
+  if (input) input.value = '';
 }
 
 let timerToastNuvem = null;
@@ -3346,6 +3478,13 @@ function alternarItemPeloDropdown(itemId, event) {
       }
     }
     sincronizarListaAtivaComCatalogo();
+
+    AppState.ultimoEvento = {
+      autor: AppState.usuarioAtivo || 'Irandy',
+      icone: AppState.usuarioIcone || (AppState.usuarioAtivo === 'Sioneide' ? '👩' : '👨'),
+      itens: [prod.nome],
+      timestamp: Date.now()
+    };
   }
 
   salvarEstado(true);
@@ -3632,6 +3771,15 @@ function alternarItemDespensaEmTempoReal(produtoId, event) {
 
   // Sincroniza estritamente com a Lista de Compras
   sincronizarListaAtivaComCatalogo();
+
+  if (prod.selecionado) {
+    AppState.ultimoEvento = {
+      autor: AppState.usuarioAtivo || 'Irandy',
+      icone: AppState.usuarioIcone || (AppState.usuarioAtivo === 'Sioneide' ? '👩' : '👨'),
+      itens: [prod.nome],
+      timestamp: Date.now()
+    };
+  }
 
   // Salva no LocalStorage e sincroniza na Nuvem imediatamente
   salvarEstado(true);
@@ -4006,6 +4154,14 @@ function alternarItemComprado(id) {
     salvarEstado(true);
     renderizarListaCompras();
     atualizarCardResumo();
+
+    // Finalização Automática quando clicar no check do último item da lista
+    const todosComprados = AppState.listaAtiva.length > 0 && AppState.listaAtiva.every(i => i.comprado);
+    if (todosComprados) {
+      setTimeout(() => {
+        abrirModalFinalizarCompra(true);
+      }, 350);
+    }
     return;
   }
 
@@ -4166,6 +4322,13 @@ function adicionarItemRapido() {
 
     sincronizarListaAtivaComCatalogo();
 
+    AppState.ultimoEvento = {
+      autor: AppState.usuarioAtivo || 'Irandy',
+      icone: AppState.usuarioIcone || (AppState.usuarioAtivo === 'Sioneide' ? '👩' : '👨'),
+      itens: [nomeLimpo],
+      timestamp: Date.now()
+    };
+
     termoBuscaDespensa = '';
     termoBuscaTopo = '';
     input.value = '';
@@ -4310,6 +4473,15 @@ function processarUploadLista(substituir = false) {
   });
 
   sincronizarListaAtivaComCatalogo();
+
+  if (totalAdicionados > 0) {
+    AppState.ultimoEvento = {
+      autor: AppState.usuarioAtivo || 'Irandy',
+      icone: AppState.usuarioIcone || (AppState.usuarioAtivo === 'Sioneide' ? '👩' : '👨'),
+      itens: [`${totalAdicionados} itens adicionados`],
+      timestamp: Date.now()
+    };
+  }
 
   salvarEstado(true);
   fecharModal('modal-subir-lista');
@@ -4764,6 +4936,13 @@ function adicionarProdutoPorTexto(textoCompleto) {
   }
 
   sincronizarListaAtivaComCatalogo();
+
+  AppState.ultimoEvento = {
+    autor: AppState.usuarioAtivo || 'Irandy',
+    icone: AppState.usuarioIcone || (AppState.usuarioAtivo === 'Sioneide' ? '👩' : '👨'),
+    itens: [capitalizar(nome)],
+    timestamp: Date.now()
+  };
 
   salvarEstado(true);
   renderizarListaCompras();
@@ -5235,22 +5414,43 @@ window.addEventListener('keydown', (e) => {
 });
 
 // Finalizar Compra no Supermercado
-function abrirModalFinalizarCompra() {
+function abrirModalFinalizarCompra(automatico = false) {
   const itensComprados = AppState.listaAtiva.filter(i => i.comprado);
   if (itensComprados.length === 0) {
-    alert("Nenhum item marcado como pego (comprado) ainda! Dê check nos itens que você colocou no carrinho.");
+    mostrarNotificacaoToast("Nenhum item marcado como pego no carrinho ainda!");
     return;
   }
 
   let totalComprado = 0;
   itensComprados.forEach(it => {
-    totalComprado += (it.qtde * it.preco);
+    totalComprado += ((it.qtde || 1) * (it.preco || 0));
   });
 
   const modal = document.getElementById('modal-finalizar');
-  document.getElementById('modal-resumo-valor').textContent = `R$ ${totalComprado.toFixed(2).replace('.', ',')}`;
-  document.getElementById('modal-resumo-qtde').textContent = `${itensComprados.length} itens marcados como pegos`;
-  modal.style.display = 'flex';
+  const valorEl = document.getElementById('modal-resumo-valor');
+  const qtdeEl = document.getElementById('modal-resumo-qtde');
+
+  if (valorEl) valorEl.textContent = `R$ ${totalComprado.toFixed(2).replace('.', ',')}`;
+  if (qtdeEl) {
+    qtdeEl.textContent = automatico 
+      ? `🎉 Todos os ${itensComprados.length} itens foram pegos no carrinho!`
+      : `${itensComprados.length} itens marcados como pegos`;
+  }
+  
+  if (modal) modal.style.display = 'flex';
+}
+
+function acionarFinalizarCompraMobile() {
+  if (!AppState.listaAtiva || AppState.listaAtiva.length === 0) {
+    mostrarNotificacaoToast("Sua lista de compras está vazia!");
+    return;
+  }
+  const itensComprados = AppState.listaAtiva.filter(i => i.comprado);
+  if (itensComprados.length === 0) {
+    mostrarNotificacaoToast("Marque os itens no carrinho [✓] para finalizar a compra.");
+    return;
+  }
+  abrirModalFinalizarCompra(false);
 }
 
 function confirmarFinalizarCompra() {
@@ -5260,7 +5460,7 @@ function confirmarFinalizarCompra() {
 
   let totalComprado = 0;
   const listaItensHistorico = itensComprados.map(it => {
-    const sub = it.qtde * it.preco;
+    const sub = (it.qtde || 1) * (it.preco || 0);
     totalComprado += sub;
 
     // Atualiza catálogo com o novo preço e data
@@ -5302,7 +5502,10 @@ function confirmarFinalizarCompra() {
   salvarEstado(true);
   fecharModal('modal-finalizar');
   renderizarTudo();
-  alert("🎉 Compra finalizada com sucesso! Histórico e preços atualizados.");
+  mostrarNotificacaoToast("🎉 Compra finalizada com sucesso! Relatório gerado no Histórico.");
+  
+  // Abre diretamente o relatório do Histórico
+  navegarParaAba('historico');
 }
 
 // Microfone / Reconhecimento de Fala (Web Speech API) - Otimizado para PC e Celular

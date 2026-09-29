@@ -12,7 +12,7 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>">
   
   <!-- CSS Moderno -->
-  <link rel="stylesheet" href="style.css?v=9.4">
+  <link rel="stylesheet" href="style.css?v=9.5">
 </head>
 <body>
 
@@ -127,6 +127,10 @@
         </div>
 
         <div class="header-acoes-unificadas">
+          <button id="btn-perfil-usuario" class="btn-perfil-usuario-header" onclick="abrirModalPerfilUsuario()" title="Identificar quem está enviando itens (Irandy / Sioneide)">
+            <span id="ico-perfil-header" class="ico-perfil-header">👨</span>
+            <span id="nome-perfil-header" class="nome-perfil-header">Irandy</span>
+          </button>
           <button class="btn-menu-opcoes" onclick="abrirModalOpcoesHeader()" title="Mais opções (Zerar, Importar, CSV, Nuvem)">
             ⚙️
           </button>
@@ -687,9 +691,9 @@
       <span class="mobile-nav-icon">📊</span>
       <span class="mobile-nav-label">HISTÓRICO</span>
     </button>
-    <button class="mobile-nav-btn" onclick="atualizarCotacaoManual()" title="Atualizar Cotação">
-      <span class="mobile-nav-icon" style="color: #10B981;">⚡</span>
-      <span class="mobile-nav-label">COTAÇÃO</span>
+    <button class="mobile-nav-btn mobile-nav-btn-finalizar" onclick="acionarFinalizarCompraMobile()" title="Finalizar Compra">
+      <span class="mobile-nav-icon" style="color: #10B981;">🏁</span>
+      <span class="mobile-nav-label" style="color: #059669; font-weight: 800;">FINALIZAR</span>
     </button>
     <button class="mobile-nav-btn" onclick="abrirModal('modal-nuvem')" title="Sincronização Nuvem">
       <span class="mobile-nav-icon">☁️</span>
@@ -698,6 +702,52 @@
     </button>
   </nav>
 
+  <!-- MODAL: IDENTIFICAR QUEM ESTÁ USANDO / ENVIANDO ITENS (PERFIL ATIVO) -->
+  <div id="modal-perfil-usuario" class="modal-overlay" style="display: none;" onclick="if(event.target === this) fecharModal('modal-perfil-usuario')">
+    <div class="modal-content modal-perfil-content">
+      <div class="modal-header">
+        <h3>👤 Quem está usando este aparelho?</h3>
+        <button class="btn-fechar" onclick="fecharModal('modal-perfil-usuario')">&times;</button>
+      </div>
+      <div class="modal-perfil-corpo">
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px; line-height: 1.35;">
+          Selecione quem está com este celular para que os pedidos apareçam com o nome correto em tempo real:
+        </p>
+        <div class="perfil-opcoes-grid">
+          <button type="button" class="btn-perfil-card-opcao" id="btn-opcao-irandy" onclick="selecionarPerfilUsuario('Irandy', '👨')">
+            <span class="perfil-avatar">👨</span>
+            <strong class="perfil-nome">Irandy</strong>
+            <span class="perfil-desc">Marido / No Mercado</span>
+          </button>
+          <button type="button" class="btn-perfil-card-opcao" id="btn-opcao-sioneide" onclick="selecionarPerfilUsuario('Sioneide', '👩')">
+            <span class="perfil-avatar">👩</span>
+            <strong class="perfil-nome">Sioneide</strong>
+            <span class="perfil-desc">Patroa / Pedidos</span>
+          </button>
+        </div>
+        <div style="margin-top: 14px; border-top: 1px solid var(--border); padding-top: 12px;">
+          <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">Ou personalizar nome:</label>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="input-nome-custom-usuario" placeholder="Ex: Filho, Visitante..." style="flex: 1; padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; font-family: inherit;">
+            <button type="button" class="btn-adicionar-topo" onclick="salvarPerfilCustomUsuario()">Salvar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BANNER FLUTUANTE DE AVISO EM TEMPO REAL: PEDIDO DA PATROA / SIONEIDE -->
+  <div id="toast-aviso-patroa" class="toast-aviso-patroa" style="display: none;">
+    <div class="toast-patroa-conteudo">
+      <div class="toast-patroa-icone">🔔</div>
+      <div class="toast-patroa-corpo">
+        <div class="toast-patroa-titulo" id="toast-patroa-titulo">👩 Sioneide pediu para comprar:</div>
+        <div class="toast-patroa-itens" id="toast-patroa-itens">Refrigerante</div>
+      </div>
+      <button type="button" class="toast-patroa-fechar" onclick="fecharAvisoPatroa()" title="Fechar aviso">✕</button>
+    </div>
+  </div>
+
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
@@ -705,7 +755,7 @@
   <script src="logos_banco.js"></script>
   <script src="icones2d.js"></script>
   <script src="firebase-sync.js"></script>
-  <script src="app.js?v=9.4"></script>
+  <script src="app.js?v=9.5"></script>
 
 </body>
 </html>
