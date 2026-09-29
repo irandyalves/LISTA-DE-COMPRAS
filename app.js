@@ -2230,6 +2230,7 @@ function ouvirPrecoItem(itemId, btnEl, ev) {
 
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRecognition) {
+    mostrarNotificacaoToast("ℹ️ Navegador sem suporte a voz direta. Abrindo edição manual...");
     editarPrecoItemManualmente(itemId);
     return;
   }
@@ -2268,12 +2269,19 @@ function ouvirPrecoItem(itemId, btnEl, ev) {
 
   gravandoPrecoItemId = itemId;
   if (btnEl) btnEl.classList.add('ouvindo');
+  mostrarNotificacaoToast(`🎙️ Ouvindo preço de "${item.nome}"... Diga o valor (ex: 4,35 ou 23 e 39)`);
 
-  recognizerPreco = new SpeechRecognition();
-  recognizerPreco.lang = 'pt-BR';
-  recognizerPreco.continuous = false;
-  recognizerPreco.interimResults = false;
-  recognizerPreco.maxAlternatives = 3;
+  try {
+    recognizerPreco = new SpeechRecognition();
+    recognizerPreco.lang = 'pt-BR';
+    recognizerPreco.continuous = false;
+    recognizerPreco.interimResults = false;
+    recognizerPreco.maxAlternatives = 3;
+  } catch (errInst) {
+    console.error("Erro ao instanciar SpeechRecognition:", errInst);
+    editarPrecoItemManualmente(itemId);
+    return;
+  }
 
   recognizerPreco.onresult = (event) => {
     let precoExtraido = null;
@@ -2310,6 +2318,9 @@ function ouvirPrecoItem(itemId, btnEl, ev) {
       salvarEstado(true);
       renderizarListaCompras();
       atualizarCardResumo();
+      mostrarNotificacaoToast(`✅ Preço salvo: R$ ${precoExtraido.toFixed(2).replace('.', ',')} para "${item.nome}"`);
+    } else {
+      mostrarNotificacaoToast(`⚠️ Não identifiquei o valor falado ("${melhorTexto || 'silêncio'}"). Tente novamente ou clique no valor para digitar.`);
     }
   };
 
@@ -2317,8 +2328,14 @@ function ouvirPrecoItem(itemId, btnEl, ev) {
     console.warn("[Voz Preço] Erro:", e.error);
     if (btnEl) btnEl.classList.remove('ouvindo');
     gravandoPrecoItemId = null;
-    if (e.error === 'not-allowed') {
-      alert("Acesso ao microfone bloqueado no navegador. Toque no preço para digitar manualmente.");
+    if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
+      mostrarNotificacaoToast("⚠️ Microfone bloqueado no navegador do PC. Abrindo teclado...");
+      setTimeout(() => editarPrecoItemManualmente(itemId), 400);
+    } else if (e.error === 'audio-capture') {
+      mostrarNotificacaoToast("⚠️ Nenhum microfone detectado no PC. Abrindo teclado...");
+      setTimeout(() => editarPrecoItemManualmente(itemId), 400);
+    } else if (e.error === 'no-speech') {
+      mostrarNotificacaoToast("🎙️ Nenhuma fala detectada. Toque no mic verde para tentar de novo.");
     }
   };
 
@@ -2709,13 +2726,13 @@ function renderizarListaCompras() {
                   ${marcaHtml}
                 </div>
                 <div class="mcol-prod-preco-grupo">
-                  <button type="button" class="btn-mic-preco-verde" id="btn-mic-item-${item.id}" onclick="ouvirPrecoItem('${item.id}', this, event)" title="Falar o preço (ex: vinte e três e trinta e nove)">
+                  <button type="button" class="btn-mic-preco-verde" id="btn-mic-item-${item.id}" onclick="ouvirPrecoItem('${item.id}', this, event)" title="Ditar preço por voz no PC ou Celular (fale ex: 4 e 35)">
                     <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor">
                       <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
                       <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
                     </svg>
                   </button>
-                  <span class="badge-preco-real ${precoRegistradoValor > 0 ? 'com-preco' : 'sem-preco'}" id="badge-preco-${item.id}" onclick="editarPrecoItemManualmente('${item.id}', event)" title="Preço no mercado (toque para digitar)">
+                  <span class="badge-preco-real ${precoRegistradoValor > 0 ? 'com-preco' : 'sem-preco'}" id="badge-preco-${item.id}" onclick="editarPrecoItemManualmente('${item.id}', event)" title="Preço do produto (Clique para digitar no teclado ou Limpar)">
                     ${precoFormatadoTxt}
                   </span>
                 </div>
@@ -5283,57 +5300,109 @@ function confirmarFinalizarCompra() {
   alert("🎉 Compra finalizada com sucesso! Histórico e preços atualizados.");
 }
 
-// Microfone / Reconhecimento de Fala (Web Speech API)
+// Microfone / Reconhecimento de Fala (Web Speech API) - Otimizado para PC e Celular
 function configurarReconhecimentoVoz() {
   const btnMic = document.getElementById('btn-mic-voz');
+  const inputBusca = document.getElementById('input-novo-item');
   if (!btnMic) return;
 
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  
   if (!SpeechRecognition) {
-    btnMic.style.display = 'none'; // Navegador sem suporte
+    btnMic.title = "Voz não suportada neste navegador (Recomendamos Google Chrome ou Edge no PC)";
+    btnMic.style.opacity = '0.6';
+    btnMic.addEventListener('click', () => {
+      mostrarNotificacaoToast("ℹ️ O reconhecimento por voz requer Google Chrome ou Microsoft Edge no PC.");
+    });
     return;
   }
 
-  const recognition = new SpeechRecognition();
-  recognition.lang = 'pt-BR';
-  recognition.continuous = false;
-  recognition.interimResults = false;
+  btnMic.title = "Pesquisar por voz (Fale no PC ou Celular) [Atalho: Alt+V]";
+  btnMic.style.opacity = '1';
+
+  let recognition = null;
+  try {
+    recognition = new SpeechRecognition();
+    recognition.lang = 'pt-BR';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+  } catch(e) {
+    console.warn("Erro ao instanciar SpeechRecognition:", e);
+  }
 
   let gravando = false;
+  let placeholderOriginal = inputBusca ? inputBusca.placeholder : "Pesquisar ou adicionar item...";
+
+  function pararGravacao() {
+    gravando = false;
+    btnMic.classList.remove('gravando');
+    btnMic.title = "Pesquisar por voz (Fale no PC ou Celular) [Atalho: Alt+V]";
+    if (inputBusca && inputBusca.placeholder.includes("Ouvindo")) {
+      inputBusca.placeholder = placeholderOriginal;
+    }
+  }
+
+  function iniciarGravacao() {
+    if (!recognition) return;
+    try {
+      recognition.start();
+      gravando = true;
+      btnMic.classList.add('gravando');
+      btnMic.title = "🔴 Ouvindo... Diga o nome do item no microfone";
+      if (inputBusca) {
+        placeholderOriginal = inputBusca.placeholder;
+        inputBusca.placeholder = "🎙️ Ouvindo... Diga o produto a pesquisar...";
+      }
+      mostrarNotificacaoToast("🎙️ Microfone ativado. Fale o nome do produto...");
+    } catch (e) {
+      console.error("Erro ao iniciar microfone:", e);
+      pararGravacao();
+    }
+  }
 
   btnMic.addEventListener('click', () => {
     if (!gravando) {
-      try {
-        recognition.start();
-        gravando = true;
-        btnMic.classList.add('gravando');
-        btnMic.title = "Ouvindo... Diga o que falta comprar";
-      } catch (e) {
-        console.error("Erro ao iniciar microfone:", e);
-      }
+      iniciarGravacao();
     } else {
-      recognition.stop();
-      gravando = false;
-      btnMic.classList.remove('gravando');
+      try { recognition.stop(); } catch(e){}
+      pararGravacao();
     }
   });
 
-  recognition.onresult = (event) => {
-    const textoFalado = event.results[0][0].transcript;
-    gravando = false;
-    btnMic.classList.remove('gravando');
-    localizarProdutoPorVoz(textoFalado);
-  };
+  // Atalho global no PC: Alt + V ativa a busca por voz
+  window.addEventListener('keydown', (e) => {
+    if (e.altKey && (e.key === 'v' || e.key === 'V')) {
+      e.preventDefault();
+      btnMic.click();
+    }
+  });
 
-  recognition.onerror = () => {
-    gravando = false;
-    btnMic.classList.remove('gravando');
-  };
+  if (recognition) {
+    recognition.onresult = (event) => {
+      const textoFalado = event.results[0][0].transcript;
+      pararGravacao();
+      mostrarNotificacaoToast(`🔍 Localizando: "${textoFalado}"...`);
+      localizarProdutoPorVoz(textoFalado);
+    };
 
-  recognition.onend = () => {
-    gravando = false;
-    btnMic.classList.remove('gravando');
-  };
+    recognition.onerror = (e) => {
+      pararGravacao();
+      console.warn("[Voz Busca] Erro:", e.error);
+      if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
+        mostrarNotificacaoToast("⚠️ Microfone bloqueado no PC. Clique no ícone de cadeado na barra de endereços para permitir.");
+      } else if (e.error === 'audio-capture') {
+        mostrarNotificacaoToast("⚠️ Nenhum microfone detectado no computador. Conecte um microfone ou fone.");
+      } else if (e.error === 'no-speech') {
+        mostrarNotificacaoToast("🎙️ Nenhuma fala detectada. Fale mais próximo ao microfone.");
+      } else if (e.error === 'network') {
+        mostrarNotificacaoToast("⚠️ Sem conexão com o serviço de voz. Verifique sua internet.");
+      }
+    };
+
+    recognition.onend = () => {
+      pararGravacao();
+    };
+  }
 }
 
 // Localiza o produto na lista ou catálogo através da voz sem JAMAIS adicionar quantidade
