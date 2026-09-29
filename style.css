@@ -5194,6 +5194,17 @@ body.modo-mercado-ativo .item-nome {
     text-overflow: ellipsis;
   }
 
+  /* No Mobile: NUNCA mostrar colunas de mercados e RETIRAR o botão do olho */
+  .btn-olho-tabela {
+    display: none !important;
+  }
+
+  .mcol-th-rede,
+  .mcol-td-preco,
+  .mcol-td-total {
+    display: none !important;
+  }
+
   /* 6. Despensa / Catálogo em Grid Responsiva */
   .despensa-grid {
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
