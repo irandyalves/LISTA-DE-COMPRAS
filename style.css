@@ -6683,9 +6683,9 @@ body.modo-mercado-ativo .item-nome {
     border-top: 1px dashed #F1F5F9;
   }
 
-  .tabela-historico-itens th:nth-child(3),
-  .tabela-historico-itens td:nth-child(3) {
-    display: none; /* Esconde preço unitário avulso para caber em telas estreitas */
+  .tabela-historico-itens th:nth-child(2),
+  .tabela-historico-itens td:nth-child(2) {
+    display: none; /* Esconde preço unitário avulso para caber perfeitamente no mobile */
   }
 
   .historico-detalhes-compra {

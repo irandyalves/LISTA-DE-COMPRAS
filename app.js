@@ -4598,7 +4598,25 @@ function alternarCardCompraHistorico(compraId) {
   }
 }
 
-// Renderizar Histórico Completo de Compras, Duração em Dias e Comparação %
+// Função utilitária para formatar intervalos de tempo entre compras (minutos, horas ou dias)
+function formatarIntervaloMs(diffMs) {
+  if (diffMs == null || isNaN(diffMs) || diffMs < 0) return '—';
+  const totalMin = Math.floor(diffMs / (1000 * 60));
+  const totalHoras = Math.floor(diffMs / (1000 * 60 * 60));
+  const totalDias = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  if (totalDias >= 1) {
+    return `${totalDias}d`;
+  } else if (totalHoras >= 1) {
+    return `${totalHoras}h`;
+  } else if (totalMin >= 1) {
+    return `${totalMin}min`;
+  } else {
+    return `< 1min`;
+  }
+}
+
+// Renderizar Histórico Completo de Compras, Duração em Dias/Horas e Comparação %
 function renderizarHistorico() {
   const container = document.getElementById('historico-container');
   const containerResumo = document.getElementById('historico-cards-resumo');
@@ -4611,7 +4629,7 @@ function renderizarHistorico() {
         <div style="font-size: 2.2rem; margin-bottom: 10px;">🧾</div>
         <h3 style="font-weight: 800; color: var(--text-main);">Nenhuma compra no histórico ainda</h3>
         <p style="color: var(--text-muted); font-size: 0.88rem; margin-top: 6px; max-width: 480px; margin-left: auto; margin-right: auto;">
-          Ao finalizar suas compras na aba <strong>Comprar</strong> ou clicando em <strong>+ Registrar Compra</strong> acima, o app calculará a duração dos produtos em dias e a variação % de preços entre cada ida ao mercado!
+          Ao finalizar suas compras na aba <strong>Comprar</strong> ou clicando em <strong>+ Registrar Compra</strong> acima, o app calculará o intervalo entre as compras e a variação % de preços entre cada ida ao mercado!
         </p>
       </div>
     `;
@@ -4633,15 +4651,16 @@ function renderizarHistorico() {
     const totalComprasQtd = AppState.historico.length;
     const ticketMedio = totalComprasQtd > 0 ? (totalGastoGeral / totalComprasQtd) : 0;
 
-    let mediaDiasIntervalo = 0;
+    let mediaIntervaloTxt = '—';
     if (historicoCrescente.length > 1) {
-      let somaDias = 0;
+      let somaMs = 0;
       for (let i = 1; i < historicoCrescente.length; i++) {
         const d1 = new Date(historicoCrescente[i - 1].data);
         const d2 = new Date(historicoCrescente[i].data);
-        somaDias += Math.max(1, Math.round((d2 - d1) / (1000 * 60 * 60 * 24)));
+        somaMs += Math.max(0, d2.getTime() - d1.getTime());
       }
-      mediaDiasIntervalo = Math.round(somaDias / (historicoCrescente.length - 1));
+      const mediaMs = Math.round(somaMs / (historicoCrescente.length - 1));
+      mediaIntervaloTxt = formatarIntervaloMs(mediaMs);
     }
 
     containerResumo.innerHTML = `
@@ -4649,7 +4668,7 @@ function renderizarHistorico() {
         <div class="card-resumo-hist-ico" style="background: #ECFDF5; color: #059669;">💰</div>
         <div class="card-resumo-hist-info">
           <span class="card-resumo-hist-rotulo">Total Gasto</span>
-          <span class="card-resumo-hist-valor" style="color: #059669;">${formatarMoeda(totalGastoGeral)}</span>
+          <span class="card-resumo-hist-valor" style="color: #059669;">${totalGastoGeral > 0 ? formatarMoeda(totalGastoGeral) : 'R$ 0,00'}</span>
         </div>
       </div>
       <div class="card-resumo-hist">
@@ -4663,14 +4682,14 @@ function renderizarHistorico() {
         <div class="card-resumo-hist-ico" style="background: #FFFBEB; color: #D97706;">📊</div>
         <div class="card-resumo-hist-info">
           <span class="card-resumo-hist-rotulo">Ticket Médio</span>
-          <span class="card-resumo-hist-valor">${formatarMoeda(ticketMedio)}</span>
+          <span class="card-resumo-hist-valor">${ticketMedio > 0 ? formatarMoeda(ticketMedio) : 'R$ 0,00'}</span>
         </div>
       </div>
       <div class="card-resumo-hist">
         <div class="card-resumo-hist-ico" style="background: #F0FDF4; color: #16A34A;">⏱️</div>
         <div class="card-resumo-hist-info">
           <span class="card-resumo-hist-rotulo">Intervalo Médio</span>
-          <span class="card-resumo-hist-valor">${mediaDiasIntervalo > 0 ? `${mediaDiasIntervalo} dias` : '1ª compra'}</span>
+          <span class="card-resumo-hist-valor">${mediaIntervaloTxt}</span>
         </div>
       </div>
     `;
@@ -4716,23 +4735,24 @@ function renderizarHistorico() {
         const compraAnterior = historicoCrescente[idxCrescente - 1];
         const diffTotal = compra.total - compraAnterior.total;
         const pctTotal = compraAnterior.total > 0 ? ((diffTotal / compraAnterior.total) * 100) : 0;
-        const diasEntre = Math.max(1, Math.round((new Date(compra.data) - new Date(compraAnterior.data)) / (1000 * 60 * 60 * 24)));
+        const diffMs = Math.max(0, new Date(compra.data).getTime() - new Date(compraAnterior.data).getTime());
+        const intervaloCompraTxt = formatarIntervaloMs(diffMs);
 
         if (pctTotal > 0.05) {
           badgeComparativoCompra = `
-            <span class="tag-comparativo-aumento" title="Aumento de ${formatarMoeda(diffTotal)} em relação à compra anterior no ${compraAnterior.mercado} (${diasEntre} dias atrás)">
+            <span class="tag-comparativo-aumento" title="Aumento de ${formatarMoeda(diffTotal)} em relação à compra anterior no ${compraAnterior.mercado} (${intervaloCompraTxt} antes)">
               🔺 +${pctTotal.toFixed(1).replace('.', ',')}% vs anterior
             </span>
           `;
         } else if (pctTotal < -0.05) {
           badgeComparativoCompra = `
-            <span class="tag-comparativo-reducao" title="Economia de ${formatarMoeda(Math.abs(diffTotal))} em relação à compra anterior no ${compraAnterior.mercado} (${diasEntre} dias atrás)">
+            <span class="tag-comparativo-reducao" title="Economia de ${formatarMoeda(Math.abs(diffTotal))} em relação à compra anterior no ${compraAnterior.mercado} (${intervaloCompraTxt} antes)">
               🔻 ${pctTotal.toFixed(1).replace('.', ',')}% vs anterior
             </span>
           `;
         } else {
           badgeComparativoCompra = `
-            <span class="tag-comparativo-estavel" title="Valor idêntico à compra anterior (${diasEntre} dias atrás)">
+            <span class="tag-comparativo-estavel" title="Valor idêntico à compra anterior (${intervaloCompraTxt} antes)">
               = Estável vs anterior
             </span>
           `;
@@ -4755,8 +4775,7 @@ function renderizarHistorico() {
         const precoUnit = Number(it.preco) || 0;
         const subtotal = Number(it.subtotal) || (qtde * precoUnit);
 
-        // 1. Cálculo de Dias de Duração / Consumo do Item
-        // Busca todas as compras que contêm este mesmo produto ordenadas cronologicamente
+        // 1. Duração / Intervalo entre a compra atual e a anterior deste item
         const comprasDesteItem = historicoCrescente.filter(c => 
           (c.itens || []).some(itemCompra => (itemCompra.nome || '').toLowerCase().trim() === nomeNorm)
         );
@@ -4764,15 +4783,13 @@ function renderizarHistorico() {
         const itemIdxNaLinha = comprasDesteItem.findIndex(c => String(c.id) === String(compra.id));
         let tagDuracaoHtml = '';
 
-        if (itemIdxNaLinha >= 0 && itemIdxNaLinha < (comprasDesteItem.length - 1)) {
-          // Houve uma compra posterior deste produto: calcula exatamente quantos dias durou!
-          const dataProxima = new Date(comprasDesteItem[itemIdxNaLinha + 1].data);
-          const diasDurou = Math.max(1, Math.round((dataProxima - dataObj) / (1000 * 60 * 60 * 24)));
-          tagDuracaoHtml = `<span class="tag-duracao-item" title="Durou ${diasDurou} dias até a próxima compra em ${dataProxima.toLocaleDateString('pt-BR')}">⏱️ Durou ${diasDurou} dias</span>`;
+        if (itemIdxNaLinha > 0) {
+          const dataAnteriorItem = new Date(comprasDesteItem[itemIdxNaLinha - 1].data);
+          const diffMs = Math.max(0, dataObj.getTime() - dataAnteriorItem.getTime());
+          const intervaloTxt = formatarIntervaloMs(diffMs);
+          tagDuracaoHtml = `<span class="tag-duracao-item" title="Intervalo de ${intervaloTxt} desde a compra anterior deste item">⏱️ ${intervaloTxt}</span>`;
         } else {
-          // É a compra mais recente deste produto: calcula há quantos dias está durando/em uso
-          const diasEmUso = Math.max(0, Math.round((Date.now() - dataObj.getTime()) / (1000 * 60 * 60 * 24)));
-          tagDuracaoHtml = `<span class="tag-duracao-item em-uso" title="Comprado nesta data e em uso atualmente">⏱️ Em uso há ${diasEmUso} ${diasEmUso === 1 ? 'dia' : 'dias'}</span>`;
+          tagDuracaoHtml = `<span class="tag-duracao-item" style="background: #F1F5F9; color: #64748B; border-color: #E2E8F0;" title="Primeira vez que este produto foi comprado">⏱️ 1ª compra</span>`;
         }
 
         // 2. Comparação de Preço do Item vs Compra Anterior do Mesmo Item
@@ -4782,7 +4799,7 @@ function renderizarHistorico() {
           const itAnt = (compraAntItem.itens || []).find(itemCompra => (itemCompra.nome || '').toLowerCase().trim() === nomeNorm);
           const precoAnt = (itAnt && Number(itAnt.preco)) || 0;
 
-          if (precoAnt > 0) {
+          if (precoAnt > 0 && precoUnit > 0) {
             const diffPreco = precoUnit - precoAnt;
             const pctItem = ((diffPreco / precoAnt) * 100);
 
@@ -4793,26 +4810,25 @@ function renderizarHistorico() {
             } else {
               badgeComparativoItem = `<span class="tag-comparativo-estavel" title="Preço manteve-se em ${formatarMoeda(precoUnit)}">= Estável</span>`;
             }
+          } else if (precoUnit > 0 && precoAnt <= 0) {
+            badgeComparativoItem = `<span class="tag-comparativo-base">⭐ 1º preço</span>`;
           } else {
-            badgeComparativoItem = `<span class="tag-comparativo-base">⭐ 1ª compra</span>`;
+            badgeComparativoItem = `<span class="tag-comparativo-base" style="color: #94A3B8;">—</span>`;
           }
         } else {
           badgeComparativoItem = `<span class="tag-comparativo-base">⭐ 1ª compra</span>`;
         }
 
-        const categoria = it.categoria || deduzirCategoria(it.nome);
-
+        // Formatação do Item: Arroz 5kg | 02 und (com 02 und em laranja escuro), sem categoria
         linhasItensHtml += `
           <tr>
             <td>
               <div class="hist-prod-info">
-                <span class="hist-prod-nome">${it.nome}</span>
-                <span class="hist-prod-cat">${categoria}</span>
+                <span class="hist-prod-nome">${it.nome} | <span style="color: #EA580C; font-weight: 800;">${String(qtde).padStart(2, '0')} und</span></span>
               </div>
             </td>
-            <td style="font-weight: 700; white-space: nowrap;">${qtde}x</td>
-            <td style="color: var(--text-muted); font-size: 0.78rem; white-space: nowrap;">${formatarMoeda(precoUnit)}</td>
-            <td style="font-weight: 800; color: #0F172A; white-space: nowrap;">${formatarMoeda(subtotal)}</td>
+            <td style="color: var(--text-muted); font-size: 0.78rem; white-space: nowrap;">${precoUnit > 0 ? formatarMoeda(precoUnit) : '—'}</td>
+            <td style="font-weight: 800; color: #0F172A; white-space: nowrap;">${subtotal > 0 ? formatarMoeda(subtotal) : '—'}</td>
             <td>${badgeComparativoItem}</td>
             <td>${tagDuracaoHtml}</td>
           </tr>
@@ -4831,7 +4847,7 @@ function renderizarHistorico() {
             <div class="historico-compra-info-dir">
               ${badgeComparativoCompra}
               <span class="historico-compra-itens-count">${itensCompra.length} ${itensCompra.length === 1 ? 'item' : 'itens'}</span>
-              <span class="historico-total-compra-valor">${formatarMoeda(compra.total)}</span>
+              <span class="historico-total-compra-valor">${compra.total > 0 ? formatarMoeda(compra.total) : 'R$ 0,00'}</span>
               <button type="button" class="btn-acao-mini" onclick="event.stopPropagation(); excluirCompraHistorico('${compra.id}')" title="Excluir esta compra do histórico" style="color: #DC2626; border-color: #FCA5A5; background: #FEF2F2;">🗑️</button>
               <span class="historico-seta-toggle">▼</span>
             </div>
@@ -4841,11 +4857,10 @@ function renderizarHistorico() {
               <thead>
                 <tr>
                   <th>Item</th>
-                  <th>Qtd</th>
                   <th>Preço Un.</th>
                   <th>Valor Gasto</th>
                   <th>Comparação</th>
-                  <th>Consumo / Duração</th>
+                  <th>Duração</th>
                 </tr>
               </thead>
               <tbody>
@@ -4859,7 +4874,7 @@ function renderizarHistorico() {
 
     container.innerHTML = `<div class="historico-lista-compras">${htmlCards}</div>`;
   } 
-  // 3. MODO 2: VISÃO POR ITEM & CONSUMO (Agrupamento por produto, evolução de preços e consumo médio)
+  // 3. MODO 2: VISÃO POR ITEM & CONSUMO (Agrupamento por produto, evolução de preços e intervalo médio)
   else {
     const mapaItens = new Map();
 
@@ -4871,7 +4886,6 @@ function renderizarHistorico() {
         if (!mapaItens.has(chave)) {
           mapaItens.set(chave, {
             nome: nomeNorm,
-            categoria: it.categoria || deduzirCategoria(it.nome),
             compras: []
           });
         }
@@ -4891,8 +4905,7 @@ function renderizarHistorico() {
     if (termoBuscaHistorico) {
       listaItensUnicos = listaItensUnicos.filter(item => {
         const n = item.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        const c = item.categoria.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        return n.includes(termoBuscaHistorico) || c.includes(termoBuscaHistorico);
+        return n.includes(termoBuscaHistorico);
       });
     }
 
@@ -4915,44 +4928,56 @@ function renderizarHistorico() {
       const totalUnidades = prod.compras.reduce((acc, c) => acc + c.qtde, 0);
       const totalGastoProd = prod.compras.reduce((acc, c) => acc + c.subtotal, 0);
 
-      const precosValidos = prod.compras.map(c => c.preco).filter(p => p > 0);
-      const menorPreco = precosValidos.length > 0 ? Math.min(...precosValidos) : 0;
-      const maiorPreco = precosValidos.length > 0 ? Math.max(...precosValidos) : 0;
-      const ultimoPreco = prod.compras[prod.compras.length - 1].preco;
-      const primeiroPreco = prod.compras[0].preco;
+      // Último preço (compra mais recente)
+      const ultimoPreco = Number(prod.compras[prod.compras.length - 1].preco) || 0;
 
-      let badgeVariacaoGeral = '';
-      if (primeiroPreco > 0 && totalVezes > 1) {
-        const diffGeral = ultimoPreco - primeiroPreco;
-        const pctGeral = ((diffGeral / primeiroPreco) * 100);
-        if (pctGeral > 0.05) {
-          badgeVariacaoGeral = `<span class="tag-comparativo-aumento">🔺 +${pctGeral.toFixed(1).replace('.', ',')}% histórico</span>`;
-        } else if (pctGeral < -0.05) {
-          badgeVariacaoGeral = `<span class="tag-comparativo-reducao">🔻 ${pctGeral.toFixed(1).replace('.', ',')}% histórico</span>`;
-        } else {
-          badgeVariacaoGeral = `<span class="tag-comparativo-estavel">= Preço Estável</span>`;
+      // Preço anterior (compra imediatamente anterior à última com preço)
+      let precoAnterior = 0;
+      if (totalVezes > 1) {
+        precoAnterior = Number(prod.compras[prod.compras.length - 2].preco) || 0;
+        if (precoAnterior <= 0) {
+          for (let k = prod.compras.length - 2; k >= 0; k--) {
+            if (Number(prod.compras[k].preco) > 0) {
+              precoAnterior = Number(prod.compras[k].preco);
+              break;
+            }
+          }
         }
       }
 
-      // Cálculo da duração média de consumo (dias entre compras)
-      let duracaoMediaTxt = '1 compra';
-      if (totalVezes > 1) {
-        let somaDias = 0;
-        for (let i = 1; i < prod.compras.length; i++) {
-          somaDias += Math.max(1, Math.round((prod.compras[i].data - prod.compras[i - 1].data) / (1000 * 60 * 60 * 24)));
+      let badgeVariacaoGeral = '';
+      if (precoAnterior > 0 && ultimoPreco > 0) {
+        const diffPreco = ultimoPreco - precoAnterior;
+        const pctPreco = ((diffPreco / precoAnterior) * 100);
+        if (pctPreco > 0.05) {
+          badgeVariacaoGeral = `<span class="tag-comparativo-aumento">🔺 +${pctPreco.toFixed(1).replace('.', ',')}% vs anterior</span>`;
+        } else if (pctPreco < -0.05) {
+          badgeVariacaoGeral = `<span class="tag-comparativo-reducao">🔻 ${pctPreco.toFixed(1).replace('.', ',')}% vs anterior</span>`;
+        } else {
+          badgeVariacaoGeral = `<span class="tag-comparativo-estavel">= Estável</span>`;
         }
-        const mediaDias = Math.round(somaDias / (totalVezes - 1));
-        duracaoMediaTxt = `Dura ~${mediaDias} dias`;
+      } else if (totalVezes === 1) {
+        badgeVariacaoGeral = `<span class="tag-comparativo-base">⭐ 1ª compra</span>`;
+      }
+
+      // Cálculo da duração média (intervalo entre compra atual e a anterior)
+      let duracaoMediaTxt = '—';
+      if (totalVezes > 1) {
+        let somaMs = 0;
+        for (let i = 1; i < prod.compras.length; i++) {
+          somaMs += Math.max(0, prod.compras[i].data.getTime() - prod.compras[i - 1].data.getTime());
+        }
+        const mediaMs = Math.round(somaMs / (totalVezes - 1));
+        duracaoMediaTxt = formatarIntervaloMs(mediaMs);
       } else {
-        const diasDesdeCompra = Math.max(0, Math.round((Date.now() - prod.compras[0].data.getTime()) / (1000 * 60 * 60 * 24)));
-        duracaoMediaTxt = `Há ${diasDesdeCompra}d em uso`;
+        duracaoMediaTxt = '—';
       }
 
       // Histórico rápido das compras daquele produto
-      let timelinePrecosHtml = prod.compras.slice(-3).reverse().map(c => `
+      let timelinePrecosHtml = prod.compras.slice(-4).reverse().map(c => `
         <div style="display: flex; justify-content: space-between; padding: 2px 0;">
           <span>📅 ${c.dataStr} (${c.mercado})</span>
-          <strong>${c.qtde}x ${formatarMoeda(c.preco)}</strong>
+          <span><strong>${c.preco > 0 ? formatarMoeda(c.preco) : '—'}</strong> | <span style="color: #EA580C; font-weight: 700;">${String(c.qtde).padStart(2, '0')} und</span></span>
         </div>
       `).join('');
 
@@ -4960,8 +4985,8 @@ function renderizarHistorico() {
         <div class="card-item-analise">
           <div class="card-item-analise-topo">
             <div>
-              <div class="card-item-analise-nome">${prod.nome}</div>
-              <div style="font-size: 0.72rem; color: var(--text-muted);">${prod.categoria} • ${totalVezes} ${totalVezes === 1 ? 'compra' : 'compras'} (${totalUnidades} un.)</div>
+              <div class="card-item-analise-nome">${prod.nome} | <span style="color: #EA580C; font-weight: 800;">${String(totalUnidades).padStart(2, '0')} und</span></div>
+              <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 2px;">${totalVezes} ${totalVezes === 1 ? 'compra registrada' : 'compras registradas'}</div>
             </div>
             ${badgeVariacaoGeral}
           </div>
@@ -4972,11 +4997,11 @@ function renderizarHistorico() {
             </div>
             <div class="item-stat-linha">
               <span class="item-stat-rotulo">Total Gasto</span>
-              <span class="item-stat-val" style="color: #059669;">${formatarMoeda(totalGastoProd)}</span>
+              <span class="item-stat-val" style="color: #059669;">${totalGastoProd > 0 ? formatarMoeda(totalGastoProd) : '—'}</span>
             </div>
             <div class="item-stat-linha">
-              <span class="item-stat-rotulo">Menor Preço</span>
-              <span class="item-stat-val">${menorPreco > 0 ? formatarMoeda(menorPreco) : '—'}</span>
+              <span class="item-stat-rotulo">Preço Anterior</span>
+              <span class="item-stat-val">${precoAnterior > 0 ? formatarMoeda(precoAnterior) : '—'}</span>
             </div>
             <div class="item-stat-linha">
               <span class="item-stat-rotulo">Último Preço</span>
@@ -5026,7 +5051,6 @@ function adicionarItemRascunhoHistorico() {
 
   itensRascunhoHistorico.push({
     nome: nome,
-    categoria: deduzirCategoria(nome),
     qtde: qtde,
     preco: preco,
     subtotal: qtde * preco
@@ -6775,13 +6799,14 @@ function confirmarFinalizarCompra() {
 
   let totalComprado = 0;
   const listaItensHistorico = itensComprados.map(it => {
-    const precoUnit = (Number(it.precoRegistradoMercado) > 0)
+    // Registra no histórico ESTRITAMENTE o valor digitado ou falado pelo usuário (nunca valores de cotações)
+    const precoUnit = (it.precoRegistradoMercado && Number(it.precoRegistradoMercado) > 0)
       ? Number(it.precoRegistradoMercado)
-      : (Number(it.preco) || 0);
+      : 0;
     const sub = (it.qtde || 1) * precoUnit;
     totalComprado += sub;
 
-    // Atualiza catálogo com o novo preço e data
+    // Atualiza catálogo com o novo preço e data somente se o usuário tiver informado um preço real
     const itemCat = AppState.catalogo.find(c => c.nome.toLowerCase() === it.nome.toLowerCase());
     if (itemCat && precoUnit > 0) {
       itemCat.ultimoPreco = precoUnit;
@@ -6790,7 +6815,6 @@ function confirmarFinalizarCompra() {
 
     return {
       nome: it.nome,
-      categoria: it.categoria || deduzirCategoria(it.nome),
       qtde: it.qtde || 1,
       preco: precoUnit,
       subtotal: sub
