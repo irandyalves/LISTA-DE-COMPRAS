@@ -5679,10 +5679,11 @@ body.tema-escuro .drawer-fechar-btn {
   .linha-abas-e-total-mobile {
     display: flex !important;
     align-items: center !important;
-    gap: 4px !important;
+    gap: 6px !important;
     width: 100% !important;
     margin-bottom: 4px !important;
-    padding: 0 8px !important;
+    padding: 0 12px !important;
+    box-sizing: border-box !important;
   }
 
   .linha-abas-e-total-mobile .despensa-abas-categorias {
@@ -5690,11 +5691,15 @@ body.tema-escuro .drawer-fechar-btn {
     min-width: 0 !important;
     overflow-x: auto !important;
     white-space: nowrap !important;
-    padding: 2px 0 !important;
-    gap: 3px !important;
+    padding: 3px 4px 3px 6px !important;
+    gap: 4px !important;
     margin-bottom: 0 !important;
     -webkit-overflow-scrolling: touch !important;
     scrollbar-width: none !important;
+  }
+
+  .linha-abas-e-total-mobile .despensa-aba-tab:first-child {
+    margin-left: 2px !important;
   }
 
   .linha-abas-e-total-mobile .despensa-abas-categorias::-webkit-scrollbar {
