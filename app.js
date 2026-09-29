@@ -3149,8 +3149,7 @@ function renderizarListaCompras() {
           <div class="categoria-titulo-tabela">
             <span class="categoria-nome-txt">${categoria}</span>
             <span class="categoria-qtd-badge">(${itens.length} ${itens.length === 1 ? 'item' : 'itens'})</span>
-            <div class="balao-total-categoria ${temValorComprar ? '' : 'vazio'}" id="balao-total-comprar-${catChave}">
-              <span class="balao-rotulo">Total:</span>
+            <div class="balao-total-categoria ${temValorComprar ? '' : 'vazio'}" id="balao-total-comprar-${catChave}" title="Total da Categoria">
               <span class="balao-valor">${formatarMoeda(totalCatComprar)}</span>
             </div>
           </div>
@@ -4182,8 +4181,7 @@ function renderizarDespensa() {
           <span>${categoria}</span>
           <span class="categoria-qtd-badge" style="font-size: 0.8rem; font-weight: 500; opacity: 0.85;">(${itensVisiveisContador} ${itensVisiveisContador === 1 ? 'item' : 'itens'})</span>
         </div>
-        <div class="balao-total-categoria ${temEscolhido ? '' : 'vazio'}" id="balao-total-despensa-${catChave}">
-          <span class="balao-rotulo">Total:</span>
+        <div class="balao-total-categoria ${temEscolhido ? '' : 'vazio'}" id="balao-total-despensa-${catChave}" title="Total Selecionado">
           <span class="balao-valor">${formatarMoeda(totalEscolhidoCat)}</span>
         </div>
       </div>

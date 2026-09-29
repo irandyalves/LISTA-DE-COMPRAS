@@ -6052,16 +6052,12 @@ body.modo-mercado-ativo .item-nome {
 }
 
 .balao-total-categoria .balao-rotulo {
-  font-weight: 700;
-  opacity: 0.92;
-  font-size: 0.68rem;
-  text-transform: uppercase;
-  letter-spacing: 0.2px;
+  display: none !important;
 }
 
 .balao-total-categoria .balao-valor {
   font-weight: 900;
-  font-size: 0.76rem;
+  font-size: 0.78rem;
 }
 
 #view-despensa .categoria-titulo {
