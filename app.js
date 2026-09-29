@@ -1027,7 +1027,6 @@ function inicializarNuvem() {
       salvarEstado(false); // Salva local sem retransmitir
       renderizarTudo();
       atualizarContadorSidebarMontar();
-      exibirToastNuvem("📲 A lista foi sincronizada pela nuvem!");
     },
     (status) => {
       atualizarBadgeStatus(status);
