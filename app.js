@@ -5189,7 +5189,7 @@ function configurarReconhecimentoVoz() {
     const textoFalado = event.results[0][0].transcript;
     gravando = false;
     btnMic.classList.remove('gravando');
-    processarFalaParaLista(textoFalado);
+    localizarProdutoPorVoz(textoFalado);
   };
 
   recognition.onerror = () => {
@@ -5203,22 +5203,59 @@ function configurarReconhecimentoVoz() {
   };
 }
 
-// Separa itens quando falados juntos (ex: "precisa de arroz, dois leites e sabão em pó")
-function processarFalaParaLista(frase) {
-  let limpa = frase.toLowerCase()
-    .replace(/^adicionar\s+/i, '')
-    .replace(/^comprar\s+/i, '')
-    .replace(/^falta\s+/i, '')
-    .replace(/^precisa de\s+/i, '');
+// Localiza o produto na lista ou catálogo através da voz sem JAMAIS adicionar quantidade
+function localizarProdutoPorVoz(frase) {
+  if (!frase) return;
+  let termo = frase.toLowerCase().trim()
+    .replace(/[.,!?]$/, '')
+    .replace(/^(procurar|localizar|buscar|achar|onde está|onde fica)\s+/i, '')
+    .trim();
 
-  // Quebra por vírgula ou por " e "
-  const partes = limpa.split(/,|\se\s/);
-  partes.forEach(p => {
-    const itemLimpo = p.trim();
-    if (itemLimpo.length > 1) {
-      adicionarProdutoPorTexto(itemLimpo);
+  const inputBusca = document.getElementById('input-novo-item');
+  if (inputBusca) {
+    inputBusca.value = termo;
+  }
+
+  // Executa o filtro oficial de busca da aplicação
+  aoDigitarBuscaTopo(termo);
+
+  // Localiza e rola a tela suavemente até o item encontrado com destaque
+  setTimeout(() => {
+    const termoNorm = termo.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    
+    // Procura na Lista Ativa
+    const itemEncontrado = AppState.listaAtiva.find(i => {
+      const nomeNorm = (i.nome || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      return nomeNorm.includes(termoNorm);
+    });
+
+    if (itemEncontrado) {
+      const trEl = document.getElementById(`tr-item-${itemEncontrado.id}`);
+      if (trEl) {
+        trEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        trEl.classList.add('linha-destaque-voz');
+        setTimeout(() => {
+          trEl.classList.remove('linha-destaque-voz');
+        }, 2200);
+      }
+    } else {
+      // Se estiver no catálogo/despensa
+      const prodCat = AppState.catalogo.find(p => {
+        const nomeNorm = (p.nome || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        return nomeNorm.includes(termoNorm);
+      });
+      if (prodCat) {
+        const cardEl = document.getElementById(`card-despensa-${prodCat.id}`);
+        if (cardEl) {
+          cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          cardEl.classList.add('linha-destaque-voz');
+          setTimeout(() => {
+            cardEl.classList.remove('linha-destaque-voz');
+          }, 2200);
+        }
+      }
     }
-  });
+  }, 120);
 }
 
 // Modal de Nuvem e Compartilhamento

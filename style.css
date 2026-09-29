@@ -5111,3 +5111,14 @@ body.modo-mercado-ativo .item-nome {
   }
 }
 
+/* Efeito de Destaque Visual ao Localizar Produto por Voz */
+.linha-destaque-voz {
+  animation: pulsoDestaqueVoz 2.2s ease-in-out;
+}
+
+@keyframes pulsoDestaqueVoz {
+  0% { background-color: #FEF08A !important; transform: scale(1.02); box-shadow: 0 0 12px rgba(234, 179, 8, 0.4); }
+  40% { background-color: #D1FAE5 !important; transform: scale(1.01); box-shadow: 0 0 8px rgba(16, 185, 129, 0.4); }
+  100% { background-color: transparent; transform: scale(1); box-shadow: none; }
+}
+
