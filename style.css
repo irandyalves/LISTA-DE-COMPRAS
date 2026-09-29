@@ -7301,7 +7301,12 @@ body.tema-escuro .card-ranking-stats {
     align-items: center !important;
   }
 
+  /* O cabeçalho integrado do histórico SÓ aparece na aba de histórico */
   .historico-topo-integrado {
+    display: none !important;
+  }
+
+  body[data-aba-ativa="historico"] .historico-topo-integrado {
     display: flex !important;
     align-items: center !important;
     gap: 3px !important;
@@ -7309,6 +7314,10 @@ body.tema-escuro .card-ranking-stats {
     flex: 1 !important;
     min-width: 0 !important;
     flex-wrap: nowrap !important;
+  }
+
+  body[data-aba-ativa="historico"] .busca-topo-reduzida {
+    display: none !important;
   }
 
   .historico-titulo {
@@ -7424,19 +7433,91 @@ body.tema-escuro .card-ranking-stats {
     color: #F8FAFC !important;
   }
 
-  /* Barra de Pesquisa no Mobile */
+  /* Campo de Pesquisa no Mobile (Reduzido em 80% na largura) */
   .busca-topo-reduzida {
     background: #1E293B !important;
     border-color: #334155 !important;
+    width: 72px !important;
+    max-width: 82px !important;
+    min-width: 0 !important;
+    flex: 0 0 72px !important;
+    padding: 2px 4px !important;
+    gap: 3px !important;
+    box-shadow: none !important;
+    transition: all 0.2s ease;
+  }
+
+  .busca-topo-reduzida:focus-within {
+    width: 120px !important;
+    max-width: 130px !important;
+    flex: 0 0 120px !important;
+  }
+
+  .busca-topo-reduzida .btn-mic-mini {
+    width: 22px !important;
+    height: 22px !important;
+    font-size: 0.80rem !important;
+    padding: 0 !important;
+    flex-shrink: 0 !important;
   }
 
   .busca-topo-reduzida .input-busca-topo {
     background: transparent !important;
     color: #F8FAFC !important;
+    font-size: 0.70rem !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    padding: 2px 0 !important;
   }
 
   .busca-topo-reduzida .input-busca-topo::placeholder {
     color: #94A3B8 !important;
+    font-size: 0.68rem !important;
+  }
+
+  /* Na versão mobile: O botão Adicionar fica oculto no topo (aparece dentro do dropdown/modal ao digitar) */
+  .busca-topo-reduzida .btn-adicionar-topo,
+  #btn-adicionar-topo-header {
+    display: none !important;
+  }
+
+  /* Dropdown Flutuante / Modal de Sugestões no Mobile */
+  .dropdown-sugestoes-topo {
+    position: fixed !important;
+    top: 50px !important;
+    left: 8px !important;
+    right: 8px !important;
+    width: auto !important;
+    max-width: calc(100vw - 16px) !important;
+    border-radius: 12px !important;
+    background: #1E293B !important;
+    border: 1.5px solid #334155 !important;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5) !important;
+    z-index: 999999 !important;
+  }
+
+  .dropdown-sugestoes-topo .sugestao-item-row {
+    background: #1E293B !important;
+    border-bottom: 1px solid #334155 !important;
+    color: #F8FAFC !important;
+  }
+
+  .dropdown-sugestoes-topo .sugestao-item-row:hover,
+  .dropdown-sugestoes-topo .sugestao-item-row.ativo-teclado {
+    background: #334155 !important;
+  }
+
+  .dropdown-sugestoes-topo .sugestao-nome-prod {
+    color: #F8FAFC !important;
+  }
+
+  .dropdown-sugestoes-topo .sugestao-meta-box {
+    color: #94A3B8 !important;
+  }
+
+  .dropdown-sugestoes-topo .sugestao-row-criar-novo {
+    background: #312E81 !important;
+    border-top: 1px solid #4F46E5 !important;
   }
 
   .historico-compra-cabecalho {
