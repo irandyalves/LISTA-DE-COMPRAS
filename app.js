@@ -818,6 +818,14 @@ let AppState = {
 
 // Sincroniza a Lista de Compra: SÓ MOSTRA O QUE FOR SELECIONADO EM MONTAR LISTA
 function sincronizarListaAtivaComCatalogo() {
+  // Garante que qualquer produto não selecionado tenha comprado = false no catálogo
+  AppState.catalogo.forEach(prod => {
+    if (!prod.selecionado) {
+      prod.comprado = false;
+      prod.precoRegistradoMercado = 0;
+    }
+  });
+
   AppState.listaAtiva = AppState.catalogo
     .filter(prod => !!prod.selecionado)
     .map(prod => {
@@ -3928,6 +3936,8 @@ function alternarItemPeloDropdown(itemId, event) {
 
   if (prod) {
     prod.selecionado = true;
+    prod.comprado = false;
+    prod.precoRegistradoMercado = 0;
     if (AppState.abaAtiva === 'despensa') {
       prod.qtde = prod.qtde || 1;
     } else {
@@ -4248,6 +4258,9 @@ function alternarItemDespensaEmTempoReal(produtoId, event) {
 
   // Inverte o estado de seleção
   prod.selecionado = !prod.selecionado;
+  // Ao jogar para comprar (ou ao retirar da lista), NUNCA pode vir marcado como comprado!
+  prod.comprado = false;
+  prod.precoRegistradoMercado = 0;
 
   const chaveIcone = prod.icone || detectarChaveIcone(prod.nome);
   const precoPadrao = prod.precoMedioDF || (prod.ultimoPreco > 0 ? prod.ultimoPreco : (COTACOES_DF[chaveIcone] ? COTACOES_DF[chaveIcone].atacadao : 10.0));
@@ -4825,7 +4838,7 @@ function renderizarHistorico() {
                 <span class="hist-prod-nome">${it.nome}</span>
               </div>
             </td>
-            <td style="text-align: center; white-space: nowrap;"><span style="color: #EA580C; font-weight: 800;">${String(qtde).padStart(2, '0')} und</span></td>
+            <td style="text-align: center; white-space: nowrap;"><span style="color: #EA580C; font-weight: 800;">${String(qtde).padStart(2, '0')}</span></td>
             <td style="text-align: right; color: var(--text-muted); font-size: 0.78rem; white-space: nowrap;">${precoUnit > 0 ? formatarMoeda(precoUnit) : '—'}</td>
             <td style="text-align: right; font-weight: 800; color: #0F172A; white-space: nowrap;">${subtotal > 0 ? formatarMoeda(subtotal) : '—'}</td>
             <td style="text-align: center;">${badgeComparativoItem}</td>
@@ -4970,7 +4983,7 @@ function renderizarHistorico() {
 
         const partes = (c.dataStr || '').split('/');
         const dataCurta = partes.length === 3 ? `${partes[0]}/${partes[1]}/${partes[2].slice(-2)}` : c.dataStr;
-        const qtdeFmt = `${String(c.qtde).padStart(2, '0')} und`;
+        const qtdeFmt = `${String(c.qtde).padStart(2, '0')}`;
         const precoFmt = c.preco > 0 ? formatarMoeda(c.preco) : '—';
 
         const badgeIntervaloHtml = (intervaloRowTxt !== '—')
@@ -5327,6 +5340,8 @@ function removerItem(id) {
   const prod = AppState.catalogo.find(p => String(p.id) === String(id) || String(p.catalogoId) === String(id) || `item_despensa_${p.id}` === String(id));
   if (prod) {
     prod.selecionado = false;
+    prod.comprado = false;
+    prod.precoRegistradoMercado = 0;
   }
   AppState.listaAtiva = AppState.listaAtiva.filter(i => String(i.id) !== String(id) && String(i.catalogoId) !== String(id));
   salvarEstado(true);
@@ -5627,6 +5642,8 @@ function adicionarItemRapido() {
     let prodExistente = AppState.catalogo.find(p => p.nome.toLowerCase().trim() === nomeLimpo.toLowerCase().trim());
     if (prodExistente) {
       prodExistente.selecionado = true;
+      prodExistente.comprado = false;
+      prodExistente.precoRegistradoMercado = 0;
     } else {
       const novoItem = {
         id: 'c_custom_' + Date.now(),
@@ -5638,6 +5655,8 @@ function adicionarItemRapido() {
         ultimoPreco: precoEstimado,
         dataUltimoPreco: new Date().toISOString().slice(0, 10),
         selecionado: true,
+        comprado: false,
+        precoRegistradoMercado: 0,
         qtde: 1
       };
       AppState.catalogo.unshift(novoItem);
@@ -5773,6 +5792,8 @@ function processarUploadLista(substituir = false) {
     const doCat = AppState.catalogo.find(c => c.nome.toLowerCase().trim() === nome.toLowerCase().trim());
     if (doCat) {
       doCat.selecionado = true;
+      doCat.comprado = false;
+      doCat.precoRegistradoMercado = 0;
       doCat.qtde = qtde;
       if (marcaDetectada) doCat.marca = marcaDetectada;
       if (preco > 0) doCat.preco = preco;
@@ -5788,6 +5809,8 @@ function processarUploadLista(substituir = false) {
         ultimoPreco: preco,
         dataUltimoPreco: new Date().toISOString().slice(0, 10),
         selecionado: true,
+        comprado: false,
+        precoRegistradoMercado: 0,
         qtde: qtde
       });
     }
@@ -6237,6 +6260,8 @@ function adicionarProdutoPorTexto(textoCompleto) {
   // Se já existe no catálogo, marca como selecionado e atualiza quantidade/marca
   if (doCatalogo) {
     doCatalogo.selecionado = true;
+    doCatalogo.comprado = false;
+    doCatalogo.precoRegistradoMercado = 0;
     doCatalogo.qtde = (doCatalogo.qtde || 0) + qtde;
     if (marcaDetectada) doCatalogo.marca = marcaDetectada;
     if (precoFinal > 0) doCatalogo.preco = precoFinal;
@@ -6253,6 +6278,8 @@ function adicionarProdutoPorTexto(textoCompleto) {
       ultimoPreco: precoFinal,
       dataUltimoPreco: dataUltimoPreco || new Date().toISOString().slice(0, 10),
       selecionado: true,
+      comprado: false,
+      precoRegistradoMercado: 0,
       qtde: qtde
     };
     AppState.catalogo.push(novoCat);
