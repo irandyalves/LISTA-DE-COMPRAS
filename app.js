@@ -2097,7 +2097,7 @@ function atualizarCardEconomiaSidebar(campeaoId, totais, economia) {
   const elConteudo = document.getElementById('sidebar-eco-conteudo');
   if (!elConteudo) return;
 
-  if (!campeaoId || !totais || !MERCADOS_DF[campeaoId] || AppState.listaAtiva.length === 0) {
+  if (AppState.listaAtiva.length === 0) {
     elConteudo.innerHTML = `
       <div class="sidebar-eco-msg" style="color: var(--text-muted); font-size: 0.8rem; line-height: 1.4;">
         Adicione itens à lista para cotar o mercado mais barato do DF.
@@ -2105,6 +2105,24 @@ function atualizarCardEconomiaSidebar(campeaoId, totais, economia) {
     `;
     return;
   }
+
+  if (!totais || !campeaoId) {
+    const chavesRedes = Object.keys(MERCADOS_DF);
+    totais = {};
+    chavesRedes.forEach(r => { totais[r] = 0; });
+    AppState.listaAtiva.forEach(item => {
+      const qtde = item.qtde || 1;
+      chavesRedes.forEach(r => {
+        totais[r] += qtde * obterPrecoEstimadoMercado(item, r);
+      });
+    });
+    const redesOrdenadas = [...chavesRedes].sort((a, b) => totais[a] - totais[b]);
+    campeaoId = redesOrdenadas[0];
+    const maisCaroId = redesOrdenadas[redesOrdenadas.length - 1];
+    economia = (totais[maisCaroId] || 0) - (totais[campeaoId] || 0);
+  }
+
+  if (!campeaoId || !totais || !MERCADOS_DF[campeaoId]) return;
 
   const infoCampeao = MERCADOS_DF[campeaoId];
   const totalCampeaoTxt = formatarMoeda(totais[campeaoId] || 0, false);
@@ -3081,8 +3099,20 @@ function atualizarBalaoTotalCategoria(categoria) {
 function renderizarListaCompras() {
   const container = document.getElementById('itens-lista-container');
   if (!container) return;
-  const scrollYAnterior = window.scrollY || document.documentElement.scrollTop || 0;
-  const scrollXAnterior = window.scrollX || document.documentElement.scrollLeft || 0;
+
+  // 1. Capturar com precisão a posição de rolagem de todos os contêineres possíveis
+  const scrollYAnterior = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+  const scrollXAnterior = window.scrollX || document.documentElement.scrollLeft || document.body.scrollLeft || 0;
+
+  const divTabelaAnterior = container.querySelector('.mcol-tabela-scroll');
+  const tabelaScrollTopAnterior = divTabelaAnterior ? divTabelaAnterior.scrollTop : 0;
+  const tabelaScrollLeftAnterior = divTabelaAnterior ? divTabelaAnterior.scrollLeft : 0;
+
+  const layoutEl = document.querySelector('.layout-conteudo-principal');
+  const layoutScrollTopAnterior = layoutEl ? layoutEl.scrollTop : 0;
+  const viewListaEl = document.getElementById('view-lista');
+  const viewListaScrollTopAnterior = viewListaEl ? viewListaEl.scrollTop : 0;
+
   const alturaAtual = Math.max(container.offsetHeight, document.documentElement.scrollHeight);
   if (alturaAtual > 0) {
     container.style.minHeight = `${alturaAtual}px`;
@@ -3439,30 +3469,62 @@ function renderizarListaCompras() {
   // Mover a informação de economia e melhor mercado para a Slide Bar à esquerda
   atualizarCardEconomiaSidebar(campeaoId, totais, economia);
 
-  container.innerHTML = `
-    <div class="mcol-tabela-scroll">
+  let divTabela = container.querySelector('.mcol-tabela-scroll');
+  if (divTabela) {
+    divTabela.innerHTML = `
       <table class="mcol-tabela-moderna tabela-lista-compras ${ocultarMercados ? 'mercados-ocultos' : ''}">
         <tbody>
           ${linhasTabelaHtml}
         </tbody>
         ${tfootHtml}
       </table>
-    </div>
-  `;
-
-  // Preservar a posição do scroll para JAMAIS jogar o usuário para o topo ao interagir na tabela
-  if (scrollYAnterior > 0) {
-    window.scrollTo({ top: scrollYAnterior, left: scrollXAnterior, behavior: 'instant' });
-    requestAnimationFrame(() => {
-      window.scrollTo({ top: scrollYAnterior, left: scrollXAnterior, behavior: 'instant' });
-      setTimeout(() => {
-        window.scrollTo({ top: scrollYAnterior, left: scrollXAnterior, behavior: 'instant' });
-        container.style.minHeight = '';
-      }, 50);
-    });
+    `;
   } else {
-    container.style.minHeight = '';
+    container.innerHTML = `
+      <div class="mcol-tabela-scroll">
+        <table class="mcol-tabela-moderna tabela-lista-compras ${ocultarMercados ? 'mercados-ocultos' : ''}">
+          <tbody>
+            ${linhasTabelaHtml}
+          </tbody>
+          ${tfootHtml}
+        </table>
+      </div>
+    `;
+    divTabela = container.querySelector('.mcol-tabela-scroll');
   }
+
+  // Preservar e travar a posição de rolagem em todos os contêineres para JAMAIS mover a tela
+  const restaurarTodosScrolls = () => {
+    const dTab = container.querySelector('.mcol-tabela-scroll');
+    if (dTab && tabelaScrollTopAnterior > 0) {
+      dTab.scrollTop = tabelaScrollTopAnterior;
+      dTab.scrollLeft = tabelaScrollLeftAnterior;
+    }
+    if (layoutEl && layoutScrollTopAnterior > 0) {
+      layoutEl.scrollTop = layoutScrollTopAnterior;
+    }
+    if (viewListaEl && viewListaScrollTopAnterior > 0) {
+      viewListaEl.scrollTop = viewListaScrollTopAnterior;
+    }
+    if (scrollYAnterior > 0 || scrollXAnterior > 0) {
+      window.scrollTo({ top: scrollYAnterior, left: scrollXAnterior, behavior: 'instant' });
+    }
+  };
+
+  // Restauração síncrona imediata
+  restaurarTodosScrolls();
+
+  // Restaurações subsequentes para cobrir reflow e recalculo de altura do navegador
+  requestAnimationFrame(() => {
+    restaurarTodosScrolls();
+    setTimeout(() => {
+      restaurarTodosScrolls();
+      container.style.minHeight = '';
+    }, 25);
+    setTimeout(() => {
+      restaurarTodosScrolls();
+    }, 80);
+  });
 }
 
 // Catálogo Especial da Despensa com Marcas e Menor Preço (8 Cards Lado a Lado)
@@ -5583,6 +5645,67 @@ function atualizarVisualItemLinha(item, isPendente = false) {
   return true;
 }
 
+// Reordena a linha dentro do bloco da sua categoria no DOM de forma 100% lisa, sem recriar a tabela
+function reordenarLinhaNaCategoria(item) {
+  if (!item) return false;
+  const tr = document.getElementById(`tr-item-${item.id}`);
+  if (!tr || !tr.parentElement) return false;
+
+  const tbody = tr.parentElement;
+
+  // Encontra o cabeçalho separador desta categoria (anterior a este tr)
+  let curr = tr.previousElementSibling;
+  let headerCat = null;
+  while (curr) {
+    if (curr.classList && curr.classList.contains('mcol-tr-categoria-separador')) {
+      headerCat = curr;
+      break;
+    }
+    curr = curr.previousElementSibling;
+  }
+
+  // Encontra o próximo cabeçalho separador de categoria (se houver)
+  let nextCatHeader = null;
+  curr = tr.nextElementSibling;
+  while (curr) {
+    if (curr.classList && curr.classList.contains('mcol-tr-categoria-separador')) {
+      nextCatHeader = curr;
+      break;
+    }
+    curr = curr.nextElementSibling;
+  }
+
+  // Coleta as outras linhas de itens desta categoria
+  const itemRows = [];
+  curr = headerCat ? headerCat.nextElementSibling : tbody.firstElementChild;
+  while (curr && curr !== nextCatHeader) {
+    if (curr.classList && curr.classList.contains('mcol-tr-item') && curr !== tr) {
+      itemRows.push(curr);
+    }
+    curr = curr.nextElementSibling;
+  }
+
+  if (item.comprado) {
+    // Move para o final do bloco desta categoria (após todos os itens desta categoria)
+    if (nextCatHeader) {
+      tbody.insertBefore(tr, nextCatHeader);
+    } else {
+      tbody.appendChild(tr);
+    }
+  } else {
+    // Desmarcado: move para antes do primeiro item comprado desta categoria
+    const primeiroComprado = itemRows.find(r => r.classList.contains('item-linha-comprado'));
+    if (primeiroComprado) {
+      tbody.insertBefore(tr, primeiroComprado);
+    } else if (nextCatHeader) {
+      tbody.insertBefore(tr, nextCatHeader);
+    } else {
+      tbody.appendChild(tr);
+    }
+  }
+  return true;
+}
+
 function alternarItemComprado(id) {
   if (houveArrastoRecente) return;
   const item = AppState.listaAtiva.find(i => String(i.id) === String(id));
@@ -5598,9 +5721,17 @@ function alternarItemComprado(id) {
 
     salvarEstado(true);
 
-    // Re-renderiza com scroll travado: o item vai para o fim da seção (ordem A-Z dos comprados) sem mover a tela
-    renderizarListaCompras();
-    atualizarCardResumo();
+    // Atualização pontual no DOM: 100% lisa, sem recriar tabela, sem salto nem tranco
+    const atualizouDOM = atualizarVisualItemLinha(item);
+    if (atualizouDOM) {
+      reordenarLinhaNaCategoria(item);
+      atualizarCardResumo();
+      atualizarBalaoTotalCategoria(item.categoria || 'Diversos');
+      atualizarCardEconomiaSidebar();
+    } else {
+      renderizarListaCompras();
+      atualizarCardResumo();
+    }
 
     // Finalização Automática quando clicar no check do último item da lista
     const todosComprados = AppState.listaAtiva.length > 0 && AppState.listaAtiva.every(i => i.comprado);
@@ -5622,8 +5753,17 @@ function alternarItemComprado(id) {
     if (catItem) catItem.comprado = false;
 
     salvarEstado(true);
-    renderizarListaCompras();
-    atualizarCardResumo();
+
+    const atualizouDOM = atualizarVisualItemLinha(item);
+    if (atualizouDOM) {
+      reordenarLinhaNaCategoria(item);
+      atualizarCardResumo();
+      atualizarBalaoTotalCategoria(item.categoria || 'Diversos');
+      atualizarCardEconomiaSidebar();
+    } else {
+      renderizarListaCompras();
+      atualizarCardResumo();
+    }
   } else {
     // Primeiro clique: entra em estado de aviso/confirmação
     cancelarPendenteDesmarcar();
