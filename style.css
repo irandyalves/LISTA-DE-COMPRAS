@@ -3786,24 +3786,25 @@ body.modo-mercado-ativo .item-nome {
   cursor: pointer;
 }
 
-/* Grupo de Preço Alinhado à Extrema Direita: Mic à esquerda do preço */
+/* Grupo de Preço Alinhado à Direita: Mic mais à esquerda com folga em relação ao badge */
 .mcol-prod-preco-grupo {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 12px;
   margin-left: auto;
   flex-shrink: 0;
   justify-content: flex-end;
 }
 
-/* Microfone Verdinho para Ditar Preço de Gôndola no Mercado */
+/* Microfone Verdinho para Ditar Preço de Gôndola no Mercado (Posicionado à Esquerda) */
 .btn-mic-preco-verde {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
-  min-width: 22px;
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  margin-right: 4px;
   border-radius: 50%;
   border: 1px solid #10B981;
   background: #ECFDF5;
@@ -3836,17 +3837,17 @@ body.modo-mercado-ativo .item-nome {
   100% { transform: scale(1.22); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
 }
 
-/* Badge do Preço Real Registrado no Mercado (Alinhado à Direita) */
+/* Badge do Preço Real Registrado no Mercado (Alinhado à Direita com largura estável) */
 .badge-preco-real {
   display: inline-flex;
   align-items: center;
   justify-content: flex-end;
   text-align: right;
-  min-width: 52px;
+  min-width: 68px;
   font-size: 0.72rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  padding: 1px 6px;
+  padding: 2px 7px;
   border-radius: 6px;
   cursor: pointer;
   white-space: nowrap;

@@ -1795,6 +1795,13 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
+// Formatação Numérica Padrão Brasileiro com Separador de Milhar (ex: 2.014,62 / R$ 2.014,62)
+function formatarMoeda(valor, comPrefixo = true) {
+  const num = Number(valor) || 0;
+  const formatado = num.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return comPrefixo ? `R$ ${formatado}` : formatado;
+}
+
 // Atualiza o Card de Economia na Sidebar com o Campeão Real (Movido para cá)
 function atualizarCardEconomiaSidebar(campeaoId, totais, economia) {
   const elConteudo = document.getElementById('sidebar-eco-conteudo');
@@ -1810,8 +1817,8 @@ function atualizarCardEconomiaSidebar(campeaoId, totais, economia) {
   }
 
   const infoCampeao = MERCADOS_DF[campeaoId];
-  const totalCampeaoTxt = (totais[campeaoId] || 0).toFixed(2).replace('.', ',');
-  const economiaTxt = (economia > 0) ? economia.toFixed(2).replace('.', ',') : '0,00';
+  const totalCampeaoTxt = formatarMoeda(totais[campeaoId] || 0, false);
+  const economiaTxt = (economia > 0) ? formatarMoeda(economia, false) : '0,00';
   const logo = (typeof obterLogoMercado === 'function' && obterLogoMercado(campeaoId)) || `logos/${campeaoId}.png`;
 
   elConteudo.innerHTML = `
@@ -2127,15 +2134,15 @@ function atualizarCardResumo() {
   if (elTotal && elRotulo) {
     if (visaoTotalModo === 'restante') {
       elRotulo.textContent = 'FALTA PEGAR';
-      elTotal.textContent = `R$ ${totalRestante.toFixed(2).replace('.', ',')}`;
+      elTotal.textContent = formatarMoeda(totalRestante);
       elTotal.style.color = '#DC2626';
     } else if (visaoTotalModo === 'carrinho') {
       elRotulo.textContent = 'NO CARRINHO';
-      elTotal.textContent = `R$ ${totalCarrinho.toFixed(2).replace('.', ',')}`;
+      elTotal.textContent = formatarMoeda(totalCarrinho);
       elTotal.style.color = '#059669';
     } else {
       elRotulo.textContent = 'TOTAL ESTIMADO';
-      elTotal.textContent = `R$ ${totalGeral.toFixed(2).replace('.', ',')}`;
+      elTotal.textContent = formatarMoeda(totalGeral);
       elTotal.style.color = 'var(--text-main)';
     }
   }
@@ -2145,13 +2152,13 @@ function atualizarCardResumo() {
     if (totalItens === 0) {
       elProgresso.textContent = 'Nenhum item na lista';
     } else if (temFiltroCat) {
-      elProgresso.textContent = `📁 ${AppState.filtroCategoria}: R$ ${totalCategoria.toFixed(2).replace('.', ',')} (${itensNoCarrinhoCat}/${itensCategoria} pegos) • Geral: R$ ${totalGeral.toFixed(2).replace('.', ',')}`;
+      elProgresso.textContent = `📁 ${AppState.filtroCategoria}: ${formatarMoeda(totalCategoria)} (${itensNoCarrinhoCat}/${itensCategoria} pegos) • Geral: ${formatarMoeda(totalGeral)}`;
     } else if (itensNoCarrinho === totalItens) {
-      elProgresso.textContent = `🎉 Todos os ${totalItens} itens pegos no carrinho! (R$ ${totalCarrinho.toFixed(2).replace('.', ',')})`;
+      elProgresso.textContent = `🎉 Todos os ${totalItens} itens pegos no carrinho! (${formatarMoeda(totalCarrinho)})`;
     } else if (itensNoCarrinho === 0) {
-      elProgresso.textContent = `🛒 0 de ${totalItens} pegos • R$ ${totalGeral.toFixed(2).replace('.', ',')} a comprar`;
+      elProgresso.textContent = `🛒 0 de ${totalItens} pegos • ${formatarMoeda(totalGeral)} a comprar`;
     } else {
-      elProgresso.textContent = `🛒 ${itensNoCarrinho} de ${totalItens} no carrinho (R$ ${totalCarrinho.toFixed(2).replace('.', ',')}) • Falta R$ ${totalRestante.toFixed(2).replace('.', ',')}`;
+      elProgresso.textContent = `🛒 ${itensNoCarrinho} de ${totalItens} no carrinho (${formatarMoeda(totalCarrinho)}) • Falta ${formatarMoeda(totalRestante)}`;
     }
   }
 
@@ -2480,7 +2487,7 @@ function ouvirPrecoItem(itemId, btnEl, ev) {
       salvarEstado(true);
       renderizarListaCompras();
       atualizarCardResumo();
-      mostrarNotificacaoToast(`✅ Preço salvo: R$ ${precoExtraido.toFixed(2).replace('.', ',')} para "${item.nome}"`);
+      mostrarNotificacaoToast(`✅ Preço salvo: ${formatarMoeda(precoExtraido)} para "${item.nome}"`);
     } else {
       mostrarNotificacaoToast(`⚠️ Não identifiquei o valor falado ("${melhorTexto || 'silêncio'}"). Tente novamente ou clique no valor para digitar.`);
     }
@@ -2857,7 +2864,7 @@ function renderizarListaCompras() {
             diffHtml = `<span class="mcol-tag-menor">✓ Menor</span>`;
           }
 
-          const precoTxt = p > 0 ? `R$ ${p.toFixed(2).replace('.', ',')}` : '<span class="mcol-a-cotar">—</span>';
+          const precoTxt = p > 0 ? formatarMoeda(p) : '<span class="mcol-a-cotar">—</span>';
 
           return `
             <td class="mcol-td-preco ${isMenor ? 'mcol-td-menor-bg' : ''}">
@@ -2887,7 +2894,7 @@ function renderizarListaCompras() {
           ? Number(item.precoRegistradoMercado)
           : (Number(item.preco) || 0);
       }
-      const precoFormatadoTxt = precoRegistradoValor > 0 ? `R$ ${precoRegistradoValor.toFixed(2).replace('.', ',')}` : 'R$ 0,00';
+      const precoFormatadoTxt = precoRegistradoValor > 0 ? formatarMoeda(precoRegistradoValor) : 'R$ 0,00';
 
       linhasTabelaHtml += `
         <tr class="mcol-tr-item ${item.comprado ? 'item-linha-comprado' : ''} ${classePendente}" id="tr-item-${item.id}">
@@ -2945,7 +2952,7 @@ function renderizarListaCompras() {
             onclick="selecionarMercadoReferencia('${r}')" 
             title="Clique para selecionar o ${MERCADOS_DF[r].nome} como mercado da lista">
           <div class="mcol-total-box">
-            <span class="mcol-total-valor">R$ ${totais[r].toFixed(2).replace('.', ',')}</span>
+            <span class="mcol-total-valor">${formatarMoeda(totais[r])}</span>
             ${isCampeao ? '<span class="mcol-campeao-tag">⭐ CAMPEÃO</span>' : ''}
             ${isColunaAtiva ? '<span style="font-size:0.62rem; color:#D97706; font-weight:800;">✓ SELECIONADO</span>' : ''}
           </div>
@@ -3437,7 +3444,7 @@ function renderizarDropdownSugestoesTopo(termoOriginal) {
     itensEncontrados.slice(0, 10).forEach(({ item }) => {
       const iconeSvg = obterIcone2D(item.nome, item.icone);
       const precoEstimado = obterPrecoEstimadoMercado(item, refMercado);
-      const precoTxt = precoEstimado > 0 ? `R$ ${precoEstimado.toFixed(2).replace('.', ',')}` : '';
+      const precoTxt = precoEstimado > 0 ? formatarMoeda(precoEstimado) : '';
 
       // Verifica se o item já está na lista ou marcado na despensa
       const estaNaLista = AppState.listaAtiva.some(i => 
@@ -4151,7 +4158,7 @@ function renderizarHistorico() {
         htmlItensCompra += `
           <div style="display: flex; justify-content: space-between; padding: 3px 0;">
             <span>${it.qtde}x ${it.nome}</span>
-            <span>R$ ${(it.subtotal || (it.qtde * it.preco)).toFixed(2).replace('.', ',')}</span>
+            <span>${formatarMoeda(it.subtotal || (it.qtde * it.preco))}</span>
           </div>
         `;
       });
@@ -4166,7 +4173,7 @@ function renderizarHistorico() {
           <div style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted);">${dataFormatada}</div>
         </div>
         <div style="font-size: 1.1rem; color: var(--success); font-weight: 800;">
-          R$ ${Number(compra.total).toFixed(2).replace('.', ',')}
+          ${formatarMoeda(compra.total)}
         </div>
       </div>
       <div class="historico-lista-itens">
@@ -5151,7 +5158,7 @@ function filtrarMarcasRealtime(texto) {
           <span>⚪ Sem marca específica (Preço padrão)</span>
         </div>
         <div class="listbox-opcao-preco">
-          <span>R$ ${precoBasePadrao.toFixed(2).replace('.', ',')}</span>
+          <span>${formatarMoeda(precoBasePadrao)}</span>
         </div>
       </div>
     `;
@@ -5180,7 +5187,7 @@ function filtrarMarcasRealtime(texto) {
           <span>${m.nome}</span>
         </div>
         <div class="listbox-opcao-preco">
-          <span>R$ ${m.preco.toFixed(2).replace('.', ',')}</span>
+          <span>${formatarMoeda(m.preco)}</span>
           <span class="listbox-mercado-tag">${m.emoji} ${m.mercado}</span>
         </div>
       </div>
@@ -5208,7 +5215,7 @@ function filtrarMarcasRealtime(texto) {
             <span style="font-weight: 700; color: var(--primary);">${marcaNomeCustom}</span>
           </div>
           <div class="listbox-opcao-preco">
-            <span>R$ ${precoEstimado.toFixed(2).replace('.', ',')}</span>
+            <span>${formatarMoeda(precoEstimado)}</span>
             <span class="listbox-mercado-tag">🟠 Atacadão</span>
           </div>
         </div>
@@ -5474,7 +5481,7 @@ function abrirModalFinalizarCompra(automatico = false) {
   const valorEl = document.getElementById('modal-resumo-valor');
   const qtdeEl = document.getElementById('modal-resumo-qtde');
 
-  if (valorEl) valorEl.textContent = `R$ ${totalComprado.toFixed(2).replace('.', ',')}`;
+  if (valorEl) valorEl.textContent = formatarMoeda(totalComprado);
   if (qtdeEl) {
     qtdeEl.textContent = automatico 
       ? `🎉 Todos os ${itensComprados.length} itens foram pegos no carrinho!`
@@ -6029,7 +6036,7 @@ function renderizarComparadorDF() {
           diffHtml = `<span class="mcol-tag-menor">✓ Menor</span>`;
         }
 
-        const precoTxt = p > 0 ? `R$ ${p.toFixed(2).replace('.', ',')}` : '<span class="mcol-a-cotar">—</span>';
+        const precoTxt = p > 0 ? formatarMoeda(p) : '<span class="mcol-a-cotar">—</span>';
 
         return `
           <td class="mcol-td-preco ${isMenor ? 'mcol-td-menor-bg' : ''}">
@@ -6070,7 +6077,7 @@ function renderizarComparadorDF() {
     return `
       <td class="mcol-td-total ${isCampeao ? 'mcol-td-total-campeao' : ''}">
         <div class="mcol-total-box">
-          <span class="mcol-total-valor">R$ ${totais[r].toFixed(2).replace('.', ',')}</span>
+          <span class="mcol-total-valor">${formatarMoeda(totais[r])}</span>
           ${isCampeao ? '<span class="mcol-campeao-tag">⭐ CAMPEÃO</span>' : ''}
         </div>
       </td>
@@ -6324,7 +6331,7 @@ function renderizarItensDrawerPreset(presetId, termoBusca = '') {
       itensRenderizados++;
       const chaveIcone = itemCat.icone || detectarChaveIcone(itemCat.nome);
       const iconeSvg = obterIcone2D(itemCat.nome, chaveIcone);
-      const precoFormatado = precoUnit > 0 ? `R$ ${precoUnit.toFixed(2).replace('.', ',')}` : 'R$ --';
+      const precoFormatado = precoUnit > 0 ? formatarMoeda(precoUnit) : 'R$ --';
 
       htmlItens += `
         <div class="drawer-item-row">
@@ -6370,7 +6377,7 @@ function renderizarItensDrawerPreset(presetId, termoBusca = '') {
         const precoUnit = catItem.precoMedioDF || catItem.ultimoPreco || 0;
         const chaveIcone = catItem.icone || detectarChaveIcone(catItem.nome);
         const iconeSvg = obterIcone2D(catItem.nome, chaveIcone);
-        const precoFormatado = precoUnit > 0 ? `R$ ${precoUnit.toFixed(2).replace('.', ',')}` : 'R$ --';
+        const precoFormatado = precoUnit > 0 ? formatarMoeda(precoUnit) : 'R$ --';
 
         htmlItens += `
           <div class="drawer-item-row sugestao-geral">
@@ -6399,7 +6406,7 @@ function renderizarItensDrawerPreset(presetId, termoBusca = '') {
 
   const estimativaEl = document.getElementById('drawer-estimativa-valor');
   if (estimativaEl) {
-    estimativaEl.textContent = `R$ ${totalEstimado.toFixed(2).replace('.', ',')}`;
+    estimativaEl.textContent = formatarMoeda(totalEstimado);
   }
 
   // Configura os botões de ação do rodapé da gaveta
