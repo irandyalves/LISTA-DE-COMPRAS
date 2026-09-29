@@ -2712,9 +2712,17 @@ function ouvirPrecoItem(itemId, btnEl, ev) {
         }
       }
       salvarEstado(true);
-      renderizarListaCompras();
+
+      // Atualiza in-place no DOM o badge de preço sem toast popup nem recriar a tabela
+      const badgeAtualizado = document.getElementById(`badge-preco-${item.id}`);
+      if (badgeAtualizado) {
+        badgeAtualizado.textContent = formatarMoeda(precoExtraido);
+        badgeAtualizado.className = 'badge-preco-real com-preco';
+      } else {
+        renderizarListaCompras();
+      }
       atualizarCardResumo();
-      mostrarNotificacaoToast(`✅ Preço salvo: ${formatarMoeda(precoExtraido)} para "${item.nome}"`);
+      atualizarBalaoTotalCategoria(item.categoria || 'Diversos');
     } else {
       mostrarNotificacaoToast(`⚠️ Não identifiquei o valor falado ("${melhorTexto || 'silêncio'}"). Tente novamente ou clique no valor para digitar.`);
     }
