@@ -4224,6 +4224,32 @@ function renderizarDespensa() {
     return;
   }
 
+// Conjunto de categorias que estão com o filtro de favoritos ativo
+let categoriasFiltroFavoritos = new Set();
+
+function alternarFiltroFavoritosCategoria(categoria, event) {
+  if (event && event.stopPropagation) event.stopPropagation();
+
+  if (categoriasFiltroFavoritos.has(categoria)) {
+    categoriasFiltroFavoritos.delete(categoria);
+    mostrarNotificacaoToast(`🌐 Exibindo todos os produtos de ${categoria}`);
+  } else {
+    categoriasFiltroFavoritos.add(categoria);
+    const qtdFavs = AppState.catalogo.filter(p => (p.categoria || 'Diversos') === categoria && p.favorito).length;
+    if (qtdFavs === 0) {
+      mostrarNotificacaoToast(`⭐ Nenhum favorito marcado em ${categoria}. Clique na estrelinha ao lado dos itens para favoritar.`);
+    } else {
+      mostrarNotificacaoToast(`⭐ Exibindo ${qtdFavs} ${qtdFavs === 1 ? 'favorito' : 'favoritos'} de ${categoria}`);
+    }
+  }
+
+  if (AppState.abaAtiva === 'despensa') {
+    renderizarDespensa();
+  } else {
+    renderizarListaCompras();
+  }
+}
+
   // Agrupar itens por Categoria (Modelo idêntico à Lista de Compra)
   const grupos = {};
   itensExibir.forEach((item) => {
@@ -4232,80 +4258,96 @@ function renderizarDespensa() {
     grupos[cat].push(item);
   });
 
-  for (const [categoria, itens] of Object.entries(grupos)) {
+  for (const [categoria, itensOriginais] of Object.entries(grupos)) {
+    const filtrandoFavCat = categoriasFiltroFavoritos.has(categoria);
+    let itens = itensOriginais;
+    if (filtrandoFavCat) {
+      itens = itensOriginais.filter(p => !!p.favorito);
+    }
+
     const grupoDiv = document.createElement('div');
     grupoDiv.className = 'categoria-grupo';
 
     let htmlItens = '';
     const nomesResumidosVistos = new Set();
     let itensVisiveisContador = 0;
-    itens.forEach(prod => {
-      let nomeExibicao = prod.nome;
-      if (AppState.modoResumido) {
-        nomeExibicao = obterNomeResumido(prod.nome);
-        const chaveDeduplicacao = nomeExibicao.toLowerCase().trim();
-        if (nomesResumidosVistos.has(chaveDeduplicacao)) {
-          // No modo resumido, variedades com o mesmo nome resumido não são exibidas ("só exibe a primeira")
-          return;
-        }
-        nomesResumidosVistos.add(chaveDeduplicacao);
-      }
-      itensVisiveisContador++;
 
-      const chaveIcone = prod.icone || detectarChaveIcone(prod.nome);
-      const iconeSvg = obterIcone2D(prod.nome, chaveIcone);
-
-      // Verifica se está selecionado para a Lista de Compra
-      const estaNaLista = !!prod.selecionado;
-      const ehFavorito = !!prod.favorito;
-      const qtde = prod.qtde || 1;
-      const checkIcone = estaNaLista ? '✓' : '';
-      const classeNaLista = estaNaLista ? 'na-lista-montar' : '';
-
-      htmlItens += `
-        <div class="item-card ${classeNaLista}" id="card-despensa-${prod.id}"
-             onclick="alternarItemDespensaEmTempoReal('${prod.id}', event)"
-             oncontextmenu="event.preventDefault(); abrirModalEditarNomeDespensa('${prod.id}', event);"
-             title="${estaNaLista ? 'Na Lista de Compra (Clique para desmarcar)' : 'Clique para marcar e adicionar à Lista de Compra'} • Botão direito para editar"
-             style="cursor: pointer;">
-          <div class="item-check-btn ${estaNaLista ? 'check-ativo' : ''}" 
-               onclick="event.stopPropagation(); alternarItemDespensaEmTempoReal('${prod.id}', event)"
-               title="${estaNaLista ? 'Retirar da Lista de Compra' : 'Adicionar à Lista de Compra'}">
-            ${checkIcone}
-          </div>
-
-          <!-- Coluna de Quantidade editável na frente do nome -->
-          <div class="contador-qtde" style="margin-right: 2px; ${estaNaLista ? '' : 'opacity: 0.5;'}" onclick="event.stopPropagation()">
-            <button class="btn-step" onclick="event.stopPropagation(); alterarQuantidadeMontarLista('${prod.id}', -1, event)">-</button>
-            <input type="number" min="1" class="input-qtde-card" value="${qtde}" id="qtde-montar-${prod.id}" onclick="event.stopPropagation()" onchange="definirQuantidadeMontarLista('${prod.id}', this.value, event)" />
-            <button class="btn-step" onclick="event.stopPropagation(); alterarQuantidadeMontarLista('${prod.id}', 1, event)">+</button>
-          </div>
-
-          <div class="item-corpo">
-            <div class="item-linha-nome">
-              <span class="item-nome" title="${prod.nome}">${nomeExibicao}</span>
-              <button class="btn-favorito-item ${ehFavorito ? 'ativo' : ''}" id="btn-fav-despensa-${prod.id}"
-                      title="${ehFavorito ? 'Remover dos favoritos' : 'Tornar favorito'}"
-                      onclick="event.stopPropagation(); alternarFavoritoItem('${prod.id}', event)">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="${ehFavorito ? '#F59E0B' : 'none'}" stroke="${ehFavorito ? '#D97706' : '#94A3B8'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                </svg>
-              </button>
-              <button class="btn-editar-despensa" title="Editar este produto" onclick="event.stopPropagation(); abrirModalEditarNomeDespensa('${prod.id}', event)">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M12 20h9"></path>
-                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          <div class="item-acoes-compra">
-            <button class="btn-delete-item" title="Excluir produto do catálogo" onclick="event.stopPropagation(); excluirItemDespensa('${prod.id}', event)">✕</button>
-          </div>
+    if (filtrandoFavCat && itens.length === 0) {
+      htmlItens = `
+        <div style="padding: 8px 12px; margin: 3px 0; background: #FFFBEB; border: 1px dashed #FDE68A; border-radius: 6px; font-size: 0.76rem; color: #B45309; display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+          <span>Nenhum favorito marcado em <strong>${categoria}</strong>. Clique na estrelinha ⭐ dos itens para favoritar.</span>
+          <button type="button" class="btn-step" style="padding: 2px 8px; font-size: 0.72rem; width: auto; height: auto; white-space: nowrap;" onclick="alternarFiltroFavoritosCategoria('${categoria}', event)">Ver Todos</button>
         </div>
       `;
-    });
+    } else {
+      itens.forEach(prod => {
+        let nomeExibicao = prod.nome;
+        if (AppState.modoResumido) {
+          nomeExibicao = obterNomeResumido(prod.nome);
+          const chaveDeduplicacao = nomeExibicao.toLowerCase().trim();
+          if (nomesResumidosVistos.has(chaveDeduplicacao)) {
+            // No modo resumido, variedades com o mesmo nome resumido não são exibidas ("só exibe a primeira")
+            return;
+          }
+          nomesResumidosVistos.add(chaveDeduplicacao);
+        }
+        itensVisiveisContador++;
+
+        const chaveIcone = prod.icone || detectarChaveIcone(prod.nome);
+        const iconeSvg = obterIcone2D(prod.nome, chaveIcone);
+
+        // Verifica se está selecionado para a Lista de Compra
+        const estaNaLista = !!prod.selecionado;
+        const ehFavorito = !!prod.favorito;
+        const qtde = prod.qtde || 1;
+        const checkIcone = estaNaLista ? '✓' : '';
+        const classeNaLista = estaNaLista ? 'na-lista-montar' : '';
+
+        htmlItens += `
+          <div class="item-card ${classeNaLista}" id="card-despensa-${prod.id}"
+               onclick="alternarItemDespensaEmTempoReal('${prod.id}', event)"
+               oncontextmenu="event.preventDefault(); abrirModalEditarNomeDespensa('${prod.id}', event);"
+               title="${estaNaLista ? 'Na Lista de Compra (Clique para desmarcar)' : 'Clique para marcar e adicionar à Lista de Compra'} • Botão direito para editar"
+               style="cursor: pointer;">
+            <div class="item-check-btn ${estaNaLista ? 'check-ativo' : ''}" 
+                 onclick="event.stopPropagation(); alternarItemDespensaEmTempoReal('${prod.id}', event)"
+                 title="${estaNaLista ? 'Retirar da Lista de Compra' : 'Adicionar à Lista de Compra'}">
+              ${checkIcone}
+            </div>
+
+            <!-- Coluna de Quantidade editável na frente do nome -->
+            <div class="contador-qtde" style="margin-right: 2px; ${estaNaLista ? '' : 'opacity: 0.5;'}" onclick="event.stopPropagation()">
+              <button class="btn-step" onclick="event.stopPropagation(); alterarQuantidadeMontarLista('${prod.id}', -1, event)">-</button>
+              <input type="number" min="1" class="input-qtde-card" value="${qtde}" id="qtde-montar-${prod.id}" onclick="event.stopPropagation()" onchange="definirQuantidadeMontarLista('${prod.id}', this.value, event)" />
+              <button class="btn-step" onclick="event.stopPropagation(); alterarQuantidadeMontarLista('${prod.id}', 1, event)">+</button>
+            </div>
+
+            <div class="item-corpo">
+              <div class="item-linha-nome">
+                <span class="item-nome" title="${prod.nome}">${nomeExibicao}</span>
+                <button class="btn-favorito-item ${ehFavorito ? 'ativo' : ''}" id="btn-fav-despensa-${prod.id}"
+                        title="${ehFavorito ? 'Remover dos favoritos' : 'Tornar favorito'}"
+                        onclick="event.stopPropagation(); alternarFavoritoItem('${prod.id}', event)">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="${ehFavorito ? '#F59E0B' : 'none'}" stroke="${ehFavorito ? '#D97706' : '#94A3B8'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                  </svg>
+                </button>
+                <button class="btn-editar-despensa" title="Editar este produto" onclick="event.stopPropagation(); abrirModalEditarNomeDespensa('${prod.id}', event)">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 20h9"></path>
+                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="item-acoes-compra">
+              <button class="btn-delete-item" title="Excluir produto do catálogo" onclick="event.stopPropagation(); excluirItemDespensa('${prod.id}', event)">✕</button>
+            </div>
+          </div>
+        `;
+      });
+    }
 
     const totalEscolhidoCat = itens.filter(p => p.selecionado).reduce((acc, p) => {
       const precoP = Number(p.precoMedioDF) || Number(p.ultimoPreco) || Number(p.preco) || 10;
@@ -4313,12 +4355,19 @@ function renderizarDespensa() {
     }, 0);
     const temEscolhido = totalEscolhidoCat > 0;
     const catChave = sanitizarChaveId(categoria);
+    const qtdExibida = filtrandoFavCat ? itensVisiveisContador : itensOriginais.length;
 
     grupoDiv.innerHTML = `
       <div class="categoria-titulo">
         <div class="categoria-titulo-info">
+          <button type="button" 
+                  class="btn-categoria-fav ${filtrandoFavCat ? 'ativo' : ''}" 
+                  onclick="alternarFiltroFavoritosCategoria('${categoria}', event)"
+                  title="${filtrandoFavCat ? `Exibir todos os produtos de ${categoria}` : `Mostrar apenas os favoritos de ${categoria}`}">
+            ⭐
+          </button>
           <span>${categoria}</span>
-          <span class="categoria-qtd-badge" style="font-size: 0.8rem; font-weight: 500; opacity: 0.85;">(${itensVisiveisContador} ${itensVisiveisContador === 1 ? 'item' : 'itens'})</span>
+          <span class="categoria-qtd-badge" style="font-size: 0.8rem; font-weight: 500; opacity: 0.85;">(${qtdExibida} ${qtdExibida === 1 ? 'item' : 'itens'}${filtrandoFavCat ? ' favoritos' : ''})</span>
         </div>
         <div class="balao-total-categoria ${temEscolhido ? '' : 'vazio'}" id="balao-total-despensa-${catChave}" title="Total Selecionado">
           <span class="balao-valor">${formatarMoeda(totalEscolhidoCat)}</span>

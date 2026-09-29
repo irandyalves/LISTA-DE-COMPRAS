@@ -2290,6 +2290,45 @@ body.modo-mercado-ativo .item-nome {
   letter-spacing: 0.3px !important;
 }
 
+/* Botão Estrela Amarela na frente do Título da Categoria */
+.btn-categoria-fav {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 0 3px;
+  font-size: 0.85rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 4px;
+  opacity: 0.55;
+  filter: grayscale(0.85);
+  transition: all 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  outline: none;
+  user-select: none;
+}
+
+.btn-categoria-fav:hover {
+  opacity: 1;
+  filter: grayscale(0) drop-shadow(0 1px 4px rgba(245, 158, 11, 0.55));
+  transform: scale(1.25);
+}
+
+.btn-categoria-fav.ativo {
+  opacity: 1;
+  filter: grayscale(0) drop-shadow(0 2px 5px rgba(245, 158, 11, 0.65));
+  transform: scale(1.18);
+  background: #FFFBEB;
+  border-color: #FDE68A;
+}
+
+body.tema-escuro .btn-categoria-fav.ativo {
+  background: #78350F;
+  border-color: #B45309;
+}
+
 #view-despensa .itens-lista {
   gap: 2px !important; /* Espremido verticalmente entre cards */
   padding-left: 2px !important; /* Sem recuo excessivo à esquerda */
