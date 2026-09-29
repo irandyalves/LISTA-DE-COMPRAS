@@ -1015,30 +1015,47 @@ body {
 }
 
 .btn-mic-mini {
-  background: transparent;
-  border: none;
-  font-size: 15px;
+  background: transparent !important;
+  border: none !important;
+  font-size: 16px;
   cursor: pointer;
-  padding: 3px 6px;
-  border-radius: 6px;
+  padding: 2px 4px;
   color: var(--primary);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.18s ease;
+  transition: all 0.2s ease;
   line-height: 1;
+  box-shadow: none !important;
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent !important;
 }
 
 .btn-mic-mini:hover {
-  background: rgba(37, 99, 235, 0.12);
+  background: transparent !important;
   transform: scale(1.15);
+  box-shadow: none !important;
 }
 
 .btn-mic-mini.gravando {
-  background: #FEE2E2 !important;
-  color: #DC2626 !important;
-  animation: pulsarAviso 0.8s infinite alternate;
-  box-shadow: 0 0 8px rgba(220, 38, 38, 0.35);
+  background: transparent !important;
+  color: #EF4444 !important;
+  border: none !important;
+  box-shadow: none !important;
+  animation: pulsoSuaveMic 1s infinite alternate ease-in-out !important;
+}
+
+@keyframes pulsoSuaveMic {
+  0% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 2px rgba(239, 68, 68, 0.5));
+    opacity: 0.85;
+  }
+  100% {
+    transform: scale(1.22);
+    filter: drop-shadow(0 0 7px rgba(239, 68, 68, 0.9));
+    opacity: 1;
+  }
 }
 
 .input-busca-topo {
@@ -7934,9 +7951,9 @@ body.tema-escuro .card-ranking-stats {
   }
 
   .busca-topo-reduzida .btn-mic-mini {
-    width: 28px !important;
-    height: 28px !important;
-    min-width: 28px !important;
+    width: 24px !important;
+    height: 24px !important;
+    min-width: 24px !important;
     font-size: 1.05rem !important;
     padding: 0 !important;
     margin: 0 !important;
@@ -7944,16 +7961,27 @@ body.tema-escuro .card-ranking-stats {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    border-radius: 6px !important;
-    background: rgba(255, 255, 255, 0.08) !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
     cursor: pointer !important;
     -webkit-tap-highlight-color: transparent !important;
   }
 
   .busca-topo-reduzida .btn-mic-mini:hover,
   .busca-topo-reduzida .btn-mic-mini:active {
-    background: rgba(255, 255, 255, 0.2) !important;
-    transform: scale(1.08) !important;
+    background: transparent !important;
+    transform: scale(1.12) !important;
+    box-shadow: none !important;
+  }
+
+  .busca-topo-reduzida .btn-mic-mini.gravando {
+    background: transparent !important;
+    border: none !important;
+    color: #EF4444 !important;
+    box-shadow: none !important;
+    animation: pulsoSuaveMic 1s infinite alternate ease-in-out !important;
   }
 
   .busca-topo-reduzida .input-busca-topo {
