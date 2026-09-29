@@ -4723,9 +4723,8 @@ function renderizarHistorico() {
     listaFiltrada.forEach(compra => {
       const isAberta = comprasExpandidasIds.has(compra.id);
       const dataObj = new Date(compra.data);
-      const dataFormatada = dataObj.toLocaleDateString('pt-BR', {
-        day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
-      });
+      const diaStr = dataObj.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      const horaStr = dataObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
       // Comparação da Compra inteira vs Compra Anterior
       const idxCrescente = historicoCrescente.findIndex(c => String(c.id) === String(compra.id));
@@ -4740,13 +4739,13 @@ function renderizarHistorico() {
 
         if (pctTotal > 0.05) {
           badgeComparativoCompra = `
-            <span class="tag-comparativo-aumento" title="Aumento de ${formatarMoeda(diffTotal)} em relação à compra anterior no ${compraAnterior.mercado} (${intervaloCompraTxt} antes)">
+            <span class="tag-comparativo-aumento" title="Aumento de ${formatarMoeda(diffTotal)} em relação à compra anterior (${intervaloCompraTxt} antes)">
               🔺 +${pctTotal.toFixed(1).replace('.', ',')}% vs anterior
             </span>
           `;
         } else if (pctTotal < -0.05) {
           badgeComparativoCompra = `
-            <span class="tag-comparativo-reducao" title="Economia de ${formatarMoeda(Math.abs(diffTotal))} em relação à compra anterior no ${compraAnterior.mercado} (${intervaloCompraTxt} antes)">
+            <span class="tag-comparativo-reducao" title="Economia de ${formatarMoeda(Math.abs(diffTotal))} em relação à compra anterior (${intervaloCompraTxt} antes)">
               🔻 ${pctTotal.toFixed(1).replace('.', ',')}% vs anterior
             </span>
           `;
@@ -4819,18 +4818,18 @@ function renderizarHistorico() {
           badgeComparativoItem = `<span class="tag-comparativo-base">⭐ 1ª compra</span>`;
         }
 
-        // Formatação do Item: Arroz 5kg | 02 und (com 02 und em laranja escuro), sem categoria
         linhasItensHtml += `
           <tr>
             <td>
               <div class="hist-prod-info">
-                <span class="hist-prod-nome">${it.nome} | <span style="color: #EA580C; font-weight: 800;">${String(qtde).padStart(2, '0')} und</span></span>
+                <span class="hist-prod-nome">${it.nome}</span>
               </div>
             </td>
-            <td style="color: var(--text-muted); font-size: 0.78rem; white-space: nowrap;">${precoUnit > 0 ? formatarMoeda(precoUnit) : '—'}</td>
-            <td style="font-weight: 800; color: #0F172A; white-space: nowrap;">${subtotal > 0 ? formatarMoeda(subtotal) : '—'}</td>
-            <td>${badgeComparativoItem}</td>
-            <td>${tagDuracaoHtml}</td>
+            <td style="text-align: center; white-space: nowrap;"><span style="color: #EA580C; font-weight: 800;">${String(qtde).padStart(2, '0')} und</span></td>
+            <td style="text-align: right; color: var(--text-muted); font-size: 0.78rem; white-space: nowrap;">${precoUnit > 0 ? formatarMoeda(precoUnit) : '—'}</td>
+            <td style="text-align: right; font-weight: 800; color: #0F172A; white-space: nowrap;">${subtotal > 0 ? formatarMoeda(subtotal) : '—'}</td>
+            <td style="text-align: center;">${badgeComparativoItem}</td>
+            <td style="text-align: center;">${tagDuracaoHtml}</td>
           </tr>
         `;
       });
@@ -4839,9 +4838,9 @@ function renderizarHistorico() {
         <div class="historico-compra-card ${isAberta ? 'aberto' : ''}" id="card-hist-${compra.id}">
           <div class="historico-compra-cabecalho" onclick="alternarCardCompraHistorico('${compra.id}')">
             <div class="historico-compra-info-esq">
-              <div>
-                <div class="historico-mercado-badge">🛒 ${compra.mercado || 'Supermercado'}</div>
-                <div class="historico-data-badge">📅 ${dataFormatada}</div>
+              <div class="historico-compra-data-hora">
+                <span class="hist-data-negrito">${diaStr}</span>
+                <span class="hist-hora-laranja">${horaStr}</span>
               </div>
             </div>
             <div class="historico-compra-info-dir">
@@ -4857,10 +4856,11 @@ function renderizarHistorico() {
               <thead>
                 <tr>
                   <th>Item</th>
-                  <th>Preço Un.</th>
-                  <th>Valor Gasto</th>
-                  <th>Comparação</th>
-                  <th>Duração</th>
+                  <th style="text-align: center;">Qtd</th>
+                  <th style="text-align: right;">Preço Un.</th>
+                  <th style="text-align: right;">Total</th>
+                  <th style="text-align: center;">Comparação</th>
+                  <th style="text-align: center;">Intervalo</th>
                 </tr>
               </thead>
               <tbody>

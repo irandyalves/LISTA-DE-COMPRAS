@@ -6682,6 +6682,26 @@ body.modo-mercado-ativo .item-nome {
   border: 1px solid #C7D2FE;
 }
 
+/* Data e Hora no Cabeçalho da Compra */
+.historico-compra-data-hora {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hist-data-negrito {
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: #0F172A;
+  letter-spacing: -0.2px;
+}
+
+.hist-hora-laranja {
+  color: #EA580C;
+  font-weight: 400;
+  font-size: 0.95rem;
+}
+
 /* Responsividade Mobile para Histórico */
 @media (max-width: 820px) {
   .historico-cards-resumo {
@@ -6717,8 +6737,8 @@ body.modo-mercado-ativo .item-nome {
     border-top: 1px dashed #F1F5F9;
   }
 
-  .tabela-historico-itens th:nth-child(2),
-  .tabela-historico-itens td:nth-child(2) {
+  .tabela-historico-itens th:nth-child(3),
+  .tabela-historico-itens td:nth-child(3) {
     display: none; /* Esconde preço unitário avulso para caber perfeitamente no mobile */
   }
 
