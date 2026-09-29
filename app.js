@@ -739,6 +739,10 @@ let AppState = {
   ordenacaoMercados: 'original', // 'original', 'alfabetico_az', 'alfabetico_za', 'preco'
   usuarioAtivo: (typeof localStorage !== 'undefined' && localStorage.getItem('usuario_nome_ativo')) || 'Irandy',
   usuarioIcone: (typeof localStorage !== 'undefined' && localStorage.getItem('usuario_icone_ativo')) || '👨',
+  usuarios: [
+    { id: 'usr_irandy', nome: 'Irandy', icone: '👨', papel: 'Marido / No Mercado' },
+    { id: 'usr_sioneide', nome: 'Sioneide', icone: '👩', papel: 'Patroa / Pedidos' }
+  ],
   ultimoEvento: null,
   itensExcluidos: [],
   catalogo: [...CATALOGO_PADRAO_EXPANDIDO],
@@ -823,6 +827,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Carregamento de dados locais
 function carregarLocalmente() {
+  carregarUsuariosCadastrados();
   const dadosSalvos = localStorage.getItem('app_compras_irandy_v2');
   if (dadosSalvos) {
     try {
@@ -1004,6 +1009,7 @@ function salvarEstado(enviarParaNuvem = true) {
     catalogo: AppState.catalogo,
     listaAtiva: AppState.listaAtiva,
     historico: AppState.historico,
+    usuarios: AppState.usuarios || [],
     itensExcluidos: AppState.itensExcluidos || [],
     cotacaoAtiva: AppState.cotacaoAtiva,
     modoNoMercado: AppState.modoNoMercado || false,
@@ -1022,6 +1028,7 @@ function salvarEstado(enviarParaNuvem = true) {
         catalogo: AppState.catalogo,
         listaAtiva: AppState.listaAtiva,
         historico: AppState.historico,
+        usuarios: AppState.usuarios || [],
         mercadoReferencia: AppState.mercadoReferencia || 'nenhum',
         cotacaoAtiva: AppState.cotacaoAtiva !== false,
         modoNoMercado: !!AppState.modoNoMercado,
@@ -1069,6 +1076,12 @@ function inicializarNuvem() {
       if (dadosNuvem.catalogo) AppState.catalogo = dadosNuvem.catalogo;
       if (dadosNuvem.listaAtiva) AppState.listaAtiva = dadosNuvem.listaAtiva;
       if (dadosNuvem.historico) AppState.historico = dadosNuvem.historico;
+      if (dadosNuvem.usuarios && Array.isArray(dadosNuvem.usuarios) && dadosNuvem.usuarios.length > 0) {
+        AppState.usuarios = dadosNuvem.usuarios;
+        localStorage.setItem('app_usuarios_cadastrados', JSON.stringify(AppState.usuarios));
+        atualizarBadgeUsuarioHeader();
+        renderizarGridUsuarios();
+      }
       if (dadosNuvem.mercadoReferencia && dadosNuvem.mercadoReferencia !== 'todos') {
         AppState.mercadoReferencia = dadosNuvem.mercadoReferencia;
       }
@@ -1169,27 +1182,93 @@ function fecharAvisoPatroa() {
   clearTimeout(timerAvisoPatroa);
 }
 
-// Gerenciamento de Perfil de Usuário Ativo (Irandy / Sioneide)
+// ========================================================
+// GESTOR DE USUÁRIOS DINÂMICO (CRIAÇÃO, EDIÇÃO E SELEÇÃO)
+// ========================================================
+let usuarioEmEdicaoId = null;
+
+function carregarUsuariosCadastrados() {
+  const salvos = localStorage.getItem('app_usuarios_cadastrados');
+  if (salvos) {
+    try {
+      const parsed = JSON.parse(salvos);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        AppState.usuarios = parsed;
+        return;
+      }
+    } catch (e) {
+      console.warn("Erro ao ler usuarios cadastrados:", e);
+    }
+  }
+  AppState.usuarios = [
+    { id: 'usr_irandy', nome: 'Irandy', icone: '👨', papel: 'Marido / No Mercado' },
+    { id: 'usr_sioneide', nome: 'Sioneide', icone: '👩', papel: 'Patroa / Pedidos' }
+  ];
+  salvarUsuariosCadastrados();
+}
+
+function salvarUsuariosCadastrados() {
+  localStorage.setItem('app_usuarios_cadastrados', JSON.stringify(AppState.usuarios || []));
+  salvarEstado(true);
+}
+
 function atualizarBadgeUsuarioHeader() {
   const icoEl = document.getElementById('ico-perfil-header');
   const nomeEl = document.getElementById('nome-perfil-header');
   const nomeAtivo = AppState.usuarioAtivo || 'Irandy';
-  const iconeAtivo = AppState.usuarioIcone || (nomeAtivo.toLowerCase().includes('sioneide') ? '👩' : '👨');
+  
+  const usr = (AppState.usuarios || []).find(u => u.nome.toLowerCase().trim() === nomeAtivo.toLowerCase().trim());
+  const iconeAtivo = usr ? usr.icone : (AppState.usuarioIcone || (nomeAtivo.toLowerCase().includes('sioneide') ? '👩' : '👨'));
 
   if (icoEl) icoEl.textContent = iconeAtivo;
   if (nomeEl) nomeEl.textContent = nomeAtivo;
-
-  const btnIrandy = document.getElementById('btn-opcao-irandy');
-  const btnSioneide = document.getElementById('btn-opcao-sioneide');
-  if (btnIrandy) btnIrandy.classList.toggle('selecionado', nomeAtivo.toLowerCase() === 'irandy');
-  if (btnSioneide) btnSioneide.classList.toggle('selecionado', nomeAtivo.toLowerCase() === 'sioneide');
 }
 
 function abrirModalPerfilUsuario() {
   const modal = document.getElementById('modal-perfil-usuario');
   if (!modal) return;
+  cancelarEdicaoUsuario();
   atualizarBadgeUsuarioHeader();
+  renderizarGridUsuarios();
   modal.style.display = 'flex';
+}
+
+function renderizarGridUsuarios() {
+  const grid = document.getElementById('grid-usuarios-cards');
+  if (!grid) return;
+
+  const nomeAtivo = (AppState.usuarioAtivo || 'Irandy').toLowerCase().trim();
+  grid.innerHTML = '';
+
+  (AppState.usuarios || []).forEach(usr => {
+    const isAtivo = (usr.nome.toLowerCase().trim() === nomeAtivo);
+    const card = document.createElement('div');
+    card.className = `btn-perfil-card-opcao ${isAtivo ? 'selecionado' : ''}`;
+    card.id = `card-usr-${usr.id}`;
+
+    const iconeEscapado = (usr.icone || '👤');
+
+    card.innerHTML = `
+      <div class="perfil-card-acoes-topo">
+        <button type="button" class="btn-acao-perfil btn-editar-perfil" onclick="iniciarEdicaoUsuario('${usr.id}', event)" title="Editar nome, avatar e papel">✏️</button>
+        ${(AppState.usuarios || []).length > 1 ? `
+          <button type="button" class="btn-acao-perfil btn-excluir-perfil" onclick="removerUsuarioPerfil('${usr.id}', event)" title="Excluir este perfil">🗑️</button>
+        ` : ''}
+      </div>
+      <div class="perfil-avatar">${iconeEscapado}</div>
+      <strong class="perfil-nome">${usr.nome}</strong>
+      <span class="perfil-desc">${usr.papel || 'Usuário'}</span>
+      ${isAtivo ? '<span class="badge-perfil-ativo">✓ Ativo</span>' : ''}
+    `;
+
+    card.onclick = (e) => {
+      if (!e.target.closest('.perfil-card-acoes-topo')) {
+        selecionarPerfilUsuario(usr.nome, usr.icone || '👤');
+      }
+    };
+
+    grid.appendChild(card);
+  });
 }
 
 function selecionarPerfilUsuario(nome, icone) {
@@ -1198,16 +1277,155 @@ function selecionarPerfilUsuario(nome, icone) {
   localStorage.setItem('usuario_nome_ativo', nome);
   localStorage.setItem('usuario_icone_ativo', icone);
   atualizarBadgeUsuarioHeader();
+  renderizarGridUsuarios();
   fecharModal('modal-perfil-usuario');
   mostrarNotificacaoToast(`👤 Perfil ativo: ${icone} ${nome}`);
 }
 
-function salvarPerfilCustomUsuario() {
-  const input = document.getElementById('input-nome-custom-usuario');
-  const nome = input ? input.value.trim() : '';
-  if (!nome) return;
-  selecionarPerfilUsuario(nome, '👤');
-  if (input) input.value = '';
+function adicionarNovoUsuarioPerfil() {
+  const inputNome = document.getElementById('input-novo-usuario-nome');
+  const inputPapel = document.getElementById('input-novo-usuario-papel');
+  const selectIcone = document.getElementById('input-novo-usuario-icone');
+
+  const nome = inputNome ? inputNome.value.trim() : '';
+  if (!nome) {
+    mostrarNotificacaoToast("⚠️ Digite um nome para o novo usuário.");
+    if (inputNome) inputNome.focus();
+    return;
+  }
+
+  const existente = (AppState.usuarios || []).find(u => u.nome.toLowerCase().trim() === nome.toLowerCase().trim());
+  if (existente) {
+    mostrarNotificacaoToast(`⚠️ Já existe um usuário com o nome "${nome}".`);
+    return;
+  }
+
+  const papel = (inputPapel && inputPapel.value.trim()) ? inputPapel.value.trim() : 'Pedidos';
+  const icone = selectIcone ? selectIcone.value : '👤';
+
+  const novoUsr = {
+    id: 'usr_' + Date.now(),
+    nome: capitalizar(nome),
+    icone: icone,
+    papel: papel
+  };
+
+  if (!AppState.usuarios) AppState.usuarios = [];
+  AppState.usuarios.push(novoUsr);
+  salvarUsuariosCadastrados();
+
+  AppState.usuarioAtivo = novoUsr.nome;
+  AppState.usuarioIcone = novoUsr.icone;
+  localStorage.setItem('usuario_nome_ativo', novoUsr.nome);
+  localStorage.setItem('usuario_icone_ativo', novoUsr.icone);
+
+  atualizarBadgeUsuarioHeader();
+  renderizarGridUsuarios();
+
+  if (inputNome) inputNome.value = '';
+  if (inputPapel) inputPapel.value = '';
+
+  mostrarNotificacaoToast(`✅ Card de "${novoUsr.nome}" criado e ativado com sucesso!`);
+}
+
+function iniciarEdicaoUsuario(usrId, ev) {
+  if (ev) ev.stopPropagation();
+  const usr = (AppState.usuarios || []).find(u => u.id === usrId);
+  if (!usr) return;
+
+  usuarioEmEdicaoId = usrId;
+
+  const painelEdicao = document.getElementById('painel-edicao-usuario');
+  const painelNovo = document.getElementById('painel-novo-usuario');
+  const inputNome = document.getElementById('input-edit-usuario-nome');
+  const inputPapel = document.getElementById('input-edit-usuario-papel');
+  const selectIcone = document.getElementById('input-edit-usuario-icone');
+
+  if (inputNome) inputNome.value = usr.nome;
+  if (inputPapel) inputPapel.value = usr.papel || '';
+  if (selectIcone) selectIcone.value = usr.icone || '👤';
+
+  if (painelNovo) painelNovo.style.display = 'none';
+  if (painelEdicao) {
+    painelEdicao.style.display = 'block';
+    if (inputNome) {
+      inputNome.focus();
+      inputNome.select();
+    }
+  }
+}
+
+function salvarEdicaoUsuario() {
+  if (!usuarioEmEdicaoId) return;
+  const usr = (AppState.usuarios || []).find(u => u.id === usuarioEmEdicaoId);
+  if (!usr) return;
+
+  const inputNome = document.getElementById('input-edit-usuario-nome');
+  const inputPapel = document.getElementById('input-edit-usuario-papel');
+  const selectIcone = document.getElementById('input-edit-usuario-icone');
+
+  const novoNome = inputNome ? inputNome.value.trim() : '';
+  if (!novoNome) {
+    mostrarNotificacaoToast("⚠️ O nome não pode ficar vazio.");
+    return;
+  }
+
+  const nomeAnterior = usr.nome;
+  usr.nome = capitalizar(novoNome);
+  usr.papel = inputPapel ? inputPapel.value.trim() : usr.papel;
+  usr.icone = selectIcone ? selectIcone.value : usr.icone;
+
+  salvarUsuariosCadastrados();
+
+  if (AppState.usuarioAtivo.toLowerCase() === nomeAnterior.toLowerCase()) {
+    AppState.usuarioAtivo = usr.nome;
+    AppState.usuarioIcone = usr.icone;
+    localStorage.setItem('usuario_nome_ativo', usr.nome);
+    localStorage.setItem('usuario_icone_ativo', usr.icone);
+    atualizarBadgeUsuarioHeader();
+  }
+
+  cancelarEdicaoUsuario();
+  renderizarGridUsuarios();
+  mostrarNotificacaoToast(`✅ Perfil atualizado para "${usr.nome}"!`);
+}
+
+function cancelarEdicaoUsuario() {
+  usuarioEmEdicaoId = null;
+  const painelEdicao = document.getElementById('painel-edicao-usuario');
+  const painelNovo = document.getElementById('painel-novo-usuario');
+  if (painelEdicao) painelEdicao.style.display = 'none';
+  if (painelNovo) painelNovo.style.display = 'block';
+}
+
+function removerUsuarioPerfil(usrId, ev) {
+  if (ev) ev.stopPropagation();
+  if (!AppState.usuarios || AppState.usuarios.length <= 1) {
+    mostrarNotificacaoToast("⚠️ Mantenha pelo menos um usuário cadastrado.");
+    return;
+  }
+
+  const usr = AppState.usuarios.find(u => u.id === usrId);
+  if (!usr) return;
+
+  if (!confirm(`Deseja realmente excluir o perfil de "${usr.nome}"?`)) return;
+
+  const eraAtivo = (AppState.usuarioAtivo.toLowerCase() === usr.nome.toLowerCase());
+  AppState.usuarios = AppState.usuarios.filter(u => u.id !== usrId);
+  salvarUsuariosCadastrados();
+
+  if (eraAtivo && AppState.usuarios.length > 0) {
+    const proximo = AppState.usuarios[0];
+    AppState.usuarioAtivo = proximo.nome;
+    AppState.usuarioIcone = proximo.icone;
+    localStorage.setItem('usuario_nome_ativo', proximo.nome);
+    localStorage.setItem('usuario_icone_ativo', proximo.icone);
+    atualizarBadgeUsuarioHeader();
+  }
+
+  cancelarEdicaoUsuario();
+  renderizarGridUsuarios();
+  mostrarNotificacaoToast(`🗑️ Usuário "${usr.nome}" removido.`);
 }
 
 let timerToastNuvem = null;
