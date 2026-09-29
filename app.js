@@ -2053,42 +2053,45 @@ function formatarNomeExibicaoCompacto(nomeOriginal) {
 }
 
 // Interpretador de Preço Falado em Português (Web Speech API)
+// Interpretador Inteligente de Preço Falado em Português (Web Speech API)
 const NUMEROS_PT_VOZ = {
   'zero': 0, 'um': 1, 'uma': 1, 'dois': 2, 'duas': 2, 'três': 3, 'tres': 3,
-  'quatro': 4, 'cinco': 5, 'seis': 6, 'sete': 7, 'oito': 8, 'nove': 9, 'dez': 10,
-  'onze': 11, 'doze': 12, 'treze': 13, 'quatorze': 14, 'catorze': 14, 'quinze': 15,
-  'dezesseis': 16, 'dezessete': 17, 'dezoito': 18, 'dezenove': 19, 'vinte': 20,
-  'trinta': 30, 'quarenta': 40, 'cinquenta': 50, 'sessenta': 60, 'setenta': 70,
-  'oitenta': 80, 'noventa': 90, 'cem': 100, 'cento': 100
+  'quatro': 4, 'cinco': 5, 'seis': 6, 'meia': 6, 'sete': 7, 'oito': 8, 'nove': 9,
+  'dez': 10, 'onze': 11, 'doze': 12, 'treze': 13, 'quatorze': 14, 'catorze': 14,
+  'quinze': 15, 'dezesseis': 16, 'dezessete': 17, 'dezoito': 18, 'dezenove': 19,
+  'vinte': 20, 'trinta': 30, 'quarenta': 40, 'cinquenta': 50, 'sessenta': 60,
+  'setenta': 70, 'oitenta': 80, 'noventa': 90,
+  'cem': 100, 'cento': 100, 'duzentos': 200, 'duzentas': 200,
+  'trezentos': 300, 'trezentas': 300, 'quatrocentos': 400, 'quatrocentas': 400,
+  'quinhentos': 500, 'quinhentas': 500, 'seiscentos': 600, 'seiscentas': 600,
+  'setecentos': 700, 'setecentas': 700, 'oitocentos': 800, 'oitocentas': 800,
+  'novecentos': 900, 'novecentas': 900
 };
+
+const CENTENAS_PT_VOZ = new Set(['cem', 'cento', 'duzentos', 'duzentas', 'trezentos', 'trezentas', 'quatrocentos', 'quatrocentas', 'quinhentos', 'quinhentas', 'seiscentos', 'seiscentas', 'setecentos', 'setecentas', 'oitocentos', 'oitocentas', 'novecentos', 'novecentas']);
 const DEZENAS_PT_VOZ = new Set(['vinte', 'trinta', 'quarenta', 'cinquenta', 'sessenta', 'setenta', 'oitenta', 'noventa']);
-const UNIDADES_PT_VOZ = new Set(['zero', 'um', 'uma', 'dois', 'duas', 'três', 'tres', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove']);
+const UNIDADES_PT_VOZ = new Set(['zero', 'um', 'uma', 'dois', 'duas', 'três', 'tres', 'quatro', 'cinco', 'seis', 'meia', 'sete', 'oito', 'nove', 'dez', 'onze', 'doze', 'treze', 'quatorze', 'catorze', 'quinze', 'dezesseis', 'dezessete', 'dezoito', 'dezenove']);
 
-function converterPalavrasEmNumeroVoz(str) {
-  const palavras = str.toLowerCase().replace(/[^a-zá-ú0-9\s]/g, '').split(/\s+/).filter(Boolean);
+function parseNumeroInteiroPt(tokens) {
+  if (!tokens || tokens.length === 0) return null;
   let total = 0;
-  for (const p of palavras) {
-    if (NUMEROS_PT_VOZ[p] !== undefined) total += NUMEROS_PT_VOZ[p];
-    else if (!isNaN(parseInt(p))) total += parseInt(p);
+  let atual = 0;
+  for (let i = 0; i < tokens.length; i++) {
+    const t = tokens[i];
+    if (t === 'e') continue;
+    if (t === 'mil') {
+      if (atual === 0) atual = 1;
+      total += atual * 1000;
+      atual = 0;
+    } else if (NUMEROS_PT_VOZ[t] !== undefined) {
+      atual += NUMEROS_PT_VOZ[t];
+    } else if (!isNaN(parseInt(t))) {
+      atual += parseInt(t);
+    } else {
+      return null;
+    }
   }
-  return total;
-}
-
-function normalizarPrecoMercado(num) {
-  if (!num || isNaN(num) || num <= 0) return null;
-
-  // Se for um número de 3 dígitos (ex: 325 -> 3.25, 525 -> 5.25, 435 -> 4.35)
-  // O reconhecimento de voz do Google frequentemente concatena "três e vinte e cinco" como 325 ou 325.00
-  if (num >= 100 && num <= 999) {
-    return parseFloat((num / 100).toFixed(2));
-  }
-
-  // Se for um número de 4 dígitos sem vírgula (ex: 1050 -> 10.50, 1290 -> 12.90, 2390 -> 23.90, 3590 -> 35.90)
-  if (num >= 1000 && num <= 9999) {
-    return parseFloat((num / 100).toFixed(2));
-  }
-
-  return parseFloat(num.toFixed(2));
+  return total + atual;
 }
 
 function interpretarPrecoFalado(texto) {
@@ -2098,122 +2101,105 @@ function interpretarPrecoFalado(texto) {
   // Limpeza de ruídos comuns no Speech Recognition do Google
   t = t.replace(/^r\$\s*/i, '');
   t = t.replace(/\s*(da tarde|da manhã|da noite|horas?|hrs?)\s*$/i, '');
-  
-  // Correção fonética comum em português: "cinto" / "sinto" -> "cinco"
   t = t.replace(/\b(cinto|sinto)\b/gi, 'cinco');
 
-  // Converte confusão de centenas que o Google Speech faz quando a pessoa fala "três e vinte e cinco"
-  t = t.replace(/\bcento\b/gi, 'um');
-  t = t.replace(/\bduzentos\b/gi, 'dois');
-  t = t.replace(/\btrezentos\b/gi, 'três');
-  t = t.replace(/\bquatrocentos\b/gi, 'quatro');
-  t = t.replace(/\bquinhentos\b/gi, 'cinco');
-  t = t.replace(/\bseiscentos\b/gi, 'seis');
-  t = t.replace(/\bsetecentos\b/gi, 'sete');
-  t = t.replace(/\boitocentos\b/gi, 'oito');
-  t = t.replace(/\bnovecentos\b/gi, 'nove');
+  // Converte formato de hora que o Google Speech às vezes gera (ex: 3:25 -> 3,25)
+  t = t.replace(/(\d{1,4})[:hH](\d{1,2})/g, '$1,$2');
 
-  // Converte formato de hora que o Google Speech gera (ex: 3:25, 03:25, 5:25, 4:35 -> 3,25, 5,25)
-  t = t.replace(/(\d{1,3})[:hH](\d{1,2})/g, (m, g1, g2) => `${parseInt(g1)},${g2}`);
+  // Converte padrão brasileiro com ponto de milhar e vírgula: 1.222,00 -> 1222.00
+  t = t.replace(/(\d+)\.(\d{3}),(\d{1,2})/g, '$1$2.$3');
+  t = t.replace(/(\d+)\.(\d{3})/g, '$1$2');
 
-  // Se veio formato 325,00 ou 525,00 (Google colocou ,00 achando que era centena inteira)
-  const matchCentenaComVirgulaZero = t.match(/^(\d{3,4})[,.]00?$/);
-  if (matchCentenaComVirgulaZero) {
-    const n = parseInt(matchCentenaComVirgulaZero[1]);
-    return normalizarPrecoMercado(n);
-  }
-
-  // 1. Dígitos diretos com vírgula ou ponto onde os centavos são de 1 a 99 (ex: '3,25', '5,25', '4.35')
-  const matchNumVirgula = t.match(/(\d+)[,.](\d{1,2})/);
+  // 1. Dígitos diretos com vírgula ou ponto (ex: '3,25', '235,00', '1222,00', '4.35')
+  const matchNumVirgula = t.match(/^(\d+)[,.](\d{1,2})$/);
   if (matchNumVirgula) {
     const inteira = parseInt(matchNumVirgula[1]);
-    const cent = matchNumVirgula[2].length === 1 ? matchNumVirgula[2] + '0' : matchNumVirgula[2];
-    
-    // Se o Google transcreveu "325,0" ou "525,0"
-    if (inteira >= 100 && (cent === '00' || cent === '0')) {
-      return normalizarPrecoMercado(inteira);
+    const centStr = matchNumVirgula[2].length === 1 ? matchNumVirgula[2] + '0' : matchNumVirgula[2];
+    return parseFloat(inteira + '.' + centStr);
+  }
+
+  // 2. Dígito puro (ex: '235', '1222', '3', '50')
+  const matchNumPuro = t.match(/^(\d+)$/);
+  if (matchNumPuro) {
+    return parseFloat(parseInt(matchNumPuro[1]).toFixed(2));
+  }
+
+  // 3. Dígito com 'e' ou 'com' e centavos em dígito (ex: '3 e 25', '235 e 50', '3 com 25')
+  const matchDigitoE = t.match(/^(\d+)\s*(?:e|com|vírgula)\s*(\d{1,2})$/);
+  if (matchDigitoE) {
+    const inteira = parseInt(matchDigitoE[1]);
+    const centStr = matchDigitoE[2].length === 1 ? matchDigitoE[2] + '0' : matchDigitoE[2];
+    return parseFloat(inteira + '.' + centStr);
+  }
+
+  // 4. Frase contendo 'reais' / 'real' (ex: 'duzentos e trinta e cinco reais e vinte centavos')
+  if (/\breais?\b/.test(t)) {
+    const partes = t.split(/\breais?\b/);
+    const tokensInt = partes[0].replace(/[^a-zá-ú0-9\s]/g, '').split(/\s+/).filter(Boolean);
+    const inteira = parseNumeroInteiroPt(tokensInt) || 0;
+    let centavos = 0;
+    if (partes[1]) {
+      const centTexto = partes[1].replace(/\bcentavos?\b/g, '').replace(/[^a-zá-ú0-9\s]/g, '').trim();
+      const tokensCent = centTexto.split(/\s+/).filter(Boolean);
+      centavos = parseNumeroInteiroPt(tokensCent) || 0;
     }
-    return parseFloat(inteira + '.' + cent);
+    const centStr = centavos < 10 ? '0' + centavos : String(centavos).slice(0, 2);
+    return parseFloat(inteira + '.' + centStr);
   }
 
-  // 2. Dígitos com 'e' ou 'com' (ex: '3 e 25', '5 e 25')
-  const matchNumE = t.match(/(\d+)\s*(?:e|com)\s*(\d{1,2})/);
-  if (matchNumE) {
-    const cent = matchNumE[2].length === 1 ? matchNumE[2] + '0' : matchNumE[2];
-    return parseFloat(parseInt(matchNumE[1]) + '.' + cent);
-  }
-
-  // 3. Dois números separados por espaço simples (ex: '3 25', '5 25')
-  const matchDoisNumeros = t.match(/^(\d{1,3})\s+(\d{1,2})$/);
-  if (matchDoisNumeros) {
-    const cent = matchDoisNumeros[2].length === 1 ? matchDoisNumeros[2] + '0' : matchDoisNumeros[2];
-    return parseFloat(parseInt(matchDoisNumeros[1]) + '.' + cent);
-  }
-
-  // 4. Se a fala veio com 'reais' (ex: 'três reais e vinte e cinco', 'cinco reais e vinte e cinco')
-  t = t.replace(/centavos?/g, '').trim();
-  if (t.includes('reais')) {
-    const partes = t.split('reais');
-    const inteira = converterPalavrasEmNumeroVoz(partes[0]);
-    const centavos = partes[1] ? converterPalavrasEmNumeroVoz(partes[1]) : 0;
-    return parseFloat(inteira + '.' + (centavos < 10 ? '0' + centavos : centavos));
-  }
-
-  // 5. Divisão por 'com' ou 'vírgula' (ex: 'três vírgula vinte e cinco', 'cinco com vinte e cinco')
+  // 5. Frase com conector explícito de centavos: 'com' ou 'vírgula'
   if (/\s+(?:com|vírgula)\s+/.test(t)) {
     const partes = t.split(/\s+(?:com|vírgula)\s+/);
-    const inteira = converterPalavrasEmNumeroVoz(partes[0]);
-    const centavos = converterPalavrasEmNumeroVoz(partes[1]);
-    return parseFloat(inteira + '.' + (centavos < 10 ? '0' + centavos : centavos));
+    const tokensInt = partes[0].replace(/[^a-zá-ú0-9\s]/g, '').split(/\s+/).filter(Boolean);
+    const tokensCent = partes[1].replace(/\bcentavos?\b/g, '').replace(/[^a-zá-ú0-9\s]/g, '').split(/\s+/).filter(Boolean);
+    const inteira = parseNumeroInteiroPt(tokensInt);
+    const centavos = parseNumeroInteiroPt(tokensCent);
+    if (inteira !== null && centavos !== null) {
+      const centStr = centavos < 10 ? '0' + centavos : String(centavos).slice(0, 2);
+      return parseFloat(inteira + '.' + centStr);
+    }
   }
 
-  // 6. Separação por 'e' (ex: 'três e vinte e cinco', 'cinco e vinte e cinco')
+  // 6. Tokens por extenso (ex: 'duzentos e trinta e cinco', 'mil duzentos e vinte e dois', 'três e vinte e cinco')
   const tokens = t.replace(/[.,]/g, '').split(/\s+/).filter(Boolean);
-  let idxDivisor = -1;
+
+  let melhorDivisao = -1;
   for (let i = 0; i < tokens.length; i++) {
     if (tokens[i] === 'e') {
       const prev = tokens[i - 1];
       const next = tokens[i + 1];
-      // Ignora o 'e' que liga dezenas a unidades (ex: 'trinta e cinco', 'quarenta e dois')
-      if (prev && DEZENAS_PT_VOZ.has(prev) && next && UNIDADES_PT_VOZ.has(next)) {
+      
+      const ehDezenaComUnidade = DEZENAS_PT_VOZ.has(prev) && UNIDADES_PT_VOZ.has(next);
+      const ehCentenaComDezena = CENTENAS_PT_VOZ.has(prev) && DEZENAS_PT_VOZ.has(next);
+      const ehCentenaComUnidade = CENTENAS_PT_VOZ.has(prev) && UNIDADES_PT_VOZ.has(next);
+      const ehMilComCentena = prev === 'mil' && CENTENAS_PT_VOZ.has(next);
+      const ehMilComDezena = prev === 'mil' && DEZENAS_PT_VOZ.has(next);
+      const ehMilComUnidade = prev === 'mil' && UNIDADES_PT_VOZ.has(next);
+
+      if (ehDezenaComUnidade || ehCentenaComDezena || ehCentenaComUnidade || ehMilComCentena || ehMilComDezena || ehMilComUnidade) {
         continue;
       }
-      idxDivisor = i;
+      
+      melhorDivisao = i;
       break;
     }
   }
 
-  if (idxDivisor !== -1) {
-    const parte1 = tokens.slice(0, idxDivisor).join(' ');
-    const parte2 = tokens.slice(idxDivisor + 1).join(' ');
-    const n1 = converterPalavrasEmNumeroVoz(parte1);
-    const n2 = converterPalavrasEmNumeroVoz(parte2);
-    if (n1 > 0 && n2 >= 0 && n2 < 100) {
-      return parseFloat(n1 + '.' + (n2 < 10 ? '0' + n2 : n2));
+  if (melhorDivisao !== -1) {
+    const parte1 = tokens.slice(0, melhorDivisao);
+    const parte2 = tokens.slice(melhorDivisao + 1);
+    const n1 = parseNumeroInteiroPt(parte1);
+    const n2 = parseNumeroInteiroPt(parte2);
+    if (n1 !== null && n2 !== null && n2 >= 0 && n2 < 100) {
+      const centStr = n2 < 10 ? '0' + n2 : String(n2).slice(0, 2);
+      return parseFloat(n1 + '.' + centStr);
     }
   }
 
-  // 7. Fala rápida sem 'e' (ex: 'três vinte e cinco', 'cinco vinte e cinco')
-  if (tokens.length >= 2) {
-    const primeiro = tokens[0];
-    const resto = tokens.slice(1).join(' ');
-    const nPrimeiro = converterPalavrasEmNumeroVoz(primeiro);
-    const nResto = converterPalavrasEmNumeroVoz(resto);
-    if (nPrimeiro > 0 && nPrimeiro <= 99 && nResto > 0 && nResto < 100) {
-      return parseFloat(nPrimeiro + '.' + (nResto < 10 ? '0' + nResto : nResto));
-    }
-  }
-
-  // 8. Se veio como dígito sozinho (ex: '325', '525')
-  const matchNumSozinho = t.match(/^(\d+)$/);
-  if (matchNumSozinho) {
-    const val = parseInt(matchNumSozinho[1]);
-    return normalizarPrecoMercado(val);
-  }
-
-  const nTotal = converterPalavrasEmNumeroVoz(t);
-  if (nTotal > 0) {
-    return normalizarPrecoMercado(nTotal);
+  // Se não houve quebra de centavos, o texto é um número inteiro completo!
+  const nInteiro = parseNumeroInteiroPt(tokens);
+  if (nInteiro !== null && nInteiro > 0) {
+    return parseFloat(nInteiro.toFixed(2));
   }
 
   return null;
