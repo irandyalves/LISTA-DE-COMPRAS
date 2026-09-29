@@ -736,6 +736,7 @@ let AppState = {
   modoNoMercado: ehDispositivoMobile ? true : false, // No celular, por padrão mercados vêm ocultados
   modoResumido: true, // true = exibe nomes simplificados e deduplica variedades (padrão ativado)
   modoCotacao: 'alfabetico', // Padrão Alfabético A-Z em todo o app
+  exibirCifrao: false, // Padrão SEM R$ conforme solicitado (pode ser ativado em Opções)
   mercadoReferencia: 'atacadao',
   ordenacaoMercados: 'original', // 'original', 'alfabetico_az', 'alfabetico_za', 'preco'
   usuarioAtivo: (typeof localStorage !== 'undefined' && localStorage.getItem('usuario_nome_ativo')) || 'Irandy',
@@ -903,6 +904,7 @@ function carregarLocalmente() {
         AppState.modoNoMercado = true;
       }
       if (parsed.modoResumido !== undefined) AppState.modoResumido = parsed.modoResumido;
+      if (parsed.exibirCifrao !== undefined) AppState.exibirCifrao = parsed.exibirCifrao;
       if (parsed.mercadoReferencia && parsed.mercadoReferencia !== 'todos') {
         AppState.mercadoReferencia = parsed.mercadoReferencia;
       } else {
@@ -1079,6 +1081,7 @@ function salvarEstado(enviarParaNuvem = true) {
     cotacaoAtiva: AppState.cotacaoAtiva,
     modoNoMercado: AppState.modoNoMercado || false,
     modoResumido: AppState.modoResumido || false,
+    exibirCifrao: AppState.exibirCifrao || false,
     mercadoReferencia: (AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos') ? AppState.mercadoReferencia : 'nenhum',
     modoCotacao: AppState.modoCotacao || 'mais_baratos',
     ordenacaoMercados: AppState.ordenacaoMercados || 'original',
@@ -2086,10 +2089,11 @@ document.addEventListener('keydown', (e) => {
 });
 
 // Formatação Numérica Padrão Brasileiro com Separador de Milhar (ex: 2.014,62 / R$ 2.014,62)
-function formatarMoeda(valor, comPrefixo = true) {
+function formatarMoeda(valor, comPrefixo = null) {
   const num = Number(valor) || 0;
   const formatado = num.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  return comPrefixo ? `R$ ${formatado}` : formatado;
+  const usarPrefixo = (comPrefixo !== null) ? comPrefixo : (typeof AppState !== 'undefined' && AppState.exibirCifrao === true);
+  return usarPrefixo ? `R$ ${formatado}` : formatado;
 }
 
 // Atualiza o Card de Economia na Sidebar com o Campeão Real (Movido para cá)
@@ -2125,8 +2129,8 @@ function atualizarCardEconomiaSidebar(campeaoId, totais, economia) {
   if (!campeaoId || !totais || !MERCADOS_DF[campeaoId]) return;
 
   const infoCampeao = MERCADOS_DF[campeaoId];
-  const totalCampeaoTxt = formatarMoeda(totais[campeaoId] || 0, false);
-  const economiaTxt = (economia > 0) ? formatarMoeda(economia, false) : '0,00';
+  const totalCampeaoTxt = formatarMoeda(totais[campeaoId] || 0);
+  const economiaTxt = (economia > 0) ? formatarMoeda(economia) : formatarMoeda(0);
   const logo = (typeof obterLogoMercado === 'function' && obterLogoMercado(campeaoId)) || `logos/${campeaoId}.png`;
 
   elConteudo.innerHTML = `
@@ -2138,13 +2142,13 @@ function atualizarCardEconomiaSidebar(campeaoId, totais, economia) {
       </div>
       <span class="sidebar-eco-divisor">|</span>
       <div class="sidebar-eco-total-bloco">
-        Total <strong class="sidebar-eco-total-valor">R$ ${totalCampeaoTxt}</strong>
+        Total <strong class="sidebar-eco-total-valor">${totalCampeaoTxt}</strong>
       </div>
     </div>
     ${economia > 0 ? `
       <div class="sidebar-eco-poupanca">
         <span class="sidebar-eco-poupanca-label">Sua economia será:</span>
-        <strong class="sidebar-eco-poupanca-valor">R$ ${economiaTxt}</strong>
+        <strong class="sidebar-eco-poupanca-valor">${economiaTxt}</strong>
       </div>
     ` : ''}
   `;
@@ -2402,7 +2406,7 @@ function atualizarCardResumo() {
     if (elRotulo) elRotulo.textContent = 'TOTAL ESTIMADO';
     if (elTagMercado) elTagMercado.classList.remove('visivel');
     if (elTotal) {
-      elTotal.textContent = 'R$ --';
+      elTotal.textContent = '—';
       elTotal.style.color = 'var(--text-main)';
     }
     if (elProgresso) {
@@ -2789,10 +2793,10 @@ function ouvirPrecoItem(itemId, btnEl, ev) {
     }
   }
 
-  // Atualiza imediatamente o badge na tela para R$ 0,00
+  // Atualiza imediatamente o badge na tela para 0,00 (ou com R$ conforme configuração)
   const badgeEl = document.getElementById(`badge-preco-${itemId}`);
   if (badgeEl) {
-    badgeEl.textContent = 'R$ 0,00';
+    badgeEl.textContent = formatarMoeda(0);
     badgeEl.className = 'badge-preco-real sem-preco';
   }
   salvarEstado(false);
@@ -3375,7 +3379,7 @@ function renderizarListaCompras() {
           ? Number(item.precoRegistradoMercado)
           : (Number(item.preco) || 0);
       }
-      const precoFormatadoTxt = precoRegistradoValor > 0 ? formatarMoeda(precoRegistradoValor) : 'R$ 0,00';
+      const precoFormatadoTxt = formatarMoeda(precoRegistradoValor);
 
       linhasTabelaHtml += `
         <tr class="mcol-tr-item ${item.comprado ? 'item-linha-comprado' : ''} ${classePendente}" id="tr-item-${item.id}">
@@ -4985,7 +4989,7 @@ function renderizarHistorico() {
         <div class="card-resumo-hist-ico" style="background: #ECFDF5; color: #059669;">💰</div>
         <div class="card-resumo-hist-info">
           <span class="card-resumo-hist-rotulo">Total</span>
-          <span class="card-resumo-hist-valor" style="color: #059669;">${totalGastoGeral > 0 ? formatarMoeda(totalGastoGeral) : 'R$ 0,00'}</span>
+          <span class="card-resumo-hist-valor" style="color: #059669;">${totalGastoGeral > 0 ? formatarMoeda(totalGastoGeral) : formatarMoeda(0)}</span>
         </div>
       </div>
       <div class="card-resumo-hist" title="Idas ao Mercado: ${totalComprasQtd} compras">
@@ -4999,7 +5003,7 @@ function renderizarHistorico() {
         <div class="card-resumo-hist-ico" style="background: #FFFBEB; color: #D97706;">📊</div>
         <div class="card-resumo-hist-info">
           <span class="card-resumo-hist-rotulo">Ticket</span>
-          <span class="card-resumo-hist-valor">${ticketMedio > 0 ? formatarMoeda(ticketMedio) : 'R$ 0,00'}</span>
+          <span class="card-resumo-hist-valor">${ticketMedio > 0 ? formatarMoeda(ticketMedio) : formatarMoeda(0)}</span>
         </div>
       </div>
       <div class="card-resumo-hist" title="Intervalo Médio: ${mediaIntervaloTxt}">
@@ -5188,7 +5192,7 @@ function renderizarHistorico() {
             <div class="historico-compra-info-dir">
               ${badgeComparativoCompra}
               <span class="historico-compra-itens-count">${itensCompra.length} ${itensCompra.length === 1 ? 'item' : 'itens'}</span>
-              <span class="historico-total-compra-valor">${compra.total > 0 ? formatarMoeda(compra.total) : 'R$ 0,00'}</span>
+              <span class="historico-total-compra-valor">${compra.total > 0 ? formatarMoeda(compra.total) : formatarMoeda(0)}</span>
               <button type="button" class="btn-acao-mini" onclick="event.stopPropagation(); excluirCompraHistorico('${compra.id}')" title="Excluir esta compra do histórico" style="color: #DC2626; border-color: #FCA5A5; background: #FEF2F2;">🗑️</button>
               <span class="historico-seta-toggle">▼</span>
             </div>
@@ -5439,7 +5443,7 @@ function renderizarHistorico() {
             </div>
             <div class="card-ranking-stat-col" style="text-align: right;">
               <span class="card-ranking-stat-label">Gasto Total</span>
-              <span class="card-ranking-stat-val" style="color: #059669;">${prod.totalGasto > 0 ? formatarMoeda(prod.totalGasto) : 'R$ 0,00'}</span>
+              <span class="card-ranking-stat-val" style="color: #059669;">${prod.totalGasto > 0 ? formatarMoeda(prod.totalGasto) : formatarMoeda(0)}</span>
             </div>
           </div>
 
@@ -5510,7 +5514,7 @@ function atualizarListaRascunhoHistorico() {
 
   if (itensRascunhoHistorico.length === 0) {
     container.innerHTML = `<span style="font-size: 0.78rem; color: var(--text-muted); padding: 6px;">Nenhum item adicionado à compra ainda.</span>`;
-    if (totalEl) totalEl.textContent = 'R$ 0,00';
+    if (totalEl) totalEl.textContent = formatarMoeda(0);
     return;
   }
 
@@ -5576,7 +5580,7 @@ function excluirCompraHistorico(compraId) {
     const d = new Date(compra.data);
     const dataFmt = d.toLocaleDateString('pt-BR');
     const horaFmt = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-    const totFmt = compra.total > 0 ? formatarMoeda(compra.total) : 'R$ 0,00';
+    const totFmt = compra.total > 0 ? formatarMoeda(compra.total) : formatarMoeda(0);
     
     if (dataEl) dataEl.textContent = `${dataFmt}, ${horaFmt}`;
     if (valorEl) valorEl.textContent = totFmt;
@@ -6903,7 +6907,26 @@ function abrirModalOpcoesHeader() {
     badge.style.color = AppState.cotacaoAtiva ? '#065F46' : '#64748B';
   }
   atualizarVisualTema();
+  atualizarVisualOpcaoCifrao();
   modal.style.display = 'flex';
+}
+
+function alternarExibicaoCifrao() {
+  AppState.exibirCifrao = !AppState.exibirCifrao;
+  salvarEstado(true);
+  atualizarVisualOpcaoCifrao();
+  renderizarTudo();
+  mostrarNotificacaoToast(AppState.exibirCifrao ? '💲 Símbolo "R$" ativado nos preços.' : '✨ Preços exibidos de forma limpa (sem R$).');
+}
+
+function atualizarVisualOpcaoCifrao() {
+  const badge = document.getElementById('badge-status-cifrao');
+  if (badge) {
+    const ativo = !!(AppState && AppState.exibirCifrao);
+    badge.textContent = ativo ? 'Ativo' : 'Desativado';
+    badge.style.background = ativo ? '#D1FAE5' : '#F1F5F9';
+    badge.style.color = ativo ? '#065F46' : '#64748B';
+  }
 }
 
 // Gerenciador de Tema Escuro / Claro
@@ -8557,7 +8580,7 @@ function alternarOrdemAlfabeticaDrawer() {
     itensRenderizados++;
     const chaveIcone = itemCat.icone || detectarChaveIcone(itemCat.nome);
     const iconeSvg = obterIcone2D(itemCat.nome, chaveIcone);
-    const precoFormatado = precoUnit > 0 ? formatarMoeda(precoUnit) : 'R$ --';
+    const precoFormatado = precoUnit > 0 ? formatarMoeda(precoUnit) : '—';
 
     htmlItens += `
       <div class="drawer-item-row">
