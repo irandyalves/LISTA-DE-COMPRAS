@@ -599,39 +599,36 @@
           <button class="modal-fechar-btn" onclick="fecharModalPresetsCompleto()">✕</button>
         </div>
 
-        <!-- Seção: Meu Preset Personalizado -->
-        <div class="secao-meu-preset-card">
-          <div class="meu-preset-info">
-            <div class="meu-preset-icon">💾</div>
-            <div style="flex: 1;">
-              <div style="font-weight: 800; font-size: 0.95rem; color: #1E293B;">Meu Preset Salvo</div>
-              <div id="meu-preset-status" style="font-size: 0.78rem; color: #64748B;">Nenhuma lista personalizada salva ainda.</div>
+        <!-- Corpo Rolável Abaixo do Cabeçalho Fixo -->
+        <div class="modal-presets-body-scroll">
+          <!-- Seção: Meu Preset Personalizado -->
+          <div class="secao-meu-preset-card">
+            <div class="meu-preset-info">
+              <div class="meu-preset-icon">💾</div>
+              <div style="flex: 1;">
+                <div style="font-weight: 800; font-size: 0.95rem; color: #1E293B;">Meu Preset Salvo</div>
+                <div id="meu-preset-status" style="font-size: 0.78rem; color: #64748B;">Nenhuma lista personalizada salva ainda.</div>
+              </div>
+            </div>
+            <div class="meu-preset-botoes">
+              <button class="btn-preset-salvar" onclick="salvarComoMeuPreset()" title="Gravar a lista atual como seu favorito">
+                ⭐ Gravar Favorito
+              </button>
+              <button id="btn-carregar-meu-preset" class="btn-preset-aplicar-principal" onclick="aplicarMeuPreset('substituir')" title="Carregar sua lista favorita salva" disabled>
+                ⚡ Carregar Favorito
+              </button>
             </div>
           </div>
-          <div class="meu-preset-botoes">
-            <button class="btn-preset-salvar" onclick="salvarComoMeuPreset()" title="Gravar a lista atual como seu favorito">
-              ⭐ Gravar Favorito
-            </button>
-            <button id="btn-carregar-meu-preset" class="btn-preset-aplicar-principal" onclick="aplicarMeuPreset('substituir')" title="Carregar sua lista favorita salva" disabled>
-              ⚡ Carregar Favorito
-            </button>
+
+          <!-- Divisor -->
+          <div style="display: flex; align-items: center; gap: 10px; margin: 10px 0 8px;">
+            <hr style="flex: 1; border: none; border-top: 1px solid #E2E8F0;">
+            <span style="font-size: 0.72rem; font-weight: 700; color: #94A3B8; text-transform: uppercase;">Listas Pré-Montadas (Presets)</span>
+            <hr style="flex: 1; border: none; border-top: 1px solid #E2E8F0;">
           </div>
-        </div>
 
-        <!-- Divisor -->
-        <div style="display: flex; align-items: center; gap: 10px; margin: 16px 0 12px;">
-          <hr style="flex: 1; border: none; border-top: 1px solid #E2E8F0;">
-          <span style="font-size: 0.75rem; font-weight: 700; color: #94A3B8; text-transform: uppercase;">Listas Pré-Montadas (Presets)</span>
-          <hr style="flex: 1; border: none; border-top: 1px solid #E2E8F0;">
-        </div>
-
-        <!-- Lista de Presets Dinâmicos -->
-        <div id="container-lista-presets" class="presets-grid-container"></div>
-
-        <div class="modal-presets-rodape">
-          <button class="btn-presets-fechar" onclick="fecharModalPresetsCompleto()">
-            Fechar
-          </button>
+          <!-- Lista de Presets Dinâmicos -->
+          <div id="container-lista-presets" class="presets-grid-container"></div>
         </div>
       </div>
 

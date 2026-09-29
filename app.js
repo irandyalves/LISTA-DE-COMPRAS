@@ -7966,10 +7966,7 @@ function abrirModalPresets() {
       <div class="card-preset-item" id="card-preset-box-${preset.id}">
         <div class="card-preset-topo">
           <div class="card-preset-icone">${preset.icone}</div>
-          <div class="card-preset-textos">
-            <h4 class="card-preset-titulo">${preset.nome}</h4>
-            <p class="card-preset-desc">${preset.descricao}</p>
-          </div>
+          <h4 class="card-preset-titulo">${preset.nome}</h4>
         </div>
         <div class="card-preset-rodape">
           <button id="btn-toggle-preset-${preset.id}" class="btn-ver-itens-preset" onclick="alternarDetalhesItensPreset('${preset.id}')" title="Clique para ver os ${qtdItens} produtos deste preset">

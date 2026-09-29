@@ -4580,11 +4580,13 @@ body.tema-escuro .btn-categoria-fav.ativo {
 .modal-presets-content {
   background: white;
   border-radius: 20px;
-  padding: 22px;
-  max-width: 435px;
+  padding: 16px 18px;
+  max-width: 440px;
   width: 100%;
   max-height: 88vh;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Cabeçalho travado, scroll somente no corpo */
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   animation: modalZerarEntrar 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   flex-shrink: 0;
@@ -4594,20 +4596,21 @@ body.tema-escuro .btn-categoria-fav.ativo {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
   border-bottom: 1px solid #E2E8F0;
+  flex-shrink: 0;
 }
 
 .modal-presets-titulo {
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   font-weight: 900;
   color: #1E293B;
-  margin: 0 0 2px 0;
+  margin: 0 0 1px 0;
 }
 
 .modal-presets-subtitulo {
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   color: #64748B;
   margin: 0;
 }
@@ -4615,10 +4618,10 @@ body.tema-escuro .btn-categoria-fav.ativo {
 .modal-fechar-btn {
   background: #F1F5F9;
   border: none;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 700;
   color: #64748B;
   cursor: pointer;
@@ -4626,6 +4629,7 @@ body.tema-escuro .btn-categoria-fav.ativo {
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .modal-fechar-btn:hover {
@@ -4633,48 +4637,69 @@ body.tema-escuro .btn-categoria-fav.ativo {
   color: #1E293B;
 }
 
-/* Card: Meu Preset Salvo */
+/* Corpo com Barra de Rolagem Abaixo do Cabeçalho Fixo */
+.modal-presets-body-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.modal-presets-body-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+
+.modal-presets-body-scroll::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 4px;
+}
+
+/* Card: Meu Preset Salvo (Espremido) */
 .secao-meu-preset-card {
   background: linear-gradient(135deg, #F8FAFC, #EEF2FF);
   border: 1.5px solid #C7D2FE;
-  border-radius: 14px;
-  padding: 14px;
-  margin-bottom: 10px;
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 4px;
+  flex-shrink: 0;
 }
 
 .meu-preset-info {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
 .meu-preset-icon {
-  width: 38px;
-  height: 38px;
+  width: 32px;
+  height: 32px;
   background: white;
-  border-radius: 10px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
-  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.15);
+  font-size: 1.1rem;
+  box-shadow: 0 1px 4px rgba(99, 102, 241, 0.15);
   flex-shrink: 0;
 }
 
 .meu-preset-botoes {
   display: flex;
-  gap: 8px;
+  gap: 6px;
 }
 
 .btn-preset-salvar {
   flex: 1;
-  padding: 9px 12px;
+  padding: 7px 10px;
   background: white;
   border: 1.5px solid #CBD5E1;
-  border-radius: 10px;
+  border-radius: 8px;
   font-family: inherit;
-  font-size: 0.8rem;
+  font-size: 0.76rem;
   font-weight: 700;
   color: #334155;
   cursor: pointer;
@@ -4687,18 +4712,18 @@ body.tema-escuro .btn-categoria-fav.ativo {
 }
 
 .btn-preset-aplicar-principal {
-  flex: 1.4;
-  padding: 9px 14px;
+  flex: 1.3;
+  padding: 7px 12px;
   background: linear-gradient(135deg, #4F46E5, #4338CA);
   color: white;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   font-family: inherit;
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 800;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 3px 10px rgba(79, 70, 229, 0.25);
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25);
 }
 
 .btn-preset-aplicar-principal:hover:not(:disabled) {
@@ -4712,86 +4737,79 @@ body.tema-escuro .btn-categoria-fav.ativo {
   box-shadow: none;
 }
 
-/* Grid de Cards de Presets */
+/* Grid de Cards de Presets Espremidos */
 .presets-grid-container {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
 }
 
 .card-preset-item {
   background: white;
   border: 1px solid #E2E8F0;
-  border-radius: 14px;
-  padding: 12px 14px;
+  border-radius: 12px;
+  padding: 8px 12px;
   transition: all 0.2s ease;
 }
 
 .card-preset-item:hover {
   border-color: #CBD5E1;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 .card-preset-topo {
   display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  margin-bottom: 10px;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
 }
 
 .card-preset-icone {
-  font-size: 1.5rem;
-  width: 36px;
-  height: 36px;
+  font-size: 1.2rem;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #F8FAFC;
-  border-radius: 10px;
+  border-radius: 8px;
   flex-shrink: 0;
 }
 
-.card-preset-textos {
-  flex: 1;
-  min-width: 0;
-}
-
 .card-preset-titulo {
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   font-weight: 800;
   color: #1E293B;
-  margin-bottom: 2px;
-}
-
-.card-preset-desc {
-  font-size: 0.75rem;
-  color: #64748B;
-  line-height: 1.35;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .card-preset-rodape {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 8px;
+  padding-top: 6px;
   border-top: 1px solid #F1F5F9;
+  gap: 6px;
 }
 
 /* Botão Interativo de Produtos nos Cards */
 .btn-ver-itens-preset {
   background: #EEF2FF;
   color: #4F46E5;
-  border: 1.5px solid #C7D2FE;
+  border: 1px solid #C7D2FE;
   font-family: inherit;
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   font-weight: 800;
-  padding: 5px 11px;
-  border-radius: 8px;
+  padding: 4px 8px;
+  border-radius: 7px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  transition: all 0.2s ease;
+  gap: 4px;
+  transition: all 0.15s ease;
 }
 
 .btn-ver-itens-preset:hover {
@@ -4799,14 +4817,14 @@ body.tema-escuro .btn-categoria-fav.ativo {
   color: white;
   border-color: #4F46E5;
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25);
+  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.2);
 }
 
 .btn-ver-itens-preset.ativo {
   background: #4338CA;
   color: white;
   border-color: #4338CA;
-  box-shadow: 0 2px 8px rgba(67, 56, 202, 0.3);
+  box-shadow: 0 2px 6px rgba(67, 56, 202, 0.25);
 }
 
 .btn-meu-preset-ver-itens {
@@ -4814,9 +4832,9 @@ body.tema-escuro .btn-categoria-fav.ativo {
   color: #4F46E5;
   border: 1px solid #C7D2FE;
   font-family: inherit;
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 700;
-  padding: 2px 7px;
+  padding: 2px 6px;
   border-radius: 6px;
   cursor: pointer;
   margin-left: 6px;
@@ -4830,20 +4848,20 @@ body.tema-escuro .btn-categoria-fav.ativo {
 
 .card-preset-acoes {
   display: flex;
-  gap: 6px;
+  gap: 5px;
 }
 
 .btn-preset-adicionar {
-  padding: 6px 10px;
+  padding: 4px 8px;
   background: #F8FAFC;
   border: 1px solid #E2E8F0;
-  border-radius: 8px;
+  border-radius: 7px;
   font-family: inherit;
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   font-weight: 700;
   color: #475569;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .btn-preset-adicionar:hover {
@@ -4852,43 +4870,52 @@ body.tema-escuro .btn-categoria-fav.ativo {
 }
 
 .btn-preset-substituir {
-  padding: 6px 12px;
+  padding: 4px 10px;
   background: #10B981;
   border: none;
-  border-radius: 8px;
+  border-radius: 7px;
   font-family: inherit;
-  font-size: 0.76rem;
+  font-size: 0.74rem;
   font-weight: 800;
   color: white;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .btn-preset-substituir:hover {
   background: #059669;
 }
 
-.modal-presets-rodape {
-  margin-top: 16px;
-  text-align: right;
+[data-theme="dark"] .card-preset-item,
+body.tema-escuro .card-preset-item {
+  background: #1E293B !important;
+  border-color: #334155 !important;
 }
 
-.btn-presets-fechar {
-  padding: 10px 20px;
-  background: #F1F5F9;
-  border: 1px solid #E2E8F0;
-  border-radius: 10px;
-  font-family: inherit;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #475569;
-  cursor: pointer;
-  transition: all 0.15s ease;
+[data-theme="dark"] .card-preset-titulo,
+body.tema-escuro .card-preset-titulo {
+  color: #F8FAFC !important;
 }
 
-.btn-presets-fechar:hover {
-  background: #E2E8F0;
-  color: #1E293B;
+[data-theme="dark"] .card-preset-icone,
+body.tema-escuro .card-preset-icone {
+  background: #0F172A !important;
+}
+
+[data-theme="dark"] .card-preset-rodape,
+body.tema-escuro .card-preset-rodape {
+  border-color: #334155 !important;
+}
+
+[data-theme="dark"] .secao-meu-preset-card,
+body.tema-escuro .secao-meu-preset-card {
+  background: linear-gradient(135deg, #1E293B, #0F172A) !important;
+  border-color: #334155 !important;
+}
+
+[data-theme="dark"] .meu-preset-icon,
+body.tema-escuro .meu-preset-icon {
+  background: #0F172A !important;
 }
 
 /* Modal Lateral / Gaveta à Direita com os Itens */
