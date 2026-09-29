@@ -751,21 +751,66 @@ let AppState = {
   // Itens atualmente marcados para a compra (sincronizados com os selecionados em Montar Lista)
   listaAtiva: [],
 
-  // Histórico de compras finalizadas
+  // Histórico de compras finalizadas com dados para comparação e cálculo de duração
   historico: [
     {
-      id: 'h_1',
+      id: 'h_4',
+      data: '2026-09-25T16:45:00Z',
+      mercado: 'Dia a Dia',
+      total: 192.10,
+      itensQtd: 6,
+      itens: [
+        { nome: 'Arroz 5kg', categoria: 'Básicos e Grãos', qtde: 2, preco: 29.50, subtotal: 59.00 },
+        { nome: 'Feijão Carioca', categoria: 'Básicos e Grãos', qtde: 2, preco: 8.20, subtotal: 16.40 },
+        { nome: 'Óleo de Soja', categoria: 'Básicos e Grãos', qtde: 4, preco: 6.40, subtotal: 25.60 },
+        { nome: 'Café Torrado', categoria: 'Básicos e Grãos', qtde: 2, preco: 19.90, subtotal: 39.80 },
+        { nome: 'Amaciante Concentrado', categoria: 'Limpeza', qtde: 1, preco: 17.50, subtotal: 17.50 },
+        { nome: 'Sabão em Pó', categoria: 'Limpeza', qtde: 1, preco: 33.80, subtotal: 33.80 }
+      ]
+    },
+    {
+      id: 'h_3',
+      data: '2026-09-10T11:15:00Z',
+      mercado: 'Assaí Atacadista',
+      total: 176.40,
+      itensQtd: 6,
+      itens: [
+        { nome: 'Arroz 5kg', categoria: 'Básicos e Grãos', qtde: 2, preco: 27.50, subtotal: 55.00 },
+        { nome: 'Feijão Carioca', categoria: 'Básicos e Grãos', qtde: 2, preco: 7.50, subtotal: 15.00 },
+        { nome: 'Óleo de Soja', categoria: 'Básicos e Grãos', qtde: 4, preco: 5.80, subtotal: 23.20 },
+        { nome: 'Café Torrado', categoria: 'Básicos e Grãos', qtde: 2, preco: 18.50, subtotal: 37.00 },
+        { nome: 'Amaciante Concentrado', categoria: 'Limpeza', qtde: 1, preco: 16.20, subtotal: 16.20 },
+        { nome: 'Sabão em Pó', categoria: 'Limpeza', qtde: 1, preco: 30.00, subtotal: 30.00 }
+      ]
+    },
+    {
+      id: 'h_2',
       data: '2026-08-20T14:30:00Z',
       mercado: 'Supermercado Central',
       total: 184.20,
       itensQtd: 6,
       itens: [
-        { nome: 'Arroz 5kg', qtde: 2, preco: 28.90, subtotal: 57.80 },
-        { nome: 'Feijão Carioca', qtde: 2, preco: 7.80, subtotal: 15.60 },
-        { nome: 'Óleo de Soja', qtde: 4, preco: 6.20, subtotal: 24.80 },
-        { nome: 'Café Torrado', qtde: 2, preco: 18.90, subtotal: 37.80 },
-        { nome: 'Amaciante Concentrado', qtde: 1, preco: 16.90, subtotal: 16.90 },
-        { nome: 'Sabão em Pó', qtde: 1, preco: 31.30, subtotal: 31.30 }
+        { nome: 'Arroz 5kg', categoria: 'Básicos e Grãos', qtde: 2, preco: 28.90, subtotal: 57.80 },
+        { nome: 'Feijão Carioca', categoria: 'Básicos e Grãos', qtde: 2, preco: 7.80, subtotal: 15.60 },
+        { nome: 'Óleo de Soja', categoria: 'Básicos e Grãos', qtde: 4, preco: 6.20, subtotal: 24.80 },
+        { nome: 'Café Torrado', categoria: 'Básicos e Grãos', qtde: 2, preco: 18.90, subtotal: 37.80 },
+        { nome: 'Amaciante Concentrado', categoria: 'Limpeza', qtde: 1, preco: 16.90, subtotal: 16.90 },
+        { nome: 'Sabão em Pó', categoria: 'Limpeza', qtde: 1, preco: 31.30, subtotal: 31.30 }
+      ]
+    },
+    {
+      id: 'h_1',
+      data: '2026-08-01T10:00:00Z',
+      mercado: 'Atacadão',
+      total: 168.50,
+      itensQtd: 6,
+      itens: [
+        { nome: 'Arroz 5kg', categoria: 'Básicos e Grãos', qtde: 2, preco: 26.50, subtotal: 53.00 },
+        { nome: 'Feijão Carioca', categoria: 'Básicos e Grãos', qtde: 2, preco: 7.90, subtotal: 15.80 },
+        { nome: 'Óleo de Soja', categoria: 'Básicos e Grãos', qtde: 4, preco: 5.90, subtotal: 23.60 },
+        { nome: 'Café Torrado', categoria: 'Básicos e Grãos', qtde: 2, preco: 17.50, subtotal: 35.00 },
+        { nome: 'Amaciante Concentrado', categoria: 'Limpeza', qtde: 1, preco: 15.90, subtotal: 15.90 },
+        { nome: 'Sabão em Pó', categoria: 'Limpeza', qtde: 1, preco: 25.20, subtotal: 25.20 }
       ]
     }
   ]
@@ -967,7 +1012,9 @@ function carregarLocalmente() {
       // Sincroniza a Lista de Compra
       sincronizarListaAtivaComCatalogo();
 
-      if (parsed.historico) AppState.historico = parsed.historico;
+      if (parsed.historico && Array.isArray(parsed.historico) && parsed.historico.length >= 2) {
+        AppState.historico = parsed.historico;
+      }
     } catch (e) {
       console.error("Erro ao carregar dados locais:", e);
     }
@@ -4519,62 +4566,549 @@ function salvarEdicaoNomeDespensaModal() {
   itemParaEditarNomeId = null;
 }
 
-// Renderizar Histórico de Compras e Preços
+// Estado e Controles do Histórico de Compras
+let modoExibicaoHistorico = 'compras'; // 'compras' ou 'itens'
+let termoBuscaHistorico = '';
+let itensRascunhoHistorico = [];
+let comprasExpandidasIds = new Set();
+
+function alternarModoHistorico(modo) {
+  modoExibicaoHistorico = modo;
+  const btnCompras = document.getElementById('tab-hist-compras');
+  const btnItens = document.getElementById('tab-hist-itens');
+  if (btnCompras) btnCompras.classList.toggle('ativa', modo === 'compras');
+  if (btnItens) btnItens.classList.toggle('ativa', modo === 'itens');
+  renderizarHistorico();
+}
+
+function filtrarHistorico(termo) {
+  termoBuscaHistorico = (termo || '').toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  renderizarHistorico();
+}
+
+function alternarCardCompraHistorico(compraId) {
+  if (comprasExpandidasIds.has(compraId)) {
+    comprasExpandidasIds.delete(compraId);
+  } else {
+    comprasExpandidasIds.add(compraId);
+  }
+  const elCard = document.getElementById(`card-hist-${compraId}`);
+  if (elCard) {
+    elCard.classList.toggle('aberto', comprasExpandidasIds.has(compraId));
+  }
+}
+
+// Renderizar Histórico Completo de Compras, Duração em Dias e Comparação %
 function renderizarHistorico() {
   const container = document.getElementById('historico-container');
+  const containerResumo = document.getElementById('historico-cards-resumo');
   if (!container) return;
-  container.innerHTML = '';
 
-  if (AppState.historico.length === 0) {
+  if (!AppState.historico || AppState.historico.length === 0) {
+    if (containerResumo) containerResumo.innerHTML = '';
     container.innerHTML = `
-      <div style="text-align: center; padding: 40px 20px; background: white; border-radius: 16px; border: 1px solid var(--border);">
-        <p style="color: var(--text-muted); font-size: 0.95rem;">Nenhuma compra anterior arquivada ainda.</p>
-        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 6px;">
-          Ao finalizar suas compras no mercado, elas ficam guardadas aqui com histórico de preços e totais!
+      <div style="text-align: center; padding: 40px 20px; background: white; border-radius: 16px; border: 1px dashed var(--border);">
+        <div style="font-size: 2.2rem; margin-bottom: 10px;">🧾</div>
+        <h3 style="font-weight: 800; color: var(--text-main);">Nenhuma compra no histórico ainda</h3>
+        <p style="color: var(--text-muted); font-size: 0.88rem; margin-top: 6px; max-width: 480px; margin-left: auto; margin-right: auto;">
+          Ao finalizar suas compras na aba <strong>Comprar</strong> ou clicando em <strong>+ Registrar Compra</strong> acima, o app calculará a duração dos produtos em dias e a variação % de preços entre cada ida ao mercado!
         </p>
       </div>
     `;
     return;
   }
 
-  // Ordenar por data decrescente
-  const historicoOrdenado = [...AppState.historico].sort((a, b) => new Date(b.data) - new Date(a.data));
+  // Ordenações cronológicas
+  const historicoCrescente = [...AppState.historico].sort((a, b) => new Date(a.data) - new Date(b.data));
+  const historicoDecrescente = [...AppState.historico].sort((a, b) => new Date(b.data) - new Date(a.data));
 
-  historicoOrdenado.forEach(compra => {
-    const dataFormatada = new Date(compra.data).toLocaleDateString('pt-BR', {
-      day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
-    });
+  // Por padrão, a compra mais recente fica aberta
+  if (comprasExpandidasIds.size === 0 && historicoDecrescente.length > 0) {
+    comprasExpandidasIds.add(historicoDecrescente[0].id);
+  }
 
-    let htmlItensCompra = '';
-    if (compra.itens && compra.itens.length > 0) {
-      compra.itens.forEach(it => {
-        htmlItensCompra += `
-          <div style="display: flex; justify-content: space-between; padding: 3px 0;">
-            <span>${it.qtde}x ${it.nome}</span>
-            <span>${formatarMoeda(it.subtotal || (it.qtde * it.preco))}</span>
-          </div>
-        `;
+  // 1. Renderizar Métricas de Resumo no Topo
+  if (containerResumo) {
+    const totalGastoGeral = AppState.historico.reduce((acc, c) => acc + (Number(c.total) || 0), 0);
+    const totalComprasQtd = AppState.historico.length;
+    const ticketMedio = totalComprasQtd > 0 ? (totalGastoGeral / totalComprasQtd) : 0;
+
+    let mediaDiasIntervalo = 0;
+    if (historicoCrescente.length > 1) {
+      let somaDias = 0;
+      for (let i = 1; i < historicoCrescente.length; i++) {
+        const d1 = new Date(historicoCrescente[i - 1].data);
+        const d2 = new Date(historicoCrescente[i].data);
+        somaDias += Math.max(1, Math.round((d2 - d1) / (1000 * 60 * 60 * 24)));
+      }
+      mediaDiasIntervalo = Math.round(somaDias / (historicoCrescente.length - 1));
+    }
+
+    containerResumo.innerHTML = `
+      <div class="card-resumo-hist">
+        <div class="card-resumo-hist-ico" style="background: #ECFDF5; color: #059669;">💰</div>
+        <div class="card-resumo-hist-info">
+          <span class="card-resumo-hist-rotulo">Total Gasto</span>
+          <span class="card-resumo-hist-valor" style="color: #059669;">${formatarMoeda(totalGastoGeral)}</span>
+        </div>
+      </div>
+      <div class="card-resumo-hist">
+        <div class="card-resumo-hist-ico" style="background: #EEF2FF; color: #4F46E5;">🛒</div>
+        <div class="card-resumo-hist-info">
+          <span class="card-resumo-hist-rotulo">Idas ao Mercado</span>
+          <span class="card-resumo-hist-valor">${totalComprasQtd} ${totalComprasQtd === 1 ? 'compra' : 'compras'}</span>
+        </div>
+      </div>
+      <div class="card-resumo-hist">
+        <div class="card-resumo-hist-ico" style="background: #FFFBEB; color: #D97706;">📊</div>
+        <div class="card-resumo-hist-info">
+          <span class="card-resumo-hist-rotulo">Ticket Médio</span>
+          <span class="card-resumo-hist-valor">${formatarMoeda(ticketMedio)}</span>
+        </div>
+      </div>
+      <div class="card-resumo-hist">
+        <div class="card-resumo-hist-ico" style="background: #F0FDF4; color: #16A34A;">⏱️</div>
+        <div class="card-resumo-hist-info">
+          <span class="card-resumo-hist-rotulo">Intervalo Médio</span>
+          <span class="card-resumo-hist-valor">${mediaDiasIntervalo > 0 ? `${mediaDiasIntervalo} dias` : '1ª compra'}</span>
+        </div>
+      </div>
+    `;
+  }
+
+  // 2. MODO 1: VISÃO POR COMPRAS (Lista cronológica detalhada com comparação vs anterior)
+  if (modoExibicaoHistorico === 'compras') {
+    let listaFiltrada = historicoDecrescente;
+    if (termoBuscaHistorico) {
+      listaFiltrada = listaFiltrada.filter(compra => {
+        const merc = (compra.mercado || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        const temItem = (compra.itens || []).some(it => {
+          const n = (it.nome || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+          return n.includes(termoBuscaHistorico);
+        });
+        return merc.includes(termoBuscaHistorico) || temItem;
       });
     }
 
-    const card = document.createElement('div');
-    card.className = 'historico-card';
-    card.innerHTML = `
-      <div class="historico-cabecalho">
+    if (listaFiltrada.length === 0) {
+      container.innerHTML = `
+        <div style="text-align: center; padding: 30px; background: white; border-radius: 12px; border: 1px dashed var(--border);">
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Nenhuma compra encontrada para o termo pesquisado.</p>
+        </div>
+      `;
+      return;
+    }
+
+    let htmlCards = '';
+
+    listaFiltrada.forEach(compra => {
+      const isAberta = comprasExpandidasIds.has(compra.id);
+      const dataObj = new Date(compra.data);
+      const dataFormatada = dataObj.toLocaleDateString('pt-BR', {
+        day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
+      });
+
+      // Comparação da Compra inteira vs Compra Anterior
+      const idxCrescente = historicoCrescente.findIndex(c => String(c.id) === String(compra.id));
+      let badgeComparativoCompra = '';
+
+      if (idxCrescente > 0) {
+        const compraAnterior = historicoCrescente[idxCrescente - 1];
+        const diffTotal = compra.total - compraAnterior.total;
+        const pctTotal = compraAnterior.total > 0 ? ((diffTotal / compraAnterior.total) * 100) : 0;
+        const diasEntre = Math.max(1, Math.round((new Date(compra.data) - new Date(compraAnterior.data)) / (1000 * 60 * 60 * 24)));
+
+        if (pctTotal > 0.05) {
+          badgeComparativoCompra = `
+            <span class="tag-comparativo-aumento" title="Aumento de ${formatarMoeda(diffTotal)} em relação à compra anterior no ${compraAnterior.mercado} (${diasEntre} dias atrás)">
+              🔺 +${pctTotal.toFixed(1).replace('.', ',')}% vs anterior
+            </span>
+          `;
+        } else if (pctTotal < -0.05) {
+          badgeComparativoCompra = `
+            <span class="tag-comparativo-reducao" title="Economia de ${formatarMoeda(Math.abs(diffTotal))} em relação à compra anterior no ${compraAnterior.mercado} (${diasEntre} dias atrás)">
+              🔻 ${pctTotal.toFixed(1).replace('.', ',')}% vs anterior
+            </span>
+          `;
+        } else {
+          badgeComparativoCompra = `
+            <span class="tag-comparativo-estavel" title="Valor idêntico à compra anterior (${diasEntre} dias atrás)">
+              = Estável vs anterior
+            </span>
+          `;
+        }
+      } else {
+        badgeComparativoCompra = `
+          <span class="tag-comparativo-base" title="Primeira compra registrada no histórico">
+            ⭐ Compra Base
+          </span>
+        `;
+      }
+
+      // Linhas da Tabela de Itens Detalhados da Compra
+      let linhasItensHtml = '';
+      const itensCompra = compra.itens || [];
+
+      itensCompra.forEach(it => {
+        const nomeNorm = (it.nome || '').toLowerCase().trim();
+        const qtde = it.qtde || 1;
+        const precoUnit = Number(it.preco) || 0;
+        const subtotal = Number(it.subtotal) || (qtde * precoUnit);
+
+        // 1. Cálculo de Dias de Duração / Consumo do Item
+        // Busca todas as compras que contêm este mesmo produto ordenadas cronologicamente
+        const comprasDesteItem = historicoCrescente.filter(c => 
+          (c.itens || []).some(itemCompra => (itemCompra.nome || '').toLowerCase().trim() === nomeNorm)
+        );
+
+        const itemIdxNaLinha = comprasDesteItem.findIndex(c => String(c.id) === String(compra.id));
+        let tagDuracaoHtml = '';
+
+        if (itemIdxNaLinha >= 0 && itemIdxNaLinha < (comprasDesteItem.length - 1)) {
+          // Houve uma compra posterior deste produto: calcula exatamente quantos dias durou!
+          const dataProxima = new Date(comprasDesteItem[itemIdxNaLinha + 1].data);
+          const diasDurou = Math.max(1, Math.round((dataProxima - dataObj) / (1000 * 60 * 60 * 24)));
+          tagDuracaoHtml = `<span class="tag-duracao-item" title="Durou ${diasDurou} dias até a próxima compra em ${dataProxima.toLocaleDateString('pt-BR')}">⏱️ Durou ${diasDurou} dias</span>`;
+        } else {
+          // É a compra mais recente deste produto: calcula há quantos dias está durando/em uso
+          const diasEmUso = Math.max(0, Math.round((Date.now() - dataObj.getTime()) / (1000 * 60 * 60 * 24)));
+          tagDuracaoHtml = `<span class="tag-duracao-item em-uso" title="Comprado nesta data e em uso atualmente">⏱️ Em uso há ${diasEmUso} ${diasEmUso === 1 ? 'dia' : 'dias'}</span>`;
+        }
+
+        // 2. Comparação de Preço do Item vs Compra Anterior do Mesmo Item
+        let badgeComparativoItem = '';
+        if (itemIdxNaLinha > 0) {
+          const compraAntItem = comprasDesteItem[itemIdxNaLinha - 1];
+          const itAnt = (compraAntItem.itens || []).find(itemCompra => (itemCompra.nome || '').toLowerCase().trim() === nomeNorm);
+          const precoAnt = (itAnt && Number(itAnt.preco)) || 0;
+
+          if (precoAnt > 0) {
+            const diffPreco = precoUnit - precoAnt;
+            const pctItem = ((diffPreco / precoAnt) * 100);
+
+            if (pctItem > 0.05) {
+              badgeComparativoItem = `<span class="tag-comparativo-aumento" title="Preço subiu de ${formatarMoeda(precoAnt)} para ${formatarMoeda(precoUnit)} (+${formatarMoeda(diffPreco)})">🔺 +${pctItem.toFixed(1).replace('.', ',')}%</span>`;
+            } else if (pctItem < -0.05) {
+              badgeComparativoItem = `<span class="tag-comparativo-reducao" title="Preço caiu de ${formatarMoeda(precoAnt)} para ${formatarMoeda(precoUnit)} (-${formatarMoeda(Math.abs(diffPreco))})">🔻 ${pctItem.toFixed(1).replace('.', ',')}%</span>`;
+            } else {
+              badgeComparativoItem = `<span class="tag-comparativo-estavel" title="Preço manteve-se em ${formatarMoeda(precoUnit)}">= Estável</span>`;
+            }
+          } else {
+            badgeComparativoItem = `<span class="tag-comparativo-base">⭐ 1ª compra</span>`;
+          }
+        } else {
+          badgeComparativoItem = `<span class="tag-comparativo-base">⭐ 1ª compra</span>`;
+        }
+
+        const categoria = it.categoria || deduzirCategoria(it.nome);
+
+        linhasItensHtml += `
+          <tr>
+            <td>
+              <div class="hist-prod-info">
+                <span class="hist-prod-nome">${it.nome}</span>
+                <span class="hist-prod-cat">${categoria}</span>
+              </div>
+            </td>
+            <td style="font-weight: 700; white-space: nowrap;">${qtde}x</td>
+            <td style="color: var(--text-muted); font-size: 0.78rem; white-space: nowrap;">${formatarMoeda(precoUnit)}</td>
+            <td style="font-weight: 800; color: #0F172A; white-space: nowrap;">${formatarMoeda(subtotal)}</td>
+            <td>${badgeComparativoItem}</td>
+            <td>${tagDuracaoHtml}</td>
+          </tr>
+        `;
+      });
+
+      htmlCards += `
+        <div class="historico-compra-card ${isAberta ? 'aberto' : ''}" id="card-hist-${compra.id}">
+          <div class="historico-compra-cabecalho" onclick="alternarCardCompraHistorico('${compra.id}')">
+            <div class="historico-compra-info-esq">
+              <div>
+                <div class="historico-mercado-badge">🛒 ${compra.mercado || 'Supermercado'}</div>
+                <div class="historico-data-badge">📅 ${dataFormatada}</div>
+              </div>
+            </div>
+            <div class="historico-compra-info-dir">
+              ${badgeComparativoCompra}
+              <span class="historico-compra-itens-count">${itensCompra.length} ${itensCompra.length === 1 ? 'item' : 'itens'}</span>
+              <span class="historico-total-compra-valor">${formatarMoeda(compra.total)}</span>
+              <button type="button" class="btn-acao-mini" onclick="event.stopPropagation(); excluirCompraHistorico('${compra.id}')" title="Excluir esta compra do histórico" style="color: #DC2626; border-color: #FCA5A5; background: #FEF2F2;">🗑️</button>
+              <span class="historico-seta-toggle">▼</span>
+            </div>
+          </div>
+          <div class="historico-detalhes-compra">
+            <table class="tabela-historico-itens">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Qtd</th>
+                  <th>Preço Un.</th>
+                  <th>Valor Gasto</th>
+                  <th>Comparação</th>
+                  <th>Consumo / Duração</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${linhasItensHtml}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    });
+
+    container.innerHTML = `<div class="historico-lista-compras">${htmlCards}</div>`;
+  } 
+  // 3. MODO 2: VISÃO POR ITEM & CONSUMO (Agrupamento por produto, evolução de preços e consumo médio)
+  else {
+    const mapaItens = new Map();
+
+    historicoCrescente.forEach(compra => {
+      const dataObj = new Date(compra.data);
+      (compra.itens || []).forEach(it => {
+        const nomeNorm = (it.nome || '').trim();
+        const chave = nomeNorm.toLowerCase();
+        if (!mapaItens.has(chave)) {
+          mapaItens.set(chave, {
+            nome: nomeNorm,
+            categoria: it.categoria || deduzirCategoria(it.nome),
+            compras: []
+          });
+        }
+        mapaItens.get(chave).compras.push({
+          data: dataObj,
+          dataStr: dataObj.toLocaleDateString('pt-BR'),
+          mercado: compra.mercado || 'Mercado',
+          qtde: it.qtde || 1,
+          preco: Number(it.preco) || 0,
+          subtotal: Number(it.subtotal) || ((it.qtde || 1) * (Number(it.preco) || 0))
+        });
+      });
+    });
+
+    let listaItensUnicos = Array.from(mapaItens.values());
+
+    if (termoBuscaHistorico) {
+      listaItensUnicos = listaItensUnicos.filter(item => {
+        const n = item.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        const c = item.categoria.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        return n.includes(termoBuscaHistorico) || c.includes(termoBuscaHistorico);
+      });
+    }
+
+    if (listaItensUnicos.length === 0) {
+      container.innerHTML = `
+        <div style="text-align: center; padding: 30px; background: white; border-radius: 12px; border: 1px dashed var(--border);">
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Nenhum produto encontrado no histórico para a busca realizada.</p>
+        </div>
+      `;
+      return;
+    }
+
+    // Ordena produtos por quantidade de vezes comprados decrescente
+    listaItensUnicos.sort((a, b) => b.compras.length - a.compras.length);
+
+    let htmlGridItens = '';
+
+    listaItensUnicos.forEach(prod => {
+      const totalVezes = prod.compras.length;
+      const totalUnidades = prod.compras.reduce((acc, c) => acc + c.qtde, 0);
+      const totalGastoProd = prod.compras.reduce((acc, c) => acc + c.subtotal, 0);
+
+      const precosValidos = prod.compras.map(c => c.preco).filter(p => p > 0);
+      const menorPreco = precosValidos.length > 0 ? Math.min(...precosValidos) : 0;
+      const maiorPreco = precosValidos.length > 0 ? Math.max(...precosValidos) : 0;
+      const ultimoPreco = prod.compras[prod.compras.length - 1].preco;
+      const primeiroPreco = prod.compras[0].preco;
+
+      let badgeVariacaoGeral = '';
+      if (primeiroPreco > 0 && totalVezes > 1) {
+        const diffGeral = ultimoPreco - primeiroPreco;
+        const pctGeral = ((diffGeral / primeiroPreco) * 100);
+        if (pctGeral > 0.05) {
+          badgeVariacaoGeral = `<span class="tag-comparativo-aumento">🔺 +${pctGeral.toFixed(1).replace('.', ',')}% histórico</span>`;
+        } else if (pctGeral < -0.05) {
+          badgeVariacaoGeral = `<span class="tag-comparativo-reducao">🔻 ${pctGeral.toFixed(1).replace('.', ',')}% histórico</span>`;
+        } else {
+          badgeVariacaoGeral = `<span class="tag-comparativo-estavel">= Preço Estável</span>`;
+        }
+      }
+
+      // Cálculo da duração média de consumo (dias entre compras)
+      let duracaoMediaTxt = '1 compra';
+      if (totalVezes > 1) {
+        let somaDias = 0;
+        for (let i = 1; i < prod.compras.length; i++) {
+          somaDias += Math.max(1, Math.round((prod.compras[i].data - prod.compras[i - 1].data) / (1000 * 60 * 60 * 24)));
+        }
+        const mediaDias = Math.round(somaDias / (totalVezes - 1));
+        duracaoMediaTxt = `Dura ~${mediaDias} dias`;
+      } else {
+        const diasDesdeCompra = Math.max(0, Math.round((Date.now() - prod.compras[0].data.getTime()) / (1000 * 60 * 60 * 24)));
+        duracaoMediaTxt = `Há ${diasDesdeCompra}d em uso`;
+      }
+
+      // Histórico rápido das compras daquele produto
+      let timelinePrecosHtml = prod.compras.slice(-3).reverse().map(c => `
+        <div style="display: flex; justify-content: space-between; padding: 2px 0;">
+          <span>📅 ${c.dataStr} (${c.mercado})</span>
+          <strong>${c.qtde}x ${formatarMoeda(c.preco)}</strong>
+        </div>
+      `).join('');
+
+      htmlGridItens += `
+        <div class="card-item-analise">
+          <div class="card-item-analise-topo">
+            <div>
+              <div class="card-item-analise-nome">${prod.nome}</div>
+              <div style="font-size: 0.72rem; color: var(--text-muted);">${prod.categoria} • ${totalVezes} ${totalVezes === 1 ? 'compra' : 'compras'} (${totalUnidades} un.)</div>
+            </div>
+            ${badgeVariacaoGeral}
+          </div>
+          <div class="card-item-analise-stats">
+            <div class="item-stat-linha">
+              <span class="item-stat-rotulo">Duração Média</span>
+              <span class="item-stat-val" style="color: #1D4ED8;">⏱️ ${duracaoMediaTxt}</span>
+            </div>
+            <div class="item-stat-linha">
+              <span class="item-stat-rotulo">Total Gasto</span>
+              <span class="item-stat-val" style="color: #059669;">${formatarMoeda(totalGastoProd)}</span>
+            </div>
+            <div class="item-stat-linha">
+              <span class="item-stat-rotulo">Menor Preço</span>
+              <span class="item-stat-val">${menorPreco > 0 ? formatarMoeda(menorPreco) : '—'}</span>
+            </div>
+            <div class="item-stat-linha">
+              <span class="item-stat-rotulo">Último Preço</span>
+              <span class="item-stat-val">${ultimoPreco > 0 ? formatarMoeda(ultimoPreco) : '—'}</span>
+            </div>
+          </div>
+          <div class="card-item-analise-historico-precos">
+            <span style="font-weight: 700; color: #475569; font-size: 0.68rem; text-transform: uppercase;">Últimos Registros:</span>
+            ${timelinePrecosHtml}
+          </div>
+        </div>
+      `;
+    });
+
+    container.innerHTML = `<div class="historico-itens-grid">${htmlGridItens}</div>`;
+  }
+}
+
+// Modal e Registro Manual de Compras no Histórico
+function abrirModalNovaCompraHistorico() {
+  itensRascunhoHistorico = [];
+  const elMercado = document.getElementById('hist-input-mercado');
+  const elData = document.getElementById('hist-input-data');
+  if (elMercado) elMercado.value = '';
+  if (elData) {
+    const agora = new Date();
+    agora.setMinutes(agora.getMinutes() - agora.getTimezoneOffset());
+    elData.value = agora.toISOString().slice(0, 16);
+  }
+  atualizarListaRascunhoHistorico();
+  abrirModal('modal-nova-compra-historico');
+}
+
+function adicionarItemRascunhoHistorico() {
+  const elNome = document.getElementById('hist-item-nome');
+  const elQtde = document.getElementById('hist-item-qtde');
+  const elPreco = document.getElementById('hist-item-preco');
+
+  const nome = elNome ? elNome.value.trim() : '';
+  const qtde = elQtde ? Math.max(1, Number(elQtde.value) || 1) : 1;
+  const preco = elPreco ? Math.max(0, Number(elPreco.value.replace(',', '.')) || 0) : 0;
+
+  if (!nome) {
+    alert('Digite o nome do produto.');
+    return;
+  }
+
+  itensRascunhoHistorico.push({
+    nome: nome,
+    categoria: deduzirCategoria(nome),
+    qtde: qtde,
+    preco: preco,
+    subtotal: qtde * preco
+  });
+
+  if (elNome) elNome.value = '';
+  if (elQtde) elQtde.value = '1';
+  if (elPreco) elPreco.value = '';
+  if (elNome) elNome.focus();
+
+  atualizarListaRascunhoHistorico();
+}
+
+function removerItemRascunhoHistorico(index) {
+  itensRascunhoHistorico.splice(index, 1);
+  atualizarListaRascunhoHistorico();
+}
+
+function atualizarListaRascunhoHistorico() {
+  const container = document.getElementById('lista-rascunho-itens-historico');
+  const totalEl = document.getElementById('hist-total-rascunho');
+  if (!container) return;
+
+  if (itensRascunhoHistorico.length === 0) {
+    container.innerHTML = `<span style="font-size: 0.78rem; color: var(--text-muted); padding: 6px;">Nenhum item adicionado à compra ainda.</span>`;
+    if (totalEl) totalEl.textContent = 'R$ 0,00';
+    return;
+  }
+
+  let total = 0;
+  container.innerHTML = itensRascunhoHistorico.map((it, idx) => {
+    total += it.subtotal;
+    return `
+      <div class="item-rascunho-linha">
+        <span><strong>${it.qtde}x</strong> ${it.nome} (${formatarMoeda(it.preco)} un.)</span>
         <div>
-          <div>🛒 ${compra.mercado || 'Supermercado'}</div>
-          <div style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted);">${dataFormatada}</div>
+          <strong style="color: #059669; margin-right: 8px;">${formatarMoeda(it.subtotal)}</strong>
+          <button type="button" onclick="removerItemRascunhoHistorico(${idx})" style="background: none; border: none; color: #DC2626; cursor: pointer; font-size: 0.8rem;">✕</button>
         </div>
-        <div style="font-size: 1.1rem; color: var(--success); font-weight: 800;">
-          ${formatarMoeda(compra.total)}
-        </div>
-      </div>
-      <div class="historico-lista-itens">
-        ${htmlItensCompra}
       </div>
     `;
-    container.appendChild(card);
-  });
+  }).join('');
+
+  if (totalEl) totalEl.textContent = formatarMoeda(total);
+}
+
+function salvarNovaCompraHistorico() {
+  const elMercado = document.getElementById('hist-input-mercado');
+  const elData = document.getElementById('hist-input-data');
+
+  const mercado = (elMercado && elMercado.value.trim()) || 'Supermercado';
+  const dataVal = (elData && elData.value) ? new Date(elData.value).toISOString() : new Date().toISOString();
+
+  if (itensRascunhoHistorico.length === 0) {
+    alert('Adicione pelo menos 1 item para salvar a compra.');
+    return;
+  }
+
+  const total = itensRascunhoHistorico.reduce((acc, it) => acc + it.subtotal, 0);
+
+  const novaCompra = {
+    id: 'h_' + Date.now(),
+    data: dataVal,
+    mercado: mercado,
+    total: total,
+    itensQtd: itensRascunhoHistorico.length,
+    itens: [...itensRascunhoHistorico]
+  };
+
+  AppState.historico.unshift(novaCompra);
+  comprasExpandidasIds.add(novaCompra.id);
+
+  salvarEstado(true);
+  fecharModal('modal-nova-compra-historico');
+  renderizarHistorico();
+}
+
+function excluirCompraHistorico(compraId) {
+  if (!confirm('Deseja realmente excluir esta compra do histórico?')) return;
+  AppState.historico = AppState.historico.filter(c => String(c.id) !== String(compraId));
+  salvarEstado(true);
+  renderizarHistorico();
 }
 
 // Ações nos Itens da Lista de Compras
@@ -6241,33 +6775,41 @@ function confirmarFinalizarCompra() {
 
   let totalComprado = 0;
   const listaItensHistorico = itensComprados.map(it => {
-    const sub = (it.qtde || 1) * (it.preco || 0);
+    const precoUnit = (Number(it.precoRegistradoMercado) > 0)
+      ? Number(it.precoRegistradoMercado)
+      : (Number(it.preco) || 0);
+    const sub = (it.qtde || 1) * precoUnit;
     totalComprado += sub;
 
     // Atualiza catálogo com o novo preço e data
     const itemCat = AppState.catalogo.find(c => c.nome.toLowerCase() === it.nome.toLowerCase());
-    if (itemCat && it.preco > 0) {
-      itemCat.ultimoPreco = it.preco;
+    if (itemCat && precoUnit > 0) {
+      itemCat.ultimoPreco = precoUnit;
       itemCat.dataUltimoPreco = hoje.split('T')[0];
     }
 
     return {
       nome: it.nome,
-      qtde: it.qtde,
-      preco: it.preco,
+      categoria: it.categoria || deduzirCategoria(it.nome),
+      qtde: it.qtde || 1,
+      preco: precoUnit,
       subtotal: sub
     };
   });
 
   // Grava no histórico
+  const novaIdCompra = 'h_' + Date.now();
   AppState.historico.unshift({
-    id: 'h_' + Date.now(),
+    id: novaIdCompra,
     data: hoje,
     mercado: nomeMercado,
     total: totalComprado,
     itensQtd: itensComprados.length,
     itens: listaItensHistorico
   });
+  if (typeof comprasExpandidasIds !== 'undefined') {
+    comprasExpandidasIds.add(novaIdCompra);
+  }
 
   // Desmarca no catálogo os itens comprados e sincroniza a lista ativa
   itensComprados.forEach(it => {

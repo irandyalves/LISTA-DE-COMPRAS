@@ -12,7 +12,7 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>">
   
   <!-- CSS Moderno -->
-  <link rel="stylesheet" href="style.css?v=10.4">
+  <link rel="stylesheet" href="style.css?v=10.6">
 </head>
 <body>
 
@@ -145,34 +145,34 @@
       <div class="linha-abas-e-total-mobile">
         <div class="despensa-abas-categorias" id="barra-abas-categorias">
           <button class="despensa-aba-tab ativa" data-categoria="todas" onclick="filtrarCategoriaGeral('todas', this)">
-            🌐 Geral
+            <span class="aba-ico">🌐</span> Geral
           </button>
           <button class="despensa-aba-tab" data-categoria="Básicos e Grãos" onclick="filtrarCategoriaGeral('Básicos e Grãos', this)">
-            🌾 Básicos & Grãos
+            <span class="aba-ico">🌾</span> Básicos & Grãos
           </button>
           <button class="despensa-aba-tab" data-categoria="Hortifrúti" onclick="filtrarCategoriaGeral('Hortifrúti', this)">
-            🥬 Hortifrúti
+            <span class="aba-ico">🥬</span> Hortifrúti
           </button>
           <button class="despensa-aba-tab" data-categoria="Carnes e Proteínas" onclick="filtrarCategoriaGeral('Carnes e Proteínas', this)">
-            🥩 Carnes & Aves
+            <span class="aba-ico">🥩</span> Carnes & Aves
           </button>
           <button class="despensa-aba-tab" data-categoria="Laticínios e Frios" onclick="filtrarCategoriaGeral('Laticínios e Frios', this)">
-            🧀 Laticínios & Frios
+            <span class="aba-ico">🧀</span> Laticínios & Frios
           </button>
           <button class="despensa-aba-tab" data-categoria="Higiene" onclick="filtrarCategoriaGeral('Higiene', this)">
-            🪥 Higiene
+            <span class="aba-ico">🪥</span> Higiene
           </button>
           <button class="despensa-aba-tab" data-categoria="Limpeza" onclick="filtrarCategoriaGeral('Limpeza', this)">
-            🧹 Limpeza
+            <span class="aba-ico">🧹</span> Limpeza
           </button>
           <button class="despensa-aba-tab" data-categoria="Padaria e Lanches" onclick="filtrarCategoriaGeral('Padaria e Lanches', this)">
-            🍞 Padaria & Lanches
+            <span class="aba-ico">🍞</span> Padaria & Lanches
           </button>
           <button class="despensa-aba-tab" data-categoria="Bebidas" onclick="filtrarCategoriaGeral('Bebidas', this)">
-            🥤 Bebidas
+            <span class="aba-ico">🥤</span> Bebidas
           </button>
           <button class="despensa-aba-tab" data-categoria="Diversos" onclick="filtrarCategoriaGeral('Diversos', this)">
-            📦 Diversos
+            <span class="aba-ico">📦</span> Diversos
           </button>
           <div class="acoes-end-barra" style="margin-left: auto; display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0;">
             <div id="controles-fonte-categorias" class="controles-fonte-categorias" style="display: none;">
@@ -207,11 +207,38 @@
 
     <!-- VIEW 4: HISTÓRICO DE COMPRAS E PREÇOS -->
     <main id="view-historico" style="display: none;">
-      <div style="margin-bottom: 14px; padding: 0 4px;">
-        <h2 style="font-size: 1.1rem; font-weight: 800;">📊 Histórico de Compras</h2>
-        <p style="font-size: 0.85rem; color: var(--text-muted);">
-          Registro de compras passadas e acompanhamento de preços:
-        </p>
+      <div class="historico-page-header">
+        <div class="historico-header-info">
+          <h2 class="historico-titulo">📊 Histórico Completo de Compras</h2>
+          <p class="historico-subtitulo">
+            Acompanhamento de compras passadas, duração de consumo (dias) e comparação de preços (% aumento/redução).
+          </p>
+        </div>
+        <div class="historico-header-acoes">
+          <button type="button" class="btn-acao-historico" onclick="abrirModalNovaCompraHistorico()" title="Cadastrar compra anterior ou nota fiscal">
+            ➕ Registrar Compra
+          </button>
+        </div>
+      </div>
+
+      <!-- Métricas Resumo do Histórico -->
+      <div id="historico-cards-resumo" class="historico-cards-resumo"></div>
+
+      <!-- Barra de Filtros e Modos de Visão -->
+      <div class="historico-barra-controles">
+        <div class="historico-tabs-modo">
+          <button type="button" class="tab-modo-hist ativa" id="tab-hist-compras" onclick="alternarModoHistorico('compras')">
+            🛒 Por Compras
+          </button>
+          <button type="button" class="tab-modo-hist" id="tab-hist-itens" onclick="alternarModoHistorico('itens')">
+            📈 Por Item & Consumo
+          </button>
+        </div>
+        <div class="historico-busca-box">
+          <input type="text" id="input-busca-historico" placeholder="🔍 Buscar produto ou mercado..." oninput="filtrarHistorico(this.value)">
+        </div>
+      </div>
+
       <div id="historico-container"></div>
     </main>
 
@@ -809,6 +836,53 @@
     </div>
   </div>
 
+  <!-- MODAL: REGISTRAR COMPRA NO HISTÓRICO -->
+  <div id="modal-nova-compra-historico" class="modal-overlay" style="display: none;" onclick="if(event.target === this) fecharModal('modal-nova-compra-historico')">
+    <div class="modal-content modal-historico-content">
+      <div class="modal-header">
+        <h3>🧾 Registrar Compra no Histórico</h3>
+        <button class="btn-fechar" onclick="fecharModal('modal-nova-compra-historico')">&times;</button>
+      </div>
+      <div class="modal-body modal-body-historico">
+        <div class="form-grupo-hist">
+          <label for="hist-input-mercado">Supermercado / Atacadista</label>
+          <input type="text" id="hist-input-mercado" placeholder="Ex: Atacadão, Assaí, Carrefour, etc." list="lista-mercados-df-sugestoes">
+          <datalist id="lista-mercados-df-sugestoes">
+            <option value="Atacadão">
+            <option value="Assaí Atacadista">
+            <option value="Dia a Dia">
+            <option value="Super Adega">
+            <option value="Carrefour">
+            <option value="Pão de Açúcar">
+            <option value="Supermercado Central">
+          </datalist>
+        </div>
+        <div class="form-grupo-hist">
+          <label for="hist-input-data">Data da Compra</label>
+          <input type="datetime-local" id="hist-input-data">
+        </div>
+        <div class="form-grupo-hist">
+          <label>Adicionar Itens da Compra</label>
+          <div class="linha-add-item-hist">
+            <input type="text" id="hist-item-nome" placeholder="Produto (ex: Arroz 5kg)" style="flex: 2;">
+            <input type="number" id="hist-item-qtde" placeholder="Qtd" value="1" min="1" style="flex: 0.8; max-width: 65px;">
+            <input type="number" step="0.01" id="hist-item-preco" placeholder="Preço (R$)" style="flex: 1.2;">
+            <button type="button" class="btn-adicionar-item-hist" onclick="adicionarItemRascunhoHistorico()">➕ Adicionar</button>
+          </div>
+          <div id="lista-rascunho-itens-historico" class="lista-rascunho-itens-historico"></div>
+        </div>
+        <div class="total-rascunho-box">
+          <span>Total da Compra:</span>
+          <strong id="hist-total-rascunho">R$ 0,00</strong>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-secundario" onclick="fecharModal('modal-nova-compra-historico')">Cancelar</button>
+        <button type="button" class="btn-primario" onclick="salvarNovaCompraHistorico()">💾 Salvar no Histórico</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
@@ -816,7 +890,7 @@
   <script src="logos_banco.js"></script>
   <script src="icones2d.js"></script>
   <script src="firebase-sync.js"></script>
-  <script src="app.js?v=10.4"></script>
+  <script src="app.js?v=10.6"></script>
 
 </body>
 </html>
