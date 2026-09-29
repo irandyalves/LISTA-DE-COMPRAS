@@ -3148,11 +3148,11 @@ body.modo-mercado-ativo .item-nome {
   background: #F8FAFC !important;
   font-weight: 800;
   color: #1E293B;
-  width: 36px !important;
-  min-width: 36px !important;
-  max-width: 36px !important;
+  width: 28px !important;
+  min-width: 28px !important;
+  max-width: 28px !important;
   text-align: center;
-  padding: 8px 4px 8px 10px !important;
+  padding: 8px 1px !important;
   font-size: 0.78rem;
   box-shadow: 0 6px 14px -2px rgba(15, 23, 42, 0.16);
 }
@@ -3162,17 +3162,17 @@ body.modo-mercado-ativo .item-nome {
   left: 0;
   z-index: 5;
   background: white;
-  width: 36px !important;
-  min-width: 36px !important;
-  max-width: 36px !important;
-  padding: 6px 4px 6px 10px !important;
+  width: 28px !important;
+  min-width: 28px !important;
+  max-width: 28px !important;
+  padding: 4px 1px !important;
   text-align: center;
   vertical-align: middle;
 }
 
 .check-item-comprado {
-  width: 18px !important;
-  height: 18px !important;
+  width: 17px !important;
+  height: 17px !important;
   cursor: pointer;
   accent-color: #10B981;
   border-radius: 4px;
@@ -3180,18 +3180,18 @@ body.modo-mercado-ativo .item-nome {
   display: block;
 }
 
-/* Coluna de Quantidade na Frente do Nome - Espremida */
+/* Coluna de Quantidade na Frente do Nome - Espremida e Encostada */
 .mcol-th-qtde {
   position: sticky;
   top: 0;
-  left: 36px !important;
+  left: 28px !important;
   z-index: 30 !important;
   background: #F8FAFC !important;
   font-weight: 800;
   color: #1E293B;
-  width: 50px !important;
-  min-width: 50px !important;
-  max-width: 50px !important;
+  width: 48px !important;
+  min-width: 48px !important;
+  max-width: 48px !important;
   text-align: center;
   padding: 8px 1px !important;
   font-size: 0.74rem;
@@ -3200,12 +3200,12 @@ body.modo-mercado-ativo .item-nome {
 
 .mcol-td-qtde {
   position: sticky;
-  left: 36px !important;
+  left: 28px !important;
   z-index: 5;
   background: white;
-  width: 50px !important;
-  min-width: 50px !important;
-  max-width: 50px !important;
+  width: 48px !important;
+  min-width: 48px !important;
+  max-width: 48px !important;
   padding: 4px 1px !important;
   text-align: center;
   vertical-align: middle;
@@ -3288,18 +3288,18 @@ body.modo-mercado-ativo .item-nome {
   margin: 0;
 }
 
-/* Coluna de Produto: ajustada com left 86px (check 36px + qtde 50px) */
+/* Coluna de Produto: ajustada com left 76px (check 28px + qtde 48px) */
 .mcol-th-produto {
   position: sticky;
   top: 0;
-  left: 86px !important;
+  left: 76px !important;
   z-index: 29 !important;
   background: #F8FAFC !important;
   font-weight: 800;
   color: #1E293B;
-  min-width: 210px;
+  min-width: 170px;
   max-width: 250px;
-  padding: 6px 8px 6px 10px !important;
+  padding: 6px 6px !important;
   box-shadow: 2px 0 6px rgba(0,0,0,0.04), 0 6px 14px -2px rgba(15, 23, 42, 0.16);
 }
 
@@ -3322,11 +3322,11 @@ body.modo-mercado-ativo .item-nome {
 
 .mcol-td-produto {
   position: sticky;
-  left: 86px !important;
+  left: 76px !important;
   z-index: 4;
   background: white;
-  padding: 5px 6px 5px 10px !important;
-  min-width: 210px;
+  padding: 4px 6px !important;
+  min-width: 170px;
   max-width: 250px;
   box-shadow: 2px 0 6px rgba(0,0,0,0.04);
 }
@@ -3657,20 +3657,102 @@ body.modo-mercado-ativo .item-nome {
   flex: 1;
 }
 
-/* Linha principal com Nome do item e Botão de Marca alinhados horizontalmente */
+/* Linha principal com Nome do item, Botão de Marca, Microfone de Preço e Preço Real encostados */
 .mcol-prod-linha-principal {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
   flex-wrap: wrap;
-  line-height: 1.3;
+  line-height: 1.25;
 }
 
 .mcol-prod-nome {
   font-size: 0.82rem;
+  font-weight: 600;
   color: #1E293B;
-  white-space: normal;
+  white-space: nowrap;
   line-height: 1.25;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+}
+
+/* Microfone Verdinho para Ditar Preço de Gôndola no Mercado */
+.btn-mic-preco-verde {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border-radius: 50%;
+  border: 1px solid #10B981;
+  background: #ECFDF5;
+  color: #059669;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.15s ease;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+.btn-mic-preco-verde:hover {
+  background: #10B981;
+  color: #FFFFFF;
+  transform: scale(1.12);
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35);
+}
+
+.btn-mic-preco-verde.ouvindo {
+  background: #EF4444 !important;
+  border-color: #DC2626 !important;
+  color: #FFFFFF !important;
+  animation: pulsoGravandoPreco 0.7s infinite alternate ease-in-out;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
+}
+
+@keyframes pulsoGravandoPreco {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+  100% { transform: scale(1.22); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+}
+
+/* Badge do Preço Real Registrado no Mercado */
+.badge-preco-real {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  vertical-align: middle;
+  user-select: none;
+  transition: all 0.15s ease;
+  line-height: 1.2;
+}
+
+.badge-preco-real.com-preco {
+  background: #D1FAE5;
+  color: #065F46;
+  border: 1px solid #6EE7B7;
+}
+
+.badge-preco-real.com-preco:hover {
+  background: #A7F3D0;
+  border-color: #34D399;
+}
+
+.badge-preco-real.sem-preco {
+  background: #F1F5F9;
+  color: #94A3B8;
+  border: 1px dashed #CBD5E1;
+  font-size: 0.66rem;
+  font-weight: 600;
+}
+
+.badge-preco-real.sem-preco:hover {
+  background: #E2E8F0;
+  color: #475569;
 }
 
 /* Botão Listbox de Marca bonito na frente do nome */
@@ -3819,31 +3901,31 @@ body.modo-mercado-ativo .item-nome {
   left: 0;
   z-index: 5;
   background: #F8FAFC !important;
-  width: 36px;
-  min-width: 36px;
-  max-width: 36px;
-  padding: 8px 2px !important;
+  width: 28px;
+  min-width: 28px;
+  max-width: 28px;
+  padding: 8px 1px !important;
 }
 
 .mcol-td-qtde-total {
   position: sticky;
-  left: 36px;
+  left: 28px;
   z-index: 5;
   background: #F8FAFC !important;
-  width: 50px;
-  min-width: 50px;
-  max-width: 50px;
-  padding: 8px 2px !important;
+  width: 48px;
+  min-width: 48px;
+  max-width: 48px;
+  padding: 8px 1px !important;
 }
 
 .mcol-td-totais-label {
   position: sticky;
-  left: 86px;
+  left: 76px;
   z-index: 4;
   background: #F8FAFC !important;
   text-align: left !important;
-  padding-left: 10px !important;
-  min-width: 210px;
+  padding-left: 6px !important;
+  min-width: 170px;
   max-width: 250px;
   box-shadow: 2px 0 6px rgba(0,0,0,0.04);
 }
@@ -4944,34 +5026,47 @@ body.modo-mercado-ativo .item-nome {
     flex-shrink: 0 !important;
   }
 
-  /* 5. Tabela de Compras Adaptada com Toque Fácil */
+  /* 5. Tabela de Compras Adaptada com Toque Fácil e Encostada */
   .mcol-th-categoria-col {
-    min-width: 220px !important;
+    min-width: 170px !important;
   }
 
+  .mcol-th-check,
   .mcol-td-check {
-    width: 38px !important;
-    min-width: 38px !important;
+    width: 28px !important;
+    min-width: 28px !important;
+    max-width: 28px !important;
+    left: 0 !important;
+    padding: 4px 1px !important;
   }
 
-  .btn-check-comprado {
-    width: 26px !important;
-    height: 26px !important;
-    font-size: 0.95rem !important;
+  .check-item-comprado {
+    width: 18px !important;
+    height: 18px !important;
   }
 
+  .mcol-th-qtde,
   .mcol-td-qtde {
-    width: 65px !important;
-    min-width: 65px !important;
+    left: 28px !important;
+    width: 48px !important;
+    min-width: 48px !important;
+    max-width: 48px !important;
+    padding: 4px 1px !important;
   }
 
-  .mcol-qtde-btn {
-    width: 22px !important;
-    height: 22px !important;
+  .mcol-th-produto,
+  .mcol-td-produto {
+    left: 76px !important;
+    padding: 4px 4px !important;
+    min-width: 140px !important;
   }
 
   .mcol-prod-nome {
-    font-size: 0.85rem !important;
+    font-size: 0.82rem !important;
+    max-width: 130px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   /* 6. Despensa / Catálogo em Grid Responsiva */

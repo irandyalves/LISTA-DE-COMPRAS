@@ -727,11 +727,13 @@ const CATALOGO_PADRAO_EXPANDIDO = [
 ];
 
 // Estado da Aplicação
+const ehDispositivoMobile = (typeof window !== 'undefined' && (window.innerWidth <= 820 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '')));
+
 let AppState = {
   abaAtiva: 'lista', // 'lista', 'despensa', 'historico'
   filtroCategoria: 'todas',
   cotacaoAtiva: true, // true = cotado com preços e atacadistas visíveis, false = preços e atacadistas ocultos
-  modoNoMercado: false, // true = modo focado no corredor (oculta comparações e tags), false = modo cotação (comparações ativas)
+  modoNoMercado: ehDispositivoMobile ? true : false, // No celular, por padrão mercados vêm ocultados
   modoResumido: false, // true = exibe nomes simplificados e deduplica variedades
   mercadoReferencia: 'atacadao',
   ordenacaoMercados: 'original', // 'original', 'alfabetico_az', 'alfabetico_za', 'preco'
@@ -810,7 +812,15 @@ function carregarLocalmente() {
       const parsed = JSON.parse(dadosSalvos);
       if (parsed.itensExcluidos) AppState.itensExcluidos = parsed.itensExcluidos;
       if (parsed.cotacaoAtiva !== undefined) AppState.cotacaoAtiva = parsed.cotacaoAtiva;
-      if (parsed.modoNoMercado !== undefined) AppState.modoNoMercado = parsed.modoNoMercado;
+      if (parsed.modoNoMercado !== undefined) {
+        if (ehDispositivoMobile && localStorage.getItem('usuario_interagiu_modo_mercado') !== 'true') {
+          AppState.modoNoMercado = true;
+        } else {
+          AppState.modoNoMercado = parsed.modoNoMercado;
+        }
+      } else if (ehDispositivoMobile) {
+        AppState.modoNoMercado = true;
+      }
       if (parsed.modoResumido !== undefined) AppState.modoResumido = parsed.modoResumido;
       if (parsed.mercadoReferencia && parsed.mercadoReferencia !== 'todos') {
         AppState.mercadoReferencia = parsed.mercadoReferencia;
@@ -1968,6 +1978,222 @@ function atualizarCardResumo() {
   }
 }
 
+// Formata nomes grandes para padrão compacto: Alho roxo... (remove parênteses e encurta nomes compridos)
+function formatarNomeExibicaoCompacto(nomeOriginal) {
+  if (!nomeOriginal) return '';
+  // 1. Remove parênteses com unidades: (kg), (Maço), (g), (L), etc.
+  let limpo = nomeOriginal.replace(/\s*\([^)]*\)/g, '').trim();
+
+  // 2. Remove adjetivos comerciais e palavras desnecessárias que ocupam espaço
+  limpo = limpo.replace(/\b(refinado|refinada|especial|tipo\s*\d+|novo\s+tipo\s*\d+|uht|crocante|hidrop[oô]nica|fresco|fresca|fresquinho|selecionado|selecionada|resfriado|resfriada|congelado|congelada|tradicional|nacional|extra\s+virgem|antisséptico|concentrado|concentrada|nobre)\b/gi, '');
+  limpo = limpo.replace(/\s{2,}/g, ' ').trim();
+
+  // 3. Divide em palavras
+  const palavras = limpo.split(/\s+/).filter(Boolean);
+  
+  // Se tiver mais de 2 palavras, coloca '...' (ex: Alho Roxo Nobre -> Alho Roxo...)
+  if (palavras.length > 2) {
+    return `${palavras[0]} ${palavras[1]}...`;
+  }
+  if (limpo.length > 15) {
+    return `${limpo.substring(0, 13)}...`;
+  }
+
+  return limpo;
+}
+
+// Interpretador de Preço Falado em Português (Web Speech API)
+const NUMEROS_PT_VOZ = {
+  'zero': 0, 'um': 1, 'uma': 1, 'dois': 2, 'duas': 2, 'três': 3, 'tres': 3,
+  'quatro': 4, 'cinco': 5, 'seis': 6, 'sete': 7, 'oito': 8, 'nove': 9, 'dez': 10,
+  'onze': 11, 'doze': 12, 'treze': 13, 'quatorze': 14, 'catorze': 14, 'quinze': 15,
+  'dezesseis': 16, 'dezessete': 17, 'dezoito': 18, 'dezenove': 19, 'vinte': 20,
+  'trinta': 30, 'quarenta': 40, 'cinquenta': 50, 'sessenta': 60, 'setenta': 70,
+  'oitenta': 80, 'noventa': 90, 'cem': 100, 'cento': 100
+};
+const DEZENAS_PT_VOZ = new Set(['vinte', 'trinta', 'quarenta', 'cinquenta', 'sessenta', 'setenta', 'oitenta', 'noventa']);
+const UNIDADES_PT_VOZ = new Set(['zero', 'um', 'uma', 'dois', 'duas', 'três', 'tres', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove']);
+
+function converterPalavrasEmNumeroVoz(str) {
+  const palavras = str.toLowerCase().replace(/[^a-zá-ú0-9\s]/g, '').split(/\s+/).filter(Boolean);
+  let total = 0;
+  for (const p of palavras) {
+    if (NUMEROS_PT_VOZ[p] !== undefined) total += NUMEROS_PT_VOZ[p];
+    else if (!isNaN(parseInt(p))) total += parseInt(p);
+  }
+  return total;
+}
+
+function interpretarPrecoFalado(texto) {
+  if (!texto) return null;
+  let t = texto.toLowerCase().trim();
+
+  // 1. Dígitos diretos com vírgula ou ponto (ex: '23,39', '23.39', 'R$ 23,39')
+  const matchNumVirgula = t.match(/(\d+)[,.](\d{1,2})/);
+  if (matchNumVirgula) {
+    const cent = matchNumVirgula[2].length === 1 ? matchNumVirgula[2] + '0' : matchNumVirgula[2];
+    return parseFloat(matchNumVirgula[1] + '.' + cent);
+  }
+
+  // 2. Dígitos com 'e' ou 'com' (ex: '23 e 39', '23 com 39')
+  const matchNumE = t.match(/(\d+)\s*(?:e|com)\s*(\d{1,2})/);
+  if (matchNumE) {
+    const cent = matchNumE[2].length === 1 ? matchNumE[2] + '0' : matchNumE[2];
+    return parseFloat(matchNumE[1] + '.' + cent);
+  }
+
+  // 3. Dígito inteiro direto (ex: '23', '23 reais')
+  const matchNumSozinho = t.match(/^(\d+)(?:\s*reais?)?$/);
+  if (matchNumSozinho) {
+    return parseFloat(matchNumSozinho[1]);
+  }
+
+  t = t.replace(/centavos?/g, '').trim();
+
+  // 4. Divisão por 'reais' (ex: 'vinte e três reais e trinta e nove')
+  if (t.includes('reais')) {
+    const partes = t.split('reais');
+    const inteira = converterPalavrasEmNumeroVoz(partes[0]);
+    const centavos = partes[1] ? converterPalavrasEmNumeroVoz(partes[1]) : 0;
+    return parseFloat(inteira + '.' + (centavos < 10 ? '0' + centavos : centavos));
+  }
+
+  // 5. Divisão por 'com' ou 'vírgula'
+  if (/\s+(?:com|vírgula)\s+/.test(t)) {
+    const partes = t.split(/\s+(?:com|vírgula)\s+/);
+    const inteira = converterPalavrasEmNumeroVoz(partes[0]);
+    const centavos = converterPalavrasEmNumeroVoz(partes[1]);
+    return parseFloat(inteira + '.' + (centavos < 10 ? '0' + centavos : centavos));
+  }
+
+  // 6. Separação por 'e' (ex: 'vinte e três e trinta e nove')
+  const tokens = t.split(/\s+/).filter(Boolean);
+  let idxDivisor = -1;
+  for (let i = 0; i < tokens.length; i++) {
+    if (tokens[i] === 'e') {
+      const prev = tokens[i - 1];
+      const next = tokens[i + 1];
+      if (prev && DEZENAS_PT_VOZ.has(prev) && next && UNIDADES_PT_VOZ.has(next)) {
+        continue;
+      }
+      idxDivisor = i;
+      break;
+    }
+  }
+
+  if (idxDivisor !== -1) {
+    const parte1 = tokens.slice(0, idxDivisor).join(' ');
+    const parte2 = tokens.slice(idxDivisor + 1).join(' ');
+    const n1 = converterPalavrasEmNumeroVoz(parte1);
+    const n2 = converterPalavrasEmNumeroVoz(parte2);
+    if (n1 > 0 && n2 >= 0 && n2 < 100) {
+      return parseFloat(n1 + '.' + (n2 < 10 ? '0' + n2 : n2));
+    }
+  }
+
+  const nTotal = converterPalavrasEmNumeroVoz(t);
+  return nTotal > 0 ? nTotal : null;
+}
+
+// Inicia escuta de preço por voz para o item
+let gravandoPrecoItemId = null;
+let recognizerPreco = null;
+
+function ouvirPrecoItem(itemId, btnEl, ev) {
+  if (ev) ev.stopPropagation();
+  const item = AppState.listaAtiva.find(i => String(i.id) === String(itemId));
+  if (!item) return;
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    editarPrecoItemManualmente(itemId);
+    return;
+  }
+
+  // Se já está ouvindo este mesmo item, cancela
+  if (gravandoPrecoItemId === itemId && recognizerPreco) {
+    try { recognizerPreco.stop(); } catch(e){}
+    gravandoPrecoItemId = null;
+    if (btnEl) btnEl.classList.remove('ouvindo');
+    return;
+  }
+
+  if (recognizerPreco) {
+    try { recognizerPreco.abort(); } catch(e){}
+  }
+
+  gravandoPrecoItemId = itemId;
+  if (btnEl) btnEl.classList.add('ouvindo');
+
+  exibirToastNuvem(`🎙️ Diga o preço (ex: vinte e três e trinta e nove)`);
+
+  recognizerPreco = new SpeechRecognition();
+  recognizerPreco.lang = 'pt-BR';
+  recognizerPreco.continuous = false;
+  recognizerPreco.interimResults = false;
+  recognizerPreco.maxAlternatives = 1;
+
+  recognizerPreco.onresult = (event) => {
+    const transcricao = event.results[0][0].transcript;
+    console.log("[Voz Preço] Ouvido:", transcricao);
+    const precoExtraido = interpretarPrecoFalado(transcricao);
+
+    if (precoExtraido && precoExtraido > 0) {
+      item.preco = precoExtraido;
+      item.ultimoPreco = precoExtraido;
+      item.precoRegistradoMercado = precoExtraido;
+      salvarEstado(true);
+      renderizarListaCompras();
+      atualizarCardResumo();
+      exibirToastNuvem(`✅ Preço registrado: R$ ${precoExtraido.toFixed(2).replace('.', ',')}`);
+    } else {
+      exibirToastNuvem(`⚠️ Não entendi "${transcricao}". Toque no preço para digitar.`);
+    }
+  };
+
+  recognizerPreco.onerror = (e) => {
+    console.warn("[Voz Preço] Erro:", e.error);
+    if (btnEl) btnEl.classList.remove('ouvindo');
+    gravandoPrecoItemId = null;
+    if (e.error === 'not-allowed') {
+      alert("Acesso ao microfone bloqueado no navegador. Toque no preço para digitar manualmente.");
+    }
+  };
+
+  recognizerPreco.onend = () => {
+    if (btnEl) btnEl.classList.remove('ouvindo');
+    gravandoPrecoItemId = null;
+  };
+
+  try {
+    recognizerPreco.start();
+  } catch(e) {
+    console.error(e);
+    editarPrecoItemManualmente(itemId);
+  }
+}
+
+function editarPrecoItemManualmente(itemId, ev) {
+  if (ev) ev.stopPropagation();
+  const item = AppState.listaAtiva.find(i => String(i.id) === String(itemId));
+  if (!item) return;
+
+  const precoAtual = (item.preco && item.preco > 0) ? item.preco.toFixed(2).replace('.', ',') : '';
+  const novoPrecoStr = prompt(`Digite o preço de ${item.nome}:`, precoAtual);
+  if (novoPrecoStr !== null) {
+    const valorNum = parseFloat(novoPrecoStr.replace(',', '.').trim());
+    if (!isNaN(valorNum) && valorNum >= 0) {
+      item.preco = valorNum;
+      item.ultimoPreco = valorNum;
+      item.precoRegistradoMercado = valorNum;
+      salvarEstado(true);
+      renderizarListaCompras();
+      atualizarCardResumo();
+      exibirToastNuvem(`✅ Preço atualizado: R$ ${valorNum.toFixed(2).replace('.', ',')}`);
+    }
+  }
+}
+
 // Renderizar a Lista de Compras Ativa (com Ícones 2D Coloridos)
 function renderizarListaCompras() {
   const container = document.getElementById('itens-lista-container');
@@ -2126,7 +2352,7 @@ function renderizarListaCompras() {
     // Linhas de Itens
     const nomesResumidosVistos = new Set();
     itens.forEach(item => {
-      let nomeExibicao = item.nome;
+      let nomeExibicao = formatarNomeExibicaoCompacto(item.nome);
       if (AppState.modoResumido) {
         nomeExibicao = obterNomeResumido(item.nome);
         const chaveDeduplicacao = nomeExibicao.toLowerCase().trim();
@@ -2137,7 +2363,6 @@ function renderizarListaCompras() {
         nomesResumidosVistos.add(chaveDeduplicacao);
       }
 
-      const iconeSvg = (typeof obterIcone2D === 'function') ? obterIcone2D(item.nome, item.icone) : '';
       const qtde = item.qtde || 1;
 
       let marcaHtml = '';
@@ -2194,6 +2419,9 @@ function renderizarListaCompras() {
         ? `<span class="badge-confirmar-desmarcar" title="Clique mais uma vez para desmarcar">⚠️ Toque novamente para desmarcar</span>` 
         : '';
 
+      const precoRegistradoValor = (item.preco && Number(item.preco) > 0) ? Number(item.preco) : 0;
+      const precoFormatadoTxt = precoRegistradoValor > 0 ? `R$ ${precoRegistradoValor.toFixed(2).replace('.', ',')}` : 'R$ —';
+
       linhasTabelaHtml += `
         <tr class="mcol-tr-item ${item.comprado ? 'item-linha-comprado' : ''} ${classePendente}" id="tr-item-${item.id}">
           <td class="mcol-td-check">
@@ -2210,14 +2438,20 @@ function renderizarListaCompras() {
           </td>
           <td class="mcol-td-produto">
             <div class="mcol-prod-card-cell">
-              <div class="mcol-prod-icone">${iconeSvg}</div>
-              <div class="mcol-prod-textos">
-                <div class="mcol-prod-linha-principal">
-                  <span class="mcol-prod-nome ${item.comprado && !isPendente ? 'texto-riscado' : ''}" onclick="alternarItemComprado('${item.id}')" title="${item.nome}">${nomeExibicao}</span>
-                  ${marcaHtml}
-                </div>
-                ${badgePendente}
+              <div class="mcol-prod-linha-principal">
+                <span class="mcol-prod-nome ${item.comprado && !isPendente ? 'texto-riscado' : ''}" onclick="alternarItemComprado('${item.id}')" title="${item.nome}">${nomeExibicao}</span>
+                ${marcaHtml}
+                <button type="button" class="btn-mic-preco-verde" id="btn-mic-item-${item.id}" onclick="ouvirPrecoItem('${item.id}', this, event)" title="Falar o preço (ex: vinte e três e trinta e nove)">
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor">
+                    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                    <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                  </svg>
+                </button>
+                <span class="badge-preco-real ${precoRegistradoValor > 0 ? 'com-preco' : 'sem-preco'}" id="badge-preco-${item.id}" onclick="editarPrecoItemManualmente('${item.id}', event)" title="Preço no mercado (toque para digitar)">
+                  ${precoFormatadoTxt}
+                </span>
               </div>
+              ${badgePendente}
             </div>
           </td>
           ${celulasPrecos}
@@ -3842,6 +4076,7 @@ function alternarReguaMercadosItem(itemId) {
 }
 
 function alternarModoNoMercado() {
+  localStorage.setItem('usuario_interagiu_modo_mercado', 'true');
   AppState.modoNoMercado = !AppState.modoNoMercado;
   atualizarUIModoNoMercado();
   salvarEstado(true);
