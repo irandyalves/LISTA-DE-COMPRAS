@@ -126,6 +126,12 @@
           <div id="dropdown-sugestoes-topo" class="dropdown-sugestoes-topo" style="display: none;"></div>
         </div>
 
+        <!-- Cabeçalho Integrado no Topo do Histórico (Título + Cards Espremidos na Mesma Linha com Usuário e Configurações) -->
+        <div id="historico-topo-integrado" class="historico-topo-integrado" style="display: none;">
+          <h2 class="historico-titulo">HISTÓRICO DAS COMPRAS</h2>
+          <div id="historico-cards-resumo" class="historico-cards-resumo"></div>
+        </div>
+
         <div class="header-acoes-unificadas">
           <div id="controles-fonte-header" class="controles-fonte-header" style="display: none;">
             <button type="button" class="btn-fonte-header" onclick="ajustarFonteMontarLista(-1)" title="Diminuir fonte em Montar Lista">A−</button>
@@ -207,14 +213,6 @@
 
     <!-- VIEW 4: HISTÓRICO DE COMPRAS E PREÇOS -->
     <main id="view-historico" style="display: none;">
-      <div class="historico-page-header">
-        <div class="historico-header-info">
-          <h2 class="historico-titulo">HISTÓRICO DAS COMPRAS</h2>
-        </div>
-        <!-- Métricas Resumo do Histórico na frente do Título -->
-        <div id="historico-cards-resumo" class="historico-cards-resumo"></div>
-      </div>
-
       <!-- Barra de Filtros e Modos de Visão -->
       <div class="historico-barra-controles">
         <div class="historico-tabs-modo">

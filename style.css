@@ -6271,54 +6271,85 @@ body.modo-mercado-ativo .item-nome {
 }
 
 /* ========================================================
-   HISTÓRICO COMPLETO: MÉTRICAS, COMPARAÇÃO E CONSUMO (DIAS)
+   HISTÓRICO COMPLETO: CABEÇALHO INTEGRADO NO TOPO
 ======================================================== */
-.historico-page-header {
+.historico-topo-integrado {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 14px;
-  flex-wrap: wrap;
-}
-
-.historico-header-info {
-  flex-shrink: 0;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
 }
 
 .historico-titulo {
-  font-size: 1.15rem;
+  font-size: 0.98rem;
   font-weight: 800;
   color: var(--text-main);
   margin-bottom: 0;
   white-space: nowrap;
+  flex-shrink: 0;
+  letter-spacing: -0.01em;
 }
 
-.historico-subtitulo {
-  display: none;
-}
-
-/* Cards de Resumo na Frente do Título */
+/* Cards de Resumo Espremidos na Mesma Linha no Topo */
 .historico-cards-resumo {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex: 1;
-  flex-wrap: wrap;
+  min-width: 0;
   margin-bottom: 0;
 }
 
 .card-resumo-hist {
   background: white;
   border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 8px 12px;
+  border-radius: 8px;
+  padding: 4px 8px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
   flex: 1;
-  min-width: 130px;
+  min-width: 0;
   box-shadow: var(--shadow-sm);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card-resumo-hist-ico {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.92rem;
+  flex-shrink: 0;
+  background: #F1F5F9;
+}
+
+.card-resumo-hist-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.15;
+}
+
+.card-resumo-hist-rotulo {
+  font-size: 0.60rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-resumo-hist-valor {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--text-main);
+  white-space: nowrap;
 }
 
 body.aba-historico .busca-topo-reduzida,
@@ -6328,45 +6359,13 @@ body[data-aba-ativa="historico"] .busca-topo-reduzida {
 
 body.aba-historico .header-acoes-unificadas,
 body[data-aba-ativa="historico"] .header-acoes-unificadas {
-  margin-left: auto;
+  margin-left: 0;
+  flex-shrink: 0;
 }
 
 .card-resumo-hist:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-}
-
-.card-resumo-hist-ico {
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.25rem;
-  flex-shrink: 0;
-  background: #F1F5F9;
-}
-
-.card-resumo-hist-info {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.card-resumo-hist-rotulo {
-  font-size: 0.70rem;
-  font-weight: 700;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-}
-
-.card-resumo-hist-valor {
-  font-size: 1.05rem;
-  font-weight: 900;
-  color: var(--text-main);
-  white-space: nowrap;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
 }
 
 /* Barra de Controles e Abas de Visão */
@@ -7099,24 +7098,40 @@ body.tema-escuro .card-ranking-stats {
 
 /* Responsividade Mobile para Histórico */
 @media (max-width: 820px) {
+  .historico-topo-integrado {
+    flex-wrap: wrap;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .historico-titulo {
+    font-size: 0.85rem;
+  }
+
   .historico-cards-resumo {
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 3px;
+    width: 100%;
   }
 
   .card-resumo-hist {
-    padding: 8px 10px;
-    gap: 8px;
+    padding: 3px 4px;
+    gap: 3px;
+    border-radius: 6px;
+    min-width: 0;
   }
 
   .card-resumo-hist-ico {
-    width: 30px;
-    height: 30px;
-    font-size: 1rem;
+    display: none;
+  }
+
+  .card-resumo-hist-rotulo {
+    font-size: 0.52rem;
   }
 
   .card-resumo-hist-valor {
-    font-size: 0.92rem;
+    font-size: 0.74rem;
   }
 
   .historico-compra-cabecalho {

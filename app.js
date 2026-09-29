@@ -2200,11 +2200,15 @@ function alternarAbaApp(aba, isUserClick = true) {
   const linhaAbasMobile = document.querySelector('.linha-abas-e-total-mobile');
   const elBadgeMobile = document.getElementById('badge-total-geral-mobile');
   const buscaTopoReduzida = document.querySelector('.busca-topo-reduzida');
+  const histTopoIntegrado = document.getElementById('historico-topo-integrado');
   document.body.setAttribute('data-aba-ativa', aba);
   document.body.classList.toggle('aba-historico', aba === 'historico');
 
   if (buscaTopoReduzida) {
     buscaTopoReduzida.style.display = (AppState.abaAtiva === 'historico') ? 'none' : 'flex';
+  }
+  if (histTopoIntegrado) {
+    histTopoIntegrado.style.display = (AppState.abaAtiva === 'historico') ? 'flex' : 'none';
   }
   if (linhaAbasMobile) {
     linhaAbasMobile.style.display = (AppState.abaAtiva === 'lista' || AppState.abaAtiva === 'despensa') ? 'flex' : 'none';
