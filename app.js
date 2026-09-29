@@ -865,6 +865,7 @@ function sincronizarListaAtivaComCatalogo() {
 
 // Inicialização da Aplicação
 document.addEventListener('DOMContentLoaded', () => {
+  inicializarTema();
   carregarLocalmente();
   sanearTodaListaHortifruti();
   atualizarBadgeUsuarioHeader();
@@ -2111,22 +2112,23 @@ function atualizarCardEconomiaSidebar(campeaoId, totais, economia) {
   const logo = (typeof obterLogoMercado === 'function' && obterLogoMercado(campeaoId)) || `logos/${campeaoId}.png`;
 
   elConteudo.innerHTML = `
-    <div class="sidebar-eco-mercado-nome">
-      <img src="${logo}" style="width: 22px; height: 22px; object-fit: contain; border-radius: 4px;" 
-           onerror="this.outerHTML='<span style=\\'font-size:1.1rem;\\'>${infoCampeao.emoji}</span>'" alt="${infoCampeao.nome}">
-      <strong>${infoCampeao.nome}</strong>
-    </div>
-    <div class="sidebar-eco-preco-linha">
-      Carrinho sai por: <span class="sidebar-eco-valor">R$ ${totalCampeaoTxt}</span>
+    <div class="sidebar-eco-linha-mercado-total">
+      <div class="sidebar-eco-mercado-info">
+        <img src="${logo}" class="sidebar-eco-logo" 
+             onerror="this.outerHTML='<span style=\\'font-size:1.1rem;\\'>${infoCampeao.emoji}</span>'" alt="${infoCampeao.nome}">
+        <span class="sidebar-eco-mercado-titulo">${infoCampeao.nome}</span>
+      </div>
+      <span class="sidebar-eco-divisor">|</span>
+      <div class="sidebar-eco-total-bloco">
+        Total <strong class="sidebar-eco-total-valor">R$ ${totalCampeaoTxt}</strong>
+      </div>
     </div>
     ${economia > 0 ? `
       <div class="sidebar-eco-poupanca">
-        💡 Comprando no <strong>${infoCampeao.nome}</strong> você economiza até <strong>R$ ${economiaTxt}</strong> nesta lista!
+        <div class="sidebar-eco-poupanca-label">Sua economia será:</div>
+        <div class="sidebar-eco-poupanca-valor">R$ ${economiaTxt}</div>
       </div>
     ` : ''}
-    <button class="btn-sidebar-aplicar-mercado" onclick="selecionarMercadoReferencia('${campeaoId}'); alternarSidebar(false);" title="Cotar a lista inteira no ${infoCampeao.nome}">
-      Cotar no ${infoCampeao.nome}
-    </button>
   `;
 }
 
@@ -2196,8 +2198,19 @@ function alternarAbaApp(aba, isUserClick = true) {
   }
 
   const linhaAbasMobile = document.querySelector('.linha-abas-e-total-mobile');
+  const elBadgeMobile = document.getElementById('badge-total-geral-mobile');
+  const buscaTopoReduzida = document.querySelector('.busca-topo-reduzida');
+  document.body.setAttribute('data-aba-ativa', aba);
+  document.body.classList.toggle('aba-historico', aba === 'historico');
+
+  if (buscaTopoReduzida) {
+    buscaTopoReduzida.style.display = (AppState.abaAtiva === 'historico') ? 'none' : 'flex';
+  }
   if (linhaAbasMobile) {
     linhaAbasMobile.style.display = (AppState.abaAtiva === 'lista' || AppState.abaAtiva === 'despensa') ? 'flex' : 'none';
+  }
+  if (elBadgeMobile) {
+    elBadgeMobile.style.display = (AppState.abaAtiva === 'historico' || AppState.abaAtiva === 'mercados') ? 'none' : '';
   }
   if (abasCategorias) abasCategorias.style.display = (AppState.abaAtiva === 'lista' || AppState.abaAtiva === 'despensa') ? 'flex' : 'none';
   if (typeof atualizarVisualBotaoOrdemAlfabetica === 'function') {
@@ -2821,12 +2834,20 @@ function ouvirPrecoItem(itemId, btnEl, ev) {
     } else {
       mostrarNotificacaoToast(`⚠️ Não identifiquei o valor falado ("${melhorTexto || 'silêncio'}"). Tente novamente ou clique no valor para digitar.`);
     }
+
+    // Após concluir, aguarda 2 segundos para voltar à cor normal
+    setTimeout(() => {
+      if (btnEl) btnEl.classList.remove('ouvindo');
+      gravandoPrecoItemId = null;
+    }, 2000);
   };
 
   recognizerPreco.onerror = (e) => {
     console.warn("[Voz Preço] Erro:", e.error);
-    if (btnEl) btnEl.classList.remove('ouvindo');
-    gravandoPrecoItemId = null;
+    setTimeout(() => {
+      if (btnEl) btnEl.classList.remove('ouvindo');
+      gravandoPrecoItemId = null;
+    }, 2000);
     if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
       mostrarNotificacaoToast("⚠️ Microfone bloqueado no navegador do PC. Abrindo teclado...");
       setTimeout(() => editarPrecoItemManualmente(itemId), 400);
@@ -2839,8 +2860,10 @@ function ouvirPrecoItem(itemId, btnEl, ev) {
   };
 
   recognizerPreco.onend = () => {
-    if (btnEl) btnEl.classList.remove('ouvindo');
-    gravandoPrecoItemId = null;
+    setTimeout(() => {
+      if (btnEl) btnEl.classList.remove('ouvindo');
+      gravandoPrecoItemId = null;
+    }, 2000);
   };
 
   try {
@@ -4589,8 +4612,10 @@ function alternarModoHistorico(modo) {
   modoExibicaoHistorico = modo;
   const btnCompras = document.getElementById('tab-hist-compras');
   const btnItens = document.getElementById('tab-hist-itens');
+  const btnMaisComprados = document.getElementById('tab-hist-mais-comprados');
   if (btnCompras) btnCompras.classList.toggle('ativa', modo === 'compras');
   if (btnItens) btnItens.classList.toggle('ativa', modo === 'itens');
+  if (btnMaisComprados) btnMaisComprados.classList.toggle('ativa', modo === 'mais_comprados');
   renderizarHistorico();
 }
 
@@ -5062,6 +5087,106 @@ function renderizarHistorico() {
 
     container.innerHTML = `<div class="historico-itens-grid">${htmlGridItens}</div>`;
   }
+
+  // 3. MODO 3: RANKING POR MAIS COMPRADOS (Frequência, Quantidade e Gasto Acumulado)
+  if (modoExibicaoHistorico === 'mais_comprados') {
+    const mapaItens = new Map();
+
+    AppState.historico.forEach(compra => {
+      const dataObj = new Date(compra.data);
+      (compra.itens || []).forEach(it => {
+        const nomeNorm = (it.nome || '').trim();
+        const chave = nomeNorm.toLowerCase();
+        if (!mapaItens.has(chave)) {
+          mapaItens.set(chave, {
+            nome: nomeNorm,
+            totalQtd: 0,
+            vezesComprado: 0,
+            totalGasto: 0,
+            ultimoPreco: 0,
+            ultimaData: dataObj,
+            compras: []
+          });
+        }
+        const ref = mapaItens.get(chave);
+        const qtd = Number(it.qtde) || 1;
+        const preco = Number(it.preco) || 0;
+        const subtotal = Number(it.subtotal) || (qtd * preco);
+        ref.totalQtd += qtd;
+        ref.vezesComprado += 1;
+        ref.totalGasto += subtotal;
+        if (preco > 0) ref.ultimoPreco = preco;
+        if (dataObj > ref.ultimaData) ref.ultimaData = dataObj;
+        ref.compras.push({ data: dataObj, qtd, preco, subtotal, mercado: compra.mercado });
+      });
+    });
+
+    let listaMaisComprados = Array.from(mapaItens.values());
+
+    if (termoBuscaHistorico) {
+      listaMaisComprados = listaMaisComprados.filter(item => {
+        const n = item.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        return n.includes(termoBuscaHistorico);
+      });
+    }
+
+    if (listaMaisComprados.length === 0) {
+      container.innerHTML = `
+        <div style="text-align: center; padding: 30px; background: white; border-radius: 12px; border: 1px dashed var(--border);">
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Nenhum produto encontrado no ranking.</p>
+        </div>
+      `;
+      return;
+    }
+
+    // Ordenação: 1º por quantidade total de unidades compradas, depois por frequência
+    listaMaisComprados.sort((a, b) => (b.totalQtd - a.totalQtd) || (b.vezesComprado - a.vezesComprado) || (b.totalGasto - a.totalGasto));
+
+    const maxQtd = listaMaisComprados[0].totalQtd || 1;
+
+    let htmlRanking = '';
+
+    listaMaisComprados.forEach((prod, index) => {
+      const pos = index + 1;
+      let posClass = '';
+      let medalhaTxt = `#${pos}`;
+      if (pos === 1) { posClass = 'ouro'; medalhaTxt = '🥇 1º'; }
+      else if (pos === 2) { posClass = 'prata'; medalhaTxt = '🥈 2º'; }
+      else if (pos === 3) { posClass = 'bronze'; medalhaTxt = '🥉 3º'; }
+
+      const pctBarra = Math.min(100, Math.max(8, Math.round((prod.totalQtd / maxQtd) * 100)));
+
+      htmlRanking += `
+        <div class="card-ranking-item">
+          <div class="card-ranking-topo">
+            <span class="card-ranking-posicao ${posClass}">${medalhaTxt}</span>
+            <div class="card-ranking-nome" title="${prod.nome}">${prod.nome}</div>
+          </div>
+
+          <div class="card-ranking-stats">
+            <div class="card-ranking-stat-col">
+              <span class="card-ranking-stat-label">Total Comprado</span>
+              <span class="card-ranking-stat-val" style="color: var(--primary);">${prod.totalQtd} un <span style="font-weight: 500; font-size: 0.72rem; color: var(--text-muted);">(${prod.vezesComprado}x)</span></span>
+            </div>
+            <div class="card-ranking-stat-col" style="text-align: center;">
+              <span class="card-ranking-stat-label">Último Preço</span>
+              <span class="card-ranking-stat-val">${prod.ultimoPreco > 0 ? formatarMoeda(prod.ultimoPreco) : '—'}</span>
+            </div>
+            <div class="card-ranking-stat-col" style="text-align: right;">
+              <span class="card-ranking-stat-label">Gasto Total</span>
+              <span class="card-ranking-stat-val" style="color: #059669;">${prod.totalGasto > 0 ? formatarMoeda(prod.totalGasto) : 'R$ 0,00'}</span>
+            </div>
+          </div>
+
+          <div class="card-ranking-barra-wrapper" title="${prod.totalQtd} unidades compradas (${pctBarra}% do líder)">
+            <div class="card-ranking-barra-fill" style="width: ${pctBarra}%;"></div>
+          </div>
+        </div>
+      `;
+    });
+
+    container.innerHTML = `<div class="historico-ranking-grid">${htmlRanking}</div>`;
+  }
 }
 
 // Modal e Registro Manual de Compras no Histórico
@@ -5180,18 +5305,16 @@ function excluirCompraHistorico(compraId) {
   
   const modal = document.getElementById('modal-confirm-excluir-compra');
   const dataEl = document.getElementById('modal-confirm-compra-data');
-  const detEl = document.getElementById('modal-confirm-compra-detalhes');
+  const valorEl = document.getElementById('modal-confirm-compra-valor');
   
   if (compra) {
     const d = new Date(compra.data);
     const dataFmt = d.toLocaleDateString('pt-BR');
     const horaFmt = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-    const merc = compra.mercado ? ` no ${compra.mercado}` : '';
-    const tot = compra.total > 0 ? ` (${formatarMoeda(compra.total)})` : '';
-    const qtdItens = (compra.itens || []).length;
+    const totFmt = compra.total > 0 ? formatarMoeda(compra.total) : 'R$ 0,00';
     
-    if (dataEl) dataEl.textContent = `${dataFmt} às ${horaFmt}`;
-    if (detEl) detEl.textContent = `Compra${merc}${tot} com ${qtdItens} ${qtdItens === 1 ? 'item' : 'itens'}. Essa ação não pode ser desfeita.`;
+    if (dataEl) dataEl.textContent = `${dataFmt}, ${horaFmt}`;
+    if (valorEl) valorEl.textContent = totFmt;
   }
   
   if (modal) modal.style.display = 'flex';
@@ -6136,7 +6259,44 @@ function abrirModalOpcoesHeader() {
     badge.style.background = AppState.cotacaoAtiva ? '#D1FAE5' : '#F1F5F9';
     badge.style.color = AppState.cotacaoAtiva ? '#065F46' : '#64748B';
   }
+  atualizarVisualTema();
   modal.style.display = 'flex';
+}
+
+// Gerenciador de Tema Escuro / Claro
+function inicializarTema() {
+  const temaSalvo = localStorage.getItem('app_tema') || 'light';
+  aplicarTema(temaSalvo);
+}
+
+function aplicarTema(tema) {
+  const isDark = (tema === 'dark');
+  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  if (document.body) {
+    document.body.classList.toggle('tema-escuro', isDark);
+  }
+  localStorage.setItem('app_tema', isDark ? 'dark' : 'light');
+  atualizarVisualTema();
+}
+
+function alternarTemaEscuro() {
+  const atual = localStorage.getItem('app_tema') || 'light';
+  const novoTema = (atual === 'dark') ? 'light' : 'dark';
+  aplicarTema(novoTema);
+}
+
+function atualizarVisualTema() {
+  const isDark = (localStorage.getItem('app_tema') === 'dark');
+  const badge = document.getElementById('badge-status-tema');
+  const label = document.getElementById('label-tema-escuro');
+  if (badge) {
+    badge.textContent = isDark ? 'Ativo' : 'Desativado';
+    badge.style.background = isDark ? '#312E81' : '#F1F5F9';
+    badge.style.color = isDark ? '#A5B4FC' : '#64748B';
+  }
+  if (label) {
+    label.textContent = isDark ? '☀️ Modo Claro' : '🌙 Tema Escuro';
+  }
 }
 
 function navegarParaAba(abaId) {
@@ -6975,18 +7135,34 @@ function configurarReconhecimentoVoz() {
 
   let gravando = false;
   let placeholderOriginal = inputBusca ? inputBusca.placeholder : "Pesquisar ou adicionar item...";
+  let timerRestaurarMic = null;
 
-  function pararGravacao() {
+  function pararGravacao(delayRemoverEstiloMs = 0) {
     gravando = false;
-    btnMic.classList.remove('gravando');
-    btnMic.title = "Pesquisar por voz (Fale no PC ou Celular) [Atalho: Alt+V]";
     if (inputBusca && inputBusca.placeholder.includes("Ouvindo")) {
       inputBusca.placeholder = placeholderOriginal;
+    }
+    if (timerRestaurarMic) {
+      clearTimeout(timerRestaurarMic);
+      timerRestaurarMic = null;
+    }
+    if (delayRemoverEstiloMs > 0) {
+      timerRestaurarMic = setTimeout(() => {
+        btnMic.classList.remove('gravando');
+        btnMic.title = "Pesquisar por voz (Fale no PC ou Celular) [Atalho: Alt+V]";
+      }, delayRemoverEstiloMs);
+    } else {
+      btnMic.classList.remove('gravando');
+      btnMic.title = "Pesquisar por voz (Fale no PC ou Celular) [Atalho: Alt+V]";
     }
   }
 
   function iniciarGravacao() {
     if (!recognition) return;
+    if (timerRestaurarMic) {
+      clearTimeout(timerRestaurarMic);
+      timerRestaurarMic = null;
+    }
     try {
       recognition.start();
       gravando = true;
@@ -6998,7 +7174,7 @@ function configurarReconhecimentoVoz() {
       }
     } catch (e) {
       console.error("Erro ao iniciar microfone:", e);
-      pararGravacao();
+      pararGravacao(0);
     }
   }
 
@@ -7007,7 +7183,7 @@ function configurarReconhecimentoVoz() {
       iniciarGravacao();
     } else {
       try { recognition.stop(); } catch(e){}
-      pararGravacao();
+      pararGravacao(0);
     }
   });
 
@@ -7022,13 +7198,13 @@ function configurarReconhecimentoVoz() {
   if (recognition) {
     recognition.onresult = (event) => {
       const textoFalado = event.results[0][0].transcript;
-      pararGravacao();
+      pararGravacao(2000); // Concluiu a fala: 2 segundos depois o mic volta à cor normal
       mostrarNotificacaoToast(`🔍 Localizando: "${textoFalado}"...`);
       localizarProdutoPorVoz(textoFalado);
     };
 
     recognition.onerror = (e) => {
-      pararGravacao();
+      pararGravacao(2000);
       console.warn("[Voz Busca] Erro:", e.error);
       if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
         mostrarNotificacaoToast("⚠️ Microfone bloqueado no PC. Clique no ícone de cadeado na barra de endereços para permitir.");
@@ -7042,7 +7218,9 @@ function configurarReconhecimentoVoz() {
     };
 
     recognition.onend = () => {
-      pararGravacao();
+      if (gravando) {
+        pararGravacao(2000);
+      }
     };
   }
 }

@@ -23,6 +23,143 @@
   --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.08);
 }
 
+:root[data-theme="dark"],
+[data-theme="dark"],
+body.tema-escuro {
+  --primary: #6366F1;
+  --primary-hover: #4F46E5;
+  --primary-light: #1E1B4B;
+  --success: #10B981;
+  --success-light: #064E3B;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+  --danger-light: #450A0A;
+  --bg-app: #0F172A;
+  --card-bg: #1E293B;
+  --text-main: #F8FAFC;
+  --text-muted: #94A3B8;
+  --border: #334155;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+  --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.5);
+}
+
+[data-theme="dark"] body,
+body.tema-escuro {
+  background-color: var(--bg-app);
+  color: var(--text-main);
+}
+
+[data-theme="dark"] .painel-superior-congelado,
+body.tema-escuro .painel-superior-congelado {
+  background: #1E293B !important;
+  border-bottom-color: #334155 !important;
+}
+
+[data-theme="dark"] .sidebar-app,
+body.tema-escuro .sidebar-app {
+  background: #1E293B !important;
+  border-right-color: #334155 !important;
+}
+
+[data-theme="dark"] .barra-navegacao-mobile,
+body.tema-escuro .barra-navegacao-mobile {
+  background: #1E293B !important;
+  border-top-color: #334155 !important;
+}
+
+[data-theme="dark"] .modal-content,
+[data-theme="dark"] .modal-editar-preco-card,
+[data-theme="dark"] .modal-presets-content,
+[data-theme="dark"] .modal-presets-drawer,
+body.tema-escuro .modal-content {
+  background: #1E293B !important;
+  color: #F8FAFC !important;
+  border-color: #334155 !important;
+}
+
+[data-theme="dark"] .card-resumo-hist,
+[data-theme="dark"] .historico-compra-card,
+[data-theme="dark"] .card-item-analise-hist,
+[data-theme="dark"] .card-produto-mercado,
+body.tema-escuro .card-resumo-hist,
+body.tema-escuro .historico-compra-card {
+  background: #1E293B !important;
+  border-color: #334155 !important;
+  color: #F8FAFC !important;
+}
+
+[data-theme="dark"] .historico-compra-cabecalho:hover,
+body.tema-escuro .historico-compra-cabecalho:hover {
+  background-color: #334155 !important;
+}
+
+[data-theme="dark"] .tabela-historico-itens th,
+body.tema-escuro .tabela-historico-itens th {
+  background: #0F172A !important;
+  color: #94A3B8 !important;
+  border-bottom-color: #334155 !important;
+}
+
+[data-theme="dark"] .tabela-historico-itens td,
+body.tema-escuro .tabela-historico-itens td {
+  border-bottom-color: #334155 !important;
+  color: #F8FAFC !important;
+}
+
+[data-theme="dark"] .tabela-compras th,
+[data-theme="dark"] .mcol-tabela th,
+body.tema-escuro .tabela-compras th {
+  background: #1E293B !important;
+  color: #94A3B8 !important;
+  border-color: #334155 !important;
+}
+
+[data-theme="dark"] .tabela-compras td,
+[data-theme="dark"] .mcol-tabela td,
+body.tema-escuro .tabela-compras td {
+  background: #1E293B !important;
+  border-color: #334155 !important;
+  color: #F8FAFC !important;
+}
+
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea,
+body.tema-escuro input,
+body.tema-escuro select,
+body.tema-escuro textarea {
+  background: #0F172A !important;
+  color: #F8FAFC !important;
+  border-color: #334155 !important;
+}
+
+[data-theme="dark"] .despensa-aba-tab,
+body.tema-escuro .despensa-aba-tab {
+  background: #0F172A;
+  border-color: #334155;
+  color: #94A3B8;
+}
+
+[data-theme="dark"] .despensa-aba-tab.ativa,
+body.tema-escuro .despensa-aba-tab.ativa {
+  background: #4F46E5 !important;
+  color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .tab-modo-hist,
+body.tema-escuro .tab-modo-hist {
+  background: #0F172A;
+  border-color: #334155;
+  color: #94A3B8;
+}
+
+[data-theme="dark"] .tab-modo-hist.ativa,
+body.tema-escuro .tab-modo-hist.ativa {
+  background: #4F46E5 !important;
+  color: #FFFFFF !important;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -462,7 +599,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 0.65rem;
+  font-size: 0.68rem;
   font-weight: 800;
   text-transform: uppercase;
   color: #047857;
@@ -479,55 +616,68 @@ body {
   line-height: 1.4;
 }
 
-.sidebar-eco-mercado-nome {
-  font-size: 1.05rem;
-  font-weight: 800;
-  color: #065F46;
-  margin-bottom: 4px;
+.sidebar-eco-linha-mercado-total {
   display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.sidebar-eco-mercado-info {
+  display: inline-flex;
   align-items: center;
   gap: 6px;
 }
 
-.sidebar-eco-preco-linha {
-  font-size: 0.82rem;
-  color: #065F46;
-  margin-bottom: 6px;
+.sidebar-eco-logo {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  border-radius: 4px;
 }
 
-.sidebar-eco-valor {
+.sidebar-eco-mercado-titulo {
+  font-size: 0.98rem;
   font-weight: 800;
-  font-size: 0.95rem;
+  color: #065F46;
+}
+
+.sidebar-eco-divisor {
+  color: #94A3B8;
+  font-weight: 400;
+  font-size: 0.85rem;
+}
+
+.sidebar-eco-total-bloco {
+  font-size: 0.85rem;
+  color: #065F46;
+}
+
+.sidebar-eco-total-valor {
+  font-weight: 800;
   color: #047857;
 }
 
 .sidebar-eco-poupanca {
-  font-size: 0.78rem;
-  color: #047857;
-  background: rgba(255, 255, 255, 0.85);
-  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 8px 10px;
   border-radius: 8px;
   border: 1px solid #A7F3D0;
-  margin-top: 6px;
   line-height: 1.35;
 }
 
-.btn-sidebar-aplicar-mercado {
-  margin-top: 10px;
-  width: 100%;
-  padding: 7px 12px;
-  background: #059669;
-  color: white;
-  border: none;
-  border-radius: 8px;
+.sidebar-eco-poupanca-label {
   font-size: 0.78rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.15s ease;
+  color: #065F46;
+  font-weight: 600;
+  margin-bottom: 2px;
 }
 
-.btn-sidebar-aplicar-mercado:hover {
-  background: #047857;
+.sidebar-eco-poupanca-valor {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: #059669;
 }
 
 .sidebar-footer {
@@ -5254,6 +5404,14 @@ body.modo-mercado-ativo .item-nome {
     text-align: center !important;
   }
 
+  body.aba-historico .badge-total-geral-mobile,
+  body[data-aba-ativa="historico"] .badge-total-geral-mobile,
+  body.aba-historico .linha-abas-e-total-mobile,
+  body[data-aba-ativa="historico"] .linha-abas-e-total-mobile,
+  #view-historico .badge-total-geral-mobile {
+    display: none !important;
+  }
+
   /* 5. Tabela de Compras Adaptada com Toque Fácil e Encostada */
   .mcol-th-categoria-col {
     min-width: 170px !important;
@@ -6117,66 +6275,60 @@ body.modo-mercado-ativo .item-nome {
 ======================================================== */
 .historico-page-header {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
+  align-items: center;
+  gap: 16px;
   margin-bottom: 14px;
   flex-wrap: wrap;
+}
+
+.historico-header-info {
+  flex-shrink: 0;
 }
 
 .historico-titulo {
   font-size: 1.15rem;
   font-weight: 800;
   color: var(--text-main);
-  margin-bottom: 3px;
-}
-
-.historico-subtitulo {
-  font-size: 0.82rem;
-  color: var(--text-muted);
-  line-height: 1.4;
-}
-
-.btn-acao-historico {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--primary);
-  color: white;
-  border: none;
-  padding: 8px 14px;
-  border-radius: var(--radius-sm);
-  font-size: 0.82rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
-  transition: all 0.15s ease;
+  margin-bottom: 0;
   white-space: nowrap;
 }
 
-.btn-acao-historico:hover {
-  background: var(--primary-hover);
-  transform: translateY(-1px);
+.historico-subtitulo {
+  display: none;
 }
 
-/* Cards de Resumo no Topo */
+/* Cards de Resumo na Frente do Título */
 .historico-cards-resumo {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 10px;
-  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  flex-wrap: wrap;
+  margin-bottom: 0;
 }
 
 .card-resumo-hist {
   background: white;
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 12px 14px;
+  border-radius: 10px;
+  padding: 8px 12px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  flex: 1;
+  min-width: 130px;
   box-shadow: var(--shadow-sm);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+body.aba-historico .busca-topo-reduzida,
+body[data-aba-ativa="historico"] .busca-topo-reduzida {
+  display: none !important;
+}
+
+body.aba-historico .header-acoes-unificadas,
+body[data-aba-ativa="historico"] .header-acoes-unificadas {
+  margin-left: auto;
 }
 
 .card-resumo-hist:hover {
@@ -6672,6 +6824,132 @@ body.modo-mercado-ativo .item-nome {
   white-space: nowrap;
   min-width: 44px;
   text-align: center;
+}
+
+/* Visão 3: Por Mais Comprados (Ranking Inteligente) */
+.historico-ranking-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 12px;
+}
+
+.card-ranking-item {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.card-ranking-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: #CBD5E1;
+}
+
+.card-ranking-topo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-ranking-posicao {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.82rem;
+  background: #F1F5F9;
+  color: #475569;
+  flex-shrink: 0;
+}
+
+.card-ranking-posicao.ouro {
+  background: #FEF3C7;
+  color: #B45309;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+}
+
+.card-ranking-posicao.prata {
+  background: #E2E8F0;
+  color: #475569;
+}
+
+.card-ranking-posicao.bronze {
+  background: #FFEDD5;
+  color: #C2410C;
+}
+
+.card-ranking-nome {
+  font-weight: 800;
+  font-size: 0.92rem;
+  color: var(--text-main);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-ranking-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #F8FAFC;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+}
+
+.card-ranking-stat-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.card-ranking-stat-label {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.card-ranking-stat-val {
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.card-ranking-barra-wrapper {
+  background: #E2E8F0;
+  height: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.card-ranking-barra-fill {
+  background: linear-gradient(90deg, #4F46E5, #06B6D4);
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+[data-theme="dark"] .card-ranking-item,
+body.tema-escuro .card-ranking-item {
+  background: #1E293B !important;
+  border-color: #334155 !important;
+}
+
+[data-theme="dark"] .card-ranking-stats,
+body.tema-escuro .card-ranking-stats {
+  background: #0F172A !important;
 }
 
 .hist-reg-intervalo.vazio {
