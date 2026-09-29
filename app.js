@@ -4957,29 +4957,32 @@ function renderizarHistorico() {
       }
 
       // Cálculo do intervalo entre compras
-      let intervaloTxt = '—';
-      if (totalVezes > 1) {
-        let somaMs = 0;
-        for (let i = 1; i < prod.compras.length; i++) {
-          somaMs += Math.max(0, prod.compras[i].data.getTime() - prod.compras[i - 1].data.getTime());
-        }
-        const mediaMs = Math.round(somaMs / (totalVezes - 1));
-        intervaloTxt = formatarIntervaloMs(mediaMs);
-      }
-
       // Histórico das compras do produto em ordem cronológica (mais antiga para mais recente)
       const comprasExibidas = prod.compras.slice(-5);
       let registrosHtml = comprasExibidas.map(c => {
+        const idxGlobal = prod.compras.indexOf(c);
+        let intervaloRowTxt = '—';
+        if (idxGlobal > 0) {
+          const compraAnt = prod.compras[idxGlobal - 1];
+          const diffMs = Math.max(0, c.data.getTime() - compraAnt.data.getTime());
+          intervaloRowTxt = formatarIntervaloMs(diffMs);
+        }
+
         const partes = (c.dataStr || '').split('/');
         const dataCurta = partes.length === 3 ? `${partes[0]}/${partes[1]}/${partes[2].slice(-2)}` : c.dataStr;
         const qtdeFmt = `${String(c.qtde).padStart(2, '0')} und`;
         const precoFmt = c.preco > 0 ? formatarMoeda(c.preco) : '—';
+
+        const badgeIntervaloHtml = (intervaloRowTxt !== '—')
+          ? `<span class="hist-reg-intervalo" title="Intervalo desde a compra anterior">${intervaloRowTxt}</span>`
+          : `<span class="hist-reg-intervalo vazio" title="Primeira compra registrada">—</span>`;
 
         return `
           <div class="linha-hist-registro">
             <span class="hist-reg-data">${dataCurta}</span>
             <span class="hist-reg-qtd">${qtdeFmt}</span>
             <span class="hist-reg-preco">${precoFmt}</span>
+            ${badgeIntervaloHtml}
           </div>
         `;
       }).join('');
@@ -4992,10 +4995,6 @@ function renderizarHistorico() {
           </div>
           <div class="card-item-analise-registros">
             ${registrosHtml}
-            <div class="linha-intervalo-compras">
-              <span class="intervalo-rotulo">Intervalo entre compras</span>
-              <span class="intervalo-val">${intervaloTxt}</span>
-            </div>
           </div>
         </div>
       `;

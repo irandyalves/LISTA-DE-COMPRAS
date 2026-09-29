@@ -6576,29 +6576,24 @@ body.modo-mercado-ativo .item-nome {
   font-size: 0.84rem;
 }
 
-.linha-intervalo-compras {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 0.78rem;
-  padding-top: 6px;
-  margin-top: 4px;
-  border-top: 1px solid #CBD5E1;
-  color: #334155;
-}
-
-.linha-intervalo-compras .intervalo-rotulo {
-  font-weight: 700;
-  color: #475569;
-}
-
-.linha-intervalo-compras .intervalo-val {
+.hist-reg-intervalo {
+  font-size: 0.76rem;
   font-weight: 800;
   color: #1D4ED8;
   background: #EFF6FF;
-  padding: 2px 8px;
+  padding: 1px 6px;
   border-radius: 6px;
   border: 1px solid #BFDBFE;
+  white-space: nowrap;
+  min-width: 44px;
+  text-align: center;
+}
+
+.hist-reg-intervalo.vazio {
+  color: #94A3B8;
+  background: transparent;
+  border-color: transparent;
+  font-weight: 600;
 }
 
 /* Modal Registrar Compra no Histórico */
