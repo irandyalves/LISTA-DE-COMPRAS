@@ -2464,12 +2464,15 @@ function atualizarCardResumo() {
       totalRestante += subtotal;
     }
 
-    if (temFiltroCat && item.categoria === AppState.filtroCategoria) {
-      totalCategoria += subtotal;
-      itensCategoria++;
-      if (item.comprado) {
-        totalCarrinhoCategoria += subtotal;
-        itensNoCarrinhoCat++;
+    if (temFiltroCat) {
+      const isFav = AppState.filtroCategoria === 'favoritos' && (item.favorito || (AppState.catalogo.find(c => c.id === item.id || c.id === item.catalogoId)?.favorito));
+      if (isFav || item.categoria === AppState.filtroCategoria) {
+        totalCategoria += subtotal;
+        itensCategoria++;
+        if (item.comprado) {
+          totalCarrinhoCategoria += subtotal;
+          itensNoCarrinhoCat++;
+        }
       }
     }
   });
@@ -3122,7 +3125,12 @@ function renderizarListaCompras() {
   // 0. Filtragem por categoria e termo de busca no topo
   let itensListaParaExibir = AppState.listaAtiva;
 
-  if (AppState.filtroCategoria && AppState.filtroCategoria !== 'todas') {
+  if (AppState.filtroCategoria === 'favoritos') {
+    itensListaParaExibir = itensListaParaExibir.filter(item => {
+      const catItem = AppState.catalogo.find(c => c.id === item.id || c.id === item.catalogoId);
+      return !!(item.favorito || (catItem && catItem.favorito));
+    });
+  } else if (AppState.filtroCategoria && AppState.filtroCategoria !== 'todas') {
     itensListaParaExibir = itensListaParaExibir.filter(item => (item.categoria || 'Diversos') === AppState.filtroCategoria);
   }
 
@@ -4171,9 +4179,11 @@ function renderizarDespensa() {
 
   const badgeTotal = document.getElementById('despensa-contador-badge');
 
-  // 1. Filtragem por Categoria
+  // 1. Filtragem por Categoria ou Favoritos
   let itensExibir = AppState.catalogo;
-  if (categoriaAtivaDespensa !== 'todas') {
+  if (categoriaAtivaDespensa === 'favoritos') {
+    itensExibir = itensExibir.filter(p => !!p.favorito);
+  } else if (categoriaAtivaDespensa !== 'todas') {
     itensExibir = itensExibir.filter(p => (p.categoria || '') === categoriaAtivaDespensa);
   }
 
@@ -4200,10 +4210,13 @@ function renderizarDespensa() {
   if (itensExibir.length === 0) {
     const inputTopo = document.getElementById('input-novo-item');
     const valorDigitado = inputTopo ? inputTopo.value.trim() : termoBuscaDespensa;
+    const msgVazio = categoriaAtivaDespensa === 'favoritos'
+      ? 'Você ainda não marcou nenhum produto como favorito. Clique na estrelinha ⭐ ao lado dos itens para torná-los favoritos!'
+      : (valorDigitado ? `Nenhum produto encontrado com "<strong>${valorDigitado}</strong>".` : 'Nenhum produto nesta categoria.');
     container.innerHTML = `
       <div style="text-align: center; padding: 25px 15px; background: white; border-radius: 12px; border: 1px dashed var(--border);">
         <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 8px;">
-          ${valorDigitado ? `Nenhum produto encontrado com "<strong>${valorDigitado}</strong>".` : 'Nenhum produto nesta categoria.'}
+          ${msgVazio}
         </p>
         ${valorDigitado ? `<button class="btn-adicionar-topo" style="margin: 0 auto; display: inline-flex; align-items: center; gap: 4px;" onclick="adicionarItemRapido()">➕ Cadastrar "${valorDigitado}" no Catálogo</button>` : ''}
       </div>
@@ -4244,6 +4257,7 @@ function renderizarDespensa() {
 
       // Verifica se está selecionado para a Lista de Compra
       const estaNaLista = !!prod.selecionado;
+      const ehFavorito = !!prod.favorito;
       const qtde = prod.qtde || 1;
       const checkIcone = estaNaLista ? '✓' : '';
       const classeNaLista = estaNaLista ? 'na-lista-montar' : '';
@@ -4270,6 +4284,13 @@ function renderizarDespensa() {
           <div class="item-corpo">
             <div class="item-linha-nome">
               <span class="item-nome" title="${prod.nome}">${nomeExibicao}</span>
+              <button class="btn-favorito-item ${ehFavorito ? 'ativo' : ''}" id="btn-fav-despensa-${prod.id}"
+                      title="${ehFavorito ? 'Remover dos favoritos' : 'Tornar favorito'}"
+                      onclick="event.stopPropagation(); alternarFavoritoItem('${prod.id}', event)">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="${ehFavorito ? '#F59E0B' : 'none'}" stroke="${ehFavorito ? '#D97706' : '#94A3B8'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+              </button>
               <button class="btn-editar-despensa" title="Editar este produto" onclick="event.stopPropagation(); abrirModalEditarNomeDespensa('${prod.id}', event)">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M12 20h9"></path>
@@ -4308,6 +4329,44 @@ function renderizarDespensa() {
 
     container.appendChild(grupoDiv);
   }
+}
+
+// Alterna o status de favorito de um item do catálogo (Estrelinha)
+function alternarFavoritoItem(produtoId, event) {
+  if (event && event.stopPropagation) event.stopPropagation();
+
+  const prod = AppState.catalogo.find(p => String(p.id) === String(produtoId));
+  if (!prod) return;
+
+  prod.favorito = !prod.favorito;
+
+  // Se o item estiver na lista ativa, atualiza a flag favorito também
+  const itemLista = AppState.listaAtiva.find(p => String(p.id) === String(produtoId) || String(p.catalogoId) === String(produtoId));
+  if (itemLista) {
+    itemLista.favorito = prod.favorito;
+  }
+
+  salvarEstado(true);
+
+  // Atualiza visual do botão de estrelinha instantaneamente
+  const btnFav = document.getElementById(`btn-fav-despensa-${produtoId}`);
+  if (btnFav) {
+    btnFav.classList.toggle('ativo', !!prod.favorito);
+    btnFav.title = prod.favorito ? 'Remover dos favoritos' : 'Tornar favorito';
+    const svg = btnFav.querySelector('svg');
+    if (svg) {
+      svg.setAttribute('fill', prod.favorito ? '#F59E0B' : 'none');
+      svg.setAttribute('stroke', prod.favorito ? '#D97706' : '#94A3B8');
+    }
+  }
+
+  // Se a aba selecionada for Favoritos, re-renderiza para atualizar a lista
+  if (categoriaAtivaDespensa === 'favoritos' || AppState.filtroCategoria === 'favoritos') {
+    renderizarDespensa();
+    if (AppState.abaAtiva === 'lista') renderizarListaCompras();
+  }
+
+  mostrarNotificacaoToast(prod.favorito ? `⭐ "${prod.nome}" favoritado!` : `☆ "${prod.nome}" removido dos favoritos.`);
 }
 
 // Alterna em TEMPO REAL a inclusão ou remoção em Montar Lista (O item NÃO vai pro final)
