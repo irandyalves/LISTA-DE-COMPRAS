@@ -3312,9 +3312,9 @@ function renderizarListaCompras() {
 
       let marcaHtml = '';
       if (item.marca) {
-        marcaHtml = `<button type="button" class="btn-marca-listbox-tag com-marca" onclick="alterarMarcaItem('${item.id}', this, event)" title="Marca: ${item.marca} (Clique para alterar)">🏷️ ${item.marca} <span class="ico-caret">▾</span></button>`;
+        marcaHtml = `<button type="button" class="btn-marca-listbox-tag com-marca" onclick="alterarMarcaItem('${item.id}', this, event)" title="Marca: ${item.marca} (Clique para alterar)">${item.marca}</button>`;
       } else {
-        marcaHtml = `<button type="button" class="btn-marca-listbox-tag" onclick="alterarMarcaItem('${item.id}', this, event)" title="Clique para escolher a marca">+ Marca <span class="ico-caret">▾</span></button>`;
+        marcaHtml = `<button type="button" class="btn-marca-listbox-tag" onclick="alterarMarcaItem('${item.id}', this, event)" title="Clique para escolher a marca">+ Marca</button>`;
       }
 
       let celulasPrecos = '';
@@ -3395,6 +3395,10 @@ function renderizarListaCompras() {
             <div class="mcol-prod-card-cell">
               <div class="mcol-prod-linha-principal">
                 <div class="mcol-prod-info-esquerda">
+                  <span class="mcol-prod-nome ${item.comprado && !isPendente ? 'texto-riscado' : ''}" onclick="alternarItemComprado('${item.id}')" title="${item.nome}">${nomeExibicao}</span>
+                  ${marcaHtml}
+                </div>
+                <div class="mcol-prod-preco-grupo">
                   <button type="button" class="btn-favorito-item ${ehFavorito ? 'ativo' : ''}" id="btn-fav-lista-${item.id}"
                           title="${ehFavorito ? 'Remover dos favoritos' : 'Tornar favorito'}"
                           onclick="event.stopPropagation(); alternarFavoritoItem('${item.id}', event)">
@@ -3402,10 +3406,6 @@ function renderizarListaCompras() {
                       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                     </svg>
                   </button>
-                  <span class="mcol-prod-nome ${item.comprado && !isPendente ? 'texto-riscado' : ''}" onclick="alternarItemComprado('${item.id}')" title="${item.nome}">${nomeExibicao}</span>
-                  ${marcaHtml}
-                </div>
-                <div class="mcol-prod-preco-grupo">
                   <button type="button" class="btn-mic-preco-verde" id="btn-mic-item-${item.id}" onclick="ouvirPrecoItem('${item.id}', this, event)" title="Ditar preço por voz no PC ou Celular (fale ex: 1,10, 55 centavos ou 4 e 35)">
                     <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor">
                       <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>

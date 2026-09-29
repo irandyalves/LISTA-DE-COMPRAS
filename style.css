@@ -3707,7 +3707,7 @@ body.tema-escuro .despensa-aba-tab.btn-aba-favoritos-estrela.ativa,
   z-index: 25;
 }
 
-/* Coluna de Checkbox na Frente de Tudo - Pertinho da borda esquerda começando com 10px */
+/* Coluna de Checkbox na Frente de Tudo - Pertinho da borda esquerda */
 .mcol-th-check {
   position: sticky;
   top: 0;
@@ -3716,11 +3716,11 @@ body.tema-escuro .despensa-aba-tab.btn-aba-favoritos-estrela.ativa,
   background: #F8FAFC !important;
   font-weight: 800;
   color: #1E293B;
-  width: 28px !important;
-  min-width: 28px !important;
-  max-width: 28px !important;
+  width: 22px !important;
+  min-width: 22px !important;
+  max-width: 22px !important;
   text-align: center;
-  padding: 8px 1px !important;
+  padding: 8px 0 !important;
   font-size: 0.78rem;
   box-shadow: 0 6px 14px -2px rgba(15, 23, 42, 0.16);
 }
@@ -3730,10 +3730,10 @@ body.tema-escuro .despensa-aba-tab.btn-aba-favoritos-estrela.ativa,
   left: 0;
   z-index: 5;
   background: white;
-  width: 28px !important;
-  min-width: 28px !important;
-  max-width: 28px !important;
-  padding: 4px 1px !important;
+  width: 22px !important;
+  min-width: 22px !important;
+  max-width: 22px !important;
+  padding: 4px 0 !important;
   text-align: center;
   vertical-align: middle;
 }
@@ -3748,33 +3748,33 @@ body.tema-escuro .despensa-aba-tab.btn-aba-favoritos-estrela.ativa,
   display: block;
 }
 
-/* Coluna de Quantidade na Frente do Nome - Espremida e Encostada */
+/* Coluna de Quantidade na Frente do Nome - Espremida e Encostada Sem Borda */
 .mcol-th-qtde {
   position: sticky;
   top: 0;
-  left: 28px !important;
+  left: 22px !important;
   z-index: 30 !important;
   background: #F8FAFC !important;
   font-weight: 800;
   color: #1E293B;
-  width: 48px !important;
-  min-width: 48px !important;
-  max-width: 48px !important;
+  width: 44px !important;
+  min-width: 44px !important;
+  max-width: 44px !important;
   text-align: center;
-  padding: 8px 1px !important;
+  padding: 8px 0 !important;
   font-size: 0.74rem;
   box-shadow: 0 6px 14px -2px rgba(15, 23, 42, 0.16);
 }
 
 .mcol-td-qtde {
   position: sticky;
-  left: 28px !important;
+  left: 22px !important;
   z-index: 5;
   background: white;
-  width: 48px !important;
-  min-width: 48px !important;
-  max-width: 48px !important;
-  padding: 4px 1px !important;
+  width: 44px !important;
+  min-width: 44px !important;
+  max-width: 44px !important;
+  padding: 4px 0 !important;
   text-align: center;
   vertical-align: middle;
 }
@@ -3787,19 +3787,19 @@ body.tema-escuro .despensa-aba-tab.btn-aba-favoritos-estrela.ativa,
   display: inline-flex;
   align-items: center;
   gap: 0;
-  background: #F1F5F9;
-  border: 1px solid #CBD5E1;
+  background: transparent;
+  border: none !important;
   border-radius: 4px;
-  padding: 1px;
+  padding: 0;
 }
 
 .btn-step-tabela {
-  width: 15px;
+  width: 14px;
   height: 18px;
-  min-width: 15px;
+  min-width: 14px;
   border-radius: 2px;
-  border: none;
-  background: white;
+  border: none !important;
+  background: #F1F5F9;
   color: #334155;
   font-weight: 900;
   font-size: 0.75rem;
@@ -3856,18 +3856,18 @@ body.tema-escuro .despensa-aba-tab.btn-aba-favoritos-estrela.ativa,
   margin: 0;
 }
 
-/* Coluna de Produto: ajustada com left 76px (check 28px + qtde 48px) */
+/* Coluna de Produto: ajustada com left 66px (check 22px + qtde 44px) */
 .mcol-th-produto {
   position: sticky;
   top: 0;
-  left: 76px !important;
+  left: 66px !important;
   z-index: 29 !important;
   background: #F8FAFC !important;
   font-weight: 800;
   color: #1E293B;
   min-width: 170px;
   max-width: 250px;
-  padding: 6px 6px !important;
+  padding: 6px 4px !important;
   box-shadow: 2px 0 6px rgba(0,0,0,0.04), 0 6px 14px -2px rgba(15, 23, 42, 0.16);
 }
 
@@ -3890,10 +3890,10 @@ body.tema-escuro .despensa-aba-tab.btn-aba-favoritos-estrela.ativa,
 
 .mcol-td-produto {
   position: sticky;
-  left: 76px !important;
+  left: 66px !important;
   z-index: 4;
   background: white;
-  padding: 4px 6px !important;
+  padding: 4px 4px !important;
   min-width: 170px;
   max-width: 250px;
   box-shadow: 2px 0 6px rgba(0,0,0,0.04);
@@ -4242,12 +4242,12 @@ body.tema-escuro .despensa-aba-tab.btn-aba-favoritos-estrela.ativa,
   flex: 1;
 }
 
-/* Linha principal: Nome e Marca à esquerda, Mic e Preço alinhados à direita */
+/* Linha principal: Nome e Marca à esquerda, Estrela, Mic e Preço alinhados à direita */
 .mcol-prod-linha-principal {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
+  gap: 4px;
   width: 100%;
   min-width: 0;
   line-height: 1.25;
@@ -4274,25 +4274,25 @@ body.tema-escuro .despensa-aba-tab.btn-aba-favoritos-estrela.ativa,
   cursor: pointer;
 }
 
-/* Grupo de Preço Alinhado à Direita: Mic mais à esquerda com folga em relação ao badge */
+/* Grupo de Preço Alinhado à Direita: Estrela, Mic e Preço bem próximos */
 .mcol-prod-preco-grupo {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: 4px;
   margin-left: auto;
   flex-shrink: 0;
   justify-content: flex-end;
 }
 
-/* Microfone Verdinho para Ditar Preço de Gôndola no Mercado (Posicionado à Esquerda) */
+/* Microfone Verdinho para Ditar Preço de Gôndola no Mercado */
 .btn-mic-preco-verde {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
-  min-width: 24px;
-  margin-right: 4px;
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  margin-right: 0;
   border-radius: 50%;
   border: 1px solid #10B981;
   background: #ECFDF5;
@@ -4340,11 +4340,11 @@ body.tema-escuro .despensa-aba-tab.btn-aba-favoritos-estrela.ativa,
   align-items: center;
   justify-content: flex-end;
   text-align: right;
-  min-width: 68px;
+  min-width: 62px;
   font-size: 0.72rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  padding: 2px 7px;
+  padding: 2px 6px;
   border-radius: 6px;
   cursor: pointer;
   white-space: nowrap;
@@ -4378,57 +4378,50 @@ body.tema-escuro .despensa-aba-tab.btn-aba-favoritos-estrela.ativa,
   color: #1E293B;
 }
 
-/* Botão Listbox de Marca bonito na frente do nome */
+/* Botão Listbox de Marca: em laranja, sem borda, sem triângulo */
 .btn-marca-listbox-tag {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 2px 8px;
-  border-radius: 12px;
+  padding: 0 1px;
+  border: none !important;
+  background: transparent !important;
+  color: #EA580C !important;
   font-family: inherit;
-  font-size: 0.69rem;
+  font-size: 0.70rem;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
-  border: 1px solid #CBD5E1;
-  background: #F8FAFC;
-  color: #64748B;
-  line-height: 1.3;
+  line-height: 1.2;
   vertical-align: middle;
   white-space: nowrap;
   user-select: none;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  box-shadow: none !important;
+  transition: opacity 0.15s ease;
 }
 
 .btn-marca-listbox-tag:hover {
-  background: #EEF2FF;
-  color: var(--primary);
-  border-color: #A5B4FC;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.12);
+  background: transparent !important;
+  color: #C2410C !important;
+  opacity: 0.85;
+  border: none !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 .btn-marca-listbox-tag.com-marca {
-  background: #EFF6FF;
-  color: #1D4ED8;
-  border-color: #BFDBFE;
+  color: #EA580C !important;
   font-weight: 800;
+  border: none !important;
+  background: transparent !important;
 }
 
 .btn-marca-listbox-tag.com-marca:hover {
-  background: #DBEAFE;
-  border-color: #93C5FD;
+  color: #C2410C !important;
+  border: none !important;
+  background: transparent !important;
 }
 
 .btn-marca-listbox-tag .ico-caret {
-  font-size: 0.60rem;
-  color: #94A3B8;
-  transition: transform 0.2s ease;
-}
-
-.btn-marca-listbox-tag:hover .ico-caret {
-  color: currentColor;
-  transform: translateY(1px);
+  display: none !important;
 }
 
 .item-linha-comprado .btn-marca-listbox-tag {
@@ -4524,30 +4517,30 @@ body.tema-escuro .despensa-aba-tab.btn-aba-favoritos-estrela.ativa,
   left: 0;
   z-index: 5;
   background: #F8FAFC !important;
-  width: 28px;
-  min-width: 28px;
-  max-width: 28px;
-  padding: 8px 1px !important;
+  width: 22px;
+  min-width: 22px;
+  max-width: 22px;
+  padding: 8px 0 !important;
 }
 
 .mcol-td-qtde-total {
   position: sticky;
-  left: 28px;
+  left: 22px;
   z-index: 5;
   background: #F8FAFC !important;
-  width: 48px;
-  min-width: 48px;
-  max-width: 48px;
-  padding: 8px 1px !important;
+  width: 44px;
+  min-width: 44px;
+  max-width: 44px;
+  padding: 8px 0 !important;
 }
 
 .mcol-td-totais-label {
   position: sticky;
-  left: 76px;
+  left: 66px;
   z-index: 4;
   background: #F8FAFC !important;
   text-align: left !important;
-  padding-left: 6px !important;
+  padding-left: 4px !important;
   min-width: 170px;
   max-width: 250px;
   box-shadow: 2px 0 6px rgba(0,0,0,0.04);
@@ -5874,37 +5867,37 @@ body.tema-escuro .drawer-fechar-btn {
 
   .mcol-th-check,
   .mcol-td-check {
-    width: 28px !important;
-    min-width: 28px !important;
-    max-width: 28px !important;
+    width: 22px !important;
+    min-width: 22px !important;
+    max-width: 22px !important;
     left: 0 !important;
-    padding: 4px 1px !important;
+    padding: 4px 0 !important;
   }
 
   .check-item-comprado {
-    width: 18px !important;
-    height: 18px !important;
+    width: 17px !important;
+    height: 17px !important;
   }
 
   .mcol-th-qtde,
   .mcol-td-qtde {
-    left: 28px !important;
-    width: 48px !important;
-    min-width: 48px !important;
-    max-width: 48px !important;
-    padding: 4px 1px !important;
+    left: 22px !important;
+    width: 44px !important;
+    min-width: 44px !important;
+    max-width: 44px !important;
+    padding: 4px 0 !important;
   }
 
   .mcol-th-produto,
   .mcol-td-produto {
-    left: 76px !important;
-    padding: 4px 4px !important;
+    left: 66px !important;
+    padding: 4px 2px !important;
     min-width: 140px !important;
   }
 
   .mcol-prod-nome {
     font-size: 0.82rem !important;
-    max-width: 130px;
+    max-width: 140px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
