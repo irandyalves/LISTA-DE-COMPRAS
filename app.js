@@ -2074,6 +2074,23 @@ function converterPalavrasEmNumeroVoz(str) {
   return total;
 }
 
+function normalizarPrecoMercado(num) {
+  if (!num || isNaN(num) || num <= 0) return null;
+
+  // Se for um número de 3 dígitos (ex: 325 -> 3.25, 525 -> 5.25, 435 -> 4.35)
+  // O reconhecimento de voz do Google frequentemente concatena "três e vinte e cinco" como 325 ou 325.00
+  if (num >= 100 && num <= 999) {
+    return parseFloat((num / 100).toFixed(2));
+  }
+
+  // Se for um número de 4 dígitos sem vírgula (ex: 1050 -> 10.50, 1290 -> 12.90, 2390 -> 23.90, 3590 -> 35.90)
+  if (num >= 1000 && num <= 9999) {
+    return parseFloat((num / 100).toFixed(2));
+  }
+
+  return parseFloat(num.toFixed(2));
+}
+
 function interpretarPrecoFalado(texto) {
   if (!texto) return null;
   let t = texto.toLowerCase().trim();
@@ -2082,39 +2099,59 @@ function interpretarPrecoFalado(texto) {
   t = t.replace(/^r\$\s*/i, '');
   t = t.replace(/\s*(da tarde|da manhã|da noite|horas?|hrs?)\s*$/i, '');
   
-  // Converte formato de hora que o Google Speech adora gerar (ex: 4:35, 04:35, 4h35 -> 4,35)
+  // Correção fonética comum em português: "cinto" / "sinto" -> "cinco"
+  t = t.replace(/\b(cinto|sinto)\b/gi, 'cinco');
+
+  // Converte confusão de centenas que o Google Speech faz quando a pessoa fala "três e vinte e cinco"
+  t = t.replace(/\bcento\b/gi, 'um');
+  t = t.replace(/\bduzentos\b/gi, 'dois');
+  t = t.replace(/\btrezentos\b/gi, 'três');
+  t = t.replace(/\bquatrocentos\b/gi, 'quatro');
+  t = t.replace(/\bquinhentos\b/gi, 'cinco');
+  t = t.replace(/\bseiscentos\b/gi, 'seis');
+  t = t.replace(/\bsetecentos\b/gi, 'sete');
+  t = t.replace(/\boitocentos\b/gi, 'oito');
+  t = t.replace(/\bnovecentos\b/gi, 'nove');
+
+  // Converte formato de hora que o Google Speech gera (ex: 3:25, 03:25, 5:25, 4:35 -> 3,25, 5,25)
   t = t.replace(/(\d{1,3})[:hH](\d{1,2})/g, (m, g1, g2) => `${parseInt(g1)},${g2}`);
 
-  // 1. Dígitos diretos com vírgula ou ponto (ex: '4,35', '4.35', '04,35')
-  const matchNumVirgula = t.match(/(\d+)[,.](\d{1,2})/);
-  if (matchNumVirgula) {
-    const cent = matchNumVirgula[2].length === 1 ? matchNumVirgula[2] + '0' : matchNumVirgula[2];
-    return parseFloat(parseInt(matchNumVirgula[1]) + '.' + cent);
+  // Se veio formato 325,00 ou 525,00 (Google colocou ,00 achando que era centena inteira)
+  const matchCentenaComVirgulaZero = t.match(/^(\d{3,4})[,.]00?$/);
+  if (matchCentenaComVirgulaZero) {
+    const n = parseInt(matchCentenaComVirgulaZero[1]);
+    return normalizarPrecoMercado(n);
   }
 
-  // 2. Dígitos com 'e' ou 'com' (ex: '4 e 35', '4 com 35')
+  // 1. Dígitos diretos com vírgula ou ponto onde os centavos são de 1 a 99 (ex: '3,25', '5,25', '4.35')
+  const matchNumVirgula = t.match(/(\d+)[,.](\d{1,2})/);
+  if (matchNumVirgula) {
+    const inteira = parseInt(matchNumVirgula[1]);
+    const cent = matchNumVirgula[2].length === 1 ? matchNumVirgula[2] + '0' : matchNumVirgula[2];
+    
+    // Se o Google transcreveu "325,0" ou "525,0"
+    if (inteira >= 100 && (cent === '00' || cent === '0')) {
+      return normalizarPrecoMercado(inteira);
+    }
+    return parseFloat(inteira + '.' + cent);
+  }
+
+  // 2. Dígitos com 'e' ou 'com' (ex: '3 e 25', '5 e 25')
   const matchNumE = t.match(/(\d+)\s*(?:e|com)\s*(\d{1,2})/);
   if (matchNumE) {
     const cent = matchNumE[2].length === 1 ? matchNumE[2] + '0' : matchNumE[2];
     return parseFloat(parseInt(matchNumE[1]) + '.' + cent);
   }
 
-  // 3. Dois números separados por espaço simples (ex: '4 35')
+  // 3. Dois números separados por espaço simples (ex: '3 25', '5 25')
   const matchDoisNumeros = t.match(/^(\d{1,3})\s+(\d{1,2})$/);
   if (matchDoisNumeros) {
     const cent = matchDoisNumeros[2].length === 1 ? matchDoisNumeros[2] + '0' : matchDoisNumeros[2];
     return parseFloat(parseInt(matchDoisNumeros[1]) + '.' + cent);
   }
 
-  // 4. Dígito inteiro direto (ex: '23', '23 reais')
-  const matchNumSozinho = t.match(/^(\d+)(?:\s*reais?)?$/);
-  if (matchNumSozinho) {
-    return parseFloat(matchNumSozinho[1]);
-  }
-
+  // 4. Se a fala veio com 'reais' (ex: 'três reais e vinte e cinco', 'cinco reais e vinte e cinco')
   t = t.replace(/centavos?/g, '').trim();
-
-  // 5. Divisão por 'reais' (ex: 'quatro reais e trinta e cinco', '4 reais e 35')
   if (t.includes('reais')) {
     const partes = t.split('reais');
     const inteira = converterPalavrasEmNumeroVoz(partes[0]);
@@ -2122,7 +2159,7 @@ function interpretarPrecoFalado(texto) {
     return parseFloat(inteira + '.' + (centavos < 10 ? '0' + centavos : centavos));
   }
 
-  // 6. Divisão por 'com' ou 'vírgula' (ex: 'quatro vírgula trinta e cinco', 'quatro com trinta e cinco')
+  // 5. Divisão por 'com' ou 'vírgula' (ex: 'três vírgula vinte e cinco', 'cinco com vinte e cinco')
   if (/\s+(?:com|vírgula)\s+/.test(t)) {
     const partes = t.split(/\s+(?:com|vírgula)\s+/);
     const inteira = converterPalavrasEmNumeroVoz(partes[0]);
@@ -2130,8 +2167,7 @@ function interpretarPrecoFalado(texto) {
     return parseFloat(inteira + '.' + (centavos < 10 ? '0' + centavos : centavos));
   }
 
-  // 7. Separação por 'e' (ex: 'quatro e trinta e cinco')
-  // Divide a string em tokens sem pontuações finais
+  // 6. Separação por 'e' (ex: 'três e vinte e cinco', 'cinco e vinte e cinco')
   const tokens = t.replace(/[.,]/g, '').split(/\s+/).filter(Boolean);
   let idxDivisor = -1;
   for (let i = 0; i < tokens.length; i++) {
@@ -2157,7 +2193,7 @@ function interpretarPrecoFalado(texto) {
     }
   }
 
-  // 8. Fala rápida sem 'e' (ex: 'quatro trinta e cinco')
+  // 7. Fala rápida sem 'e' (ex: 'três vinte e cinco', 'cinco vinte e cinco')
   if (tokens.length >= 2) {
     const primeiro = tokens[0];
     const resto = tokens.slice(1).join(' ');
@@ -2168,8 +2204,19 @@ function interpretarPrecoFalado(texto) {
     }
   }
 
+  // 8. Se veio como dígito sozinho (ex: '325', '525')
+  const matchNumSozinho = t.match(/^(\d+)$/);
+  if (matchNumSozinho) {
+    const val = parseInt(matchNumSozinho[1]);
+    return normalizarPrecoMercado(val);
+  }
+
   const nTotal = converterPalavrasEmNumeroVoz(t);
-  return nTotal > 0 ? nTotal : null;
+  if (nTotal > 0) {
+    return normalizarPrecoMercado(nTotal);
+  }
+
+  return null;
 }
 
 // Inicia escuta de preço por voz para o item
