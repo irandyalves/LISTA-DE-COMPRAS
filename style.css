@@ -6435,17 +6435,46 @@ body.modo-mercado-ativo .item-nome {
 .tabela-historico-itens {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
   font-size: 0.80rem;
 }
 
+/* Larguras Fixas Inteligentes das Colunas (Calculadas pelo maior item) */
+.tabela-historico-itens .col-hist-item {
+  width: auto; /* Ocupa a área restante com limite máximo rigoroso */
+}
+
+.tabela-historico-itens .col-hist-qtd {
+  width: 55px; /* Calculado: comporta exatamente 'QTD' e 2 dígitos '01' a '99' */
+}
+
+.tabela-historico-itens .col-hist-precoun {
+  width: 90px; /* Calculado: comporta 'PREÇO UN.' e 'R$ 999,99' */
+}
+
+.tabela-historico-itens .col-hist-total {
+  width: 90px; /* Calculado: comporta 'TOTAL' e 'R$ 999,99' */
+}
+
+.tabela-historico-itens .col-hist-comp {
+  width: 115px; /* Calculado: comporta 'COMPARAÇÃO' e badges '= Estável' / '⭐ 1ª compra' */
+}
+
+.tabela-historico-itens .col-hist-intervalo {
+  width: 95px; /* Calculado: comporta 'INTERVALO' e badge '⏱ 9min' */
+}
+
+/* Cabeçalhos e Células */
 .tabela-historico-itens th {
-  text-align: left;
   padding: 8px 10px;
   color: #64748B;
   font-weight: 700;
   font-size: 0.72rem;
   text-transform: uppercase;
   border-bottom: 1px solid #E2E8F0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .tabela-historico-itens td {
@@ -6453,20 +6482,72 @@ body.modo-mercado-ativo .item-nome {
   border-bottom: 1px solid #F1F5F9;
   color: #1E293B;
   vertical-align: middle;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .tabela-historico-itens tr:last-child td {
   border-bottom: none;
 }
 
+/* Alinhamentos Inteligentes por Coluna */
+.tabela-historico-itens .th-hist-item,
+.tabela-historico-itens .td-hist-item {
+  text-align: left;
+}
+
+.tabela-historico-itens .th-hist-qtd,
+.tabela-historico-itens .td-hist-qtd {
+  text-align: center;
+}
+
+.tabela-historico-itens .th-hist-precoun,
+.tabela-historico-itens .td-hist-precoun {
+  text-align: right;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.tabela-historico-itens .th-hist-total,
+.tabela-historico-itens .td-hist-total {
+  text-align: right;
+  font-weight: 800;
+  color: #0F172A;
+}
+
+.tabela-historico-itens .th-hist-comp,
+.tabela-historico-itens .td-hist-comp {
+  text-align: center;
+}
+
+.tabela-historico-itens .th-hist-intervalo,
+.tabela-historico-itens .td-hist-intervalo {
+  text-align: center;
+}
+
+.hist-qtd-num {
+  color: #EA580C;
+  font-weight: 800;
+  display: inline-block;
+}
+
+/* Limitação de Tamanho do Nome do Item (Bebida Láctea Piracanjuba .... espaço máximo) */
 .hist-prod-info {
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .hist-prod-nome {
   font-weight: 700;
   color: #0F172A;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 285px; /* Limite exato equivalente a 'Bebida Láctea Piracanjuba ....' */
+  display: block;
 }
 
 .hist-prod-cat {
@@ -6769,9 +6850,36 @@ body.modo-mercado-ativo .item-nome {
     border-top: 1px dashed #F1F5F9;
   }
 
-  .tabela-historico-itens th:nth-child(3),
-  .tabela-historico-itens td:nth-child(3) {
-    display: none; /* Esconde preço unitário avulso para caber perfeitamente no mobile */
+  .tabela-historico-itens .col-hist-precoun,
+  .tabela-historico-itens .th-hist-precoun,
+  .tabela-historico-itens .td-hist-precoun {
+    display: none; /* Esconde preço unitário no mobile para caber perfeitamente */
+  }
+
+  .tabela-historico-itens .col-hist-qtd {
+    width: 42px;
+  }
+
+  .tabela-historico-itens .col-hist-total {
+    width: 75px;
+  }
+
+  .tabela-historico-itens .col-hist-comp {
+    width: 82px;
+  }
+
+  .tabela-historico-itens .col-hist-intervalo {
+    width: 72px;
+  }
+
+  .tabela-historico-itens th,
+  .tabela-historico-itens td {
+    padding: 6px 4px;
+    font-size: 0.74rem;
+  }
+
+  .hist-prod-nome {
+    max-width: 140px;
   }
 
   .historico-detalhes-compra {

@@ -4833,16 +4833,16 @@ function renderizarHistorico() {
 
         linhasItensHtml += `
           <tr>
-            <td>
+            <td class="td-hist-item">
               <div class="hist-prod-info">
-                <span class="hist-prod-nome">${it.nome}</span>
+                <span class="hist-prod-nome" title="${it.nome}">${it.nome}</span>
               </div>
             </td>
-            <td style="text-align: center; white-space: nowrap;"><span style="color: #EA580C; font-weight: 800;">${String(qtde).padStart(2, '0')}</span></td>
-            <td style="text-align: right; color: var(--text-muted); font-size: 0.78rem; white-space: nowrap;">${precoUnit > 0 ? formatarMoeda(precoUnit) : '—'}</td>
-            <td style="text-align: right; font-weight: 800; color: #0F172A; white-space: nowrap;">${subtotal > 0 ? formatarMoeda(subtotal) : '—'}</td>
-            <td style="text-align: center;">${badgeComparativoItem}</td>
-            <td style="text-align: center;">${tagDuracaoHtml}</td>
+            <td class="td-hist-qtd"><span class="hist-qtd-num">${String(qtde).padStart(2, '0')}</span></td>
+            <td class="td-hist-precoun">${precoUnit > 0 ? formatarMoeda(precoUnit) : '—'}</td>
+            <td class="td-hist-total">${subtotal > 0 ? formatarMoeda(subtotal) : '—'}</td>
+            <td class="td-hist-comp">${badgeComparativoItem}</td>
+            <td class="td-hist-intervalo">${tagDuracaoHtml}</td>
           </tr>
         `;
       });
@@ -4891,14 +4891,22 @@ function renderizarHistorico() {
           </div>
           <div class="historico-detalhes-compra">
             <table class="tabela-historico-itens">
+              <colgroup>
+                <col class="col-hist-item">
+                <col class="col-hist-qtd">
+                <col class="col-hist-precoun">
+                <col class="col-hist-total">
+                <col class="col-hist-comp">
+                <col class="col-hist-intervalo">
+              </colgroup>
               <thead>
                 <tr>
-                  <th>Item</th>
-                  <th style="text-align: center;">Qtd</th>
-                  <th style="text-align: right;">Preço Un.</th>
-                  <th style="text-align: right;">Total</th>
-                  <th style="text-align: center;">Comparação</th>
-                  <th style="text-align: center;">Intervalo</th>
+                  <th class="th-hist-item">Item</th>
+                  <th class="th-hist-qtd">Qtd</th>
+                  <th class="th-hist-precoun">Preço Un.</th>
+                  <th class="th-hist-total">Total</th>
+                  <th class="th-hist-comp">Comparação</th>
+                  <th class="th-hist-intervalo">Intervalo</th>
                 </tr>
               </thead>
               <tbody>
