@@ -734,7 +734,7 @@ let AppState = {
   filtroCategoria: 'todas',
   cotacaoAtiva: true, // true = cotado com preços e atacadistas visíveis, false = preços e atacadistas ocultos
   modoNoMercado: ehDispositivoMobile ? true : false, // No celular, por padrão mercados vêm ocultados
-  modoResumido: false, // true = exibe nomes simplificados e deduplica variedades
+  modoResumido: true, // true = exibe nomes simplificados e deduplica variedades (padrão ativado)
   modoCotacao: 'alfabetico', // Padrão Alfabético A-Z em todo o app
   mercadoReferencia: 'atacadao',
   ordenacaoMercados: 'original', // 'original', 'alfabetico_az', 'alfabetico_za', 'preco'
@@ -2529,28 +2529,10 @@ function atualizarCardResumo() {
   }
 }
 
-// Formata nomes grandes para padrão compacto: Alho roxo... (remove parênteses e encurta nomes compridos)
+// Formata nomes grandes para padrão compacto e reduzido com corte abrupto e inteligente
 function formatarNomeExibicaoCompacto(nomeOriginal) {
   if (!nomeOriginal) return '';
-  // 1. Remove parênteses com unidades: (kg), (Maço), (g), (L), etc.
-  let limpo = nomeOriginal.replace(/\s*\([^)]*\)/g, '').trim();
-
-  // 2. Remove adjetivos comerciais e palavras desnecessárias que ocupam espaço
-  limpo = limpo.replace(/\b(refinado|refinada|especial|tipo\s*\d+|novo\s+tipo\s*\d+|uht|crocante|hidrop[oô]nica|fresco|fresca|fresquinho|selecionado|selecionada|resfriado|resfriada|congelado|congelada|tradicional|nacional|extra\s+virgem|antisséptico|concentrado|concentrada|nobre)\b/gi, '');
-  limpo = limpo.replace(/\s{2,}/g, ' ').trim();
-
-  // 3. Divide em palavras
-  const palavras = limpo.split(/\s+/).filter(Boolean);
-  
-  // Se tiver mais de 2 palavras, coloca '...' (ex: Alho Roxo Nobre -> Alho Roxo...)
-  if (palavras.length > 2) {
-    return `${palavras[0]} ${palavras[1]}...`;
-  }
-  if (limpo.length > 15) {
-    return `${limpo.substring(0, 13)}...`;
-  }
-
-  return limpo;
+  return (typeof obterNomeResumido === 'function') ? obterNomeResumido(nomeOriginal) : nomeOriginal;
 }
 
 // Interpretador de Preço Falado em Português (Web Speech API)
@@ -3296,6 +3278,7 @@ function renderizarListaCompras() {
       }
 
       const qtde = item.qtde || 1;
+      const ehFavorito = !!(item.favorito || (AppState.catalogo.find(c => String(c.id) === String(item.id) || String(c.id) === String(item.catalogoId))?.favorito));
 
       let marcaHtml = '';
       if (item.marca) {
@@ -3382,6 +3365,13 @@ function renderizarListaCompras() {
             <div class="mcol-prod-card-cell">
               <div class="mcol-prod-linha-principal">
                 <div class="mcol-prod-info-esquerda">
+                  <button type="button" class="btn-favorito-item ${ehFavorito ? 'ativo' : ''}" id="btn-fav-lista-${item.id}"
+                          title="${ehFavorito ? 'Remover dos favoritos' : 'Tornar favorito'}"
+                          onclick="event.stopPropagation(); alternarFavoritoItem('${item.id}', event)">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="${ehFavorito ? '#F59E0B' : 'none'}" stroke="${ehFavorito ? '#D97706' : '#94A3B8'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                  </button>
                   <span class="mcol-prod-nome ${item.comprado && !isPendente ? 'texto-riscado' : ''}" onclick="alternarItemComprado('${item.id}')" title="${item.nome}">${nomeExibicao}</span>
                   ${marcaHtml}
                 </div>
@@ -4329,9 +4319,8 @@ function alternarFiltroFavoritosCategoria(categoria, event) {
       `;
     } else {
       itens.forEach(prod => {
-        let nomeExibicao = prod.nome;
+        let nomeExibicao = (typeof obterNomeResumido === 'function') ? obterNomeResumido(prod.nome) : prod.nome;
         if (AppState.modoResumido) {
-          nomeExibicao = obterNomeResumido(prod.nome);
           const chaveDeduplicacao = nomeExibicao.toLowerCase().trim();
           if (nomesResumidosVistos.has(chaveDeduplicacao)) {
             // No modo resumido, variedades com o mesmo nome resumido não são exibidas ("só exibe a primeira")
@@ -4372,7 +4361,6 @@ function alternarFiltroFavoritosCategoria(categoria, event) {
 
             <div class="item-corpo">
               <div class="item-linha-nome">
-                <span class="item-nome" title="${prod.nome}">${nomeExibicao}</span>
                 <button class="btn-favorito-item ${ehFavorito ? 'ativo' : ''}" id="btn-fav-despensa-${prod.id}"
                         title="${ehFavorito ? 'Remover dos favoritos' : 'Tornar favorito'}"
                         onclick="event.stopPropagation(); alternarFavoritoItem('${prod.id}', event)">
@@ -4380,6 +4368,7 @@ function alternarFiltroFavoritosCategoria(categoria, event) {
                     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                   </svg>
                 </button>
+                <span class="item-nome" title="${prod.nome}">${nomeExibicao}</span>
                 <button class="btn-editar-despensa" title="Editar este produto" onclick="event.stopPropagation(); abrirModalEditarNomeDespensa('${prod.id}', event)">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M12 20h9"></path>
@@ -4422,30 +4411,41 @@ function alternarFiltroFavoritosCategoria(categoria, event) {
 function alternarFavoritoItem(produtoId, event) {
   if (event && event.stopPropagation) event.stopPropagation();
 
-  const prod = AppState.catalogo.find(p => String(p.id) === String(produtoId));
-  if (!prod) return;
-
-  prod.favorito = !prod.favorito;
-
-  // Se o item estiver na lista ativa, atualiza a flag favorito também
+  let prod = AppState.catalogo.find(p => String(p.id) === String(produtoId));
   const itemLista = AppState.listaAtiva.find(p => String(p.id) === String(produtoId) || String(p.catalogoId) === String(produtoId));
-  if (itemLista) {
-    itemLista.favorito = prod.favorito;
+
+  if (!prod && itemLista) {
+    prod = AppState.catalogo.find(p => String(p.id) === String(itemLista.catalogoId) || (p.nome || '').toLowerCase().trim() === (itemLista.nome || '').toLowerCase().trim());
   }
+
+  const novoStatus = prod ? !prod.favorito : (itemLista ? !itemLista.favorito : true);
+
+  if (prod) prod.favorito = novoStatus;
+  if (itemLista) itemLista.favorito = novoStatus;
 
   salvarEstado(true);
 
-  // Atualiza visual do botão de estrelinha instantaneamente
-  const btnFav = document.getElementById(`btn-fav-despensa-${produtoId}`);
-  if (btnFav) {
-    btnFav.classList.toggle('ativo', !!prod.favorito);
-    btnFav.title = prod.favorito ? 'Remover dos favoritos' : 'Tornar favorito';
-    const svg = btnFav.querySelector('svg');
-    if (svg) {
-      svg.setAttribute('fill', prod.favorito ? '#F59E0B' : 'none');
-      svg.setAttribute('stroke', prod.favorito ? '#D97706' : '#94A3B8');
+  // Atualiza visual dos botões de estrelinha instantaneamente (despensa e lista)
+  const idChave = prod ? prod.id : produtoId;
+  const idsParaAtualizar = [
+    `btn-fav-despensa-${idChave}`,
+    `btn-fav-lista-${idChave}`,
+    `btn-fav-despensa-${produtoId}`,
+    `btn-fav-lista-${produtoId}`
+  ];
+
+  idsParaAtualizar.forEach(idBtn => {
+    const btnFav = document.getElementById(idBtn);
+    if (btnFav) {
+      btnFav.classList.toggle('ativo', novoStatus);
+      btnFav.title = novoStatus ? 'Remover dos favoritos' : 'Tornar favorito';
+      const svg = btnFav.querySelector('svg');
+      if (svg) {
+        svg.setAttribute('fill', novoStatus ? '#F59E0B' : 'none');
+        svg.setAttribute('stroke', novoStatus ? '#D97706' : '#94A3B8');
+      }
     }
-  }
+  });
 
   // Se a aba selecionada for Favoritos, re-renderiza para atualizar a lista
   if (categoriaAtivaDespensa === 'favoritos' || AppState.filtroCategoria === 'favoritos') {
@@ -4453,7 +4453,9 @@ function alternarFavoritoItem(produtoId, event) {
     if (AppState.abaAtiva === 'lista') renderizarListaCompras();
   }
 
-  mostrarNotificacaoToast(prod.favorito ? `⭐ "${prod.nome}" favoritado!` : `☆ "${prod.nome}" removido dos favoritos.`);
+  const nomeProd = (prod && prod.nome) || (itemLista && itemLista.nome) || 'Produto';
+  const nomeReduz = (typeof obterNomeResumido === 'function') ? obterNomeResumido(nomeProd) : nomeProd;
+  mostrarNotificacaoToast(novoStatus ? `⭐ "${nomeReduz}" favoritado!` : `☆ "${nomeReduz}" removido dos favoritos.`);
 }
 
 // Alterna em TEMPO REAL a inclusão ou remoção em Montar Lista (O item NÃO vai pro final)
@@ -6501,63 +6503,185 @@ function atualizarUIModoNoMercado() {
   }
 }
 
-// Regras de simplificação para o Modo Resumido
+// Regras de simplificação e nomes reduzidos diretos para o Modo Resumido
 const REGRAS_NOMES_RESUMIDOS = [
+  // Adoçantes
+  { padrao: /^ado[cç]ante\s+stevia/i, res: 'Adoçante Stevia' },
+  { padrao: /^ado[cç]ante\s+(?:l[ií]quido\s+)?sucralose/i, res: 'Adoçante Sucralose' },
+  { padrao: /^ado[cç]ante\s+(?:em\s+p[oó]\s+)?xilitol/i, res: 'Adoçante Xilitol' },
+  { padrao: /^ado[cç]ante\s+(?:l[ií]quido\s+)?sacarina/i, res: 'Adoçante Sacarina' },
+  { padrao: /^ado[cç]ante\s+(?:l[ií]quido\s+)?eritritol/i, res: 'Adoçante Eritritol' },
+  { padrao: /^ado[cç]ante\s+l[ií]quido/i, res: 'Adoçante Líquido' },
+  { padrao: /^ado[cç]ante/i, res: 'Adoçante' },
+
+  // Temperos e Básicos
+  { padrao: /^a[cç]afr[aã]o(?:\s+da\s+terra)?/i, res: 'Açafrão da Terra' },
+  { padrao: /^alho\s+frito/i, res: 'Alho Frito' },
+  { padrao: /^alho\s+triturado/i, res: 'Alho Triturado' },
+  { padrao: /^alho\s+granulado/i, res: 'Alho Granulado' },
+  { padrao: /^alho\s+por[oó]/i, res: 'Alho-Poró' },
+  { padrao: /^alho\s+roxo/i, res: 'Alho' },
+  { padrao: /^amido\s+de\s+milho/i, res: 'Amido de Milho' },
+  { padrao: /^arroz\s+7\s+gr[aã]os/i, res: 'Arroz 7 Grãos' },
+  { padrao: /^arroz\s+arb[oó]reo/i, res: 'Arroz Arbóreo' },
+  { padrao: /^arroz\s+jasmin/i, res: 'Arroz Jasmin' },
+  { padrao: /^arroz\s+basmati/i, res: 'Arroz Basmati' },
+  { padrao: /^arroz\s+negro/i, res: 'Arroz Negro' },
+  { padrao: /^arroz\s+vermelho/i, res: 'Arroz Vermelho' },
+  { padrao: /^arroz\s+(?:branco|agulhinha|tipo\s*1)/i, res: 'Arroz Branco' },
+  { padrao: /^arroz\s+parboilizado/i, res: 'Arroz Parboilizado' },
+  { padrao: /^arroz\s+integral/i, res: 'Arroz Integral' },
+  { padrao: /^a[cç][uú]car\s+refinado/i, res: 'Açúcar Refinado' },
+  { padrao: /^a[cç][uú]car\s+cristal/i, res: 'Açúcar Cristal' },
+  { padrao: /^a[cç][uú]car\s+demerara/i, res: 'Açúcar Demerara' },
+  { padrao: /^a[cç][uú]car\s+mascavo/i, res: 'Açúcar Mascavo' },
+  { padrao: /^a[cç][uú]car\s+de\s+coco/i, res: 'Açúcar de Coco' },
+  { padrao: /^a[cç][uú]car\s+confeiteiro/i, res: 'Açúcar Confeiteiro' },
+  { padrao: /^a[cç][uú]car\s+light/i, res: 'Açúcar Light' },
+  { padrao: /^a[cç][uú]car\s+org[aâ]nico/i, res: 'Açúcar Orgânico' },
+  { padrao: /^achocolatado/i, res: 'Achocolatado' },
+  { padrao: /^cacau\s+em\s+p[oó]/i, res: 'Cacau em Pó' },
+  { padrao: /^chocolate\s+em\s+p[oó]/i, res: 'Chocolate em Pó' },
   { padrao: /^óleo\s+(?:de\s+)?soja/i, res: 'Óleo' },
+  { padrao: /^óleo\s+(?:de\s+)?girassol/i, res: 'Óleo Girassol' },
+  { padrao: /^óleo\s+(?:de\s+)?milho/i, res: 'Óleo de Milho' },
+  { padrao: /^óleo\s+(?:de\s+)?canola/i, res: 'Óleo de Canola' },
+  { padrao: /^óleo\s+(?:de\s+)?coco/i, res: 'Óleo de Coco' },
   { padrao: /^azeite\s+(?:de\s+oliva)?/i, res: 'Azeite' },
+  { padrao: /^azeite\s+dend[eê]/i, res: 'Azeite de Dendê' },
+  { padrao: /^vinagre\s+(?:de\s+)?ma[cç][aã]/i, res: 'Vinagre de Maçã' },
+  { padrao: /^vinagre\s+(?:de\s+)?[aá]lcool/i, res: 'Vinagre de Álcool' },
+  { padrao: /^vinagre\s+(?:de\s+)?vinho/i, res: 'Vinagre de Vinho' },
+  { padrao: /^vinagre\s+bals[aâ]mico/i, res: 'Aceto Balsâmico' },
   { padrao: /^alface\s+(americana|crespa|lisa|roxa|hidrop[oô]nica)/i, res: 'Alface' },
   { padrao: /^feij[aã]o\s+carioca/i, res: 'Feijão Carioca' },
   { padrao: /^feij[aã]o\s+preto/i, res: 'Feijão Preto' },
   { padrao: /^feij[aã]o\s+fradinho/i, res: 'Feijão Fradinho' },
   { padrao: /^feij[aã]o\s+branco/i, res: 'Feijão Branco' },
   { padrao: /^feij[aã]o\s+vermelho/i, res: 'Feijão Vermelho' },
-  { padrao: /^arroz\s+(branco|agulhinha|tipo\s*1)/i, res: 'Arroz Branco' },
-  { padrao: /^arroz\s+parboilizado/i, res: 'Arroz Parboilizado' },
-  { padrao: /^arroz\s+integral/i, res: 'Arroz Integral' },
   { padrao: /^macarr[aã]o\s+(?:espaguete|com\s+ovos)/i, res: 'Macarrão' },
   { padrao: /^macarr[aã]o\s+parafuso/i, res: 'Macarrão Parafuso' },
   { padrao: /^macarr[aã]o\s+pena/i, res: 'Macarrão Pena' },
+  { padrao: /^macarr[aã]o\s+instant[aâ]neo/i, res: 'Miojo' },
   { padrao: /^sal\s+grosso/i, res: 'Sal Grosso' },
   { padrao: /^sal\s+(?:refinado|iodado)?/i, res: 'Sal' },
+  { padrao: /^sal\s+rosa/i, res: 'Sal Rosa' },
   { padrao: /^farinha\s+de\s+trigo/i, res: 'Farinha de Trigo' },
   { padrao: /^farinha\s+de\s+mandioca/i, res: 'Farinha de Mandioca' },
+  { padrao: /^farinha\s+de\s+aveia/i, res: 'Farinha de Aveia' },
+  { padrao: /^farinha\s+de\s+linha[cç]a/i, res: 'Farinha Linhaça' },
+  { padrao: /^farinha\s+de\s+milho/i, res: 'Farinha de Milho' },
+  { padrao: /^farinha\s+de\s+arroz/i, res: 'Farinha de Arroz' },
+  { padrao: /^farinha\s+panko/i, res: 'Farinha Panko' },
+  { padrao: /^farinha\s+de\s+rosca/i, res: 'Farinha de Rosca' },
   { padrao: /^fub[aá]/i, res: 'Fubá' },
+  { padrao: /^floc[aã]o\s+de\s+milho/i, res: 'Flocão de Milho' },
+  { padrao: /^aveia\s+em\s+flocos/i, res: 'Aveia em Flocos' },
+  { padrao: /^farelo\s+de\s+aveia/i, res: 'Farelo de Aveia' },
   { padrao: /^milho\s+(?:para\s+)?pipoca/i, res: 'Pipoca' },
   { padrao: /^leite\s+integral/i, res: 'Leite Integral' },
   { padrao: /^leite\s+desnatado/i, res: 'Leite Desnatado' },
   { padrao: /^leite\s+semidesnatado/i, res: 'Leite Semidesnatado' },
   { padrao: /^leite\s+zero\s+lactose/i, res: 'Leite Zero Lactose' },
-  { padrao: /^caf[eé]\s+(mo[ií]do|torrado|tradicional|extraforte)/i, res: 'Café' },
+  { padrao: /^leite\s+em\s+p[oó]/i, res: 'Leite em Pó' },
+  { padrao: /^leite\s+condensado/i, res: 'Leite Condensado' },
+  { padrao: /^creme\s+de\s+leite/i, res: 'Creme de Leite' },
+  { padrao: /^leite\s+de\s+coco/i, res: 'Leite de Coco' },
+  { padrao: /^coco\s+ralado/i, res: 'Coco Ralado' },
+  { padrao: /^caf[eé]\s+(?:mo[ií]do|torrado|tradicional|extraforte)/i, res: 'Café' },
   { padrao: /^caf[eé]\s+sol[uú]vel/i, res: 'Café Solúvel' },
-  { padrao: /^a[cç][uú]car\s+refinado/i, res: 'Açúcar Refinado' },
-  { padrao: /^a[cç][uú]car\s+cristal/i, res: 'Açúcar Cristal' },
-  { padrao: /^a[cç][uú]car\s+demerara/i, res: 'Açúcar Demerara' },
-  { padrao: /^a[cç][uú]car\s+mascavo/i, res: 'Açúcar Mascavo' },
+  { padrao: /^caf[eé]\s+em\s+c[aá]psula/i, res: 'Cápsulas Café' },
+  { padrao: /^caf[eé]\s+em\s+gr[aã]os/i, res: 'Café em Grãos' },
   { padrao: /^extrato\s+de\s+tomate/i, res: 'Extrato de Tomate' },
-  { padrao: /^achocolatado/i, res: 'Achocolatado' },
+  { padrao: /^molho\s+de\s+tomate/i, res: 'Molho de Tomate' },
+  { padrao: /^passata\s+de\s+tomate/i, res: 'Passata de Tomate' },
   { padrao: /^tomate\s+italiano/i, res: 'Tomate Italiano' },
   { padrao: /^tomate\s+salada/i, res: 'Tomate' },
+  { padrao: /^tomate\s+cereja/i, res: 'Tomate Cereja' },
+  { padrao: /^tomate\s+sweet\s+grape/i, res: 'Sweet Grape' },
   { padrao: /^cebola\s+branca/i, res: 'Cebola Branca' },
   { padrao: /^cebola\s+roxa/i, res: 'Cebola Roxa' },
   { padrao: /^banana\s+prata/i, res: 'Banana Prata' },
   { padrao: /^banana\s+nanica/i, res: 'Banana Nanica' },
+  { padrao: /^banana\s+da\s+terra/i, res: 'Banana da Terra' },
+  { padrao: /^banana\s+ma[cç][aã]/i, res: 'Banana Maçã' },
   { padrao: /^ma[cç][aã]\s+(?:nacional\s+)?gala/i, res: 'Maçã Gala' },
   { padrao: /^ma[cç][aã]\s+(?:verde\s*\/\s*)?fuji/i, res: 'Maçã Fuji' },
+  { padrao: /^ma[cç][aã]\s+verde/i, res: 'Maçã Verde' },
   { padrao: /^batata\s+inglesa/i, res: 'Batata Inglesa' },
   { padrao: /^batata\s+doce/i, res: 'Batata Doce' },
-  { padrao: /^batata\s+baroa/i, res: 'Batata Baroa' }
+  { padrao: /^batata\s+baroa/i, res: 'Batata Baroa' },
+  { padrao: /^batata\s+palha/i, res: 'Batata Palha' },
+  { padrao: /^maionese/i, res: 'Maionese' },
+  { padrao: /^ketchup/i, res: 'Ketchup' },
+  { padrao: /^mostarda\s+(?:francesa\s+tipo\s+)?dijon/i, res: 'Mostarda Dijon' },
+  { padrao: /^mostarda/i, res: 'Mostarda' },
+  { padrao: /^molho\s+(?:de\s+soja\s+)?shoyu/i, res: 'Molho Shoyu' },
+  { padrao: /^molho\s+barbecue/i, res: 'Molho Barbecue' },
+  { padrao: /^molho\s+ingl[eê]s/i, res: 'Molho Inglês' },
+  { padrao: /^molho\s+de\s+pimenta/i, res: 'Molho de Pimenta' },
+  { padrao: /^fermento\s+em\s+p[oó]/i, res: 'Fermento em Pó' },
+  { padrao: /^fermento\s+biol[oó]gico/i, res: 'Fermento Biológico' },
+  { padrao: /^bicarbonato(?:\s+de\s+s[oó]dio)?/i, res: 'Bicarbonato' },
+  { padrao: /^pimenta\s+do\s+reino/i, res: 'Pimenta do Reino' },
+  { padrao: /^p[aá]prica\s+doce/i, res: 'Páprica Doce' },
+  { padrao: /^p[aá]prica\s+defumada/i, res: 'Páprica Defumada' },
+  { padrao: /^p[aá]prica\s+picante/i, res: 'Páprica Picante' },
+  { padrao: /^or[eé]gano/i, res: 'Orégano' },
+  { padrao: /^canela\s+em\s+p[oó]/i, res: 'Canela em Pó' },
+  { padrao: /^canela\s+em\s+pau/i, res: 'Canela em Pau' },
+  { padrao: /^cravo\s+da\s+[ií]ndia/i, res: 'Cravo da Índia' },
+  { padrao: /^noz\s+moscada/i, res: 'Noz Moscada' },
+  { padrao: /^erva\s+doce/i, res: 'Erva Doce' },
+  { padrao: /^chimichurri/i, res: 'Chimichurri' },
+  { padrao: /^cominho/i, res: 'Cominho' }
 ];
 
 function obterNomeResumido(nome) {
   if (!nome || typeof nome !== 'string') return '';
   const limpoTrim = nome.trim();
+
+  // 1. Verifica regras pré-definidas de alta precisão
   for (const r of REGRAS_NOMES_RESUMIDOS) {
     if (r.padrao.test(limpoTrim)) return r.res;
   }
-  // Limpeza geral para outros itens: remove parênteses de unidades e adjetivos comerciais
-  let limpo = limpoTrim.replace(/\s*\([^)]*\)/g, '');
-  limpo = limpo.replace(/\b(refinado|refinada|especial|tipo\s*\d+|novo\s+tipo\s*\d+|uht|crocante|hidrop[oô]nica|fresco|fresca|fresquinho|selecionado|selecionada|resfriado|resfriada|congelado|congelada|tradicional|nacional|extra\s+virgem|antisséptico|concentrado|concentrada)\b/gi, '');
+
+  // 2. Limpeza profunda e abrupta
+  let limpo = limpoTrim;
+
+  // Remove parênteses e colchetes com seus conteúdos (ex: (kg), (60ml), [100g], (Pote 500g))
+  limpo = limpo.replace(/\s*\([^)]*\)/g, '').replace(/\s*\[[^\]]*\]/g, '').trim();
+
+  // Remove percentuais e claims comuns (ex: 100% natural, 100%, 70% cacau)
+  limpo = limpo.replace(/\b\d+%\s*(?:natural|puro|pura|integral|de\s+fruta|cacau)?/gi, '');
+
+  // Remove marcas conhecidas que poluem o nome principal
+  limpo = limpo.replace(/\b(color\s+andina|hellmann\'?s|heinz|linea|sakura|quaker|yoki|dona\s+benta|tio\s+jo[aã]o|camil|dr\.?\s*oetker|nestl[eé]|garoto|lacta|bauducco|pil[aã]o|melitta|3\s*cora[cç][oõ]es|tres\s*cora[cç][oõ]es|qualy|sadia|perdig[aã]o|seara|danone|vigor|itamb[eé]|piracanjuba|parmalat|marat[aá]|zaeli|predilecta|elefante|pomarola|soya|liza|coamo|cocinero|borges|gallo|andorinha|carbonell|filippo\s+berio|sinh[aá]|uni[aã]o|da\s+barra|zero[-\s]*cal|finn|maguary|dafruta|camp|tang|clight|knorr|maggi|ajinomoto|arisco|fugini|quero|peixe|vitalle|liza|leve|adoro|cocamar|italac|cemil|tirol|batavo|elege|frimesa|aurora|panco|wickbold|plus\s+vita|pullman|visconti|parati|marilan|mabel|triunfo|adria|isabela|fortaleza|piraqu[eê]|vitarella|toddy|nescau|ovomaltine|downy|comfort|yp[eê]|ype|omo|brilhante|ariel|tixan|vanish|veja|cif|mr\s+m[uú]sculo|ajax|pinho\s+sol|lysoform|minuano|limpol|bombril|assolan|sanilux|harpic|pato|colgate|sorriso|oral[-\s]*b|sensodyne|close[-\s]*up|dove|lux|palmolive|protex|nivea|rexona|axe|monange|seda|pantene|elseve|clear|tresemm[eé]|personal|neve|milli|duetto|sublime|cotton|snob|scala|copacol|pif\s+paf|essential\s+nutrition|la\s+pastina|ruzene|real\s+thai)\b/gi, '');
+
+  // Remove formatos de embalagem e apresentação
+  limpo = limpo.replace(/\b(gotas|em\s+gotas|l[ií]quido|l[ií]quida|em\s+p[oó]|em\s+gr[aã]os|em\s+tiras|em\s+cubos|em\s+fatias|fatiado|fatiada|ralado|ralada|mo[ií]do|mo[ií]da|triturado|triturada|desidratado|desidratada|granulado|granulada|frasco|squeeze|vidro|lata|garrafa|pote|sach[eê]|pacote|envelope|caixa|tubo|refil|stand\s*up\s*pouch|tetra\s*pak|pack|d[uú]zia|bandeja|ma[cç]o|unidade)\b/gi, '');
+
+  // Remove adjetivos comerciais e palavras de marketing
+  limpo = limpo.replace(/\b(puro|pura|natural|artesanal|gourmet|premium|cl[aá]ssico|cl[aá]ssica|original|especial|especiais|tipo\s*\d+|novo\s+tipo\s*\d+|uht|crocante|crocantes|hidrop[oô]nica|fresco|fresca|frescos|frescas|fresquinho|fresquinha|selecionado|selecionada|selecionados|selecionadas|resfriado|resfriada|resfriados|resfriadas|congelado|congelada|congelados|congeladas|tradicional|tradicionais|nacional|nacionais|importado|importada|extra\s+virgem|antiss[eé]ptico|concentrado|concentrada|concentrados|nobre|nobres|longa\s+vida|zero\s+calorias|zero\s+a[cç][uú]car|sem\s+a[cç][uú]car|diet|light|refinado|refinada)\b/gi, '');
+
+  // Remove medidas e números isolados com unidades (ex: 500g, 1kg, 75ml, 60ml, 30 un)
+  limpo = limpo.replace(/\b\d+(?:[.,]\d+)?\s*(?:kg|g|gr|l|lt|litros?|ml|un|und|unidades?|pct|pacotes?|doses?|folhas?|sach[eê]s?|tabletes?|c[aá]psulas?)\b/gi, '');
+
+  // Limpa múltiplos espaços
   limpo = limpo.replace(/\s{2,}/g, ' ').trim();
+
+  // Limpa preposições/conjunções soltas nas extremidades
+  limpo = limpo.replace(/^(?:de|da|do|dos|das|para|com|em|e)\s+/i, '');
+  limpo = limpo.replace(/\s+(?:de|da|do|dos|das|para|com|em|e)$/i, '');
+
+  // 3. Redução abrupta final para manter o nome enxuto (máximo 2 a 3 palavras principais)
+  const palavras = limpo.split(/\s+/).filter(Boolean);
+  if (palavras.length > 3) {
+    limpo = palavras.slice(0, 3).join(' ');
+  } else if (palavras.length === 0) {
+    limpo = nome.trim();
+  }
+
   return limpo || nome;
 }
 
@@ -7939,9 +8063,8 @@ function renderizarComparadorDF() {
 
     const nomesResumidosVistos = new Set();
     itensExibir.forEach(item => {
-      let nomeExibicao = item.nome;
+      let nomeExibicao = (typeof obterNomeResumido === 'function') ? obterNomeResumido(item.nome) : item.nome;
       if (AppState.modoResumido) {
-        nomeExibicao = obterNomeResumido(item.nome);
         const chaveDeduplicacao = nomeExibicao.toLowerCase().trim();
         if (nomesResumidosVistos.has(chaveDeduplicacao)) {
           return; // Deduplica variações no modo resumido
@@ -8300,7 +8423,7 @@ function alternarOrdemAlfabeticaDrawer() {
       <div class="drawer-item-row">
         <div class="drawer-item-icone">${iconeSvg}</div>
         <div class="drawer-item-info">
-          <div class="drawer-item-nome" title="${itemCat.nome}">${itemCat.nome}</div>
+          <div class="drawer-item-nome" title="${itemCat.nome}">${obterNomeResumido(itemCat.nome)}</div>
           <div class="drawer-item-cat">${itemCat.categoria || 'Geral'}</div>
         </div>
         <div class="drawer-item-preco">${precoFormatado}</div>
@@ -8349,7 +8472,7 @@ function alternarOrdemAlfabeticaDrawer() {
           <div class="drawer-item-row sugestao-geral">
             <div class="drawer-item-icone">${iconeSvg}</div>
             <div class="drawer-item-info">
-              <div class="drawer-item-nome" title="${catItem.nome}">${catItem.nome}</div>
+              <div class="drawer-item-nome" title="${catItem.nome}">${obterNomeResumido(catItem.nome)}</div>
               <div class="drawer-item-cat">${catItem.categoria || 'Geral'}</div>
             </div>
             <div class="drawer-item-preco">${precoFormatado}</div>

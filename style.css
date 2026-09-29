@@ -2453,8 +2453,12 @@ body.tema-escuro .btn-categoria-fav.ativo,
 }
 
 #view-despensa .item-card .item-linha-nome {
-  gap: 4px !important;
+  display: flex !important;
   align-items: center !important;
+  gap: 5px !important;
+  flex-wrap: nowrap !important;
+  width: 100% !important;
+  min-width: 0 !important;
 }
 
 #view-despensa .item-card .item-nome {
@@ -2464,6 +2468,11 @@ body.tema-escuro .btn-categoria-fav.ativo,
   font-size: var(--fonte-montar, 0.78rem) !important;
   line-height: 1.2 !important;
   text-decoration: none !important;
+  flex: 1 !important;
+  min-width: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
 
 /* Botão Estrelinha de Favorito */
@@ -2485,16 +2494,20 @@ body.tema-escuro .btn-categoria-fav.ativo,
 }
 
 #view-despensa .item-card .btn-favorito-item {
-  width: 17px !important;
-  height: 17px !important;
-  min-width: 17px !important;
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
   padding: 0 !important;
   flex-shrink: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 #view-despensa .item-card .btn-favorito-item svg {
-  width: 13px !important;
-  height: 13px !important;
+  width: 14px !important;
+  height: 14px !important;
+  flex-shrink: 0 !important;
   transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), stroke 0.15s ease, fill 0.15s ease;
 }
 
@@ -2517,6 +2530,10 @@ body.tema-escuro .btn-categoria-fav.ativo,
   border-radius: 3px !important;
   padding: 0 !important;
   flex-shrink: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-left: auto !important;
 }
 
 #view-despensa .item-card .btn-editar-despensa svg {
