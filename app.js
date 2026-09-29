@@ -771,10 +771,17 @@ function sincronizarListaAtivaComCatalogo() {
       const padrao = CATALOGO_PADRAO_EXPANDIDO.find(p => p.id === prod.id || p.nome.toLowerCase().trim() === prod.nome.toLowerCase().trim());
       const precoReferenciaDF = (padrao && padrao.precoMedioDF) || prod.precoMedioDF || prod.preco || 0;
 
-      // Preços registrados de gôndola/mercado vêm zerados por padrão
-      const precoRegistrado = (prod.precoRegistradoMercado && Number(prod.precoRegistradoMercado) > 0) 
-        ? Number(prod.precoRegistradoMercado) 
-        : 0;
+      // No celular (somente mobile): não traz preços, vêm todos 0,00 até falar no mic
+      let precoRegistrado = 0;
+      if (ehDispositivoMobile) {
+        precoRegistrado = (prod.precoRegistradoMercado && Number(prod.precoRegistradoMercado) > 0) 
+          ? Number(prod.precoRegistradoMercado) 
+          : 0;
+      } else {
+        precoRegistrado = (prod.precoRegistradoMercado && Number(prod.precoRegistradoMercado) > 0) 
+          ? Number(prod.precoRegistradoMercado) 
+          : (Number(prod.preco) || 0);
+      }
 
       return {
         id: prod.id,
@@ -785,7 +792,7 @@ function sincronizarListaAtivaComCatalogo() {
         marca: prod.marca || null,
         qtde: prod.qtde || 1,
         precoReferencia: precoReferenciaDF,
-        preco: precoRegistrado, // Valores vêm zerados por padrão
+        preco: precoRegistrado, // No mobile, rigorosamente 0.00
         precoRegistradoMercado: precoRegistrado,
         ultimoPreco: prod.ultimoPreco || precoReferenciaDF,
         dataUltimoPreco: prod.dataUltimoPreco || new Date().toISOString().slice(0, 10),
@@ -1040,6 +1047,27 @@ function inicializarNuvem() {
       if (dadosNuvem.mercadoReferencia && dadosNuvem.mercadoReferencia !== 'todos') {
         AppState.mercadoReferencia = dadosNuvem.mercadoReferencia;
       }
+
+      // No celular (somente mobile), não traga preços. Tem que vir todos 0,00 até falar no mic
+      if (ehDispositivoMobile) {
+        if (AppState.listaAtiva) {
+          AppState.listaAtiva.forEach(item => {
+            if (!item.precoRegistradoMercado) {
+              item.precoRegistradoMercado = 0;
+              item.preco = 0;
+            }
+          });
+        }
+        if (AppState.catalogo) {
+          AppState.catalogo.forEach(p => {
+            if (!p.precoRegistradoMercado) {
+              p.precoRegistradoMercado = 0;
+              p.preco = 0;
+            }
+          });
+        }
+      }
+
       salvarEstado(false); // Salva local sem retransmitir
       renderizarTudo();
       atualizarContadorSidebarMontar();
@@ -1927,13 +1955,20 @@ function atualizarCardResumo() {
       nomesResumidosVistos.add(chaveDedup);
     }
 
-    let precoItem = (ref !== 'nenhum') ? obterPrecoEstimadoMercado(item, ref) : 0;
-    if (!precoItem || precoItem <= 0) {
-      precoItem = item.preco || item.ultimoPreco || item.precoReferencia || 0;
-    }
-    if (!precoItem || precoItem <= 0) {
-      const precosValidos = Object.keys(MERCADOS_DF).map(r => obterPrecoEstimadoMercado(item, r)).filter(p => p > 0);
-      if (precosValidos.length > 0) precoItem = Math.min(...precosValidos);
+    let precoItem = 0;
+    if (ehDispositivoMobile) {
+      precoItem = (item.precoRegistradoMercado && Number(item.precoRegistradoMercado) > 0) 
+        ? Number(item.precoRegistradoMercado) 
+        : 0;
+    } else {
+      precoItem = (ref !== 'nenhum') ? obterPrecoEstimadoMercado(item, ref) : 0;
+      if (!precoItem || precoItem <= 0) {
+        precoItem = item.preco || item.ultimoPreco || item.precoReferencia || 0;
+      }
+      if (!precoItem || precoItem <= 0) {
+        const precosValidos = Object.keys(MERCADOS_DF).map(r => obterPrecoEstimadoMercado(item, r)).filter(p => p > 0);
+        if (precosValidos.length > 0) precoItem = Math.min(...precosValidos);
+      }
     }
 
     const subtotal = (item.qtde || 1) * precoItem;
@@ -2463,7 +2498,17 @@ function renderizarListaCompras() {
         ? `<span class="badge-confirmar-desmarcar" title="Clique mais uma vez para desmarcar">⚠️ Toque novamente para desmarcar</span>` 
         : '';
 
-      const precoRegistradoValor = (item.preco && Number(item.preco) > 0) ? Number(item.preco) : 0;
+      // No celular (somente mobile): não traz preços, vêm todos 0,00 até falar no mic
+      let precoRegistradoValor = 0;
+      if (ehDispositivoMobile) {
+        precoRegistradoValor = (item.precoRegistradoMercado && Number(item.precoRegistradoMercado) > 0)
+          ? Number(item.precoRegistradoMercado)
+          : 0;
+      } else {
+        precoRegistradoValor = (item.precoRegistradoMercado && Number(item.precoRegistradoMercado) > 0)
+          ? Number(item.precoRegistradoMercado)
+          : (Number(item.preco) || 0);
+      }
       const precoFormatadoTxt = precoRegistradoValor > 0 ? `R$ ${precoRegistradoValor.toFixed(2).replace('.', ',')}` : 'R$ 0,00';
 
       linhasTabelaHtml += `
