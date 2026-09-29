@@ -64,11 +64,11 @@
 
         <button class="sidebar-nav-item nav-item" data-aba="despensa" id="btn-nav-montar-lista" onclick="navegarParaAba('despensa');">
           <span class="sidebar-nav-icon">📋</span>
-          <span class="sidebar-nav-text">ORGANIZAR LISTA</span>
+          <span class="sidebar-nav-text">CRIAR LISTA</span>
           <span class="sidebar-nav-badge" id="sidebar-montar-itens-badge">0 itens</span>
         </button>
 
-        <!-- SUBOPÇÕES DE ORGANIZAR LISTA (REVELAÇÃO CORTINA SUAVE IDENTADA) -->
+        <!-- SUBOPÇÕES DE CRIAR LISTA (REVELAÇÃO CORTINA SUAVE IDENTADA) -->
         <div id="sidebar-subopcoes-montar" class="sidebar-subopcoes-cortina">
           <button id="btn-sidebar-modo-resumido" class="btn-subopcao-item btn-sub-resumir" onclick="alternarModoResumido()" title="Alternar entre nomes resumidos ou nomes completos">
             <span class="ico-sub">📝</span> <span class="txt-sub">Resumir nomes</span>
@@ -150,8 +150,8 @@
             🔤 A-Z
           </button>
           <div id="controles-fonte-header" class="controles-fonte-header" style="display: none;">
-            <button type="button" class="btn-fonte-header" onclick="ajustarFonteMontarLista(-1)" title="Diminuir fonte em Organizar Lista">A−</button>
-            <button type="button" class="btn-fonte-header" onclick="ajustarFonteMontarLista(1)" title="Aumentar fonte em Organizar Lista">A+</button>
+            <button type="button" class="btn-fonte-header" onclick="ajustarFonteMontarLista(-1)" title="Diminuir fonte em Criar Lista">A−</button>
+            <button type="button" class="btn-fonte-header" onclick="ajustarFonteMontarLista(1)" title="Aumentar fonte em Criar Lista">A+</button>
           </div>
           <button id="btn-perfil-usuario" class="btn-perfil-usuario-header" onclick="abrirModalPerfilUsuario()" title="Identificar quem está enviando itens (Irandy / Sioneide)">
             <span id="ico-perfil-header" class="ico-perfil-header">👨</span>
@@ -734,7 +734,7 @@
     </button>
     <button class="mobile-nav-btn" data-aba="despensa" onclick="navegarParaAba('despensa')">
       <span class="mobile-nav-icon">📋</span>
-      <span class="mobile-nav-label">ORGANIZAR</span>
+      <span class="mobile-nav-label">CRIAR LISTA</span>
       <span id="mobile-nav-badge-itens" class="mobile-nav-badge">0</span>
     </button>
     <button class="mobile-nav-btn" data-aba="historico" onclick="navegarParaAba('historico')">
