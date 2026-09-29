@@ -2656,7 +2656,6 @@ function ouvirPrecoItem(itemId, btnEl, ev) {
 
   gravandoPrecoItemId = itemId;
   if (btnEl) btnEl.classList.add('ouvindo');
-  mostrarNotificacaoToast(`🎙️ Ouvindo preço de "${item.nome}"... Diga o valor (ex: 1,10, 55 centavos ou 4 e 35)`);
 
   try {
     recognizerPreco = new SpeechRecognition();
@@ -5830,7 +5829,6 @@ function configurarReconhecimentoVoz() {
         placeholderOriginal = inputBusca.placeholder;
         inputBusca.placeholder = "🎙️ Ouvindo... Diga o produto a pesquisar...";
       }
-      mostrarNotificacaoToast("🎙️ Microfone ativado. Fale o nome do produto...");
     } catch (e) {
       console.error("Erro ao iniciar microfone:", e);
       pararGravacao();
