@@ -12,7 +12,7 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>">
   
   <!-- CSS Moderno -->
-  <link rel="stylesheet" href="style.css?v=8.0">
+  <link rel="stylesheet" href="style.css?v=8.1">
 </head>
 <body>
 
@@ -622,6 +622,40 @@
     </div>
   </div>
 
+  <!-- TOAST DE NOTIFICAÇÃO EM TEMPO REAL (QUANDO A ESPOSA ATUALIZAR A LISTA) -->
+  <div id="toast-notificacao-nuvem" class="toast-nuvem-realtime" style="display: none;">
+    <div class="toast-nuvem-conteudo">
+      <span class="toast-nuvem-ico">⚡</span>
+      <span id="toast-nuvem-texto" class="toast-nuvem-txt">Lista atualizada pela nuvem!</span>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAVIGATION BAR (BARRA INFERIOR FIXA PARA CELULAR) -->
+  <nav class="mobile-bottom-nav">
+    <button class="mobile-nav-btn ativo" data-aba="lista" onclick="navegarParaAba('lista')">
+      <span class="mobile-nav-icon">🛒</span>
+      <span class="mobile-nav-label">COMPRAR</span>
+    </button>
+    <button class="mobile-nav-btn" data-aba="despensa" onclick="navegarParaAba('despensa')">
+      <span class="mobile-nav-icon">📋</span>
+      <span class="mobile-nav-label">MONTAR</span>
+      <span id="mobile-nav-badge-itens" class="mobile-nav-badge">0</span>
+    </button>
+    <button class="mobile-nav-btn" data-aba="historico" onclick="navegarParaAba('historico')">
+      <span class="mobile-nav-icon">📊</span>
+      <span class="mobile-nav-label">HISTÓRICO</span>
+    </button>
+    <button class="mobile-nav-btn" onclick="atualizarCotacaoManual()" title="Atualizar Cotação">
+      <span class="mobile-nav-icon" style="color: #10B981;">⚡</span>
+      <span class="mobile-nav-label">COTAÇÃO</span>
+    </button>
+    <button class="mobile-nav-btn" onclick="abrirModal('modal-nuvem')" title="Sincronização Nuvem">
+      <span class="mobile-nav-icon">☁️</span>
+      <span class="mobile-nav-label">NUVEM</span>
+      <span id="mobile-nuvem-dot" class="mobile-nuvem-dot"></span>
+    </button>
+  </nav>
+
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
@@ -629,7 +663,7 @@
   <script src="logos_banco.js"></script>
   <script src="icones2d.js"></script>
   <script src="firebase-sync.js"></script>
-  <script src="app.js?v=7.8"></script>
+  <script src="app.js?v=8.1"></script>
 
 </body>
 </html>

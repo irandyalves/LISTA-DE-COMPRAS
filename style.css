@@ -4770,3 +4770,222 @@ body.modo-mercado-ativo .item-nome {
   }
 }
 
+/* =========================================================================
+   CAMADA MOBILE FIRST & RESPONSIVIDADE PARA CELULAR (PADRÃO APP)
+   ========================================================================= */
+
+/* Desktop: Oculta bottom nav e toast quando não ativo */
+@media (min-width: 821px) {
+  .mobile-bottom-nav {
+    display: none !important;
+  }
+}
+
+/* Toast de Notificação da Nuvem em Tempo Real */
+.toast-nuvem-realtime {
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999999;
+  background: #0F172A;
+  color: #FFFFFF;
+  padding: 10px 18px;
+  border-radius: 30px;
+  box-shadow: 0 10px 25px -4px rgba(15, 23, 42, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1.5px solid #10B981;
+  animation: toastDescerSuave 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes toastDescerSuave {
+  from { opacity: 0; transform: translate(-50%, -20px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.toast-nuvem-conteudo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.toast-nuvem-ico {
+  font-size: 1.1rem;
+}
+
+/* CELULARES E TABLETS PEQUENOS (<= 820px) */
+@media (max-width: 820px) {
+  /* 1. Oculta sidebar desktop e expande conteúdo para 100% da tela */
+  .sidebar-esquerda {
+    display: none !important;
+  }
+
+  .layout-conteudo-principal {
+    margin-left: 0 !important;
+    width: 100% !important;
+    padding-bottom: 74px !important; /* Espaço para a barra inferior fixa */
+  }
+
+  body {
+    padding-bottom: 74px !important;
+  }
+
+  /* 2. Barra de Navegação Inferior Fixa para Celular (Mobile Bottom Nav) */
+  .mobile-bottom-nav {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 58px !important;
+    background: #FFFFFF !important;
+    border-top: 1.5px solid #E2E8F0 !important;
+    box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.08) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-around !important;
+    z-index: 99999 !important;
+    padding: 0 4px !important;
+  }
+
+  .mobile-nav-btn {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    background: none;
+    border: none;
+    color: #64748B;
+    cursor: pointer;
+    padding: 6px 8px;
+    border-radius: 8px;
+    transition: all 0.15s ease;
+    flex: 1;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobile-nav-btn.ativo {
+    color: #4F46E5;
+    font-weight: 800;
+  }
+
+  .mobile-nav-btn.ativo .mobile-nav-icon {
+    transform: scale(1.18);
+  }
+
+  .mobile-nav-icon {
+    font-size: 1.25rem;
+    line-height: 1;
+    transition: transform 0.15s ease;
+  }
+
+  .mobile-nav-label {
+    font-size: 0.60rem;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+  }
+
+  .mobile-nav-badge {
+    position: absolute;
+    top: 4px;
+    right: calc(50% - 18px);
+    background: #4F46E5;
+    color: #FFFFFF;
+    font-size: 0.58rem;
+    font-weight: 800;
+    padding: 1px 5px;
+    border-radius: 8px;
+    border: 1.5px solid #FFFFFF;
+    line-height: 1;
+  }
+
+  .mobile-nuvem-dot {
+    position: absolute;
+    top: 8px;
+    right: calc(50% - 14px);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #10B981;
+    border: 1.5px solid #FFFFFF;
+  }
+
+  /* 3. Topo Congelado Adaptado para Celular */
+  .painel-topo-congelado {
+    padding: 6px 8px !important;
+  }
+
+  .header-otimizado-l1 {
+    gap: 6px !important;
+  }
+
+  .input-pesquisa-topo-box input {
+    font-size: 16px !important; /* Evita auto-zoom do Safari no iOS */
+    padding: 8px 10px !important;
+  }
+
+  /* 4. Abas de Categorias com Rolagem Horizontal Suave */
+  .despensa-abas-categorias {
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    padding: 4px 2px !important;
+    gap: 6px !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .despensa-aba-tab {
+    padding: 5px 10px !important;
+    font-size: 0.76rem !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* 5. Tabela de Compras Adaptada com Toque Fácil */
+  .mcol-th-categoria-col {
+    min-width: 220px !important;
+  }
+
+  .mcol-td-check {
+    width: 38px !important;
+    min-width: 38px !important;
+  }
+
+  .btn-check-comprado {
+    width: 26px !important;
+    height: 26px !important;
+    font-size: 0.95rem !important;
+  }
+
+  .mcol-td-qtde {
+    width: 65px !important;
+    min-width: 65px !important;
+  }
+
+  .mcol-qtde-btn {
+    width: 22px !important;
+    height: 22px !important;
+  }
+
+  .mcol-prod-nome {
+    font-size: 0.85rem !important;
+  }
+
+  /* 6. Despensa / Catálogo em Grid Responsiva */
+  .despensa-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
+    gap: 8px !important;
+    padding: 8px !important;
+  }
+
+  /* 7. Modal e Popover de Marcas no Celular */
+  .cortina-marcas-popover {
+    width: calc(100vw - 20px) !important;
+    left: 10px !important;
+    right: 10px !important;
+  }
+}
+

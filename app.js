@@ -1016,6 +1016,8 @@ function inicializarNuvem() {
       }
       salvarEstado(false); // Salva local sem retransmitir
       renderizarTudo();
+      atualizarContadorSidebarMontar();
+      exibirToastNuvem("📲 A lista foi sincronizada pela nuvem!");
     },
     (status) => {
       atualizarBadgeStatus(status);
@@ -1023,8 +1025,23 @@ function inicializarNuvem() {
   );
 }
 
+let timerToastNuvem = null;
+function exibirToastNuvem(mensagem = "Lista atualizada em tempo real!") {
+  const toast = document.getElementById('toast-notificacao-nuvem');
+  const txt = document.getElementById('toast-nuvem-texto');
+  if (!toast) return;
+  if (txt) txt.textContent = mensagem;
+
+  toast.style.display = 'flex';
+  clearTimeout(timerToastNuvem);
+  timerToastNuvem = setTimeout(() => {
+    toast.style.display = 'none';
+  }, 3500);
+}
+
 function atualizarBadgeStatus(status) {
   const btnNuvem = document.getElementById('btn-nuvem-header');
+  const dotMobile = document.getElementById('mobile-nuvem-dot');
   if (btnNuvem) {
     if (status.online) {
       btnNuvem.classList.add('online');
@@ -1033,6 +1050,9 @@ function atualizarBadgeStatus(status) {
       btnNuvem.classList.remove('online');
       btnNuvem.title = status.msg || "Configurar Nuvem / Compartilhar com Esposa";
     }
+  }
+  if (dotMobile) {
+    dotMobile.style.background = status.online ? '#10B981' : '#94A3B8';
   }
 }
 
@@ -1636,8 +1656,8 @@ function alternarAbaApp(aba, isUserClick = true) {
   const abaAnterior = AppState.abaAtiva;
   AppState.abaAtiva = aba;
 
-  // Sincroniza classes ativas em todos os menus (sidebar e inferior)
-  document.querySelectorAll('.nav-item, .sidebar-nav-item').forEach(b => {
+  // Sincroniza classes ativas em todos os menus (sidebar, inferior celular e desktop)
+  document.querySelectorAll('.nav-item, .sidebar-nav-item, .mobile-nav-btn').forEach(b => {
     if (b.getAttribute('data-aba') === aba) b.classList.add('ativo');
     else b.classList.remove('ativo');
   });
@@ -3977,14 +3997,15 @@ function atualizarUIModoResumido() {
   }
 }
 
-// Atualiza a contagem 'xxx itens' na frente do botão MONTAR LISTA na sidebar
+// Atualiza a contagem 'xxx itens' na frente do botão MONTAR LISTA (Desktop e Mobile)
 function atualizarContadorSidebarMontar() {
   const badge = document.getElementById('sidebar-montar-itens-badge');
-  if (!badge) return;
+  const badgeMobile = document.getElementById('mobile-nav-badge-itens');
   const selecionados = (AppState.listaAtiva && AppState.listaAtiva.length > 0) 
     ? AppState.listaAtiva.length 
     : (AppState.catalogo ? AppState.catalogo.filter(i => i.selecionado).length : 0);
-  badge.textContent = `${selecionados} itens`;
+  if (badge) badge.textContent = `${selecionados} itens`;
+  if (badgeMobile) badgeMobile.textContent = String(selecionados);
 }
 
 function abrirModalOpcoesHeader() {
