@@ -62,6 +62,23 @@ body.tema-escuro .sidebar-app {
   border-right-color: #334155 !important;
 }
 
+[data-theme="dark"] .btn-subopcao-item,
+body.tema-escuro .btn-subopcao-item {
+  color: #CBD5E1 !important;
+}
+
+[data-theme="dark"] .btn-subopcao-item .txt-sub,
+body.tema-escuro .btn-subopcao-item .txt-sub {
+  background: #0F172A !important;
+  border-color: #334155 !important;
+  color: #E2E8F0 !important;
+}
+
+[data-theme="dark"] .btn-subopcao-item.ativo .txt-sub,
+body.tema-escuro .btn-subopcao-item.ativo .txt-sub {
+  color: #FFFFFF !important;
+}
+
 [data-theme="dark"] .barra-navegacao-mobile,
 body.tema-escuro .barra-navegacao-mobile {
   background: #1E293B !important;
@@ -447,7 +464,7 @@ body {
 
 .sidebar-subopcoes-cortina.aberto,
 .sidebar-subopcoes-montar.aberto {
-  max-height: 140px;
+  max-height: 200px;
   opacity: 1;
   transform: translateY(0);
   margin: 4px 4px 8px 14px; /* Identado embaixo do menu pai */
@@ -582,6 +599,76 @@ body {
 
 .btn-subopcao-item:active {
   transform: scale(0.98);
+}
+
+/* Sub-botões Filhos de Histórico (Identados na Sidebar do PC) */
+.btn-subopcao-item.btn-sub-hist-compras {
+  border-left-color: #4F46E5;
+  color: #312E81;
+}
+
+.btn-subopcao-item.btn-sub-hist-compras .txt-sub {
+  border-color: #C7D2FE;
+  color: #4338CA;
+  background: #F5F3FF;
+}
+
+.btn-subopcao-item.btn-sub-hist-compras:hover {
+  background: rgba(79, 70, 229, 0.05) !important;
+  transform: translateX(3px);
+}
+
+.btn-subopcao-item.btn-sub-hist-compras.ativo .txt-sub {
+  border-color: #4F46E5;
+  color: #FFFFFF;
+  background: #4F46E5;
+  box-shadow: 0 1px 4px rgba(79, 70, 229, 0.25);
+}
+
+.btn-subopcao-item.btn-sub-hist-itens {
+  border-left-color: #0284C7;
+  color: #0369A1;
+}
+
+.btn-subopcao-item.btn-sub-hist-itens .txt-sub {
+  border-color: #BAE6FD;
+  color: #0284C7;
+  background: #F0F9FF;
+}
+
+.btn-subopcao-item.btn-sub-hist-itens:hover {
+  background: rgba(2, 132, 199, 0.05) !important;
+  transform: translateX(3px);
+}
+
+.btn-subopcao-item.btn-sub-hist-itens.ativo .txt-sub {
+  border-color: #0284C7;
+  color: #FFFFFF;
+  background: #0284C7;
+  box-shadow: 0 1px 4px rgba(2, 132, 199, 0.25);
+}
+
+.btn-subopcao-item.btn-sub-hist-mais-comprados {
+  border-left-color: #D97706;
+  color: #92400E;
+}
+
+.btn-subopcao-item.btn-sub-hist-mais-comprados .txt-sub {
+  border-color: #FED7AA;
+  color: #B45309;
+  background: #FFFBEB;
+}
+
+.btn-subopcao-item.btn-sub-hist-mais-comprados:hover {
+  background: rgba(217, 119, 6, 0.05) !important;
+  transform: translateX(3px);
+}
+
+.btn-subopcao-item.btn-sub-hist-mais-comprados.ativo .txt-sub {
+  border-color: #D97706;
+  color: #FFFFFF;
+  background: #D97706;
+  box-shadow: 0 1px 4px rgba(217, 119, 6, 0.25);
 }
 
 
@@ -6382,14 +6469,20 @@ body[data-aba-ativa="historico"] .header-acoes-unificadas {
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
 }
 
-/* Barra de Controles e Abas de Visão */
+/* Barra de Controles e Abas de Visão (No PC movida para a sidebar sob Histórico; mantida visível somente no Mobile) */
 .historico-barra-controles {
-  display: flex;
-  justify-content: space-between;
+  display: none !important;
+  justify-content: center;
   align-items: center;
   gap: 10px;
   margin-bottom: 14px;
   flex-wrap: wrap;
+}
+
+@media (max-width: 820px) {
+  .historico-barra-controles {
+    display: flex !important;
+  }
 }
 
 .historico-tabs-modo {

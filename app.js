@@ -2183,6 +2183,27 @@ function alternarAbaApp(aba, isUserClick = true) {
     }
   }
 
+  // Submenu de HISTÓRICO com cortina suave identada
+  const subHistorico = document.getElementById('sidebar-subopcoes-historico');
+  if (subHistorico) {
+    if (aba === 'historico') {
+      if (abaAnterior === 'historico' && isUserClick) {
+        subHistorico.classList.toggle('aberto');
+      } else {
+        subHistorico.classList.add('aberto');
+      }
+      // Sincroniza estado ativo nos botões filhos do histórico
+      const btnSideHistCompras = document.getElementById('btn-sidebar-hist-compras');
+      const btnSideHistItens = document.getElementById('btn-sidebar-hist-itens');
+      const btnSideHistMaisComprados = document.getElementById('btn-sidebar-hist-mais-comprados');
+      if (btnSideHistCompras) btnSideHistCompras.classList.toggle('ativo', modoExibicaoHistorico === 'compras');
+      if (btnSideHistItens) btnSideHistItens.classList.toggle('ativo', modoExibicaoHistorico === 'itens');
+      if (btnSideHistMaisComprados) btnSideHistMaisComprados.classList.toggle('ativo', modoExibicaoHistorico === 'mais_comprados');
+    } else {
+      subHistorico.classList.remove('aberto');
+    }
+  }
+
   // Alternar abas do painel superior congelado
   const abasCategorias = document.getElementById('barra-abas-categorias');
   const inputTopo = document.getElementById('input-novo-item');
@@ -4627,12 +4648,28 @@ let comprasExpandidasIds = new Set();
 
 function alternarModoHistorico(modo) {
   modoExibicaoHistorico = modo;
+  
+  // Se não estiver na aba de histórico, navega para ela
+  if (AppState.abaAtiva !== 'historico') {
+    navegarParaAba('historico');
+  }
+
+  // Abas na visualização mobile
   const btnCompras = document.getElementById('tab-hist-compras');
   const btnItens = document.getElementById('tab-hist-itens');
   const btnMaisComprados = document.getElementById('tab-hist-mais-comprados');
   if (btnCompras) btnCompras.classList.toggle('ativa', modo === 'compras');
   if (btnItens) btnItens.classList.toggle('ativa', modo === 'itens');
   if (btnMaisComprados) btnMaisComprados.classList.toggle('ativa', modo === 'mais_comprados');
+
+  // Sub-botões filhos na barra lateral PC
+  const btnSideHistCompras = document.getElementById('btn-sidebar-hist-compras');
+  const btnSideHistItens = document.getElementById('btn-sidebar-hist-itens');
+  const btnSideHistMaisComprados = document.getElementById('btn-sidebar-hist-mais-comprados');
+  if (btnSideHistCompras) btnSideHistCompras.classList.toggle('ativo', modo === 'compras');
+  if (btnSideHistItens) btnSideHistItens.classList.toggle('ativo', modo === 'itens');
+  if (btnSideHistMaisComprados) btnSideHistMaisComprados.classList.toggle('ativo', modo === 'mais_comprados');
+
   renderizarHistorico();
 }
 

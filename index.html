@@ -82,6 +82,19 @@
           <span class="sidebar-nav-icon">📊</span>
           <span class="sidebar-nav-text">HISTÓRICO</span>
         </button>
+
+        <!-- SUBOPÇÕES DE HISTÓRICO (REVELAÇÃO CORTINA SUAVE IDENTADA) -->
+        <div id="sidebar-subopcoes-historico" class="sidebar-subopcoes-cortina">
+          <button id="btn-sidebar-hist-compras" class="btn-subopcao-item btn-sub-hist btn-sub-hist-compras ativo" onclick="alternarModoHistorico('compras')" title="Exibir histórico agrupado por compras">
+            <span class="ico-sub">🛒</span> <span class="txt-sub">Por Compras</span>
+          </button>
+          <button id="btn-sidebar-hist-itens" class="btn-subopcao-item btn-sub-hist btn-sub-hist-itens" onclick="alternarModoHistorico('itens')" title="Exibir histórico detalhado por item">
+            <span class="ico-sub">📈</span> <span class="txt-sub">Por Item</span>
+          </button>
+          <button id="btn-sidebar-hist-mais-comprados" class="btn-subopcao-item btn-sub-hist btn-sub-hist-mais-comprados" onclick="alternarModoHistorico('mais_comprados')" title="Exibir os produtos mais comprados por mim">
+            <span class="ico-sub">🏆</span> <span class="txt-sub">Mais Comprados por Mim</span>
+          </button>
+        </div>
       </nav>
 
       <!-- INFORMAÇÃO MOVIDA: COMPRANDO NO ASSAÍ / MELHOR MERCADO E ECONOMIA -->
