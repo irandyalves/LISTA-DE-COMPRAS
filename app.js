@@ -2125,8 +2125,8 @@ function atualizarCardEconomiaSidebar(campeaoId, totais, economia) {
     </div>
     ${economia > 0 ? `
       <div class="sidebar-eco-poupanca">
-        <div class="sidebar-eco-poupanca-label">Sua economia será:</div>
-        <div class="sidebar-eco-poupanca-valor">R$ ${economiaTxt}</div>
+        <span class="sidebar-eco-poupanca-label">Sua economia será:</span>
+        <strong class="sidebar-eco-poupanca-valor">R$ ${economiaTxt}</strong>
       </div>
     ` : ''}
   `;

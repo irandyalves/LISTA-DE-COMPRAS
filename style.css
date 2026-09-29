@@ -599,46 +599,46 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 0.68rem;
-  font-weight: 800;
+  font-size: 0.72rem;
+  font-weight: 900;
   text-transform: uppercase;
   color: #047857;
   background: #D1FAE5;
-  padding: 3px 8px;
+  padding: 4px 8px;
   border-radius: 6px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   letter-spacing: 0.5px;
 }
 
 .sidebar-eco-conteudo {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   color: #065F46;
-  line-height: 1.4;
+  line-height: 1.35;
 }
 
 .sidebar-eco-linha-mercado-total {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .sidebar-eco-mercado-info {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .sidebar-eco-logo {
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
   object-fit: contain;
-  border-radius: 4px;
+  border-radius: 3px;
 }
 
 .sidebar-eco-mercado-titulo {
-  font-size: 0.98rem;
+  font-size: 0.84rem;
   font-weight: 800;
   color: #065F46;
 }
@@ -646,38 +646,43 @@ body {
 .sidebar-eco-divisor {
   color: #94A3B8;
   font-weight: 400;
-  font-size: 0.85rem;
+  font-size: 0.80rem;
 }
 
 .sidebar-eco-total-bloco {
-  font-size: 0.85rem;
+  font-size: 0.80rem;
   color: #065F46;
 }
 
 .sidebar-eco-total-valor {
   font-weight: 800;
   color: #047857;
+  font-size: 0.84rem;
 }
 
 .sidebar-eco-poupanca {
-  background: rgba(255, 255, 255, 0.9);
-  padding: 8px 10px;
-  border-radius: 8px;
-  border: 1px solid #A7F3D0;
-  line-height: 1.35;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  background: transparent !important;
+  border: none !important;
+  padding: 2px 0 0 0;
+  margin-top: 2px;
+  box-shadow: none !important;
 }
 
 .sidebar-eco-poupanca-label {
   font-size: 0.78rem;
   color: #065F46;
   font-weight: 600;
-  margin-bottom: 2px;
+  white-space: nowrap;
 }
 
 .sidebar-eco-poupanca-valor {
-  font-size: 1.25rem;
+  font-size: 1.08rem;
   font-weight: 900;
   color: #059669;
+  white-space: nowrap;
 }
 
 .sidebar-footer {
