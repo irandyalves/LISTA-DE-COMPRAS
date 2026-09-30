@@ -2174,15 +2174,19 @@ body.modo-mercado-ativo .item-nome {
 }
 
 .badge-confirmar-desmarcar {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font-size: 0.68rem;
   font-weight: 700;
-  color: #D97706;
+  color: #B45309;
   background: #FEF3C7;
   border: 1px solid #FCD34D;
-  padding: 1px 6px;
-  border-radius: 4px;
+  padding: 2px 8px;
+  border-radius: 6px;
   white-space: nowrap;
   animation: pulse 1s infinite;
+  margin-top: 2px;
 }
 
 .item-check-btn {

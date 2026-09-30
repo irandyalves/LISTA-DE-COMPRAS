@@ -6007,39 +6007,77 @@ function alternarItemComprado(id) {
   const item = AppState.listaAtiva.find(i => String(i.id) === String(id));
   if (!item) return;
 
-  cancelarPendenteDesmarcar();
+  // CASO 1: Item ainda NÃO comprado -> Marca imediatamente com 1 clique!
+  if (!item.comprado) {
+    cancelarPendenteDesmarcar();
+    item.comprado = true;
 
-  // Alterna diretamente: 1 clique para marcar, 1 clique para desmarcar
-  item.comprado = !item.comprado;
+    const catItem = AppState.catalogo.find(c => String(c.id) === String(item.id) || String(c.id) === String(item.catalogoId));
+    if (catItem) catItem.comprado = true;
 
-  const catItem = AppState.catalogo.find(c => String(c.id) === String(item.id) || String(c.id) === String(item.catalogoId));
-  if (catItem) catItem.comprado = item.comprado;
+    salvarEstado(true);
 
-  salvarEstado(true);
+    const atualizouDOM = atualizarVisualItemLinha(item, false);
+    if (atualizouDOM) {
+      setTimeout(() => {
+        reordenarLinhaNaCategoria(item);
+      }, 120);
+      atualizarCardResumo();
+      atualizarBalaoTotalCategoria(item.categoria || 'Diversos');
+      atualizarCardEconomiaSidebar();
+    } else {
+      renderizarListaCompras();
+      atualizarCardResumo();
+    }
 
-  // Atualização visual instantânea do checkbox verde e texto riscado
-  const atualizouDOM = atualizarVisualItemLinha(item, false);
-  if (atualizouDOM) {
-    // Reordena na categoria após o término do evento de clique para não anular o estado do checkbox
-    setTimeout(() => {
-      reordenarLinhaNaCategoria(item);
-    }, 120);
-    atualizarCardResumo();
-    atualizarBalaoTotalCategoria(item.categoria || 'Diversos');
-    atualizarCardEconomiaSidebar();
-  } else {
-    renderizarListaCompras();
-    atualizarCardResumo();
-  }
-
-  // Finalização Automática quando marcar o último item da lista
-  if (item.comprado) {
+    // Finalização Automática quando marcar o último item da lista
     const todosComprados = AppState.listaAtiva.length > 0 && AppState.listaAtiva.every(i => i.comprado);
     if (todosComprados) {
       setTimeout(() => {
         abrirModalFinalizarCompra(true);
       }, 350);
     }
+    return;
+  }
+
+  // CASO 2: Item JÁ ESTÁ COMPRADO -> Exige 2 cliques para desmarcar (com aviso de confirmação)
+  if (itemPendenteDesmarcarId === id) {
+    // 2º clique confirmado dentro da janela de tempo: Desmarca o item!
+    cancelarPendenteDesmarcar();
+    item.comprado = false;
+
+    const catItem = AppState.catalogo.find(c => String(c.id) === String(item.id) || String(c.id) === String(item.catalogoId));
+    if (catItem) catItem.comprado = false;
+
+    salvarEstado(true);
+
+    const atualizouDOM = atualizarVisualItemLinha(item, false);
+    if (atualizouDOM) {
+      setTimeout(() => {
+        reordenarLinhaNaCategoria(item);
+      }, 120);
+      atualizarCardResumo();
+      atualizarBalaoTotalCategoria(item.categoria || 'Diversos');
+      atualizarCardEconomiaSidebar();
+    } else {
+      renderizarListaCompras();
+      atualizarCardResumo();
+    }
+  } else {
+    // 1º clique: entra no estado de aviso/confirmação
+    cancelarPendenteDesmarcar();
+    itemPendenteDesmarcarId = id;
+
+    if (!atualizarVisualItemLinha(item, true)) {
+      renderizarListaCompras();
+    }
+
+    mostrarNotificacaoToast("⚠️ Toque novamente no item para confirmar a desmarcação.");
+
+    // Janela de 4 segundos para expirar a confirmação se não houver o 2º clique
+    timerPendenteDesmarcar = setTimeout(() => {
+      cancelarPendenteDesmarcar();
+    }, 4000);
   }
 }
 
