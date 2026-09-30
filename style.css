@@ -8962,6 +8962,262 @@ body.tema-escuro .card-ranking-stats {
   }
 }
 
+/* ========================================================
+   RECURSOS COLABORATIVOS: PEDIDOS DE CASA, QUEM PEGOU & CORREDORES
+   ======================================================== */
+
+/* 1. Banner de Novos Pedidos de Casa no Topo da aba COMPRAR */
+.banner-novos-pedidos-comprar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%);
+  border: 1.5px solid #FCA5A5;
+  border-left: 5px solid #EF4444;
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.12);
+  animation: deslizarBannerAviso 0.3s ease-out;
+}
+
+@keyframes deslizarBannerAviso {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.banner-novos-pedidos-conteudo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.icone-alerta-pedidos {
+  font-size: 1.3rem;
+  animation: sinoTocar 2s infinite ease-in-out;
+  flex-shrink: 0;
+}
+
+@keyframes sinoTocar {
+  0%, 100% { transform: rotate(0deg); }
+  10%, 30% { transform: rotate(14deg); }
+  20%, 40% { transform: rotate(-14deg); }
+  50% { transform: rotate(0deg); }
+}
+
+.texto-alerta-pedidos {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 2px;
+}
+
+.texto-alerta-pedidos strong {
+  font-size: 0.82rem;
+  color: #991B1B;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.nomes-itens-novos-texto {
+  font-size: 0.78rem;
+  color: #B91C1C;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600;
+}
+
+.btn-dispensar-alerta-pedidos {
+  background: #EF4444;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.btn-dispensar-alerta-pedidos:hover {
+  background: #DC2626;
+  transform: scale(1.04);
+}
+
+/* 2. Tag "NOVO (Nome)" no próprio item da lista */
+.tag-novo-pedido-casa {
+  display: inline-flex;
+  align-items: center;
+  background: #FEE2E2;
+  color: #DC2626;
+  border: 1px solid #FCA5A5;
+  border-radius: 12px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 1px 6px;
+  cursor: pointer;
+  margin-left: 4px;
+  white-space: nowrap;
+  animation: pulsarTagNovo 2s infinite ease-in-out;
+  user-select: none;
+}
+
+@keyframes pulsarTagNovo {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  50% { transform: scale(1.06); box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15); }
+}
+
+.tag-novo-pedido-casa:hover {
+  background: #FECACA;
+  color: #991B1B;
+}
+
+/* 3. Badge "Quem Pegou o Item" (Mini Avatar + Nome) */
+.badge-comprado-por {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: #ECFDF5;
+  color: #047857;
+  border: 1px solid #A7F3D0;
+  border-radius: 12px;
+  font-size: 0.66rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  margin-left: 4px;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.badge-comprado-por .ico-comprador {
+  font-size: 0.72rem;
+  line-height: 1;
+}
+
+/* 4. Contador de Itens nas Abas de Categorias / Corredores */
+.badge-count-cat {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.08);
+  color: inherit;
+  border-radius: 10px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 0 5px;
+  min-width: 16px;
+  height: 16px;
+  margin-left: 4px;
+  line-height: 1;
+}
+
+.despensa-aba-tab.ativa .badge-count-cat {
+  background: rgba(127, 29, 29, 0.15);
+  color: #7F1D1D;
+}
+
+/* 5. Banner de Corredor Ativo */
+.banner-corredor-ativo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  padding: 8px 12px;
+  margin-bottom: 10px;
+  gap: 8px;
+}
+
+.banner-corredor-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: #334155;
+}
+
+.banner-corredor-progresso {
+  background: #E2E8F0;
+  color: #475569;
+  border-radius: 6px;
+  padding: 2px 7px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.btn-voltar-todos-corredores {
+  background: #FFFFFF;
+  color: #475569;
+  border: 1px solid #CBD5E1;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-voltar-todos-corredores:hover {
+  background: #F1F5F9;
+  color: #1E293B;
+  border-color: #94A3B8;
+}
+
+/* Dark Mode support for new elements */
+body.tema-escuro .banner-novos-pedidos-comprar,
+body.dark-mode .banner-novos-pedidos-comprar {
+  background: linear-gradient(135deg, #450A0A 0%, #2A0808 100%);
+  border-color: #7F1D1D;
+  border-left-color: #EF4444;
+}
+
+body.tema-escuro .texto-alerta-pedidos strong,
+body.dark-mode .texto-alerta-pedidos strong {
+  color: #FCA5A5;
+}
+
+body.tema-escuro .nomes-itens-novos-texto,
+body.dark-mode .nomes-itens-novos-texto {
+  color: #F87171;
+}
+
+body.tema-escuro .tag-novo-pedido-casa,
+body.dark-mode .tag-novo-pedido-casa {
+  background: #7F1D1D;
+  color: #FEE2E2;
+  border-color: #991B1B;
+}
+
+body.tema-escuro .badge-comprado-por,
+body.dark-mode .badge-comprado-por {
+  background: #064E3B;
+  color: #A7F3D0;
+  border-color: #059669;
+}
+
+body.tema-escuro .banner-corredor-ativo,
+body.dark-mode .banner-corredor-ativo {
+  background: #0F172A;
+  border-color: #334155;
+  color: #E2E8F0;
+}
+
+body.tema-escuro .btn-voltar-todos-corredores,
+body.dark-mode .btn-voltar-todos-corredores {
+  background: #1E293B;
+  color: #CBD5E1;
+  border-color: #475569;
+}
+
+
 
 
 

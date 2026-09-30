@@ -823,6 +823,9 @@ function sincronizarListaAtivaComCatalogo() {
   AppState.catalogo.forEach(prod => {
     if (!prod.selecionado) {
       prod.comprado = false;
+      prod.compradoPor = null;
+      prod.compradoPorIcone = null;
+      prod.compradoEm = null;
       prod.precoRegistradoMercado = 0;
     }
   });
@@ -859,6 +862,12 @@ function sincronizarListaAtivaComCatalogo() {
         ultimoPreco: prod.ultimoPreco || precoReferenciaDF,
         dataUltimoPreco: prod.dataUltimoPreco || new Date().toISOString().slice(0, 10),
         comprado: !!prod.comprado,
+        compradoPor: prod.compradoPor || null,
+        compradoPorIcone: prod.compradoPorIcone || null,
+        compradoEm: prod.compradoEm || null,
+        adicionadoPor: prod.adicionadoPor || null,
+        adicionadoEm: prod.adicionadoEm || null,
+        novoPedidoCasa: !!prod.novoPedidoCasa,
         origemPreco: prod.origemPreco || null
       };
     });
@@ -1075,6 +1084,12 @@ function sanearTodaListaHortifruti() {
 // Salvar dados com sincronização automática
 let timeoutSincronizacao = null;
 let timestampUltimaModificacaoLocal = 0;
+const timestampsModificacaoLocalItem = {};
+
+function registrarTimestampModificacaoItem(id) {
+  if (id) timestampsModificacaoLocalItem[String(id)] = Date.now();
+  timestampUltimaModificacaoLocal = Date.now();
+}
 
 function salvarEstado(enviarParaNuvem = true) {
   if (enviarParaNuvem) {
@@ -1125,57 +1140,93 @@ function salvarEstado(enviarParaNuvem = true) {
 function inicializarNuvem() {
   FirebaseSync.inicializar(
     (dadosNuvem) => {
-      // Proteção contra eco: se fizemos uma modificação local há menos de 4s, ignora o re-render
-      const modificacaoLocalRecente = timestampUltimaModificacaoLocal > 0 && (Date.now() - timestampUltimaModificacaoLocal) < 4000;
-      if (modificacaoLocalRecente) {
-        console.log("[Nuvem] Modificação local recente (<4s) - preservando renderização local.");
-        salvarEstado(false);
-        return;
-      }
+      if (!dadosNuvem) return;
 
-      if (dadosNuvem.ultimaAtualizacao && timestampUltimaModificacaoLocal > 0) {
-        const timeNuvem = new Date(dadosNuvem.ultimaAtualizacao).getTime();
-        if (timeNuvem < (timestampUltimaModificacaoLocal - 500)) {
-          console.log("[Nuvem] Ignorando snapshot antigo para preservar alteração local recente.");
-          return;
-        }
-      }
+      const agora = Date.now();
 
-      // Verifica se houve novo pedido vindo da outra pessoa (ex: Patroa Sioneide mandando itens)
+      // 1. Verifica se houve novo pedido vindo da outra pessoa (ex: Patroa Sioneide / Empregada / Filhos mandando itens)
       if (dadosNuvem.ultimoEvento && dadosNuvem.ultimoEvento.timestamp) {
         const evento = dadosNuvem.ultimoEvento;
-        const agora = Date.now();
         const ultimoProcessado = Number(localStorage.getItem('ultimo_evento_notificado_ts') || 0);
 
-        // Se o evento foi criado há menos de 90 segundos e ainda não foi mostrado
-        if (evento.timestamp > ultimoProcessado && (agora - evento.timestamp) < 90000) {
+        // Se o evento foi criado há menos de 120 segundos e ainda não foi mostrado
+        if (evento.timestamp > ultimoProcessado && (agora - evento.timestamp) < 120000) {
           const meuNome = (AppState.usuarioAtivo || 'Irandy').toLowerCase().trim();
           const autorEvento = (evento.autor || '').toLowerCase().trim();
 
-          // Se quem enviou o item NÃO foi este aparelho (veio do cônjuge/patroa)
+          // Se quem enviou o item NÃO foi este aparelho (veio do cônjuge/patroa/empregada)
           if (autorEvento && autorEvento !== meuNome) {
             localStorage.setItem('ultimo_evento_notificado_ts', String(evento.timestamp));
             tocarAvisoSonoroNotificacao();
             exibirAvisoPedidoPatroa(evento.autor, evento.itens, evento.icone || '👩');
+
+            // Marca os itens como novos pedidos de casa no catálogo local
+            if (Array.isArray(evento.itens)) {
+              evento.itens.forEach(nomeItem => {
+                const nomeNorm = String(nomeItem).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+                const pCat = AppState.catalogo.find(p => p.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().includes(nomeNorm));
+                if (pCat && !pCat.comprado) {
+                  pCat.novoPedidoCasa = true;
+                  pCat.adicionadoPor = evento.autor;
+                  pCat.adicionadoEm = evento.timestamp;
+                }
+              });
+            }
           }
         }
       }
 
-      // Recebeu atualização da Nuvem (ex: esposa acabou de marcar ou adicionar um item no celular)
-      if (dadosNuvem.catalogo) AppState.catalogo = dadosNuvem.catalogo;
-      if (dadosNuvem.listaAtiva) AppState.listaAtiva = dadosNuvem.listaAtiva;
-      if (dadosNuvem.historico) AppState.historico = dadosNuvem.historico;
+      // 2. Merge Granular no Nível de Item do Catálogo para evitar perda de dados por concorrência
+      if (dadosNuvem.catalogo && Array.isArray(dadosNuvem.catalogo)) {
+        if (!AppState.catalogo || AppState.catalogo.length === 0) {
+          AppState.catalogo = dadosNuvem.catalogo;
+        } else {
+          dadosNuvem.catalogo.forEach(nuvemItem => {
+            let localItem = AppState.catalogo.find(p => String(p.id) === String(nuvemItem.id) || p.nome.toLowerCase().trim() === (nuvemItem.nome || '').toLowerCase().trim());
+            if (localItem) {
+              const tsLocal = timestampsModificacaoLocalItem[String(localItem.id)] || 0;
+              const modificadoLocalRecente = tsLocal > 0 && (agora - tsLocal) < 2000;
+
+              // Se este item específico NÃO foi modificado no último segundo aqui, atualiza com a nuvem
+              if (!modificadoLocalRecente) {
+                localItem.selecionado = !!nuvemItem.selecionado;
+                localItem.comprado = !!nuvemItem.comprado;
+                localItem.compradoPor = nuvemItem.compradoPor || null;
+                localItem.compradoPorIcone = nuvemItem.compradoPorIcone || null;
+                localItem.compradoEm = nuvemItem.compradoEm || null;
+                localItem.qtde = nuvemItem.qtde || localItem.qtde || 1;
+                localItem.marca = nuvemItem.marca || localItem.marca || null;
+                localItem.precoRegistradoMercado = nuvemItem.precoRegistradoMercado || 0;
+                localItem.adicionadoPor = nuvemItem.adicionadoPor || localItem.adicionadoPor || null;
+                if (nuvemItem.novoPedidoCasa !== undefined) {
+                  localItem.novoPedidoCasa = nuvemItem.novoPedidoCasa;
+                }
+              }
+            } else {
+              // Item novo cadastrado na nuvem
+              AppState.catalogo.push(nuvemItem);
+            }
+          });
+        }
+        sincronizarListaAtivaComCatalogo();
+      }
+
+      if (dadosNuvem.historico && Array.isArray(dadosNuvem.historico)) {
+        AppState.historico = dadosNuvem.historico;
+      }
+
       if (dadosNuvem.usuarios && Array.isArray(dadosNuvem.usuarios) && dadosNuvem.usuarios.length > 0) {
         AppState.usuarios = dadosNuvem.usuarios;
         localStorage.setItem('app_usuarios_cadastrados', JSON.stringify(AppState.usuarios));
         atualizarBadgeUsuarioHeader();
         renderizarGridUsuarios();
       }
+
       if (dadosNuvem.mercadoReferencia && dadosNuvem.mercadoReferencia !== 'todos') {
         AppState.mercadoReferencia = dadosNuvem.mercadoReferencia;
       }
 
-      // No celular (somente mobile), não traga preços. Tem que vir todos 0,00 até falar no mic
+      // No celular (somente mobile), não traga preços até serem registrados
       if (ehDispositivoMobile) {
         if (AppState.listaAtiva) {
           AppState.listaAtiva.forEach(item => {
@@ -2459,15 +2510,19 @@ function atualizarAbasCategoriasInteligente() {
   // Na aba COMPRAR: Cabeçalho Inteligente
   // Identifica setores que têm pelo menos 1 item na lista ativa
   const categoriasPresentes = new Set();
+  const contagemPorCat = {};
+  let totalFav = 0;
   let temFavoritos = false;
 
   (AppState.listaAtiva || []).forEach(item => {
     const cat = item.categoria || 'Diversos';
     categoriasPresentes.add(cat);
+    contagemPorCat[cat] = (contagemPorCat[cat] || 0) + 1;
 
-    if (!temFavoritos) {
-      const ehFav = !!(item.favorito || (AppState.catalogo && AppState.catalogo.find(c => String(c.id) === String(item.id) || String(c.id) === String(item.catalogoId))?.favorito));
-      if (ehFav) temFavoritos = true;
+    const ehFav = !!(item.favorito || (AppState.catalogo && AppState.catalogo.find(c => String(c.id) === String(item.id) || String(c.id) === String(item.catalogoId))?.favorito));
+    if (ehFav) {
+      totalFav++;
+      temFavoritos = true;
     }
   });
 
@@ -2487,16 +2542,29 @@ function atualizarAbasCategoriasInteligente() {
     }
   }
 
-  // Atualizar visibilidade das abas estáticas no cabeçalho
+  // Atualizar visibilidade e contagens das abas estáticas no cabeçalho
   abas.forEach(aba => {
     const catAba = aba.getAttribute('data-categoria');
+    let badgeEl = aba.querySelector('.badge-count-cat');
+    if (!badgeEl) {
+      badgeEl = document.createElement('span');
+      badgeEl.className = 'badge-count-cat';
+      aba.appendChild(badgeEl);
+    }
+
     if (!catAba || catAba === 'todas') {
+      badgeEl.textContent = String(AppState.listaAtiva.length);
       aba.style.display = ''; // "Geral" sempre visível
     } else if (catAba === 'favoritos') {
+      badgeEl.textContent = String(totalFav);
       aba.style.display = temFavoritos ? '' : 'none';
     } else {
-      const temItensNesteSetor = Array.from(categoriasPresentes).some(cat => categoriasSaoIguais(cat, catAba));
-      aba.style.display = temItensNesteSetor ? '' : 'none';
+      let count = 0;
+      Object.keys(contagemPorCat).forEach(c => {
+        if (categoriasSaoIguais(c, catAba)) count += contagemPorCat[c];
+      });
+      badgeEl.textContent = String(count);
+      aba.style.display = (count > 0) ? '' : 'none';
     }
 
     // Sincronizar estado ativo
@@ -3572,6 +3640,16 @@ function renderizarListaCompras() {
       }
       const precoFormatadoTxt = formatarMoeda(precoRegistradoValor);
 
+      let badgeCompradorHtml = '';
+      if (item.comprado && item.compradoPor && !isPendente) {
+        badgeCompradorHtml = `<span class="badge-comprado-por" title="Pego por ${item.compradoPor}"><span class="ico-comprador">${item.compradoPorIcone || '✓'}</span> ${item.compradoPor} pegou</span>`;
+      }
+
+      let tagNovoPedidoHtml = '';
+      if (item.novoPedidoCasa && !item.comprado) {
+        tagNovoPedidoHtml = `<span class="tag-novo-pedido-casa" onclick="event.stopPropagation(); dispensarAlertaNovoPedido('${item.id}')" title="Novo pedido de ${item.adicionadoPor || 'Casa'} (Clique para dispensar)">🔴 Novo (${item.adicionadoPor || 'Casa'})</span>`;
+      }
+
       linhasTabelaHtml += `
         <tr class="mcol-tr-item ${item.comprado ? 'item-linha-comprado' : ''} ${classePendente}" id="tr-item-${item.id}">
           <td class="mcol-td-check" onclick="alternarItemComprado('${item.id}')">
@@ -3592,6 +3670,8 @@ function renderizarListaCompras() {
                 <div class="mcol-prod-info-esquerda">
                   <span class="mcol-prod-nome ${item.comprado && !isPendente ? 'texto-riscado' : ''}" onclick="alternarItemComprado('${item.id}')" title="${item.nome}">${nomeExibicao}</span>
                   ${marcaHtml}
+                  ${tagNovoPedidoHtml}
+                  ${badgeCompradorHtml}
                   ${badgePendente}
                 </div>
                 <div class="mcol-prod-preco-grupo">
@@ -3664,29 +3744,53 @@ function renderizarListaCompras() {
   // Mover a informação de economia e melhor mercado para a Slide Bar à esquerda
   atualizarCardEconomiaSidebar(campeaoId, totais, economia);
 
-  let divTabela = container.querySelector('.mcol-tabela-scroll');
-  if (divTabela) {
-    divTabela.innerHTML = `
+  // Banners Dinâmicos (Novos Pedidos de Casa & Corredor Ativo)
+  const itensNovosDeCasa = (AppState.listaAtiva || []).filter(i => i.novoPedidoCasa && !i.comprado);
+  let bannerNovosPedidosHtml = '';
+  if (itensNovosDeCasa.length > 0) {
+    const nomesNovos = itensNovosDeCasa.map(i => i.nome).join(', ');
+    const autorTxt = (itensNovosDeCasa[0].adicionadoPor || 'Casa').toUpperCase();
+    bannerNovosPedidosHtml = `
+      <div class="banner-novos-pedidos-comprar" id="banner-novos-pedidos-comprar">
+        <div class="banner-novos-pedidos-conteudo">
+          <span class="icone-alerta-pedidos">🔔</span>
+          <div class="texto-alerta-pedidos">
+            <strong>${autorTxt} adicionou novos pedidos de casa:</strong>
+            <span class="nomes-itens-novos-texto">${nomesNovos}</span>
+          </div>
+        </div>
+        <button type="button" class="btn-dispensar-alerta-pedidos" onclick="dispensarTodosNovosPedidos()" title="Dispensar aviso">✓ Entendido</button>
+      </div>
+    `;
+  }
+
+  let bannerCorredorHtml = '';
+  if (AppState.filtroCategoria && AppState.filtroCategoria !== 'todas' && AppState.filtroCategoria !== 'favoritos') {
+    const totalCat = itensListaParaExibir.length;
+    const pegosCat = itensListaParaExibir.filter(i => i.comprado).length;
+    bannerCorredorHtml = `
+      <div class="banner-corredor-ativo">
+        <div class="banner-corredor-info">
+          <span class="banner-corredor-nome">Corredor: <strong>${AppState.filtroCategoria}</strong></span>
+          <span class="banner-corredor-progresso">${pegosCat} de ${totalCat} pegos</span>
+        </div>
+        <button type="button" class="btn-voltar-todos-corredores" onclick="filtrarCategoriaGeral('todas')">🌐 Ver Todos os Corredores</button>
+      </div>
+    `;
+  }
+
+  container.innerHTML = `
+    ${bannerNovosPedidosHtml}
+    ${bannerCorredorHtml}
+    <div class="mcol-tabela-scroll">
       <table class="mcol-tabela-moderna tabela-lista-compras ${ocultarMercados ? 'mercados-ocultos' : ''}">
         <tbody>
           ${linhasTabelaHtml}
         </tbody>
         ${tfootHtml}
       </table>
-    `;
-  } else {
-    container.innerHTML = `
-      <div class="mcol-tabela-scroll">
-        <table class="mcol-tabela-moderna tabela-lista-compras ${ocultarMercados ? 'mercados-ocultos' : ''}">
-          <tbody>
-            ${linhasTabelaHtml}
-          </tbody>
-          ${tfootHtml}
-        </table>
-      </div>
-    `;
-    divTabela = container.querySelector('.mcol-tabela-scroll');
-  }
+    </div>
+  `;
 
   // Preservar e travar a posição de rolagem em todos os contêineres para JAMAIS mover a tela
   const restaurarTodosScrolls = () => {
@@ -4328,6 +4432,10 @@ function alternarItemPeloDropdown(itemId, event) {
     prod.selecionado = true;
     prod.comprado = false;
     prod.precoRegistradoMercado = 0;
+    prod.adicionadoPor = AppState.usuarioAtivo || 'Irandy';
+    prod.adicionadoEm = Date.now();
+    prod.novoPedidoCasa = (AppState.abaAtiva === 'despensa');
+
     if (AppState.abaAtiva === 'despensa') {
       prod.qtde = prod.qtde || 1;
     } else {
@@ -4345,6 +4453,8 @@ function alternarItemPeloDropdown(itemId, event) {
       itens: [prod.nome],
       timestamp: Date.now()
     };
+
+    registrarTimestampModificacaoItem(prod.id);
   }
 
   salvarEstado(true);
@@ -4794,6 +4904,9 @@ function alternarItemDespensaEmTempoReal(produtoId, event) {
     prod.selecionado = true;
     prod.comprado = false;
     prod.precoRegistradoMercado = 0;
+    prod.adicionadoPor = AppState.usuarioAtivo || 'Irandy';
+    prod.adicionadoEm = Date.now();
+    prod.novoPedidoCasa = true;
 
     const chaveIcone = prod.icone || detectarChaveIcone(prod.nome);
     const precoPadrao = prod.precoMedioDF || (prod.ultimoPreco > 0 ? prod.ultimoPreco : (COTACOES_DF[chaveIcone] ? COTACOES_DF[chaveIcone].atacadao : 10.0));
@@ -4812,6 +4925,7 @@ function alternarItemDespensaEmTempoReal(produtoId, event) {
     };
 
     // Salva no LocalStorage e sincroniza na Nuvem imediatamente
+    registrarTimestampModificacaoItem(prod.id);
     salvarEstado(true);
 
     // Atualiza diretamente o card no DOM
@@ -5958,11 +6072,66 @@ function atualizarVisualItemLinha(item, isPendente = false) {
     } else if (badgePendenteEl) {
       badgePendenteEl.remove();
     }
+
+    // Atualiza badge de quem comprou
+    let badgeCompradoEl = infoEsquerda.querySelector('.badge-comprado-por');
+    if (item.comprado && item.compradoPor && !isPendente) {
+      if (!badgeCompradoEl) {
+        badgeCompradoEl = document.createElement('span');
+        badgeCompradoEl.className = 'badge-comprado-por';
+        infoEsquerda.appendChild(badgeCompradoEl);
+      }
+      badgeCompradoEl.title = `Pego por ${item.compradoPor}`;
+      badgeCompradoEl.innerHTML = `<span class="ico-comprador">${item.compradoPorIcone || '✓'}</span> ${item.compradoPor} pegou`;
+    } else if (badgeCompradoEl) {
+      badgeCompradoEl.remove();
+    }
+
+    // Atualiza tag novo pedido de casa
+    let tagNovoEl = infoEsquerda.querySelector('.tag-novo-pedido-casa');
+    if (item.novoPedidoCasa && !item.comprado) {
+      if (!tagNovoEl) {
+        tagNovoEl = document.createElement('span');
+        tagNovoEl.className = 'tag-novo-pedido-casa';
+        tagNovoEl.title = `Novo pedido de ${item.adicionadoPor || 'Casa'} (Clique para dispensar)`;
+        tagNovoEl.onclick = (e) => {
+          e.stopPropagation();
+          dispensarAlertaNovoPedido(item.id);
+        };
+        infoEsquerda.appendChild(tagNovoEl);
+      }
+      tagNovoEl.textContent = `🔴 Novo (${item.adicionadoPor || 'Casa'})`;
+    } else if (tagNovoEl) {
+      tagNovoEl.remove();
+    }
   }
   const strayBadge = tr.querySelector('.mcol-prod-card-cell > .badge-confirmar-desmarcar');
   if (strayBadge) strayBadge.remove();
 
   return true;
+}
+
+function dispensarAlertaNovoPedido(id) {
+  const item = AppState.listaAtiva.find(i => String(i.id) === String(id));
+  if (item) {
+    item.novoPedidoCasa = false;
+    const cat = AppState.catalogo.find(c => String(c.id) === String(id) || String(c.id) === String(item.catalogoId));
+    if (cat) cat.novoPedidoCasa = false;
+    registrarTimestampModificacaoItem(item.id);
+    salvarEstado(true);
+    renderizarListaCompras();
+  }
+}
+
+function dispensarTodosNovosPedidos() {
+  (AppState.listaAtiva || []).forEach(i => {
+    i.novoPedidoCasa = false;
+  });
+  (AppState.catalogo || []).forEach(c => {
+    c.novoPedidoCasa = false;
+  });
+  salvarEstado(true);
+  renderizarListaCompras();
 }
 
 // Reordena a linha dentro do bloco da sua categoria no DOM de forma 100% lisa, sem recriar a tabela
@@ -6035,10 +6204,21 @@ function alternarItemComprado(id) {
   if (!item.comprado) {
     cancelarPendenteDesmarcar();
     item.comprado = true;
+    item.compradoPor = AppState.usuarioAtivo || 'Irandy';
+    item.compradoPorIcone = AppState.usuarioIcone || (AppState.usuarioAtivo === 'Sioneide' ? '👩' : '👨');
+    item.compradoEm = Date.now();
+    item.novoPedidoCasa = false;
 
     const catItem = AppState.catalogo.find(c => String(c.id) === String(item.id) || String(c.id) === String(item.catalogoId));
-    if (catItem) catItem.comprado = true;
+    if (catItem) {
+      catItem.comprado = true;
+      catItem.compradoPor = item.compradoPor;
+      catItem.compradoPorIcone = item.compradoPorIcone;
+      catItem.compradoEm = item.compradoEm;
+      catItem.novoPedidoCasa = false;
+    }
 
+    registrarTimestampModificacaoItem(item.id);
     salvarEstado(true);
 
     const atualizouDOM = atualizarVisualItemLinha(item, false);
@@ -6069,10 +6249,19 @@ function alternarItemComprado(id) {
     // 2º clique confirmado dentro da janela de tempo: Desmarca o item!
     cancelarPendenteDesmarcar();
     item.comprado = false;
+    item.compradoPor = null;
+    item.compradoPorIcone = null;
+    item.compradoEm = null;
 
     const catItem = AppState.catalogo.find(c => String(c.id) === String(item.id) || String(c.id) === String(item.catalogoId));
-    if (catItem) catItem.comprado = false;
+    if (catItem) {
+      catItem.comprado = false;
+      catItem.compradoPor = null;
+      catItem.compradoPorIcone = null;
+      catItem.compradoEm = null;
+    }
 
+    registrarTimestampModificacaoItem(item.id);
     salvarEstado(true);
 
     const atualizouDOM = atualizarVisualItemLinha(item, false);
@@ -6718,6 +6907,10 @@ function adicionarItemRapido() {
       prodExistente.selecionado = true;
       prodExistente.comprado = false;
       prodExistente.precoRegistradoMercado = 0;
+      prodExistente.adicionadoPor = AppState.usuarioAtivo || 'Irandy';
+      prodExistente.adicionadoEm = Date.now();
+      prodExistente.novoPedidoCasa = true;
+      registrarTimestampModificacaoItem(prodExistente.id);
     } else {
       const novoItem = {
         id: 'c_custom_' + Date.now(),
@@ -6731,9 +6924,13 @@ function adicionarItemRapido() {
         selecionado: true,
         comprado: false,
         precoRegistradoMercado: 0,
-        qtde: 1
+        qtde: 1,
+        adicionadoPor: AppState.usuarioAtivo || 'Irandy',
+        adicionadoEm: Date.now(),
+        novoPedidoCasa: true
       };
       AppState.catalogo.unshift(novoItem);
+      registrarTimestampModificacaoItem(novoItem.id);
     }
 
     sincronizarListaAtivaComCatalogo();
@@ -6871,10 +7068,14 @@ function processarUploadLista(substituir = false) {
       doCat.comprado = false;
       doCat.precoRegistradoMercado = 0;
       doCat.qtde = qtde;
+      doCat.adicionadoPor = AppState.usuarioAtivo || 'Irandy';
+      doCat.adicionadoEm = Date.now();
+      doCat.novoPedidoCasa = (AppState.abaAtiva === 'despensa');
       if (marcaDetectada) doCat.marca = marcaDetectada;
       if (preco > 0) doCat.preco = preco;
+      registrarTimestampModificacaoItem(doCat.id);
     } else {
-      AppState.catalogo.push({
+      const novoProdCat = {
         id: 'c_' + Date.now() + '_' + Math.floor(Math.random() * 10000),
         nome: capitalizar(nome),
         marca: marcaDetectada,
@@ -6887,8 +7088,13 @@ function processarUploadLista(substituir = false) {
         selecionado: true,
         comprado: false,
         precoRegistradoMercado: 0,
-        qtde: qtde
-      });
+        qtde: qtde,
+        adicionadoPor: AppState.usuarioAtivo || 'Irandy',
+        adicionadoEm: Date.now(),
+        novoPedidoCasa: (AppState.abaAtiva === 'despensa')
+      };
+      AppState.catalogo.push(novoProdCat);
+      registrarTimestampModificacaoItem(novoProdCat.id);
     }
 
     totalAdicionados++;
@@ -6900,7 +7106,7 @@ function processarUploadLista(substituir = false) {
     AppState.ultimoEvento = {
       autor: AppState.usuarioAtivo || 'Irandy',
       icone: AppState.usuarioIcone || (AppState.usuarioAtivo === 'Sioneide' ? '👩' : '👨'),
-      itens: [`${totalAdicionados} itens adicionados`],
+      itens: [`${totalAdicionados} itens importados`],
       timestamp: Date.now()
     };
   }
@@ -7519,8 +7725,12 @@ function adicionarProdutoPorTexto(textoCompleto) {
     doCatalogo.comprado = false;
     doCatalogo.precoRegistradoMercado = 0;
     doCatalogo.qtde = (doCatalogo.qtde || 0) + qtde;
+    doCatalogo.adicionadoPor = AppState.usuarioAtivo || 'Irandy';
+    doCatalogo.adicionadoEm = Date.now();
+    doCatalogo.novoPedidoCasa = (AppState.abaAtiva === 'despensa');
     if (marcaDetectada) doCatalogo.marca = marcaDetectada;
     if (precoFinal > 0) doCatalogo.preco = precoFinal;
+    registrarTimestampModificacaoItem(doCatalogo.id);
   } else {
     // Adiciona ao catálogo como selecionado
     const novoCat = {
@@ -7536,9 +7746,13 @@ function adicionarProdutoPorTexto(textoCompleto) {
       selecionado: true,
       comprado: false,
       precoRegistradoMercado: 0,
-      qtde: qtde
+      qtde: qtde,
+      adicionadoPor: AppState.usuarioAtivo || 'Irandy',
+      adicionadoEm: Date.now(),
+      novoPedidoCasa: (AppState.abaAtiva === 'despensa')
     };
     AppState.catalogo.push(novoCat);
+    registrarTimestampModificacaoItem(novoCat.id);
   }
 
   sincronizarListaAtivaComCatalogo();
