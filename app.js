@@ -9314,9 +9314,11 @@ function atualizarStatusMeuPreset() {
 
 // Notificação Toast rápida e discreta
 function mostrarNotificacaoToast(mensagem) {
-  // Em COMPRAR, bloqueia mensagens/toasts de busca ou localização
-  if (AppState && AppState.abaAtiva === 'lista' && (mensagem.includes('Localizando') || mensagem.includes('🔍'))) {
-    return;
+  // Em COMPRAR e CRIAR LISTA, não exibe toasts/modais de mensagem flutuantes
+  if (AppState && (AppState.abaAtiva === 'lista' || AppState.abaAtiva === 'despensa')) {
+    if (!mensagem.includes('🎉 Compra finalizada')) {
+      return;
+    }
   }
   let toast = document.getElementById('toast-notificacao-flutuante');
   if (!toast) {
