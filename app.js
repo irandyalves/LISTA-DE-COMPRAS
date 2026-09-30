@@ -8172,7 +8172,11 @@ function configurarReconhecimentoVoz() {
     }
   }
 
-  btnMic.addEventListener('click', () => {
+  btnMic.addEventListener('click', (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     if (!gravando) {
       iniciarGravacao();
     } else {

@@ -1066,15 +1066,37 @@ body {
   box-shadow: 0 2px 8px rgba(14, 165, 233, 0.45) !important;
 }
 
+@keyframes pulsoGravandoMicAmarelo {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.85), 0 0 0 0 rgba(245, 158, 11, 0.5);
+  }
+  100% {
+    transform: scale(1.24);
+    box-shadow: 0 0 0 7px rgba(250, 204, 21, 0), 0 0 0 14px rgba(245, 158, 11, 0);
+  }
+}
+
+#btn-mic-voz.gravando,
+#btn-mic-voz.ouvindo,
 .btn-mic-mini.gravando,
 .btn-mic-mini.ouvindo {
-  background: #EF4444 !important;
-  border-color: #DC2626 !important;
+  background: #FACC15 !important; /* Fundo amarelo vibrante ao clicar */
+  border: 1.5px solid #EAB308 !important;
   border-radius: 50% !important;
-  color: #FFFFFF !important;
-  animation: pulsoGravandoPreco 0.7s infinite alternate ease-in-out !important;
+  color: #0F172A !important;
+  animation: pulsoGravandoMicAmarelo 0.7s infinite alternate ease-in-out !important;
   position: relative !important;
-  z-index: 10 !important;
+  z-index: 15 !important;
+}
+
+#btn-mic-voz.gravando .icone-mic-topo,
+#btn-mic-voz.gravando svg,
+#btn-mic-voz.ouvindo svg,
+.btn-mic-mini.gravando .icone-mic-topo,
+.btn-mic-mini.ouvindo svg {
+  color: #0F172A !important;
+  fill: #0F172A !important;
 }
 
 .input-busca-topo {
@@ -8354,13 +8376,13 @@ body.tema-escuro .card-ranking-stats {
   #btn-mic-voz.ouvindo,
   .btn-mic-mini.gravando,
   .btn-mic-mini.ouvindo {
-    background: #EF4444 !important;
-    border-color: #DC2626 !important;
+    background: #FACC15 !important; /* Fundo amarelo vibrante ao clicar */
+    border: 1.5px solid #EAB308 !important;
     border-radius: 50% !important;
-    color: #FFFFFF !important;
-    animation: pulsoGravandoPreco 0.7s infinite alternate ease-in-out !important;
+    color: #0F172A !important;
+    animation: pulsoGravandoMicAmarelo 0.7s infinite alternate ease-in-out !important;
     position: relative !important;
-    z-index: 10 !important;
+    z-index: 15 !important;
   }
 
   #btn-mic-voz.gravando .icone-mic-topo,
@@ -8368,8 +8390,8 @@ body.tema-escuro .card-ranking-stats {
   #btn-mic-voz.ouvindo svg,
   .btn-mic-mini.gravando .icone-mic-topo,
   .btn-mic-mini.ouvindo svg {
-    color: #FFFFFF !important;
-    fill: #FFFFFF !important;
+    color: #0F172A !important;
+    fill: #0F172A !important;
   }
 
   .busca-topo-reduzida .input-busca-topo {
