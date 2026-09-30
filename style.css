@@ -4481,14 +4481,14 @@ body.tema-escuro .despensa-aba-tab.btn-aba-favoritos-estrela.ativa,
   color: #1E293B;
 }
 
-/* Botão Listbox de Marca: em laranja, sem borda, sem triângulo */
+/* Botão Listbox de Marca: sem borda, sem triângulo - Verde quando marca escolhida */
 .btn-marca-listbox-tag {
   display: inline-flex;
   align-items: center;
   padding: 0 1px;
   border: none !important;
   background: transparent !important;
-  color: #EA580C !important;
+  color: #94A3B8 !important;
   font-family: inherit;
   font-size: 0.70rem;
   font-weight: 700;
@@ -4503,7 +4503,7 @@ body.tema-escuro .despensa-aba-tab.btn-aba-favoritos-estrela.ativa,
 
 .btn-marca-listbox-tag:hover {
   background: transparent !important;
-  color: #C2410C !important;
+  color: #64748B !important;
   opacity: 0.85;
   border: none !important;
   box-shadow: none !important;
@@ -4511,16 +4511,24 @@ body.tema-escuro .despensa-aba-tab.btn-aba-favoritos-estrela.ativa,
 }
 
 .btn-marca-listbox-tag.com-marca {
-  color: #EA580C !important;
+  color: #059669 !important; /* Cor verde quando escolher a marca */
   font-weight: 800;
   border: none !important;
   background: transparent !important;
 }
 
 .btn-marca-listbox-tag.com-marca:hover {
-  color: #C2410C !important;
+  color: #047857 !important;
   border: none !important;
   background: transparent !important;
+}
+
+body.tema-escuro .btn-marca-listbox-tag.com-marca {
+  color: #34D399 !important; /* Verde claro vibrante no tema escuro */
+}
+
+body.tema-escuro .btn-marca-listbox-tag.com-marca:hover {
+  color: #6EE7B7 !important;
 }
 
 .btn-marca-listbox-tag .ico-caret {
@@ -4533,7 +4541,7 @@ body.tema-escuro .despensa-aba-tab.btn-aba-favoritos-estrela.ativa,
 
 .mcol-prod-marca {
   font-size: 0.68rem;
-  color: var(--primary);
+  color: #059669;
   font-weight: 700;
 }
 
