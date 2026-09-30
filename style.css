@@ -173,12 +173,19 @@ body.tema-escuro .despensa-aba-tab {
   background: #0F172A;
   border-color: #334155;
   color: #94A3B8;
+  border-radius: 5px;
+}
+
+[data-theme="dark"] .despensa-aba-tab:not(:last-child)::after,
+body.tema-escuro .despensa-aba-tab:not(:last-child)::after {
+  background: #334155 !important;
 }
 
 [data-theme="dark"] .despensa-aba-tab.ativa,
 body.tema-escuro .despensa-aba-tab.ativa {
-  background: #4F46E5 !important;
-  color: #FFFFFF !important;
+  background: #DFD3BA !important;
+  color: #7F1D1D !important;
+  border-color: #C4B595 !important;
 }
 
 [data-theme="dark"] .tab-modo-hist,
@@ -2989,7 +2996,8 @@ body.tema-escuro #view-despensa .categoria-titulo .categoria-titulo-info span:fi
 /* Abas de Categorias da Despensa */
 .despensa-abas-categorias {
   display: flex;
-  gap: 6px;
+  gap: 4px; /* Reduzido em mais de 30% (era 6px) */
+  align-items: center;
   overflow-x: auto;
   padding-bottom: 8px;
   margin-bottom: 10px;
@@ -2997,13 +3005,14 @@ body.tema-escuro #view-despensa .categoria-titulo .categoria-titulo-info span:fi
 }
 
 .despensa-aba-tab {
+  position: relative;
   background: #F1F5F9;
   border: 1px solid var(--border);
   color: #475569;
-  padding: 5px 12px;
-  border-radius: 6px 14px 14px 6px; /* Cantos à esquerda reduzidos */
+  padding: 4px 10px;
+  border-radius: 5px; /* Pequeno arredondamento dos cantos */
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  font-size: 0.96rem;
+  font-size: 0.94rem;
   font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
@@ -3012,35 +3021,50 @@ body.tema-escuro #view-despensa .categoria-titulo .categoria-titulo-info span:fi
   user-select: none;
 }
 
+/* Linha vertical fininha para separar as abas */
+.despensa-aba-tab:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: -2.5px;
+  top: 18%;
+  height: 64%;
+  width: 1px;
+  background: #CBD5E1;
+  pointer-events: none;
+  z-index: 2;
+}
+
 .despensa-aba-tab .aba-ico {
   margin-right: 4px;
   font-size: 1.0em;
 }
 
 .despensa-aba-tab:hover {
-  background: #EEF2FF;
-  color: var(--primary);
-  border-color: #C7D2FE;
+  background: #EAE3D2;
+  color: #7F1D1D;
+  border-color: #C8B998;
 }
 
+/* Aba ativa: Bege médio com fonte vermelha escura */
 .despensa-aba-tab.ativa {
-  background: var(--primary);
-  color: white;
-  border-color: var(--primary);
-  font-weight: 600;
-  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
+  background: #DFD3BA !important; /* Bege médio */
+  color: #7F1D1D !important; /* Fonte vermelha escura */
+  border-color: #C4B595 !important;
+  font-weight: 700 !important;
+  border-radius: 5px !important;
+  box-shadow: 0 1px 4px rgba(127, 29, 29, 0.12) !important;
 }
 
 .despensa-aba-tab.btn-aba-favoritos-estrela {
-  padding: 4px 10px;
+  padding: 4px 8px;
   font-size: 1.05rem;
   line-height: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 30px;
+  min-width: 28px;
   cursor: pointer;
-  border-radius: 6px 14px 14px 6px; /* Cantos à esquerda reduzidos */
+  border-radius: 5px; /* Pequeno arredondamento dos cantos */
   transition: transform 0.2s ease, background 0.2s ease;
 }
 
@@ -6125,8 +6149,8 @@ body.tema-escuro .drawer-fechar-btn {
     min-width: 0 !important;
     overflow-x: auto !important;
     white-space: nowrap !important;
-    padding: 3px 4px !important;
-    gap: 5px !important;
+    padding: 3px 2px !important;
+    gap: 3.5px !important; /* Reduzido em 30% (era 5px) */
     margin-bottom: 0 !important;
     -webkit-overflow-scrolling: touch !important;
     scrollbar-width: none !important;
@@ -6141,28 +6165,32 @@ body.tema-escuro .drawer-fechar-btn {
   }
 
   .despensa-aba-tab {
-    padding: 4px 9px !important;
+    padding: 3px 8px !important;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
-    font-size: 0.92rem !important;
+    font-size: 0.90rem !important;
     font-weight: 500 !important;
-    border-radius: 6px 12px 12px 6px !important; /* Cantos à esquerda reduzidos no mobile */
+    border-radius: 5px !important; /* Pequeno arredondamento dos cantos */
     flex-shrink: 0 !important;
     letter-spacing: 0.01em !important;
   }
 
   .despensa-aba-tab.ativa {
-    font-weight: 600 !important;
+    background: #DFD3BA !important; /* Bege médio */
+    color: #7F1D1D !important; /* Fonte vermelha escura */
+    border-color: #C4B595 !important;
+    font-weight: 700 !important;
+    border-radius: 5px !important;
   }
 
   .despensa-aba-tab.btn-aba-favoritos-estrela {
-    padding: 3px 8px !important;
+    padding: 3px 7px !important;
     font-size: 1.0rem !important;
     line-height: 1 !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    min-width: 28px !important;
-    border-radius: 6px 12px 12px 6px !important;
+    min-width: 26px !important;
+    border-radius: 5px !important;
   }
 
   .despensa-aba-tab.btn-aba-favoritos-estrela.ativa {
