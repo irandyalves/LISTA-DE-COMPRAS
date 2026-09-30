@@ -1434,7 +1434,8 @@ body {
 /* Modal de Opções do Topo */
 /* Modal de Opções do Topo - Ultra Compacto & Seções por Cores */
 .modal-opcoes-content {
-  max-width: 420px;
+  width: 96%;
+  max-width: 440px;
   border-radius: 14px;
   box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.25);
   overflow: hidden;
@@ -1442,13 +1443,13 @@ body {
 }
 
 .modal-opcoes-content .modal-header {
-  padding: 8px 14px;
+  padding: 8px 12px;
   background: #F8FAFC;
   border-bottom: 1px solid #E2E8F0;
 }
 
 .modal-opcoes-content .modal-header h3 {
-  font-size: 0.95rem;
+  font-size: 1.08rem;
   font-weight: 800;
   color: #0F172A;
   display: flex;
@@ -1457,20 +1458,20 @@ body {
 }
 
 .modal-body-opcoes {
-  padding: 8px 10px;
+  padding: 5px 4px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  max-height: calc(92vh - 50px);
+  gap: 5px;
+  max-height: calc(92vh - 46px);
   overflow-y: auto;
 }
 
 .secao-opcoes-grupo {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 6px 8px;
-  border-radius: 8px;
+  gap: 3px;
+  padding: 4px 6px;
+  border-radius: 7px;
   border: 1px solid #E2E8F0;
   background: #F8FAFC;
   transition: all 0.15s ease;
@@ -1514,11 +1515,11 @@ body {
 }
 
 .titulo-secao-opcoes {
-  font-size: 0.68rem;
+  font-size: 0.77rem;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin-bottom: 2px;
+  letter-spacing: 0.03em;
+  margin-bottom: 1px;
   display: flex;
   align-items: center;
   gap: 4px;
@@ -1531,9 +1532,9 @@ body {
 }
 
 .grid-modos-cotacao .btn-chip-modo {
-  min-height: 28px;
-  padding: 3px 6px;
-  font-size: 0.76rem;
+  min-height: 29px;
+  padding: 3px 4px;
+  font-size: 0.86rem;
   font-weight: 700;
   border-radius: 6px;
   display: flex;
@@ -1565,8 +1566,8 @@ body {
 
 @media (max-width: 380px) {
   .grid-modos-cotacao .btn-chip-modo {
-    font-size: 0.72rem;
-    padding: 3px 4px;
+    font-size: 0.80rem;
+    padding: 3px 2px;
     gap: 2px;
   }
 }
@@ -1574,19 +1575,19 @@ body {
 .lista-acoes-menu {
   display: flex;
   flex-direction: column;
-  gap: 3.5px;
+  gap: 3px;
 }
 
 .btn-menu-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 4px 8px;
+  padding: 3.5px 6px;
   min-height: 29px;
   background: #FFFFFF;
   border: 1px solid #E2E8F0;
   border-radius: 6px;
-  font-size: 0.78rem;
+  font-size: 0.88rem;
   font-weight: 600;
   color: #1E293B;
   cursor: pointer;
@@ -1596,7 +1597,7 @@ body {
 }
 
 .btn-menu-item #label-tema-escuro {
-  font-size: 0.78rem;
+  font-size: 0.88rem;
   font-weight: 600;
 }
 
@@ -1620,7 +1621,7 @@ body {
 }
 
 .badge-status-cotado {
-  font-size: 0.65rem;
+  font-size: 0.74rem;
   font-weight: 800;
   background: #DCFCE7;
   color: #15803D;
