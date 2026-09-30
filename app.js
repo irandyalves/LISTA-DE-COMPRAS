@@ -3539,7 +3539,7 @@ function renderizarListaCompras() {
       const isPendente = (itemPendenteDesmarcarId === item.id);
       const classePendente = isPendente ? 'pendente-desmarcar' : '';
       const badgePendente = isPendente 
-        ? `<span class="badge-confirmar-desmarcar" title="Clique mais uma vez para desmarcar">⚠️ Toque novamente para desmarcar</span>` 
+        ? `<span class="badge-confirmar-desmarcar" onclick="event.stopPropagation(); alternarItemComprado('${item.id}')" title="Clique mais uma vez para desmarcar">⚠️ Toque novamente para desmarcar</span>` 
         : '';
 
       // No celular (somente mobile): não traz preços, vêm todos 0,00 até falar no mic
@@ -3575,6 +3575,7 @@ function renderizarListaCompras() {
                 <div class="mcol-prod-info-esquerda">
                   <span class="mcol-prod-nome ${item.comprado && !isPendente ? 'texto-riscado' : ''}" onclick="alternarItemComprado('${item.id}')" title="${item.nome}">${nomeExibicao}</span>
                   ${marcaHtml}
+                  ${badgePendente}
                 </div>
                 <div class="mcol-prod-preco-grupo">
                   <button type="button" class="btn-favorito-item ${ehFavorito ? 'ativo' : ''}" id="btn-fav-lista-${item.id}"
@@ -3595,7 +3596,6 @@ function renderizarListaCompras() {
                   </span>
                 </div>
               </div>
-              ${badgePendente}
             </div>
           </td>
           ${celulasPrecos}
@@ -4619,10 +4619,12 @@ function alternarFiltroFavoritosCategoria(categoria, event) {
         const ehFavorito = !!prod.favorito;
         const qtde = prod.qtde || 1;
         const checkIcone = estaNaLista ? '✓' : '';
+        const isDespensaPendente = (String(despensaPendenteDesmarcarId) === String(prod.id));
         const classeNaLista = estaNaLista ? 'na-lista-montar' : '';
+        const classePendenteDesp = isDespensaPendente ? 'pendente-desmarcar' : '';
 
         htmlItens += `
-          <div class="item-card ${classeNaLista}" id="card-despensa-${prod.id}"
+          <div class="item-card ${classeNaLista} ${classePendenteDesp}" id="card-despensa-${prod.id}"
                onclick="alternarItemDespensaEmTempoReal('${prod.id}', event)"
                oncontextmenu="event.preventDefault(); abrirModalEditarNomeDespensa('${prod.id}', event);"
                title="${estaNaLista ? 'Na Lista de Compra (Clique para desmarcar)' : 'Clique para marcar e adicionar à Lista de Compra'} • Botão direito para editar"
@@ -4656,6 +4658,7 @@ function alternarFiltroFavoritosCategoria(categoria, event) {
                     <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
                   </svg>
                 </button>
+                ${isDespensaPendente ? '<span class="badge-confirmar-desmarcar" title="Clique mais uma vez para desmarcar">⚠️ Toque novamente para desmarcar</span>' : ''}
               </div>
             </div>
           </div>
@@ -4861,13 +4864,11 @@ function alternarItemDespensaEmTempoReal(produtoId, event) {
       if (linhaNome && !linhaNome.querySelector('.badge-confirmar-desmarcar')) {
         const badge = document.createElement('span');
         badge.className = 'badge-confirmar-desmarcar';
+        badge.title = 'Clique mais uma vez para desmarcar';
         badge.textContent = '⚠️ Toque novamente para desmarcar';
         linhaNome.appendChild(badge);
       }
     }
-
-    const nomeReduz = (typeof obterNomeResumido === 'function') ? obterNomeResumido(prod.nome) : prod.nome;
-    mostrarNotificacaoToast(`⚠️ Clique mais uma vez para retirar "${nomeReduz}" da lista.`);
 
     // Janela de 3 segundos para confirmar com o segundo clique
     timerDespensaPendenteDesmarcar = setTimeout(() => {
@@ -5922,21 +5923,27 @@ function atualizarVisualItemLinha(item, isPendente = false) {
     }
   }
 
-  const cardCell = tr.querySelector('.mcol-prod-card-cell');
-  if (cardCell) {
-    let badgePendenteEl = cardCell.querySelector('.badge-confirmar-desmarcar');
+  const infoEsquerda = tr.querySelector('.mcol-prod-info-esquerda');
+  if (infoEsquerda) {
+    let badgePendenteEl = infoEsquerda.querySelector('.badge-confirmar-desmarcar');
     if (isPendente) {
       if (!badgePendenteEl) {
         badgePendenteEl = document.createElement('span');
         badgePendenteEl.className = 'badge-confirmar-desmarcar';
         badgePendenteEl.title = 'Clique mais uma vez para desmarcar';
         badgePendenteEl.textContent = '⚠️ Toque novamente para desmarcar';
-        cardCell.appendChild(badgePendenteEl);
+        badgePendenteEl.onclick = (e) => {
+          e.stopPropagation();
+          alternarItemComprado(item.id);
+        };
+        infoEsquerda.appendChild(badgePendenteEl);
       }
     } else if (badgePendenteEl) {
       badgePendenteEl.remove();
     }
   }
+  const strayBadge = tr.querySelector('.mcol-prod-card-cell > .badge-confirmar-desmarcar');
+  if (strayBadge) strayBadge.remove();
 
   return true;
 }
@@ -6071,8 +6078,6 @@ function alternarItemComprado(id) {
     if (!atualizarVisualItemLinha(item, true)) {
       renderizarListaCompras();
     }
-
-    mostrarNotificacaoToast("⚠️ Toque novamente no item para confirmar a desmarcação.");
 
     // Janela de 4 segundos para expirar a confirmação se não houver o 2º clique
     timerPendenteDesmarcar = setTimeout(() => {

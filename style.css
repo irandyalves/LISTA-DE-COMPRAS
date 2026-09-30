@@ -2167,26 +2167,62 @@ body.modo-mercado-ativo .item-nome {
   to { border-color: #D97706; }
 }
 
-.item-card.pendente-desmarcar .item-nome {
-  text-decoration: none !important;
-  color: #B45309 !important;
-  font-weight: 700;
+.item-card.pendente-desmarcar .item-nome,
+.item-card.pendente-desmarcar .btn-editar-despensa {
+  visibility: hidden !important;
+}
+
+.mcol-tr-item.pendente-desmarcar .mcol-prod-nome,
+.mcol-tr-item.pendente-desmarcar .badge-marca-selecionada,
+.mcol-tr-item.pendente-desmarcar .badge-marca-item {
+  visibility: hidden !important;
 }
 
 .badge-confirmar-desmarcar {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 0.68rem;
+  font-size: 0.70rem;
   font-weight: 700;
-  color: #B45309;
+  color: #92400E;
   background: #FEF3C7;
-  border: 1px solid #FCD34D;
+  border: 1px solid #F59E0B;
   padding: 2px 8px;
   border-radius: 6px;
   white-space: nowrap;
   animation: pulse 1s infinite;
-  margin-top: 2px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  z-index: 10;
+}
+
+.mcol-tr-item.pendente-desmarcar .badge-confirmar-desmarcar {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+
+.item-card.pendente-desmarcar .badge-confirmar-desmarcar {
+  position: absolute;
+  left: 25px;
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: calc(100% - 30px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+
+body.dark-mode .item-card.pendente-desmarcar .badge-confirmar-desmarcar,
+body.dark-mode .mcol-tr-item.pendente-desmarcar .badge-confirmar-desmarcar {
+  background: #78350F !important;
+  border-color: #F59E0B !important;
+  color: #FEF3C7 !important;
 }
 
 .item-check-btn {
@@ -2617,6 +2653,7 @@ body.tema-escuro .btn-categoria-fav.ativo,
 }
 
 #view-despensa .item-card .item-linha-nome {
+  position: relative !important;
   display: flex !important;
   align-items: center !important;
   gap: 5px !important;
@@ -4429,6 +4466,7 @@ body.tema-escuro .despensa-aba-tab.btn-aba-favoritos-estrela.ativa,
 }
 
 .mcol-prod-info-esquerda {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 4px;
