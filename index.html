@@ -16,8 +16,116 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   
+  <!-- Anti-Flicker Instantâneo: Aplica a aba salva imediatamente antes de pintar a tela -->
+  <script>
+    (function() {
+      try {
+        var aba = localStorage.getItem('app_aba_ativa') || 'lista';
+        if (aba && ['lista', 'despensa', 'historico', 'mercados'].indexOf(aba) !== -1) {
+          document.documentElement.setAttribute('data-aba-ativa', aba);
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <style>
+    /* Anti-Flicker: Sincronização visual de abas no milissegundo zero */
+    html[data-aba-ativa="despensa"] #view-lista { display: none !important; }
+    html[data-aba-ativa="despensa"] #view-despensa { display: block !important; }
+    html[data-aba-ativa="despensa"] #sidebar-subopcoes-comprar { display: none !important; }
+    html[data-aba-ativa="despensa"] #sidebar-subopcoes-montar { display: block !important; }
+
+    html[data-aba-ativa="historico"] #view-lista { display: none !important; }
+    html[data-aba-ativa="historico"] #view-historico { display: block !important; }
+    html[data-aba-ativa="historico"] #sidebar-subopcoes-comprar { display: none !important; }
+    html[data-aba-ativa="historico"] #sidebar-subopcoes-historico { display: block !important; }
+
+    html[data-aba-ativa="mercados"] #view-lista { display: none !important; }
+    html[data-aba-ativa="mercados"] #view-mercados { display: block !important; }
+
+    html[data-aba-ativa="despensa"] .barra-mercados-filtro,
+    html[data-aba-ativa="historico"] .barra-mercados-filtro { display: none !important; }
+    html[data-aba-ativa="despensa"] #btn-toggle-modo-mercado,
+    html[data-aba-ativa="historico"] #btn-toggle-modo-mercado { display: none !important; }
+
+    html[data-aba-ativa="historico"] #btn-mic-voz,
+    html[data-aba-ativa="historico"] .busca-topo-reduzida,
+    html[data-aba-ativa="historico"] #btn-perfil-usuario { display: none !important; }
+    html[data-aba-ativa="historico"] #historico-topo-integrado,
+    html[data-aba-ativa="historico"] #historico-barra-controles { display: flex !important; }
+
+    html[data-aba-ativa="despensa"] .mobile-nav-btn[data-aba="lista"],
+    html[data-aba-ativa="historico"] .mobile-nav-btn[data-aba="lista"],
+    html[data-aba-ativa="despensa"] .nav-item[data-aba="lista"],
+    html[data-aba-ativa="historico"] .nav-item[data-aba="lista"] {
+      background: transparent !important;
+    }
+    html[data-aba-ativa="despensa"] .mobile-nav-btn[data-aba="lista"] .mobile-nav-label,
+    html[data-aba-ativa="historico"] .mobile-nav-btn[data-aba="lista"] .mobile-nav-label {
+      color: #64748B !important;
+      font-weight: 500 !important;
+    }
+    html[data-aba-ativa="despensa"] .mobile-nav-btn[data-aba="lista"] .mobile-nav-icon,
+    html[data-aba-ativa="historico"] .mobile-nav-btn[data-aba="lista"] .mobile-nav-icon {
+      filter: grayscale(100%) opacity(0.65) !important;
+      transform: none !important;
+    }
+    html[data-aba-ativa="despensa"] .mobile-nav-btn[data-aba="lista"] .nav-icon-comprar svg,
+    html[data-aba-ativa="historico"] .mobile-nav-btn[data-aba="lista"] .nav-icon-comprar svg {
+      color: #94A3B8 !important;
+      stroke: #94A3B8 !important;
+    }
+
+    html[data-aba-ativa="despensa"] .mobile-nav-btn[data-aba="despensa"] {
+      background: #F4EBE1 !important;
+    }
+    html[data-aba-ativa="despensa"] .mobile-nav-btn[data-aba="despensa"] .mobile-nav-label {
+      color: #C2410C !important;
+      font-weight: 800 !important;
+    }
+    html[data-aba-ativa="despensa"] .mobile-nav-btn[data-aba="despensa"] .mobile-nav-icon {
+      filter: none !important;
+      opacity: 1 !important;
+      transform: scale(1.10) !important;
+    }
+    html[data-aba-ativa="despensa"] .sidebar-nav-item[data-aba="despensa"] {
+      background: var(--primary-light, #EEF2FF) !important;
+      color: var(--primary, #4F46E5) !important;
+    }
+
+    html[data-aba-ativa="historico"] .mobile-nav-btn[data-aba="historico"] {
+      background: #F4EBE1 !important;
+    }
+    html[data-aba-ativa="historico"] .mobile-nav-btn[data-aba="historico"] .mobile-nav-label {
+      color: #C2410C !important;
+      font-weight: 800 !important;
+    }
+    html[data-aba-ativa="historico"] .mobile-nav-btn[data-aba="historico"] .mobile-nav-icon {
+      filter: none !important;
+      opacity: 1 !important;
+      transform: scale(1.10) !important;
+    }
+    html[data-aba-ativa="historico"] .sidebar-nav-item[data-aba="historico"] {
+      background: var(--primary-light, #EEF2FF) !important;
+      color: var(--primary, #4F46E5) !important;
+    }
+
+    html.tema-escuro[data-aba-ativa="despensa"] .mobile-nav-btn[data-aba="despensa"],
+    html.tema-escuro[data-aba-ativa="historico"] .mobile-nav-btn[data-aba="historico"],
+    [data-theme="dark"][data-aba-ativa="despensa"] .mobile-nav-btn[data-aba="despensa"],
+    [data-theme="dark"][data-aba-ativa="historico"] .mobile-nav-btn[data-aba="historico"] {
+      background: #1E293B !important;
+    }
+    html.tema-escuro[data-aba-ativa="despensa"] .mobile-nav-btn[data-aba="despensa"] .mobile-nav-label,
+    html.tema-escuro[data-aba-ativa="historico"] .mobile-nav-btn[data-aba="historico"] .mobile-nav-label,
+    [data-theme="dark"][data-aba-ativa="despensa"] .mobile-nav-btn[data-aba="despensa"] .mobile-nav-label,
+    [data-theme="dark"][data-aba-ativa="historico"] .mobile-nav-btn[data-aba="historico"] .mobile-nav-label {
+      color: #FB923C !important;
+      font-weight: 800 !important;
+    }
+  </style>
+
   <!-- CSS Moderno -->
-  <link rel="stylesheet" href="style.css?v=10.54">
+  <link rel="stylesheet" href="style.css?v=10.55">
 </head>
 <body>
 
@@ -773,6 +881,22 @@
     </button>
   </nav>
 
+  <!-- Script Instantâneo: Sincroniza classes dos botões mobile e sidebar imediatamente ao serem inseridos no DOM -->
+  <script>
+    (function() {
+      try {
+        var aba = localStorage.getItem('app_aba_ativa') || 'lista';
+        if (aba && aba !== 'lista') {
+          var btns = document.querySelectorAll('.mobile-nav-btn, .sidebar-nav-item');
+          btns.forEach(function(b) {
+            if (b.getAttribute('data-aba') === aba) b.classList.add('ativo');
+            else if (b.getAttribute('data-aba') === 'lista') b.classList.remove('ativo');
+          });
+        }
+      } catch (e) {}
+    })();
+  </script>
+
   <!-- MODAL: GESTOR DE USUÁRIOS (PERFIS DINÂMICOS & EDIÇÃO) -->
   <div id="modal-perfil-usuario" class="modal-overlay" style="display: none;" onclick="if(event.target === this) fecharModal('modal-perfil-usuario')">
     <div class="modal-content modal-perfil-content">
@@ -958,7 +1082,7 @@
   <script src="logos_banco.js?v=10.13"></script>
   <script src="icones2d.js"></script>
   <script src="firebase-sync.js"></script>
-  <script src="app.js?v=10.54"></script>
+  <script src="app.js?v=10.55"></script>
 
 </body>
 </html>

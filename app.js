@@ -2181,6 +2181,7 @@ function alternarAbaApp(aba, isUserClick = true) {
   } catch (e) {
     console.warn('Erro ao salvar aba ativa no localStorage:', e);
   }
+  document.documentElement.setAttribute('data-aba-ativa', aba);
 
   if (typeof cancelarPendenteDesmarcar === 'function') cancelarPendenteDesmarcar();
   if (typeof cancelarDespensaPendenteDesmarcar === 'function') cancelarDespensaPendenteDesmarcar();
