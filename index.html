@@ -404,6 +404,24 @@
         </div>
 
         <div class="secao-opcoes-grupo">
+          <span class="titulo-secao-opcoes">Exibição nos Cards</span>
+          <div class="lista-acoes-menu">
+            <button class="btn-menu-item" onclick="alternarExibirMarcaCard();" id="btn-cfg-marca-menu">
+              <span>🏷️ Exibir Marca no Card</span>
+              <span class="badge-status-cotado" id="badge-status-cfg-marca">Ativo</span>
+            </button>
+            <button class="btn-menu-item" onclick="alternarExibirFavoritoCard();" id="btn-cfg-favorito-menu">
+              <span>⭐ Exibir Estrela de Favoritos</span>
+              <span class="badge-status-cotado" id="badge-status-cfg-favorito">Ativo</span>
+            </button>
+            <button class="btn-menu-item" onclick="alternarExibirCompradorCard();" id="btn-cfg-comprador-menu">
+              <span>✊ Exibir Quem Pegou o Item</span>
+              <span class="badge-status-cotado" id="badge-status-cfg-comprador">Ativo</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="secao-opcoes-grupo">
           <span class="titulo-secao-opcoes">Ações da Lista</span>
           <div class="lista-acoes-menu">
             <button class="btn-menu-item" onclick="alternarCotacaoEstado(); fecharModal('modal-opcoes-header');" id="btn-cotar-menu">

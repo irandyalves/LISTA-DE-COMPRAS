@@ -4631,7 +4631,7 @@ body.tema-escuro .despensa-aba-tab.btn-aba-favoritos-estrela.ativa,
   flex: 1;
 }
 
-/* Linha principal: Nome e Marca à esquerda, Estrela, Mic e Preço alinhados à direita */
+/* Linha principal: Nome e Marca à esquerda, Estrela, Mic, Quem Pegou e Preço alinhados à direita */
 .mcol-prod-linha-principal {
   display: flex;
   align-items: center;
@@ -4639,6 +4639,8 @@ body.tema-escuro .despensa-aba-tab.btn-aba-favoritos-estrela.ativa,
   gap: 4px;
   width: 100%;
   min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
   line-height: 1.25;
 }
 
@@ -4648,7 +4650,7 @@ body.tema-escuro .despensa-aba-tab.btn-aba-favoritos-estrela.ativa,
   align-items: center;
   gap: 4px;
   min-width: 0;
-  flex: 1;
+  flex: 1 1 auto;
   overflow: hidden;
 }
 
@@ -4662,9 +4664,11 @@ body.tema-escuro .despensa-aba-tab.btn-aba-favoritos-estrela.ativa,
   line-height: 1.25;
   letter-spacing: -0.01em;
   cursor: pointer;
+  min-width: 0;
+  flex: 0 1 auto;
 }
 
-/* Grupo de Preço Alinhado à Direita: Estrela, Mic e Preço bem próximos */
+/* Grupo de Preço e Ações Alinhado à Direita: Quem Pegou, Estrela, Mic e Preço travados */
 .mcol-prod-preco-grupo {
   display: inline-flex;
   align-items: center;
@@ -4672,6 +4676,8 @@ body.tema-escuro .despensa-aba-tab.btn-aba-favoritos-estrela.ativa,
   margin-left: auto;
   flex-shrink: 0;
   justify-content: flex-end;
+  max-width: 68%;
+  overflow: hidden;
 }
 
 /* Microfone Verdinho para Ditar Preço de Gôndola no Mercado */
@@ -9078,7 +9084,7 @@ body.tema-escuro .card-ranking-stats {
   color: #991B1B;
 }
 
-/* 3. Badge "Quem Pegou o Item" (Mini Avatar + Nome) */
+/* 3. Badge "Quem Pegou o Item" (✊ Nome - Alinhado à Direita) */
 .badge-comprado-por {
   display: inline-flex;
   align-items: center;
@@ -9087,17 +9093,26 @@ body.tema-escuro .card-ranking-stats {
   color: #047857;
   border: 1px solid #A7F3D0;
   border-radius: 12px;
-  font-size: 0.66rem;
+  font-size: 0.68rem;
   font-weight: 700;
   padding: 1px 6px;
-  margin-left: 4px;
+  margin-right: 2px;
   white-space: nowrap;
   user-select: none;
+  flex-shrink: 0;
+  line-height: 1.2;
 }
 
-.badge-comprado-por .ico-comprador {
-  font-size: 0.72rem;
+.badge-comprado-por .ico-mao-comprador {
+  font-size: 0.74rem;
   line-height: 1;
+}
+
+.badge-comprado-por .nome-comprador-txt {
+  max-width: 65px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* 4. Banner de Corredor Ativo */

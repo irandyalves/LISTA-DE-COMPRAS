@@ -737,6 +737,9 @@ let AppState = {
   modoResumido: true, // true = exibe nomes simplificados e deduplica variedades (padrão ativado)
   modoCotacao: 'alfabetico', // Padrão Alfabético A-Z em todo o app
   exibirCifrao: false, // Padrão SEM R$ conforme solicitado (pode ser ativado em Opções)
+  exibirMarcaCard: (typeof localStorage !== 'undefined' && localStorage.getItem('cfg_exibir_marca_card') !== null) ? localStorage.getItem('cfg_exibir_marca_card') === 'true' : true,
+  exibirFavoritoCard: (typeof localStorage !== 'undefined' && localStorage.getItem('cfg_exibir_favorito_card') !== null) ? localStorage.getItem('cfg_exibir_favorito_card') === 'true' : true,
+  exibirCompradorCard: (typeof localStorage !== 'undefined' && localStorage.getItem('cfg_exibir_comprador_card') !== null) ? localStorage.getItem('cfg_exibir_comprador_card') === 'true' : true,
   mercadoReferencia: 'atacadao',
   ordenacaoMercados: 'original', // 'original', 'alfabetico_az', 'alfabetico_za', 'preco'
   usuarioAtivo: (typeof localStorage !== 'undefined' && localStorage.getItem('usuario_nome_ativo')) || 'Irandy',
@@ -924,6 +927,9 @@ function carregarLocalmente() {
       }
       if (parsed.modoResumido !== undefined) AppState.modoResumido = parsed.modoResumido;
       if (parsed.exibirCifrao !== undefined) AppState.exibirCifrao = parsed.exibirCifrao;
+      if (parsed.exibirMarcaCard !== undefined) AppState.exibirMarcaCard = parsed.exibirMarcaCard;
+      if (parsed.exibirFavoritoCard !== undefined) AppState.exibirFavoritoCard = parsed.exibirFavoritoCard;
+      if (parsed.exibirCompradorCard !== undefined) AppState.exibirCompradorCard = parsed.exibirCompradorCard;
       if (parsed.mercadoReferencia && parsed.mercadoReferencia !== 'todos') {
         AppState.mercadoReferencia = parsed.mercadoReferencia;
       } else {
@@ -1111,6 +1117,9 @@ function salvarEstado(enviarParaNuvem = true) {
     modoNoMercado: AppState.modoNoMercado || false,
     modoResumido: AppState.modoResumido || false,
     exibirCifrao: AppState.exibirCifrao || false,
+    exibirMarcaCard: AppState.exibirMarcaCard !== false,
+    exibirFavoritoCard: AppState.exibirFavoritoCard !== false,
+    exibirCompradorCard: AppState.exibirCompradorCard !== false,
     mercadoReferencia: (AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos') ? AppState.mercadoReferencia : 'nenhum',
     modoCotacao: AppState.modoCotacao || 'mais_baratos',
     ordenacaoMercados: AppState.ordenacaoMercados || 'original',
@@ -3564,13 +3573,6 @@ function renderizarListaCompras() {
       const qtde = item.qtde || 1;
       const ehFavorito = !!(item.favorito || (AppState.catalogo.find(c => String(c.id) === String(item.id) || String(c.id) === String(item.catalogoId))?.favorito));
 
-      let marcaHtml = '';
-      if (item.marca) {
-        marcaHtml = `<button type="button" class="btn-marca-listbox-tag com-marca" onclick="alterarMarcaItem('${item.id}', this, event)" title="Marca: ${item.marca} (Clique para alterar)">${item.marca}</button>`;
-      } else {
-        marcaHtml = `<button type="button" class="btn-marca-listbox-tag" onclick="alterarMarcaItem('${item.id}', this, event)" title="Clique para escolher a marca">+ Marca</button>`;
-      }
-
       let celulasPrecos = '';
       let badgeMelhor = '';
 
@@ -3631,14 +3633,36 @@ function renderizarListaCompras() {
       }
       const precoFormatadoTxt = formatarMoeda(precoRegistradoValor);
 
+      let marcaHtml = '';
+      if (AppState.exibirMarcaCard !== false) {
+        if (item.marca) {
+          marcaHtml = `<button type="button" class="btn-marca-listbox-tag com-marca" onclick="alterarMarcaItem('${item.id}', this, event)" title="Marca: ${item.marca} (Clique para alterar)">${item.marca}</button>`;
+        } else {
+          marcaHtml = `<button type="button" class="btn-marca-listbox-tag" onclick="alterarMarcaItem('${item.id}', this, event)" title="Clique para escolher a marca">+ Marca</button>`;
+        }
+      }
+
       let badgeCompradorHtml = '';
-      if (item.comprado && item.compradoPor && !isPendente) {
-        badgeCompradorHtml = `<span class="badge-comprado-por" title="Pego por ${item.compradoPor}"><span class="ico-comprador">${item.compradoPorIcone || '✓'}</span> ${item.compradoPor} pegou</span>`;
+      if (AppState.exibirCompradorCard !== false && item.comprado && item.compradoPor && !isPendente) {
+        badgeCompradorHtml = `<span class="badge-comprado-por" title="Pego por ${item.compradoPor}"><span class="ico-mao-comprador">✊</span> <span class="nome-comprador-txt">${item.compradoPor}</span></span>`;
       }
 
       let tagNovoPedidoHtml = '';
       if (item.novoPedidoCasa && !item.comprado) {
         tagNovoPedidoHtml = `<span class="tag-novo-pedido-casa" onclick="event.stopPropagation(); dispensarAlertaNovoPedido('${item.id}')" title="Novo pedido de ${item.adicionadoPor || 'Casa'} (Clique para dispensar)">🔴 Novo (${item.adicionadoPor || 'Casa'})</span>`;
+      }
+
+      let favBtnHtml = '';
+      if (AppState.exibirFavoritoCard !== false) {
+        favBtnHtml = `
+          <button type="button" class="btn-favorito-item ${ehFavorito ? 'ativo' : ''}" id="btn-fav-lista-${item.id}"
+                  title="${ehFavorito ? 'Remover dos favoritos' : 'Tornar favorito'}"
+                  onclick="event.stopPropagation(); alternarFavoritoItem('${item.id}', event)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="${ehFavorito ? '#F59E0B' : 'none'}" stroke="${ehFavorito ? '#D97706' : '#94A3B8'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+          </button>
+        `;
       }
 
       linhasTabelaHtml += `
@@ -3662,17 +3686,11 @@ function renderizarListaCompras() {
                   <span class="mcol-prod-nome ${item.comprado && !isPendente ? 'texto-riscado' : ''}" onclick="alternarItemComprado('${item.id}')" title="${item.nome}">${nomeExibicao}</span>
                   ${marcaHtml}
                   ${tagNovoPedidoHtml}
-                  ${badgeCompradorHtml}
                   ${badgePendente}
                 </div>
                 <div class="mcol-prod-preco-grupo">
-                  <button type="button" class="btn-favorito-item ${ehFavorito ? 'ativo' : ''}" id="btn-fav-lista-${item.id}"
-                          title="${ehFavorito ? 'Remover dos favoritos' : 'Tornar favorito'}"
-                          onclick="event.stopPropagation(); alternarFavoritoItem('${item.id}', event)">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="${ehFavorito ? '#F59E0B' : 'none'}" stroke="${ehFavorito ? '#D97706' : '#94A3B8'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                    </svg>
-                  </button>
+                  ${badgeCompradorHtml}
+                  ${favBtnHtml}
                   <button type="button" class="btn-mic-preco-verde" id="btn-mic-item-${item.id}" onclick="ouvirPrecoItem('${item.id}', this, event)" title="Ditar preço por voz no PC ou Celular (fale ex: 1,10, 55 centavos ou 4 e 35)">
                     <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor">
                       <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
@@ -4762,13 +4780,15 @@ function alternarFiltroFavoritosCategoria(categoria, event) {
 
             <div class="item-corpo">
               <div class="item-linha-nome">
-                <button class="btn-favorito-item ${ehFavorito ? 'ativo' : ''}" id="btn-fav-despensa-${prod.id}"
-                        title="${ehFavorito ? 'Remover dos favoritos' : 'Tornar favorito'}"
-                        onclick="event.stopPropagation(); alternarFavoritoItem('${prod.id}', event)">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="${ehFavorito ? '#F59E0B' : 'none'}" stroke="${ehFavorito ? '#D97706' : '#94A3B8'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                  </svg>
-                </button>
+                ${AppState.exibirFavoritoCard !== false ? `
+                  <button class="btn-favorito-item ${ehFavorito ? 'ativo' : ''}" id="btn-fav-despensa-${prod.id}"
+                          title="${ehFavorito ? 'Remover dos favoritos' : 'Tornar favorito'}"
+                          onclick="event.stopPropagation(); alternarFavoritoItem('${prod.id}', event)">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="${ehFavorito ? '#F59E0B' : 'none'}" stroke="${ehFavorito ? '#D97706' : '#94A3B8'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                  </button>
+                ` : ''}
                 <span class="item-nome" title="${prod.nome}">${nomeExibicao}</span>
                 <button class="btn-editar-despensa" title="Editar este produto" onclick="event.stopPropagation(); abrirModalEditarNomeDespensa('${prod.id}', event)">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
@@ -6064,20 +6084,6 @@ function atualizarVisualItemLinha(item, isPendente = false) {
       badgePendenteEl.remove();
     }
 
-    // Atualiza badge de quem comprou
-    let badgeCompradoEl = infoEsquerda.querySelector('.badge-comprado-por');
-    if (item.comprado && item.compradoPor && !isPendente) {
-      if (!badgeCompradoEl) {
-        badgeCompradoEl = document.createElement('span');
-        badgeCompradoEl.className = 'badge-comprado-por';
-        infoEsquerda.appendChild(badgeCompradoEl);
-      }
-      badgeCompradoEl.title = `Pego por ${item.compradoPor}`;
-      badgeCompradoEl.innerHTML = `<span class="ico-comprador">${item.compradoPorIcone || '✓'}</span> ${item.compradoPor} pegou`;
-    } else if (badgeCompradoEl) {
-      badgeCompradoEl.remove();
-    }
-
     // Atualiza tag novo pedido de casa
     let tagNovoEl = infoEsquerda.querySelector('.tag-novo-pedido-casa');
     if (item.novoPedidoCasa && !item.comprado) {
@@ -6094,6 +6100,23 @@ function atualizarVisualItemLinha(item, isPendente = false) {
       tagNovoEl.textContent = `🔴 Novo (${item.adicionadoPor || 'Casa'})`;
     } else if (tagNovoEl) {
       tagNovoEl.remove();
+    }
+  }
+
+  // Atualiza badge de quem comprou (alinhado à direita no grupo de preço)
+  const precoGrupo = tr.querySelector('.mcol-prod-preco-grupo');
+  if (precoGrupo) {
+    let badgeCompradoEl = precoGrupo.querySelector('.badge-comprado-por');
+    if (AppState.exibirCompradorCard !== false && item.comprado && item.compradoPor && !isPendente) {
+      if (!badgeCompradoEl) {
+        badgeCompradoEl = document.createElement('span');
+        badgeCompradoEl.className = 'badge-comprado-por';
+        precoGrupo.insertBefore(badgeCompradoEl, precoGrupo.firstChild);
+      }
+      badgeCompradoEl.title = `Pego por ${item.compradoPor}`;
+      badgeCompradoEl.innerHTML = `<span class="ico-mao-comprador">✊</span> <span class="nome-comprador-txt">${item.compradoPor}</span>`;
+    } else if (badgeCompradoEl) {
+      badgeCompradoEl.remove();
     }
   }
   const strayBadge = tr.querySelector('.mcol-prod-card-cell > .badge-confirmar-desmarcar');
@@ -6526,13 +6549,13 @@ function executarDesfazerExclusao(event) {
 // ESCALA DE FONTE DOS CARDS E PREÇOS (BOTÕES 'a' E 'A' NO CABEÇALHO)
 // =========================================================================
 const ESCALAS_FONTE_CARDS = [
-  { fator: 0.75, nomeRem: '0.62rem', precoRem: '0.55rem', subtotalRem: '0.62rem', montarRem: '0.60rem', label: 'Muito Pequena (75%)' },
-  { fator: 0.88, nomeRem: '0.72rem', precoRem: '0.64rem', subtotalRem: '0.72rem', montarRem: '0.69rem', label: 'Pequena (88%)' },
-  { fator: 1.00, nomeRem: '0.82rem', precoRem: '0.72rem', subtotalRem: '0.82rem', montarRem: '0.78rem', label: 'Padrão (100%)' },
-  { fator: 1.15, nomeRem: '0.94rem', precoRem: '0.83rem', subtotalRem: '0.94rem', montarRem: '0.90rem', label: 'Média (115%)' },
-  { fator: 1.30, nomeRem: '1.07rem', precoRem: '0.94rem', subtotalRem: '1.07rem', montarRem: '1.02rem', label: 'Grande (130%)' },
-  { fator: 1.45, nomeRem: '1.19rem', precoRem: '1.05rem', subtotalRem: '1.19rem', montarRem: '1.14rem', label: 'Muito Grande (145%)' },
-  { fator: 1.65, nomeRem: '1.35rem', precoRem: '1.19rem', subtotalRem: '1.35rem', montarRem: '1.29rem', label: 'Extra Grande (165%)' }
+  { nomeRem: '0.65rem', montarRem: '0.62rem', label: 'Muito Pequena (75%)' },
+  { nomeRem: '0.74rem', montarRem: '0.70rem', label: 'Pequena (88%)' },
+  { nomeRem: '0.82rem', montarRem: '0.78rem', label: 'Padrão (100%)' },
+  { nomeRem: '0.96rem', montarRem: '0.90rem', label: 'Média (115%)' },
+  { nomeRem: '1.12rem', montarRem: '1.04rem', label: 'Grande (130%)' },
+  { nomeRem: '1.28rem', montarRem: '1.18rem', label: 'Muito Grande (145%)' },
+  { nomeRem: '1.45rem', montarRem: '1.32rem', label: 'Extra Grande (165%)' }
 ];
 let indiceFonteCards = 2; // Padrão: 100%
 
@@ -6550,24 +6573,18 @@ function inicializarEscalaFonteCards() {
 function aplicarEscalaFonteCards(mostrarToast = false) {
   const escala = ESCALAS_FONTE_CARDS[indiceFonteCards] || ESCALAS_FONTE_CARDS[2];
   
-  document.documentElement.style.setProperty('--fator-fonte-cards', escala.fator);
+  // Apenas modifica a fonte do título/nome dos cards; o restante permanece travado e fixo
   document.documentElement.style.setProperty('--fonte-card-nome', escala.nomeRem);
-  document.documentElement.style.setProperty('--fonte-card-preco', escala.precoRem);
-  document.documentElement.style.setProperty('--fonte-card-subtotal', escala.subtotalRem);
   document.documentElement.style.setProperty('--fonte-montar', escala.montarRem);
 
   const vLista = document.getElementById('view-lista');
   if (vLista) {
     vLista.style.setProperty('--fonte-card-nome', escala.nomeRem);
-    vLista.style.setProperty('--fonte-card-preco', escala.precoRem);
-    vLista.style.setProperty('--fonte-card-subtotal', escala.subtotalRem);
-    vLista.style.setProperty('--fator-fonte-cards', escala.fator);
   }
   const vDespensa = document.getElementById('view-despensa');
   if (vDespensa) {
     vDespensa.style.setProperty('--fonte-montar', escala.montarRem);
     vDespensa.style.setProperty('--fonte-card-nome', escala.nomeRem);
-    vDespensa.style.setProperty('--fator-fonte-cards', escala.fator);
   }
 
   try {
@@ -6576,7 +6593,7 @@ function aplicarEscalaFonteCards(mostrarToast = false) {
   } catch (e) {}
 
   if (mostrarToast) {
-    mostrarNotificacaoToast(`🔤 Tamanho dos Cards e Preços: ${escala.label}`);
+    mostrarNotificacaoToast(`🔤 Tamanho do Título do Card: ${escala.label}`);
   }
 }
 
@@ -7460,7 +7477,59 @@ function abrirModalOpcoesHeader() {
   }
   atualizarVisualTema();
   atualizarVisualOpcaoCifrao();
+  atualizarVisualOpcoesCardsHeader();
   modal.style.display = 'flex';
+}
+
+function alternarExibirMarcaCard() {
+  AppState.exibirMarcaCard = (AppState.exibirMarcaCard === false);
+  localStorage.setItem('cfg_exibir_marca_card', String(AppState.exibirMarcaCard));
+  salvarEstado(true);
+  atualizarVisualOpcoesCardsHeader();
+  renderizarTudo();
+  mostrarNotificacaoToast(AppState.exibirMarcaCard ? '🏷️ Exibição de Marcas ativada nos cards.' : '🏷️ Exibição de Marcas ocultada.');
+}
+
+function alternarExibirFavoritoCard() {
+  AppState.exibirFavoritoCard = (AppState.exibirFavoritoCard === false);
+  localStorage.setItem('cfg_exibir_favorito_card', String(AppState.exibirFavoritoCard));
+  salvarEstado(true);
+  atualizarVisualOpcoesCardsHeader();
+  renderizarTudo();
+  mostrarNotificacaoToast(AppState.exibirFavoritoCard ? '⭐ Estrela de Favoritos ativada nos cards.' : '⭐ Estrela de Favoritos ocultada.');
+}
+
+function alternarExibirCompradorCard() {
+  AppState.exibirCompradorCard = (AppState.exibirCompradorCard === false);
+  localStorage.setItem('cfg_exibir_comprador_card', String(AppState.exibirCompradorCard));
+  salvarEstado(true);
+  atualizarVisualOpcoesCardsHeader();
+  renderizarTudo();
+  mostrarNotificacaoToast(AppState.exibirCompradorCard ? '✊ Exibição de Quem Pegou (Comprador) ativada.' : '✊ Exibição de Quem Pegou ocultada.');
+}
+
+function atualizarVisualOpcoesCardsHeader() {
+  const bMarca = document.getElementById('badge-status-cfg-marca');
+  if (bMarca) {
+    const at = AppState.exibirMarcaCard !== false;
+    bMarca.textContent = at ? 'Ativo' : 'Desativado';
+    bMarca.style.background = at ? '#D1FAE5' : '#F1F5F9';
+    bMarca.style.color = at ? '#065F46' : '#64748B';
+  }
+  const bFav = document.getElementById('badge-status-cfg-favorito');
+  if (bFav) {
+    const at = AppState.exibirFavoritoCard !== false;
+    bFav.textContent = at ? 'Ativo' : 'Desativado';
+    bFav.style.background = at ? '#D1FAE5' : '#F1F5F9';
+    bFav.style.color = at ? '#065F46' : '#64748B';
+  }
+  const bComp = document.getElementById('badge-status-cfg-comprador');
+  if (bComp) {
+    const at = AppState.exibirCompradorCard !== false;
+    bComp.textContent = at ? 'Ativo' : 'Desativado';
+    bComp.style.background = at ? '#D1FAE5' : '#F1F5F9';
+    bComp.style.color = at ? '#065F46' : '#64748B';
+  }
 }
 
 function alternarExibicaoCifrao() {
