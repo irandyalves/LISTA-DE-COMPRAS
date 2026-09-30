@@ -94,14 +94,43 @@ body.tema-escuro .mobile-bottom-nav {
   border-top-color: #334155 !important;
 }
 
-[data-theme="dark"] .mobile-nav-btn,
-body.tema-escuro .mobile-nav-btn {
-  color: #94A3B8;
+[data-theme="dark"] .mobile-nav-btn:not(.ativo) .mobile-nav-label,
+body.tema-escuro .mobile-nav-btn:not(.ativo) .mobile-nav-label {
+  color: #94A3B8 !important;
+  font-weight: 500 !important;
+}
+
+[data-theme="dark"] .mobile-nav-btn:not(.ativo) .mobile-nav-icon,
+body.tema-escuro .mobile-nav-btn:not(.ativo) .mobile-nav-icon {
+  filter: grayscale(100%) opacity(0.6) !important;
+}
+
+[data-theme="dark"] .mobile-nav-btn:not(:last-child)::after,
+body.tema-escuro .mobile-nav-btn:not(:last-child)::after {
+  background-color: #334155 !important;
 }
 
 [data-theme="dark"] .mobile-nav-btn.ativo,
 body.tema-escuro .mobile-nav-btn.ativo {
-  color: #818CF8 !important;
+  background: #1E293B !important;
+}
+
+[data-theme="dark"] .mobile-nav-btn.ativo .mobile-nav-label,
+body.tema-escuro .mobile-nav-btn.ativo .mobile-nav-label {
+  color: #FB923C !important; /* Laranja escuro / nítido no tema escuro */
+  font-weight: 800 !important;
+}
+
+[data-theme="dark"] .mobile-nav-btn.ativo .nav-icon-comprar svg,
+body.tema-escuro .mobile-nav-btn.ativo .nav-icon-comprar svg {
+  color: #60A5FA !important;
+  stroke: #60A5FA !important;
+}
+
+[data-theme="dark"] .mobile-nav-icon.nav-icon-config svg,
+body.tema-escuro .mobile-nav-icon.nav-icon-config svg {
+  color: #FBBF24 !important;
+  fill: #FBBF24 !important;
 }
 
 [data-theme="dark"] .modal-content,
@@ -6033,6 +6062,7 @@ body.tema-escuro .drawer-fechar-btn {
     justify-content: space-around !important;
     z-index: 99999 !important;
     padding: 0 4px !important;
+    gap: 2px !important;
   }
 
   .mobile-nav-btn {
@@ -6046,32 +6076,116 @@ body.tema-escuro .drawer-fechar-btn {
     border: none;
     color: #64748B;
     cursor: pointer;
-    padding: 5px 2px;
+    padding: 6px 2px;
     border-radius: 8px;
     transition: all 0.15s ease;
     flex: 1;
     -webkit-tap-highlight-color: transparent;
   }
 
+  /* Linhas verticais fininhas para separar os itens */
+  .mobile-nav-btn:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 20%;
+    height: 60%;
+    width: 1px;
+    background-color: #E2E8F0;
+    pointer-events: none;
+  }
+
+  /* Quando NÃO estiver selecionado: fonte sem bold, ícones cinzas (inclusive histórico) */
+  .mobile-nav-btn:not(.ativo) {
+    background: transparent !important;
+  }
+
+  .mobile-nav-btn:not(.ativo) .mobile-nav-label {
+    font-weight: 500 !important; /* Sem bold */
+    color: #64748B !important;
+  }
+
+  .mobile-nav-btn:not(.ativo) .mobile-nav-icon {
+    filter: grayscale(100%) opacity(0.65) !important; /* Ícone cinza, incluso o de histórico */
+    color: #94A3B8 !important;
+  }
+
+  .mobile-nav-btn:not(.ativo) .mobile-nav-icon svg {
+    filter: grayscale(100%) opacity(0.65) !important;
+    color: #94A3B8 !important;
+    stroke: #94A3B8 !important;
+    fill: #94A3B8 !important;
+  }
+
+  /* Quando estiver SELECIONADO: fundo bege médio, cantos arredondados, ícone e fontes coloridos */
   .mobile-nav-btn.ativo {
-    color: #4F46E5;
-    font-weight: 800;
+    background: #F4EBE1 !important; /* Bege médio elegante */
+    border-radius: 8px !important; /* Pequeno arredondamento dos cantos */
+  }
+
+  .mobile-nav-btn.ativo .mobile-nav-label {
+    color: #C2410C !important; /* Fonte laranja escuro */
+    font-weight: 800 !important; /* Bold */
   }
 
   .mobile-nav-btn.ativo .mobile-nav-icon {
+    filter: none !important;
+    opacity: 1 !important;
     transform: scale(1.10);
+  }
+
+  /* Carrinho azul quando selecionado */
+  .mobile-nav-btn.ativo .nav-icon-comprar svg,
+  .mobile-nav-btn.ativo .nav-icon-comprar {
+    color: #2563EB !important;
+    stroke: #2563EB !important;
+  }
+
+  /* Ícone Criar Lista: dessa cor mesmo (mantém a prancheta original colorida) */
+  .mobile-nav-btn.ativo .nav-icon-criar {
+    filter: none !important;
+    opacity: 1 !important;
+  }
+
+  /* Ícone Histórico: colorido quando selecionado */
+  .mobile-nav-btn.ativo .nav-icon-historico {
+    filter: none !important;
+    opacity: 1 !important;
+  }
+
+  /* Engrenagem de Config: dourada quando ativa ou colorida */
+  .nav-icon-config svg,
+  .nav-icon-config {
+    color: #F59E0B !important;
+    fill: #F59E0B !important;
+  }
+
+  .mobile-nav-btn.ativo .nav-icon-config svg {
+    color: #D97706 !important;
+    fill: #D97706 !important;
+    filter: drop-shadow(0 1px 3px rgba(217, 119, 6, 0.4)) !important;
   }
 
   .mobile-nav-icon {
     font-size: 1.45rem !important;
     line-height: 1;
-    transition: transform 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 24px;
+    transition: transform 0.15s ease, filter 0.15s ease;
+  }
+
+  .mobile-nav-icon svg {
+    width: 22px;
+    height: 22px;
+    transition: all 0.15s ease;
   }
 
   .mobile-nav-label {
     font-size: 0.70rem !important;
-    font-weight: 800 !important;
     letter-spacing: 0.2px;
+    transition: color 0.15s ease, font-weight 0.15s ease;
   }
 
   .mobile-nav-badge {

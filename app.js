@@ -7233,6 +7233,8 @@ function atualizarContadorSidebarMontar() {
 function abrirModalOpcoesHeader() {
   const modal = document.getElementById('modal-opcoes-header');
   if (!modal) return;
+  const btnConfig = document.getElementById('mobile-nav-btn-config');
+  if (btnConfig) btnConfig.classList.add('ativo');
   const badge = document.getElementById('badge-status-cotado');
   if (badge) {
     badge.textContent = AppState.cotacaoAtiva ? 'Ativo' : 'Pausado';
@@ -8317,6 +8319,10 @@ function abrirModalNuvem() {
 }
 
 function fecharModal(id) {
+  if (id === 'modal-opcoes-header') {
+    const btnConfig = document.getElementById('mobile-nav-btn-config');
+    if (btnConfig) btnConfig.classList.remove('ativo');
+  }
   if (id === 'modal-marcas') {
     fecharCortinaMarcas();
     return;
