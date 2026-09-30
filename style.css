@@ -2130,6 +2130,7 @@ body.modo-mercado-ativo .item-nome {
 
 /* Cartão do Item de Compra (com sombra suave de elevação por cima e ao redor) */
 .item-card {
+  position: relative;
   background: var(--card-bg);
   border-radius: var(--radius-sm);
   padding: 5px 10px;
@@ -2168,61 +2169,88 @@ body.modo-mercado-ativo .item-nome {
 }
 
 .item-card.pendente-desmarcar .item-nome,
-.item-card.pendente-desmarcar .btn-editar-despensa {
+.item-card.pendente-desmarcar .btn-editar-despensa,
+.item-card.pendente-desmarcar .btn-favorito-item,
+.item-card.pendente-desmarcar .tag-marca,
+.item-card.pendente-desmarcar .tag-historico-preco {
   visibility: hidden !important;
 }
 
 .mcol-tr-item.pendente-desmarcar .mcol-prod-nome,
+.mcol-tr-item.pendente-desmarcar .btn-marca-listbox-tag,
 .mcol-tr-item.pendente-desmarcar .badge-marca-selecionada,
 .mcol-tr-item.pendente-desmarcar .badge-marca-item {
   visibility: hidden !important;
 }
 
+.mcol-tr-item.pendente-desmarcar .mcol-prod-info-esquerda {
+  overflow: visible !important;
+  position: relative !important;
+}
+
+.item-card.pendente-desmarcar .item-corpo,
+.item-card.pendente-desmarcar .item-linha-nome {
+  overflow: visible !important;
+  position: relative !important;
+}
+
+@keyframes pulseBadgeConfirmar {
+  0% {
+    transform: translate(-50%, -50%) scale(0.97);
+    box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.03);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.55);
+  }
+}
+
 .badge-confirmar-desmarcar {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  font-size: 0.70rem;
+  justify-content: center;
+  gap: 5px;
+  font-size: 0.72rem;
   font-weight: 700;
   color: #92400E;
   background: #FEF3C7;
   border: 1px solid #F59E0B;
-  padding: 2px 8px;
+  padding: 3px 10px;
   border-radius: 6px;
   white-space: nowrap;
-  animation: pulse 1s infinite;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  animation: pulseBadgeConfirmar 0.9s infinite alternate ease-in-out;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35);
   cursor: pointer;
-  z-index: 10;
+  z-index: 50;
+  pointer-events: auto;
 }
 
 .mcol-tr-item.pendente-desmarcar .badge-confirmar-desmarcar {
   position: absolute;
-  left: 0;
+  left: 50%;
   top: 50%;
-  transform: translateY(-50%);
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  transform: translate(-50%, -50%);
+  max-width: 95%;
   margin: 0;
 }
 
 .item-card.pendente-desmarcar .badge-confirmar-desmarcar {
   position: absolute;
-  left: 25px;
+  left: 50%;
   top: 50%;
-  transform: translateY(-50%);
-  max-width: calc(100% - 30px);
-  overflow: hidden;
-  text-overflow: ellipsis;
+  transform: translate(-50%, -50%);
+  max-width: 95%;
   margin: 0;
 }
 
 body.dark-mode .item-card.pendente-desmarcar .badge-confirmar-desmarcar,
-body.dark-mode .mcol-tr-item.pendente-desmarcar .badge-confirmar-desmarcar {
+body.dark-mode .mcol-tr-item.pendente-desmarcar .badge-confirmar-desmarcar,
+body.tema-escuro .item-card.pendente-desmarcar .badge-confirmar-desmarcar,
+body.tema-escuro .mcol-tr-item.pendente-desmarcar .badge-confirmar-desmarcar {
   background: #78350F !important;
   border-color: #F59E0B !important;
   color: #FEF3C7 !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.6) !important;
 }
 
 .item-check-btn {

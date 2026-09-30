@@ -4849,9 +4849,6 @@ function alternarItemDespensaEmTempoReal(produtoId, event) {
     atualizarBalaoTotalCategoria(prod.categoria || 'Diversos');
     renderizarListaCompras();
     atualizarCardResumo();
-
-    const nomeReduz = (typeof obterNomeResumido === 'function') ? obterNomeResumido(prod.nome) : prod.nome;
-    mostrarNotificacaoToast(`🗑️ "${nomeReduz}" retirado da lista.`);
   } else {
     // Primeiro clique: entra em estado de aviso / confirmação!
     cancelarDespensaPendenteDesmarcar();
@@ -8453,15 +8450,15 @@ function atualizarBotoesOrdenacaoMercados() {
   if (btnAlfa) {
     if (ordenacao === 'alfabetico_az') {
       btnAlfa.classList.add('ativo');
-      if (labelAlfa) labelAlfa.textContent = '🔤 Alfabético (A ➔ Z)';
+      if (labelAlfa) labelAlfa.textContent = 'Alfabético (A ➔ Z)';
       btnAlfa.title = "Ordenado de A a Z. Clique para inverter (Z a A)";
     } else if (ordenacao === 'alfabetico_za') {
       btnAlfa.classList.add('ativo');
-      if (labelAlfa) labelAlfa.textContent = '🔤 Alfabético (Z ➔ A)';
+      if (labelAlfa) labelAlfa.textContent = 'Alfabético (Z ➔ A)';
       btnAlfa.title = "Ordenado de Z a A. Clique para voltar para A a Z";
     } else {
       btnAlfa.classList.remove('ativo');
-      if (labelAlfa) labelAlfa.textContent = '🔤 Ordem Alfabética (A-Z)';
+      if (labelAlfa) labelAlfa.textContent = 'Ordem Alfabética (A-Z)';
       btnAlfa.title = "Ordenar alfabeticamente (A-Z ou Z-A)";
     }
   }
@@ -8552,11 +8549,11 @@ function renderizarComparadorDF() {
   }).join('');
 
   // Coluna de Produto interativa (com ordenação A-Z / Z-A ao clicar)
-  let badgeOrdemTh = '🔤 A-Z';
+  let badgeOrdemTh = 'A-Z';
   if (ordenacao === 'alfabetico_az') {
-    badgeOrdemTh = '🔤 A ➔ Z 🔽';
+    badgeOrdemTh = 'A ➔ Z 🔽';
   } else if (ordenacao === 'alfabetico_za') {
-    badgeOrdemTh = '🔤 Z ➔ A 🔼';
+    badgeOrdemTh = 'Z ➔ A 🔼';
   } else if (ordenacao === 'preco') {
     badgeOrdemTh = '🔥 Menor Preço';
   }
