@@ -3753,26 +3753,7 @@ function renderizarListaCompras() {
   // Mover a informação de economia e melhor mercado para a Slide Bar à esquerda
   atualizarCardEconomiaSidebar(campeaoId, totais, economia);
 
-  // Banners Dinâmicos (Novos Pedidos de Casa & Corredor Ativo)
-  const itensNovosDeCasa = (AppState.listaAtiva || []).filter(i => i.novoPedidoCasa && !i.comprado);
-  let bannerNovosPedidosHtml = '';
-  if (itensNovosDeCasa.length > 0) {
-    const nomesNovos = itensNovosDeCasa.map(i => i.nome).join(', ');
-    const autorTxt = (itensNovosDeCasa[0].adicionadoPor || 'Casa').toUpperCase();
-    bannerNovosPedidosHtml = `
-      <div class="banner-novos-pedidos-comprar" id="banner-novos-pedidos-comprar">
-        <div class="banner-novos-pedidos-conteudo">
-          <span class="icone-alerta-pedidos">🔔</span>
-          <div class="texto-alerta-pedidos">
-            <strong>${autorTxt} adicionou novos pedidos de casa:</strong>
-            <span class="nomes-itens-novos-texto">${nomesNovos}</span>
-          </div>
-        </div>
-        <button type="button" class="btn-dispensar-alerta-pedidos" onclick="dispensarTodosNovosPedidos()" title="Dispensar aviso">✓ Entendido</button>
-      </div>
-    `;
-  }
-
+  // Banner de Corredor Ativo
   let bannerCorredorHtml = '';
   if (AppState.filtroCategoria && AppState.filtroCategoria !== 'todas' && AppState.filtroCategoria !== 'favoritos') {
     const totalCat = itensListaParaExibir.length;
@@ -3789,7 +3770,6 @@ function renderizarListaCompras() {
   }
 
   container.innerHTML = `
-    ${bannerNovosPedidosHtml}
     ${bannerCorredorHtml}
     <div class="mcol-tabela-scroll">
       <table class="mcol-tabela-moderna tabela-lista-compras ${ocultarMercados ? 'mercados-ocultos' : ''}">
