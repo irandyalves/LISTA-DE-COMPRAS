@@ -8234,7 +8234,6 @@ function configurarReconhecimentoVoz() {
     recognition.onresult = (event) => {
       const textoFalado = event.results[0][0].transcript;
       pararGravacao(2000, true); // Concluiu a fala: verde por 2s como feedback de sucesso
-      mostrarNotificacaoToast(`🔍 Localizando: "${textoFalado}"...`);
       localizarProdutoPorVoz(textoFalado);
     };
 
@@ -9315,6 +9314,10 @@ function atualizarStatusMeuPreset() {
 
 // Notificação Toast rápida e discreta
 function mostrarNotificacaoToast(mensagem) {
+  // Em COMPRAR, bloqueia mensagens/toasts de busca ou localização
+  if (AppState && AppState.abaAtiva === 'lista' && (mensagem.includes('Localizando') || mensagem.includes('🔍'))) {
+    return;
+  }
   let toast = document.getElementById('toast-notificacao-flutuante');
   if (!toast) {
     toast = document.createElement('div');
