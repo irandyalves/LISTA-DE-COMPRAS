@@ -133,6 +133,13 @@ body.tema-escuro .mobile-nav-icon.nav-icon-config svg {
   fill: #FBBF24 !important;
 }
 
+[data-theme="dark"] .mobile-nav-badge,
+body.tema-escuro .mobile-nav-badge {
+  background: #059669 !important;
+  border-color: #0F172A !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.45) !important;
+}
+
 [data-theme="dark"] .modal-content,
 [data-theme="dark"] .modal-editar-preco-card,
 [data-theme="dark"] .modal-presets-content,
@@ -6078,6 +6085,7 @@ body.tema-escuro .drawer-fechar-btn {
     cursor: pointer;
     padding: 6px 2px;
     border-radius: 8px;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
     transition: all 0.15s ease;
     flex: 1;
     -webkit-tap-highlight-color: transparent;
@@ -6183,23 +6191,32 @@ body.tema-escuro .drawer-fechar-btn {
   }
 
   .mobile-nav-label {
-    font-size: 0.70rem !important;
-    letter-spacing: 0.2px;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    font-size: 0.74rem !important;
+    letter-spacing: 0.3px;
+    line-height: 1.25;
     transition: color 0.15s ease, font-weight 0.15s ease;
   }
 
   .mobile-nav-badge {
     position: absolute;
-    top: 3px;
-    right: calc(50% - 20px);
-    background: #4F46E5;
-    color: #FFFFFF;
-    font-size: 0.65rem;
-    font-weight: 800;
-    padding: 1px 6px;
-    border-radius: 10px;
+    top: 2px;
+    right: calc(50% - 22px);
+    background: #10B981 !important; /* Bolhinha verdinha vibrante */
+    color: #FFFFFF !important;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    font-size: 0.68rem !important;
+    font-weight: 800 !important;
+    min-width: 19px;
+    height: 19px;
+    padding: 0 4px;
+    border-radius: 999px; /* Formato bolhinha perfeito */
     border: 1.5px solid #FFFFFF;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     line-height: 1;
+    box-shadow: 0 2px 5px rgba(16, 185, 129, 0.45);
   }
 
   .mobile-nuvem-dot {
