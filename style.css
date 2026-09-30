@@ -7208,13 +7208,46 @@ body.tema-escuro .historico-barra-controles {
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45) !important;
 }
 
-/* No Histórico: o painel congelado encosta exatamente no final da barra de controles */
+/* No Histórico: cabeçalho 100% CONGELADO / FIXO no topo (imóvel tanto no mouse quanto no toque do dedo) */
 body.aba-historico .painel-topo-congelado,
 body[data-aba-ativa="historico"] .painel-topo-congelado {
-  padding-bottom: 0 !important;
-  margin-bottom: 0 !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 220px !important;
+  right: 0 !important;
+  width: calc(100% - 220px) !important;
+  max-width: calc(100% - 220px) !important;
+  z-index: 1000 !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  padding: 0 !important;
   border-bottom: none !important;
   box-shadow: none !important;
+  background: #0F172A !important;
+}
+
+@media (max-width: 820px) {
+  body.aba-historico .painel-topo-congelado,
+  body[data-aba-ativa="historico"] .painel-topo-congelado {
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+/* Espaçamento superior no Histórico para o conteúdo começar exatamente abaixo da linha de trava */
+body.aba-historico .app-container,
+body[data-aba-ativa="historico"] .app-container {
+  padding-top: var(--altura-topo-congelado, 94px) !important;
+}
+
+body.aba-historico #view-historico,
+body[data-aba-ativa="historico"] #view-historico {
+  padding-top: 6px !important;
+  padding-bottom: 90px !important;
+  max-height: none !important;
+  overflow: visible !important;
 }
 
 .historico-tabs-modo {
@@ -7255,43 +7288,6 @@ body.tema-escuro .historico-tabs-modo {
 body.tema-escuro .tab-modo-hist.ativa {
   background: #0F172A !important;
   color: #818CF8 !important;
-}
-
-/* Conteúdo do Histórico rola sob o painel congelado */
-#view-historico {
-  width: 100%;
-  max-height: calc(100vh - var(--altura-topo-congelado, 115px) - 15px);
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  -webkit-overflow-scrolling: touch;
-  padding-top: 10px;
-  padding-bottom: 30px;
-  box-sizing: border-box;
-}
-
-#view-historico::-webkit-scrollbar {
-  width: 6px;
-}
-
-#view-historico::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-#view-historico::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
-  border-radius: 4px;
-}
-
-[data-theme="dark"] #view-historico::-webkit-scrollbar-thumb,
-body.tema-escuro #view-historico::-webkit-scrollbar-thumb {
-  background: #475569;
-}
-
-@media (max-width: 820px) {
-  #view-historico {
-    max-height: calc(100vh - var(--altura-topo-congelado, 115px) - 80px) !important;
-    padding-bottom: 80px !important;
-  }
 }
 
 .historico-busca-box {

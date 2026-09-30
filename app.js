@@ -2323,6 +2323,15 @@ function atualizarAlturaPainelCongeladoCSS() {
       document.documentElement.style.setProperty('--altura-topo-congelado', `${altura}px`);
     }
   }
+  requestAnimationFrame(() => {
+    const p = document.querySelector('.painel-topo-congelado');
+    if (p) {
+      const h = Math.round(p.getBoundingClientRect().height || p.offsetHeight);
+      if (h > 0) {
+        document.documentElement.style.setProperty('--altura-topo-congelado', `${h}px`);
+      }
+    }
+  });
 }
 
 function configurarNavegacao() {
