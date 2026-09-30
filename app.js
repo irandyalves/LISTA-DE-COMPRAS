@@ -3557,10 +3557,10 @@ function renderizarListaCompras() {
 
       linhasTabelaHtml += `
         <tr class="mcol-tr-item ${item.comprado ? 'item-linha-comprado' : ''} ${classePendente}" id="tr-item-${item.id}">
-          <td class="mcol-td-check">
-            <input type="checkbox" class="check-item-comprado" ${item.comprado ? 'checked' : ''} 
-                   onclick="event.preventDefault(); alternarItemComprado('${item.id}')" 
-                   title="${item.comprado ? (isPendente ? 'Clique novamente para confirmar' : 'Clique 2x para desmarcar') : 'Marcar como pego no carrinho'}" />
+          <td class="mcol-td-check" onclick="alternarItemComprado('${item.id}')">
+            <input type="checkbox" class="check-item-comprado" ${item.comprado ? 'checked="checked"' : ''} 
+                   onclick="event.stopPropagation(); alternarItemComprado('${item.id}')" 
+                   title="${item.comprado ? 'Desmarcar produto' : 'Marcar como pego no carrinho'}" />
           </td>
           <td class="mcol-td-qtde">
             <div class="contador-qtde-tabela">
@@ -5905,9 +5905,12 @@ function atualizarVisualItemLinha(item, isPendente = false) {
   const chk = tr.querySelector('.check-item-comprado');
   if (chk) {
     chk.checked = !!item.comprado;
-    chk.title = item.comprado 
-      ? (isPendente ? 'Clique novamente para confirmar' : 'Clique 2x para desmarcar') 
-      : 'Marcar como pego no carrinho';
+    if (item.comprado) {
+      chk.setAttribute('checked', 'checked');
+    } else {
+      chk.removeAttribute('checked');
+    }
+    chk.title = item.comprado ? 'Desmarcar produto' : 'Marcar como pego no carrinho';
   }
 
   const nomeEl = tr.querySelector('.mcol-prod-nome');
@@ -6004,71 +6007,39 @@ function alternarItemComprado(id) {
   const item = AppState.listaAtiva.find(i => String(i.id) === String(id));
   if (!item) return;
 
-  // CASO 1: Item ainda NÃO comprado -> Marca imediatamente com 1 clique!
-  if (!item.comprado) {
-    item.comprado = true;
-    cancelarPendenteDesmarcar();
+  cancelarPendenteDesmarcar();
 
-    const catItem = AppState.catalogo.find(c => String(c.id) === String(item.id) || String(c.id) === String(item.catalogoId));
-    if (catItem) catItem.comprado = true;
+  // Alterna diretamente: 1 clique para marcar, 1 clique para desmarcar
+  item.comprado = !item.comprado;
 
-    salvarEstado(true);
+  const catItem = AppState.catalogo.find(c => String(c.id) === String(item.id) || String(c.id) === String(item.catalogoId));
+  if (catItem) catItem.comprado = item.comprado;
 
-    // Atualização pontual no DOM: 100% lisa, sem recriar tabela, sem salto nem tranco
-    const atualizouDOM = atualizarVisualItemLinha(item);
-    if (atualizouDOM) {
+  salvarEstado(true);
+
+  // Atualização visual instantânea do checkbox verde e texto riscado
+  const atualizouDOM = atualizarVisualItemLinha(item, false);
+  if (atualizouDOM) {
+    // Reordena na categoria após o término do evento de clique para não anular o estado do checkbox
+    setTimeout(() => {
       reordenarLinhaNaCategoria(item);
-      atualizarCardResumo();
-      atualizarBalaoTotalCategoria(item.categoria || 'Diversos');
-      atualizarCardEconomiaSidebar();
-    } else {
-      renderizarListaCompras();
-      atualizarCardResumo();
-    }
+    }, 120);
+    atualizarCardResumo();
+    atualizarBalaoTotalCategoria(item.categoria || 'Diversos');
+    atualizarCardEconomiaSidebar();
+  } else {
+    renderizarListaCompras();
+    atualizarCardResumo();
+  }
 
-    // Finalização Automática quando clicar no check do último item da lista
+  // Finalização Automática quando marcar o último item da lista
+  if (item.comprado) {
     const todosComprados = AppState.listaAtiva.length > 0 && AppState.listaAtiva.every(i => i.comprado);
     if (todosComprados) {
       setTimeout(() => {
         abrirModalFinalizarCompra(true);
       }, 350);
     }
-    return;
-  }
-
-  // CASO 2: Item JÁ ESTÁ COMPRADO -> Exige 2 cliques para desmarcar (regra anti-toque acidental)
-  if (itemPendenteDesmarcarId === id) {
-    // Segundo clique confirmado dentro da janela de 3 segundos!
-    cancelarPendenteDesmarcar();
-    item.comprado = false;
-
-    const catItem = AppState.catalogo.find(c => String(c.id) === String(item.id) || String(c.id) === String(item.catalogoId));
-    if (catItem) catItem.comprado = false;
-
-    salvarEstado(true);
-
-    const atualizouDOM = atualizarVisualItemLinha(item);
-    if (atualizouDOM) {
-      reordenarLinhaNaCategoria(item);
-      atualizarCardResumo();
-      atualizarBalaoTotalCategoria(item.categoria || 'Diversos');
-      atualizarCardEconomiaSidebar();
-    } else {
-      renderizarListaCompras();
-      atualizarCardResumo();
-    }
-  } else {
-    // Primeiro clique: entra em estado de aviso/confirmação
-    cancelarPendenteDesmarcar();
-    itemPendenteDesmarcarId = id;
-    if (!atualizarVisualItemLinha(item, true)) {
-      renderizarListaCompras();
-    }
-
-    // Timer de 3 segundos para expirar a confirmação se não houver o 2º clique
-    timerPendenteDesmarcar = setTimeout(() => {
-      cancelarPendenteDesmarcar();
-    }, 3000);
   }
 }
 
