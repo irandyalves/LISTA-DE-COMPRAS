@@ -1068,10 +1068,27 @@ body {
 
 @keyframes pulsoMicIconeInterno {
   0% {
-    transform: scale(0.90); /* reduz 10% do tamanho original */
+    transform: scale(0.92); /* reduz 8% do tamanho original */
   }
   100% {
-    transform: scale(1.20); /* cresce até 20% */
+    transform: scale(1.30); /* cresce até 30% */
+  }
+}
+
+/* Efeito extra: Borda fininha que cresce antes da bolinha */
+@keyframes bordaFininhaCresce {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.95;
+    border-width: 1.5px;
+  }
+  50% {
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(1.55);
+    opacity: 0;
+    border-width: 1px;
   }
 }
 
@@ -1087,10 +1104,9 @@ body {
 #btn-mic-voz.gravando,
 #btn-mic-voz.ouvindo,
 .btn-mic-mini.gravando,
-.btn-mic-mini.ouvindo {
-  width: 23px !important;
-  height: 23px !important;
-  min-width: 23px !important;
+.btn-mic-mini.ouvindo,
+.btn-mic-preco-verde.ouvindo,
+.btn-mic-preco-verde.gravando {
   background: #FACC15 !important; /* Fundo amarelo ao clicar */
   border: 1.5px solid #EAB308 !important;
   border-radius: 50% !important;
@@ -1100,12 +1116,49 @@ body {
   z-index: 15 !important;
 }
 
+#btn-mic-voz.gravando,
+#btn-mic-voz.ouvindo,
+.btn-mic-mini.gravando,
+.btn-mic-mini.ouvindo {
+  width: 23px !important;
+  height: 23px !important;
+  min-width: 23px !important;
+}
+
+.btn-mic-preco-verde.ouvindo,
+.btn-mic-preco-verde.gravando {
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px !important;
+}
+
+/* Borda fininha que cresce antes da bolinha */
+#btn-mic-voz.gravando::before,
+#btn-mic-voz.ouvindo::before,
+.btn-mic-mini.gravando::before,
+.btn-mic-mini.ouvindo::before,
+.btn-mic-preco-verde.ouvindo::before,
+.btn-mic-preco-verde.gravando::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: 50%;
+  border: 1.5px solid #F59E0B;
+  animation: bordaFininhaCresce 0.85s infinite ease-out !important;
+  pointer-events: none;
+}
+
 #btn-mic-voz.gravando svg,
 #btn-mic-voz.ouvindo svg,
 .btn-mic-mini.gravando svg,
 .btn-mic-mini.ouvindo svg,
 #btn-mic-voz.gravando .icone-mic-topo,
-.btn-mic-mini.gravando .icone-mic-topo {
+.btn-mic-mini.gravando .icone-mic-topo,
+.btn-mic-preco-verde.ouvindo svg,
+.btn-mic-preco-verde.gravando svg {
   color: #0F172A !important;
   fill: #0F172A !important;
   transform-origin: center center !important;
@@ -1113,16 +1166,26 @@ body {
 }
 
 #btn-mic-voz.mic-concluido-verde,
-.btn-mic-mini.mic-concluido-verde {
+.btn-mic-mini.mic-concluido-verde,
+.btn-mic-preco-verde.mic-concluido-verde {
   background: #10B981 !important;
   border: 1.5px solid #059669 !important;
   color: #FFFFFF !important;
 }
 
+#btn-mic-voz.mic-concluido-verde::before,
+.btn-mic-mini.mic-concluido-verde::before,
+.btn-mic-preco-verde.mic-concluido-verde::before {
+  display: none !important;
+}
+
 #btn-mic-voz.mic-concluido-verde svg,
-.btn-mic-mini.mic-concluido-verde svg {
+.btn-mic-mini.mic-concluido-verde svg,
+.btn-mic-preco-verde.mic-concluido-verde svg {
   color: #FFFFFF !important;
   fill: #FFFFFF !important;
+  animation: none !important;
+  transform: none !important;
 }
 
 .input-busca-topo {
@@ -4586,16 +4649,6 @@ body.tema-escuro .despensa-aba-tab.btn-aba-favoritos-estrela.ativa,
   background: #10B981 !important;
   color: #FFFFFF !important;
   border-color: #059669 !important;
-}
-
-.btn-mic-preco-verde.ouvindo,
-.btn-mic-preco-verde.gravando {
-  background: #EF4444 !important;
-  border-color: #DC2626 !important;
-  color: #FFFFFF !important;
-  animation: pulsoGravandoPreco 0.7s infinite alternate ease-in-out !important;
-  position: relative !important;
-  z-index: 10 !important;
 }
 
 @keyframes pulsoGravandoPreco {
@@ -8581,6 +8634,22 @@ body.tema-escuro .card-ranking-stats {
     animation: pulsoSonarAmarelo 0.7s infinite alternate ease-in-out !important;
     position: relative !important;
     z-index: 15 !important;
+  }
+
+  #btn-mic-voz.gravando::before,
+  #btn-mic-voz.ouvindo::before,
+  .btn-mic-mini.gravando::before,
+  .btn-mic-mini.ouvindo::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border-radius: 50%;
+    border: 1.5px solid #F59E0B;
+    animation: bordaFininhaCresce 0.85s infinite ease-out !important;
+    pointer-events: none;
   }
 
   #btn-mic-voz.gravando svg,
