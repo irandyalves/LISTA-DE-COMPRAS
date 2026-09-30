@@ -1036,9 +1036,9 @@ body {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  width: 22px !important;
-  height: 22px !important;
-  min-width: 22px !important;
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px !important;
   margin-right: 4px !important;
   border-radius: 50% !important;
   border: 1px solid #7DD3FC !important;
@@ -1066,26 +1066,50 @@ body {
   box-shadow: 0 2px 8px rgba(14, 165, 233, 0.45) !important;
 }
 
+@keyframes pulsoMicIconeInterno {
+  0% {
+    transform: scale(0.90); /* reduz 10% do tamanho original */
+  }
+  100% {
+    transform: scale(1.20); /* cresce até 20% */
+  }
+}
+
+@keyframes pulsoSonarAmarelo {
+  0% {
+    box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.8), 0 0 0 0 rgba(234, 179, 8, 0.45);
+  }
+  100% {
+    box-shadow: 0 0 0 5px rgba(250, 204, 21, 0), 0 0 0 10px rgba(234, 179, 8, 0);
+  }
+}
+
 #btn-mic-voz.gravando,
 #btn-mic-voz.ouvindo,
 .btn-mic-mini.gravando,
 .btn-mic-mini.ouvindo {
-  background: #EF4444 !important; /* Vermelho de alerta ao gravar */
-  border: 1.5px solid #DC2626 !important;
+  width: 23px !important;
+  height: 23px !important;
+  min-width: 23px !important;
+  background: #FACC15 !important; /* Fundo amarelo ao clicar */
+  border: 1.5px solid #EAB308 !important;
   border-radius: 50% !important;
-  color: #FFFFFF !important;
-  animation: pulsoGravandoPreco 0.7s infinite alternate ease-in-out !important;
+  color: #0F172A !important;
+  animation: pulsoSonarAmarelo 0.7s infinite alternate ease-in-out !important;
   position: relative !important;
   z-index: 15 !important;
 }
 
-#btn-mic-voz.gravando .icone-mic-topo,
 #btn-mic-voz.gravando svg,
 #btn-mic-voz.ouvindo svg,
-.btn-mic-mini.gravando .icone-mic-topo,
-.btn-mic-mini.ouvindo svg {
-  color: #FFFFFF !important;
-  fill: #FFFFFF !important;
+.btn-mic-mini.gravando svg,
+.btn-mic-mini.ouvindo svg,
+#btn-mic-voz.gravando .icone-mic-topo,
+.btn-mic-mini.gravando .icone-mic-topo {
+  color: #0F172A !important;
+  fill: #0F172A !important;
+  transform-origin: center center !important;
+  animation: pulsoMicIconeInterno 0.65s infinite alternate ease-in-out !important;
 }
 
 #btn-mic-voz.mic-concluido-verde,
@@ -8501,12 +8525,12 @@ body.tema-escuro .card-ranking-stats {
     flex-shrink: 0 !important;
   }
 
-  /* Microfone: SEM BORDA EM VOLTA */
+  /* Microfone: SEM BORDA EM VOLTA (Reduzido em 10%: de 26px para 23px) */
   #btn-mic-voz,
   .btn-mic-mini {
-    width: 26px !important;
-    height: 26px !important;
-    min-width: 26px !important;
+    width: 23px !important;
+    height: 23px !important;
+    min-width: 23px !important;
     padding: 0 !important;
     margin: 0 4px 0 2px !important;
     flex-shrink: 0 !important;
@@ -8529,8 +8553,8 @@ body.tema-escuro .card-ranking-stats {
 
   #btn-mic-voz svg,
   .btn-mic-mini svg {
-    width: 15px !important;
-    height: 15px !important;
+    width: 14px !important;
+    height: 14px !important;
     fill: currentColor !important;
   }
 
@@ -8547,22 +8571,28 @@ body.tema-escuro .card-ranking-stats {
   #btn-mic-voz.ouvindo,
   .btn-mic-mini.gravando,
   .btn-mic-mini.ouvindo {
-    background: #EF4444 !important; /* Vermelho de alerta ao gravar */
-    border: 1.5px solid #DC2626 !important;
+    width: 23px !important;
+    height: 23px !important;
+    min-width: 23px !important;
+    background: #FACC15 !important; /* Fundo amarelo ao clicar */
+    border: 1.5px solid #EAB308 !important;
     border-radius: 50% !important;
-    color: #FFFFFF !important;
-    animation: pulsoGravandoPreco 0.7s infinite alternate ease-in-out !important;
+    color: #0F172A !important;
+    animation: pulsoSonarAmarelo 0.7s infinite alternate ease-in-out !important;
     position: relative !important;
     z-index: 15 !important;
   }
 
-  #btn-mic-voz.gravando .icone-mic-topo,
   #btn-mic-voz.gravando svg,
   #btn-mic-voz.ouvindo svg,
-  .btn-mic-mini.gravando .icone-mic-topo,
-  .btn-mic-mini.ouvindo svg {
-    color: #FFFFFF !important;
-    fill: #FFFFFF !important;
+  .btn-mic-mini.gravando svg,
+  .btn-mic-mini.ouvindo svg,
+  #btn-mic-voz.gravando .icone-mic-topo,
+  .btn-mic-mini.gravando .icone-mic-topo {
+    color: #0F172A !important;
+    fill: #0F172A !important;
+    transform-origin: center center !important;
+    animation: pulsoMicIconeInterno 0.65s infinite alternate ease-in-out !important;
   }
 
   #btn-mic-voz.mic-concluido-verde,
