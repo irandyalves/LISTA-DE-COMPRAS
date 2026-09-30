@@ -1432,118 +1432,186 @@ body {
 }
 
 /* Modal de Opções do Topo */
+/* Modal de Opções do Topo - Ultra Compacto & Seções por Cores */
 .modal-opcoes-content {
   max-width: 420px;
-  border-radius: 16px;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  max-height: 92vh;
+}
+
+.modal-opcoes-content .modal-header {
+  padding: 8px 14px;
+  background: #F8FAFC;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.modal-opcoes-content .modal-header h3 {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #0F172A;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .modal-body-opcoes {
-  padding: 14px 18px;
+  padding: 8px 10px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 6px;
+  max-height: calc(92vh - 50px);
+  overflow-y: auto;
 }
 
 .secao-opcoes-grupo {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid #E2E8F0;
+  background: #F8FAFC;
+  transition: all 0.15s ease;
+}
+
+/* Identidades Visuais por Cores */
+.secao-cfg-cotacao {
+  background: #FAF8FF;
+  border-color: #E0E7FF;
+  border-left: 3.5px solid #6366F1;
+}
+.secao-cfg-cotacao .titulo-secao-opcoes {
+  color: #4F46E5;
+}
+
+.secao-cfg-aparencia {
+  background: #FFFDF5;
+  border-color: #FEF3C7;
+  border-left: 3.5px solid #F59E0B;
+}
+.secao-cfg-aparencia .titulo-secao-opcoes {
+  color: #D97706;
+}
+
+.secao-cfg-cards {
+  background: #F2FDF7;
+  border-color: #D1FAE5;
+  border-left: 3.5px solid #10B981;
+}
+.secao-cfg-cards .titulo-secao-opcoes {
+  color: #059669;
+}
+
+.secao-cfg-acoes {
+  background: #F4F8FF;
+  border-color: #DBEAFE;
+  border-left: 3.5px solid #3B82F6;
+}
+.secao-cfg-acoes .titulo-secao-opcoes {
+  color: #2563EB;
 }
 
 .titulo-secao-opcoes {
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 800;
   text-transform: uppercase;
-  color: #64748B;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .grid-modos-cotacao {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  gap: 4px;
 }
 
 .grid-modos-cotacao .btn-chip-modo {
-  min-height: 48px;
-  padding: 10px 8px;
-  font-size: 0.88rem;
+  min-height: 28px;
+  padding: 3px 6px;
+  font-size: 0.76rem;
   font-weight: 700;
-  border-radius: 10px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 4px;
   white-space: nowrap;
   letter-spacing: -0.01em;
   border: 1px solid #CBD5E1;
   background: #FFFFFF;
   color: #1E293B;
   cursor: pointer;
-  transition: all 0.15s ease;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  transition: all 0.12s ease;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
 }
 
 .grid-modos-cotacao .btn-chip-modo:hover {
-  background: #F1F5F9;
-  border-color: #94A3B8;
-  color: #0F172A;
+  background: #EEF2FF;
+  border-color: #A5B4FC;
+  color: #3730A3;
 }
 
 .grid-modos-cotacao .btn-chip-modo.ativo {
   background: #4F46E5 !important;
   border-color: #4338CA !important;
   color: #FFFFFF !important;
-  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.35) !important;
+  box-shadow: 0 1px 4px rgba(79, 70, 229, 0.3) !important;
 }
 
 @media (max-width: 380px) {
   .grid-modos-cotacao .btn-chip-modo {
-    font-size: 0.82rem;
-    padding: 10px 4px;
-    gap: 4px;
+    font-size: 0.72rem;
+    padding: 3px 4px;
+    gap: 2px;
   }
 }
 
 .lista-acoes-menu {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 3.5px;
 }
 
 .btn-menu-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 14px;
-  min-height: 48px;
-  background: #F8FAFC;
+  padding: 4px 8px;
+  min-height: 29px;
+  background: #FFFFFF;
   border: 1px solid #E2E8F0;
-  border-radius: 10px;
-  font-size: 0.94rem; /* Aumentado em 15% */
+  border-radius: 6px;
+  font-size: 0.78rem;
   font-weight: 600;
   color: #1E293B;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.12s ease;
   text-align: left;
+  line-height: 1.2;
 }
 
 .btn-menu-item #label-tema-escuro {
-  font-size: 0.95rem;
-  font-weight: 700;
+  font-size: 0.78rem;
+  font-weight: 600;
 }
 
 .btn-menu-item:hover {
-  background: #EEF2FF;
-  border-color: #C7D2FE;
-  color: var(--primary);
-  transform: translateX(2px);
+  background: #F1F5F9;
+  border-color: #CBD5E1;
+  color: #0F172A;
+  transform: translateX(1.5px);
 }
 
 .btn-menu-perigo {
-  background: #FEF2F2 !important;
+  background: #FFF5F5 !important;
   border-color: #FECACA !important;
   color: #DC2626 !important;
+  font-weight: 700;
 }
 
 .btn-menu-perigo:hover {
@@ -1552,41 +1620,105 @@ body {
 }
 
 .badge-status-cotado {
-  font-size: 0.76rem;
+  font-size: 0.65rem;
   font-weight: 800;
-  background: #D1FAE5;
-  color: #065F46;
-  padding: 3px 8px;
-  border-radius: 6px;
+  background: #DCFCE7;
+  color: #15803D;
+  padding: 1.5px 5px;
+  border-radius: 4px;
+  line-height: 1.2;
 }
 
 /* Modo escuro para modal de configurações */
-body.tema-escuro .grid-modos-cotacao .btn-chip-modo {
+body.tema-escuro .modal-opcoes-content,
+body.dark-mode .modal-opcoes-content {
+  background: #0B132B;
+  border: 1px solid #1E293B;
+}
+
+body.tema-escuro .modal-opcoes-content .modal-header,
+body.dark-mode .modal-opcoes-content .modal-header {
   background: #0F172A;
-  border-color: #334155;
+  border-bottom: 1px solid #1E293B;
+}
+
+body.tema-escuro .modal-opcoes-content .modal-header h3,
+body.dark-mode .modal-opcoes-content .modal-header h3 {
+  color: #F8FAFC;
+}
+
+body.tema-escuro .secao-cfg-cotacao,
+body.dark-mode .secao-cfg-cotacao {
+  background: #111827;
+  border-color: #1F2937;
+  border-left-color: #818CF8;
+}
+
+body.tema-escuro .secao-cfg-aparencia,
+body.dark-mode .secao-cfg-aparencia {
+  background: #181510;
+  border-color: #2E2311;
+  border-left-color: #FBBF24;
+}
+
+body.tema-escuro .secao-cfg-cards,
+body.dark-mode .secao-cfg-cards {
+  background: #0B1D17;
+  border-color: #123A2D;
+  border-left-color: #34D399;
+}
+
+body.tema-escuro .secao-cfg-acoes,
+body.dark-mode .secao-cfg-acoes {
+  background: #0E1A2C;
+  border-color: #172D4D;
+  border-left-color: #60A5FA;
+}
+
+body.tema-escuro .grid-modos-cotacao .btn-chip-modo,
+body.dark-mode .grid-modos-cotacao .btn-chip-modo {
+  background: #162032;
+  border-color: #243247;
   color: #F1F5F9;
 }
 
-body.tema-escuro .grid-modos-cotacao .btn-chip-modo:hover {
-  background: #1E293B;
+body.tema-escuro .grid-modos-cotacao .btn-chip-modo:hover,
+body.dark-mode .grid-modos-cotacao .btn-chip-modo:hover {
+  background: #1E2E48;
   border-color: #475569;
 }
 
-body.tema-escuro .grid-modos-cotacao .btn-chip-modo.ativo {
+body.tema-escuro .grid-modos-cotacao .btn-chip-modo.ativo,
+body.dark-mode .grid-modos-cotacao .btn-chip-modo.ativo {
   background: #4F46E5 !important;
   border-color: #6366F1 !important;
   color: #FFFFFF !important;
 }
 
-body.tema-escuro .btn-menu-item {
-  background: #0F172A;
-  border-color: #334155;
+body.tema-escuro .btn-menu-item,
+body.dark-mode .btn-menu-item {
+  background: #141E2E;
+  border-color: #223147;
   color: #F1F5F9;
 }
 
-body.tema-escuro .btn-menu-item:hover {
-  background: #1E293B;
-  border-color: #475569;
+body.tema-escuro .btn-menu-item:hover,
+body.dark-mode .btn-menu-item:hover {
+  background: #1D2C42;
+  border-color: #3B82F6;
+}
+
+body.tema-escuro .btn-menu-perigo,
+body.dark-mode .btn-menu-perigo {
+  background: #2D1418 !important;
+  border-color: #591D24 !important;
+  color: #F87171 !important;
+}
+
+body.tema-escuro .btn-menu-perigo:hover,
+body.dark-mode .btn-menu-perigo:hover {
+  background: #3B1B20 !important;
+  border-color: #EF4444 !important;
 }
 
 /* Checkbox à Esquerda Padronizado */

@@ -371,8 +371,8 @@
         <button class="btn-fechar" onclick="fecharModal('modal-opcoes-header')">&times;</button>
       </div>
       <div class="modal-body-opcoes">
-        <div class="secao-opcoes-grupo">
-          <span class="titulo-secao-opcoes">Modo de Cotação da Lista</span>
+        <div class="secao-opcoes-grupo secao-cfg-cotacao">
+          <span class="titulo-secao-opcoes">🔥 Modo de Cotação</span>
           <div class="grid-modos-cotacao">
             <button class="btn-chip-modo ativo" id="modo-mais-baratos" onclick="aplicarModoCotacao('mais_baratos'); fecharModal('modal-opcoes-header');">
               🔥 Mais Baratos
@@ -389,8 +389,8 @@
           </div>
         </div>
 
-        <div class="secao-opcoes-grupo">
-          <span class="titulo-secao-opcoes">Aparência & Formatação</span>
+        <div class="secao-opcoes-grupo secao-cfg-aparencia">
+          <span class="titulo-secao-opcoes">🎨 Aparência & Formatação</span>
           <div class="lista-acoes-menu">
             <button class="btn-menu-item" onclick="alternarTemaEscuro();" id="btn-tema-escuro-menu">
               <span id="label-tema-escuro">🌙 Tema Escuro</span>
@@ -403,8 +403,8 @@
           </div>
         </div>
 
-        <div class="secao-opcoes-grupo">
-          <span class="titulo-secao-opcoes">Exibição nos Cards</span>
+        <div class="secao-opcoes-grupo secao-cfg-cards">
+          <span class="titulo-secao-opcoes">🎴 Exibição nos Cards</span>
           <div class="lista-acoes-menu">
             <button class="btn-menu-item" onclick="alternarExibirMarcaCard();" id="btn-cfg-marca-menu">
               <span>🏷️ Exibir Marca no Card</span>
@@ -421,8 +421,8 @@
           </div>
         </div>
 
-        <div class="secao-opcoes-grupo">
-          <span class="titulo-secao-opcoes">Ações da Lista</span>
+        <div class="secao-opcoes-grupo secao-cfg-acoes">
+          <span class="titulo-secao-opcoes">⚡ Ações da Lista & Dados</span>
           <div class="lista-acoes-menu">
             <button class="btn-menu-item" onclick="alternarCotacaoEstado(); fecharModal('modal-opcoes-header');" id="btn-cotar-menu">
               <span>✓ Exibir Preços Cotados</span>
@@ -435,10 +435,10 @@
               <span>📊 Exportar Planilha (Excel / CSV)</span>
             </button>
             <button class="btn-menu-item" onclick="abrirModalNuvem(); fecharModal('modal-opcoes-header');">
-              <span>☁️ Sincronizar na Nuvem Google / Compartilhar</span>
+              <span>☁️ Sincronizar na Nuvem / Compartilhar</span>
             </button>
             <button class="btn-menu-item btn-menu-perigo" onclick="limparTudoEZerar(); fecharModal('modal-opcoes-header');">
-              <span>🗑️ Zerar Lista Ativa e Limpar Carrinho</span>
+              <span>🗑️ Zerar Lista Ativa e Carrinho</span>
             </button>
           </div>
         </div>
