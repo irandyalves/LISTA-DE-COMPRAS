@@ -8142,7 +8142,7 @@ function configurarReconhecimentoVoz() {
   let placeholderOriginal = inputBusca ? inputBusca.placeholder : "Pesquisar ou adicionar item...";
   let timerRestaurarMic = null;
 
-  function pararGravacao(delayRemoverEstiloMs = 0) {
+  function pararGravacao(delayRemoverEstiloMs = 0, sucesso = false) {
     gravando = false;
     if (inputBusca && inputBusca.placeholder.includes("Ouvindo")) {
       inputBusca.placeholder = placeholderOriginal;
@@ -8151,13 +8151,17 @@ function configurarReconhecimentoVoz() {
       clearTimeout(timerRestaurarMic);
       timerRestaurarMic = null;
     }
+    if (sucesso) {
+      btnMic.classList.remove('gravando', 'ouvindo');
+      btnMic.classList.add('mic-concluido-verde');
+    }
     if (delayRemoverEstiloMs > 0) {
       timerRestaurarMic = setTimeout(() => {
-        btnMic.classList.remove('gravando', 'ouvindo');
+        btnMic.classList.remove('gravando', 'ouvindo', 'mic-concluido-verde');
         btnMic.title = "Pesquisar por voz (Fale no PC ou Celular) [Atalho: Alt+V]";
       }, delayRemoverEstiloMs);
     } else {
-      btnMic.classList.remove('gravando', 'ouvindo');
+      btnMic.classList.remove('gravando', 'ouvindo', 'mic-concluido-verde');
       btnMic.title = "Pesquisar por voz (Fale no PC ou Celular) [Atalho: Alt+V]";
     }
   }
@@ -8207,7 +8211,7 @@ function configurarReconhecimentoVoz() {
   if (recognition) {
     recognition.onresult = (event) => {
       const textoFalado = event.results[0][0].transcript;
-      pararGravacao(2000); // Concluiu a fala: 2 segundos depois o mic volta à cor normal
+      pararGravacao(2000, true); // Concluiu a fala: verde por 2s como feedback de sucesso
       mostrarNotificacaoToast(`🔍 Localizando: "${textoFalado}"...`);
       localizarProdutoPorVoz(textoFalado);
     };
