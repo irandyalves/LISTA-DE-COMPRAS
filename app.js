@@ -5161,6 +5161,7 @@ function alternarModoHistorico(modo) {
   if (btnSideHistMaisComprados) btnSideHistMaisComprados.classList.toggle('ativo', modo === 'mais_comprados');
 
   renderizarHistorico();
+  atualizarAlturaPainelCongeladoCSS();
 }
 
 function filtrarHistorico(termo) {
@@ -5730,6 +5731,10 @@ function renderizarHistorico() {
     });
 
     container.innerHTML = `<div class="historico-ranking-grid">${htmlRanking}</div>`;
+  }
+
+  if (typeof atualizarAlturaPainelCongeladoCSS === 'function') {
+    atualizarAlturaPainelCongeladoCSS();
   }
 }
 
