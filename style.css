@@ -2348,7 +2348,7 @@ body.modo-mercado-ativo .item-nome {
   justify-content: space-between !important;
   margin-top: 0 !important;
   margin-bottom: 4px !important;
-  padding: 6px 8px 5px 8px !important;
+  padding: 6px 2px 5px 8px !important;
   font-size: 0.92rem !important; /* Fonte 10% maior */
   font-weight: 800 !important;   /* Negrito forte */
   color: #1E293B !important;
@@ -6953,20 +6953,21 @@ body.tema-escuro .drawer-fechar-btn {
 ======================================================== */
 .balao-total-categoria {
   margin-left: auto;
+  margin-right: -4px !important;   /* Puxado mais próximo à borda direita */
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background: #D7C4A5 !important; /* Tom bege escuro */
+  background: #E5D9C3 !important; /* Tom bege 25% mais claro */
   color: #047857 !important;       /* Fonte verde */
   padding: 3px 10px;
-  border-radius: 0 !important;     /* Retira arredondado canto direito superior e inferior */
-  border-top-right-radius: 0 !important;
-  border-bottom-right-radius: 0 !important;
-  border-top-left-radius: 0 !important;
-  border-bottom-left-radius: 0 !important;
+  border-radius: 0 !important;
+  border-top-right-radius: 6px !important;    /* Arredondado no canto superior direito acompanhando o cabeçalho */
+  border-bottom-right-radius: 0 !important;   /* Canto inferior direito reto */
+  border-top-left-radius: 0 !important;       /* Canto superior esquerdo reto */
+  border-bottom-left-radius: 0 !important;    /* Canto inferior esquerdo reto */
   font-size: 0.76rem;
   font-weight: 800;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   white-space: nowrap;
   letter-spacing: 0.2px;
   flex-shrink: 0;
@@ -6974,10 +6975,12 @@ body.tema-escuro .drawer-fechar-btn {
 }
 
 .balao-total-categoria.vazio {
-  background: #E8DEC8 !important; /* Tom bege suave quando zerado */
+  background: #F1E9DB !important; /* Tom bege clarinho quando zerado */
   color: #059669 !important;       /* Fonte verde */
   box-shadow: none;
   border-radius: 0 !important;
+  border-top-right-radius: 6px !important;
+  border-bottom-right-radius: 0 !important;
   opacity: 0.88;
 }
 
@@ -6997,9 +7000,11 @@ body.tema-escuro .drawer-fechar-btn {
 
 [data-theme="dark"] .balao-total-categoria,
 body.tema-escuro .balao-total-categoria {
-  background: #4A3E2D !important; /* Bege escuro para modo escuro */
+  background: #3F3424 !important; /* Bege escuro adaptado para modo escuro */
   color: #34D399 !important;       /* Fonte verde */
   border-radius: 0 !important;
+  border-top-right-radius: 6px !important;
+  border-bottom-right-radius: 0 !important;
 }
 
 [data-theme="dark"] .balao-total-categoria .balao-valor,
@@ -7009,9 +7014,11 @@ body.tema-escuro .balao-total-categoria .balao-valor {
 
 [data-theme="dark"] .balao-total-categoria.vazio,
 body.tema-escuro .balao-total-categoria.vazio {
-  background: #383023 !important;
+  background: #332B1E !important;
   color: #10B981 !important;
   border-radius: 0 !important;
+  border-top-right-radius: 6px !important;
+  border-bottom-right-radius: 0 !important;
 }
 
 [data-theme="dark"] .balao-total-categoria.vazio .balao-valor,
