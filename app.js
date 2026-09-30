@@ -2542,29 +2542,20 @@ function atualizarAbasCategoriasInteligente() {
     }
   }
 
-  // Atualizar visibilidade e contagens das abas estáticas no cabeçalho
+  // Remove qualquer badge de contagem anterior caso exista
+  containerAbas.querySelectorAll('.badge-count-cat').forEach(b => b.remove());
+
+  // Atualizar visibilidade das abas estáticas no cabeçalho
   abas.forEach(aba => {
     const catAba = aba.getAttribute('data-categoria');
-    let badgeEl = aba.querySelector('.badge-count-cat');
-    if (!badgeEl) {
-      badgeEl = document.createElement('span');
-      badgeEl.className = 'badge-count-cat';
-      aba.appendChild(badgeEl);
-    }
 
     if (!catAba || catAba === 'todas') {
-      badgeEl.textContent = String(AppState.listaAtiva.length);
       aba.style.display = ''; // "Geral" sempre visível
     } else if (catAba === 'favoritos') {
-      badgeEl.textContent = String(totalFav);
       aba.style.display = temFavoritos ? '' : 'none';
     } else {
-      let count = 0;
-      Object.keys(contagemPorCat).forEach(c => {
-        if (categoriasSaoIguais(c, catAba)) count += contagemPorCat[c];
-      });
-      badgeEl.textContent = String(count);
-      aba.style.display = (count > 0) ? '' : 'none';
+      const temItensNesteSetor = Array.from(categoriasPresentes).some(cat => categoriasSaoIguais(cat, catAba));
+      aba.style.display = temItensNesteSetor ? '' : 'none';
     }
 
     // Sincronizar estado ativo

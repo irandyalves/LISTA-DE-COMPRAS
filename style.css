@@ -9100,29 +9100,7 @@ body.tema-escuro .card-ranking-stats {
   line-height: 1;
 }
 
-/* 4. Contador de Itens nas Abas de Categorias / Corredores */
-.badge-count-cat {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.08);
-  color: inherit;
-  border-radius: 10px;
-  font-size: 0.68rem;
-  font-weight: 800;
-  padding: 0 5px;
-  min-width: 16px;
-  height: 16px;
-  margin-left: 4px;
-  line-height: 1;
-}
-
-.despensa-aba-tab.ativa .badge-count-cat {
-  background: rgba(127, 29, 29, 0.15);
-  color: #7F1D1D;
-}
-
-/* 5. Banner de Corredor Ativo */
+/* 4. Banner de Corredor Ativo */
 .banner-corredor-ativo {
   display: flex;
   align-items: center;
