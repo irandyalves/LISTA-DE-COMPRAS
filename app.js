@@ -730,7 +730,7 @@ const CATALOGO_PADRAO_EXPANDIDO = [
 const ehDispositivoMobile = (typeof window !== 'undefined' && (window.innerWidth <= 820 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '')));
 
 let AppState = {
-  abaAtiva: 'lista', // 'lista', 'despensa', 'historico'
+  abaAtiva: (typeof localStorage !== 'undefined' && localStorage.getItem('app_aba_ativa')) || 'lista', // 'lista', 'despensa', 'historico'
   filtroCategoria: 'todas',
   cotacaoAtiva: true, // true = cotado com preços e atacadistas visíveis, false = preços e atacadistas ocultos
   modoNoMercado: ehDispositivoMobile ? true : false, // No celular, por padrão mercados vêm ocultados
@@ -877,7 +877,7 @@ document.addEventListener('DOMContentLoaded', () => {
   inicializarNuvem();
   carregarCotacoesRaspadas();
   configurarBuscaGlobal();
-  renderizarTudo();
+  alternarAbaApp(AppState.abaAtiva, false);
   atualizarVisualBotaoOrdemAlfabetica();
   atualizarCardResumo();
   atualizarContadorSidebarMontar();
@@ -891,10 +891,17 @@ document.addEventListener('DOMContentLoaded', () => {
 // Carregamento de dados locais
 function carregarLocalmente() {
   carregarUsuariosCadastrados();
+  const abaSalva = (typeof localStorage !== 'undefined' && localStorage.getItem('app_aba_ativa'));
+  if (abaSalva && ['lista', 'despensa', 'historico', 'mercados'].includes(abaSalva)) {
+    AppState.abaAtiva = abaSalva;
+  }
   const dadosSalvos = localStorage.getItem('app_compras_irandy_v2');
   if (dadosSalvos) {
     try {
       const parsed = JSON.parse(dadosSalvos);
+      if (!abaSalva && parsed.abaAtiva && ['lista', 'despensa', 'historico', 'mercados'].includes(parsed.abaAtiva)) {
+        AppState.abaAtiva = parsed.abaAtiva;
+      }
       if (parsed.itensExcluidos) AppState.itensExcluidos = parsed.itensExcluidos;
       if (parsed.cotacaoAtiva !== undefined) AppState.cotacaoAtiva = parsed.cotacaoAtiva;
       if (parsed.modoNoMercado !== undefined) {
@@ -1075,7 +1082,11 @@ function salvarEstado(enviarParaNuvem = true) {
   }
 
   // Salva no localStorage como cache rápido
+  try {
+    localStorage.setItem('app_aba_ativa', AppState.abaAtiva || 'lista');
+  } catch (e) {}
   localStorage.setItem('app_compras_irandy_v2', JSON.stringify({
+    abaAtiva: AppState.abaAtiva,
     catalogo: AppState.catalogo,
     listaAtiva: AppState.listaAtiva,
     historico: AppState.historico,
@@ -2165,6 +2176,11 @@ function alternarAbaApp(aba, isUserClick = true) {
 
   const abaAnterior = AppState.abaAtiva;
   AppState.abaAtiva = aba;
+  try {
+    localStorage.setItem('app_aba_ativa', aba);
+  } catch (e) {
+    console.warn('Erro ao salvar aba ativa no localStorage:', e);
+  }
 
   if (typeof cancelarPendenteDesmarcar === 'function') cancelarPendenteDesmarcar();
   if (typeof cancelarDespensaPendenteDesmarcar === 'function') cancelarDespensaPendenteDesmarcar();
@@ -5138,13 +5154,16 @@ function salvarEdicaoNomeDespensaModal() {
 }
 
 // Estado e Controles do Histórico de Compras
-let modoExibicaoHistorico = 'compras'; // 'compras' ou 'itens'
+let modoExibicaoHistorico = (typeof localStorage !== 'undefined' && localStorage.getItem('app_modo_historico')) || 'compras'; // 'compras', 'itens' ou 'mais_comprados'
 let termoBuscaHistorico = '';
 let itensRascunhoHistorico = [];
 let comprasExpandidasIds = new Set();
 
 function alternarModoHistorico(modo) {
   modoExibicaoHistorico = modo;
+  try {
+    localStorage.setItem('app_modo_historico', modo);
+  } catch (e) {}
   
   // Se não estiver na aba de histórico, navega para ela
   if (AppState.abaAtiva !== 'historico') {
