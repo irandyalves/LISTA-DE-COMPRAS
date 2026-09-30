@@ -12,7 +12,7 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>">
   
   <!-- CSS Moderno -->
-  <link rel="stylesheet" href="style.css?v=10.27">
+  <link rel="stylesheet" href="style.css?v=10.41">
 </head>
 <body>
 
@@ -123,17 +123,21 @@
       <!-- LINHA 1: Barra de Pesquisa + Ações -->
       <header class="header-otimizado-l1">
 
+        <!-- Microfone de Pesquisa Independente (Fora do Campo) -->
+        <button id="btn-mic-voz" class="btn-mic-mini" onclick="acionarMicrofoneBusca()" title="Pesquisar / Localizar produto por voz">
+          <svg class="icone-mic-topo" viewBox="0 0 24 24" width="13" height="13" fill="currentColor">
+            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+            <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+          </svg>
+        </button>
+
         <!-- Barra de Pesquisa Reduzida / Expandida -->
         <div class="busca-topo-reduzida">
-          <button id="btn-mic-voz" class="btn-mic-mini" title="Pesquisar / Localizar produto por voz">
-            <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor">
-              <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
-              <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
-            </svg>
-          </button>
           <input type="text" id="input-novo-item" class="input-busca-topo" 
-                 placeholder="Pesquisar ou adicionar item..." 
+                 placeholder="Pesquisar..." 
                  autocomplete="off"
+                 onfocus="ativarFocoBuscaTopo()"
+                 onblur="desativarFocoBuscaTopo()"
                  oninput="aoDigitarBuscaTopo(this.value)"
                  onkeydown="gerenciarTeclasBuscaTopo(event)">
           <button id="btn-adicionar-topo-header" class="btn-adicionar-topo" style="display: none;" onclick="adicionarItemRapido()">Adicionar</button>
@@ -149,12 +153,13 @@
         </div>
 
         <div class="header-acoes-unificadas">
-          <button id="btn-ordem-alfabetica" class="btn-acao-mini ativo" onclick="alternarOrdemAlfabeticaGeral()" title="Ordenar de A a Z">
+          <div id="badge-total-geral-mobile" class="badge-total-geral-mobile" onclick="alternarVisaoTotal()" title="Total Geral da Compra (Toque para alternar Total/Falta/Pego)">0,00</div>
+          <button id="btn-ordem-alfabetica" class="btn-ordem-az-header ativo" onclick="alternarOrdemAlfabeticaGeral()" title="Ordenar de A a Z">
             🔤 A-Z
           </button>
-          <div id="controles-fonte-header" class="controles-fonte-header" style="display: none;">
-            <button type="button" class="btn-fonte-header" onclick="ajustarFonteMontarLista(-1)" title="Diminuir fonte em Criar Lista">A−</button>
-            <button type="button" class="btn-fonte-header" onclick="ajustarFonteMontarLista(1)" title="Aumentar fonte em Criar Lista">A+</button>
+          <div id="controles-fonte-header" class="controles-fonte-header">
+            <button type="button" class="btn-fonte-header" onclick="ajustarFonteCards(-1)" title="Diminuir tamanho da fonte dos cards e preços"><span class="txt-fonte-menor">a</span></button>
+            <button type="button" class="btn-fonte-header" onclick="ajustarFonteCards(1)" title="Aumentar tamanho da fonte dos cards e preços"><span class="txt-fonte-maior">A</span></button>
           </div>
           <button id="btn-perfil-usuario" class="btn-perfil-usuario-header" onclick="abrirModalPerfilUsuario()" title="Identificar quem está enviando itens (Irandy / Sioneide)">
             <span id="ico-perfil-header" class="ico-perfil-header">👨</span>
@@ -201,7 +206,21 @@
             <span class="aba-ico">📦</span> Diversos
           </button>
         </div>
-        <div id="badge-total-geral-mobile" class="badge-total-geral-mobile" onclick="alternarVisaoTotal()" title="Total Geral da Compra (Toque para alternar Total/Falta/Pego)">0,00</div>
+      </div>
+
+      <!-- Barra de Filtros e Modos de Visão do Histórico (CONGELADA / TRAVADA COM LINHA DIVISÓRIA) -->
+      <div id="historico-barra-controles" class="historico-barra-controles" style="display: none;">
+        <div class="historico-tabs-modo">
+          <button type="button" class="tab-modo-hist ativa" id="tab-hist-compras" onclick="alternarModoHistorico('compras')">
+            🛒 Por Compras
+          </button>
+          <button type="button" class="tab-modo-hist" id="tab-hist-itens" onclick="alternarModoHistorico('itens')">
+            📈 Por Item
+          </button>
+          <button type="button" class="tab-modo-hist" id="tab-hist-mais-comprados" onclick="alternarModoHistorico('mais_comprados')">
+            🏆 Mais Comprados por Mim
+          </button>
+        </div>
       </div>
     </div>
     <!-- FIM DO PAINEL SUPERIOR CONGELADO -->
@@ -224,21 +243,6 @@
 
     <!-- VIEW 4: HISTÓRICO DE COMPRAS E PREÇOS -->
     <main id="view-historico" style="display: none;">
-      <!-- Barra de Filtros e Modos de Visão -->
-      <div class="historico-barra-controles">
-        <div class="historico-tabs-modo">
-          <button type="button" class="tab-modo-hist ativa" id="tab-hist-compras" onclick="alternarModoHistorico('compras')">
-            🛒 Por Compras
-          </button>
-          <button type="button" class="tab-modo-hist" id="tab-hist-itens" onclick="alternarModoHistorico('itens')">
-            📈 Por Item
-          </button>
-          <button type="button" class="tab-modo-hist" id="tab-hist-mais-comprados" onclick="alternarModoHistorico('mais_comprados')">
-            🏆 Mais Comprados por Mim
-          </button>
-        </div>
-      </div>
-
       <div id="historico-container"></div>
     </main>
 
@@ -748,14 +752,9 @@
       <span class="mobile-nav-icon">📊</span>
       <span class="mobile-nav-label">HISTÓRICO</span>
     </button>
-    <button class="mobile-nav-btn mobile-nav-btn-finalizar" onclick="acionarFinalizarCompraMobile()" title="Finalizar Compra">
-      <span class="mobile-nav-icon" style="color: #10B981;">🏁</span>
-      <span class="mobile-nav-label" style="color: #059669; font-weight: 800;">FINALIZAR</span>
-    </button>
-    <button class="mobile-nav-btn" onclick="abrirModal('modal-nuvem')" title="Sincronização Nuvem">
-      <span class="mobile-nav-icon">☁️</span>
-      <span class="mobile-nav-label">NUVEM</span>
-      <span id="mobile-nuvem-dot" class="mobile-nuvem-dot"></span>
+    <button class="mobile-nav-btn" id="mobile-nav-btn-config" onclick="abrirModalOpcoesHeader()" title="Configurações e Opções">
+      <span class="mobile-nav-icon">⚙️</span>
+      <span class="mobile-nav-label">CONFIG</span>
     </button>
   </nav>
 
@@ -944,7 +943,7 @@
   <script src="logos_banco.js?v=10.13"></script>
   <script src="icones2d.js"></script>
   <script src="firebase-sync.js"></script>
-  <script src="app.js?v=10.27"></script>
+  <script src="app.js?v=10.41"></script>
 
 </body>
 </html>

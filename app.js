@@ -2166,6 +2166,9 @@ function alternarAbaApp(aba, isUserClick = true) {
   const abaAnterior = AppState.abaAtiva;
   AppState.abaAtiva = aba;
 
+  if (typeof cancelarPendenteDesmarcar === 'function') cancelarPendenteDesmarcar();
+  if (typeof cancelarDespensaPendenteDesmarcar === 'function') cancelarDespensaPendenteDesmarcar();
+
   // Sincroniza classes ativas em todos os menus (sidebar, inferior celular e desktop)
   document.querySelectorAll('.nav-item, .sidebar-nav-item, .mobile-nav-btn').forEach(b => {
     if (b.getAttribute('data-aba') === aba) b.classList.add('ativo');
@@ -2252,11 +2255,19 @@ function alternarAbaApp(aba, isUserClick = true) {
   document.body.setAttribute('data-aba-ativa', aba);
   document.body.classList.toggle('aba-historico', aba === 'historico');
 
+  const btnMicTopo = document.getElementById('btn-mic-voz');
+  if (btnMicTopo) {
+    btnMicTopo.style.display = (AppState.abaAtiva === 'historico') ? 'none' : 'inline-flex';
+  }
   if (buscaTopoReduzida) {
     buscaTopoReduzida.style.display = (AppState.abaAtiva === 'historico') ? 'none' : 'flex';
   }
   if (histTopoIntegrado) {
     histTopoIntegrado.style.display = (AppState.abaAtiva === 'historico') ? 'flex' : 'none';
+  }
+  const barraHist = document.getElementById('historico-barra-controles');
+  if (barraHist) {
+    barraHist.style.display = (AppState.abaAtiva === 'historico') ? 'flex' : 'none';
   }
   if (linhaAbasMobile) {
     linhaAbasMobile.style.display = (AppState.abaAtiva === 'lista' || AppState.abaAtiva === 'despensa') ? 'flex' : 'none';
@@ -2269,10 +2280,16 @@ function alternarAbaApp(aba, isUserClick = true) {
     atualizarVisualBotaoOrdemAlfabetica();
   }
 
-  // Controles de Aumentar / Reduzir fonte no cabeçalho visíveis na aba Montar Lista
+  // Controles de Aumentar / Reduzir fonte (a A) visíveis nas abas Comprar e Montar Lista
   const ctrlFonteHeader = document.getElementById('controles-fonte-header');
-  const isMontar = (AppState.abaAtiva === 'despensa');
-  if (ctrlFonteHeader) ctrlFonteHeader.style.display = isMontar ? 'inline-flex' : 'none';
+  const exibirCtrlFonte = (AppState.abaAtiva === 'lista' || AppState.abaAtiva === 'despensa');
+  if (ctrlFonteHeader) ctrlFonteHeader.style.display = exibirCtrlFonte ? 'inline-flex' : 'none';
+
+  // Perfil do Usuário no Cabeçalho (Oculto no Histórico conforme solicitado)
+  const btnPerfilTopo = document.getElementById('btn-perfil-usuario');
+  if (btnPerfilTopo) {
+    btnPerfilTopo.style.display = (AppState.abaAtiva === 'historico') ? 'none' : 'inline-flex';
+  }
 
   if (inputTopo) {
     inputTopo.placeholder = AppState.abaAtiva === 'despensa' 
@@ -2370,9 +2387,135 @@ function selecionarMercadoReferencia(mercadoId) {
   }
 }
 
+// =========================================================================
+// CABEÇALHO INTELIGENTE DE CATEGORIAS / SETORES
+// =========================================================================
+function normalizarNomeCategoria(cat) {
+  if (!cat) return 'diversos';
+  return cat.toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/&/g, 'e')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function categoriasSaoIguais(cat1, cat2) {
+  if (!cat1 || !cat2) return false;
+  if (cat1 === cat2) return true;
+  const n1 = normalizarNomeCategoria(cat1);
+  const n2 = normalizarNomeCategoria(cat2);
+  if (n1 === n2) return true;
+  // Sinônimos conhecidos: Carnes & Aves / Carnes e Proteínas
+  if ((n1.includes('carne') || n1.includes('ave') || n1.includes('proteina')) &&
+      (n2.includes('carne') || n2.includes('ave') || n2.includes('proteina'))) {
+    return true;
+  }
+  return false;
+}
+
+function atualizarAbasCategoriasInteligente() {
+  const containerAbas = document.getElementById('barra-abas-categorias');
+  if (!containerAbas) return;
+
+  const abas = containerAbas.querySelectorAll('.despensa-aba-tab:not(.aba-cat-dinamica)');
+
+  // Se NÃO estiver na aba 'lista' (COMPRAR), exibe todas as abas padrão (ex: Criar Lista / Montar Lista)
+  if (AppState.abaAtiva !== 'lista') {
+    abas.forEach(aba => {
+      aba.style.display = '';
+    });
+    // Remove abas dinâmicas temporárias ao sair da aba Comprar
+    containerAbas.querySelectorAll('.aba-cat-dinamica').forEach(el => el.remove());
+    return;
+  }
+
+  // Na aba COMPRAR: Cabeçalho Inteligente
+  // Identifica setores que têm pelo menos 1 item na lista ativa
+  const categoriasPresentes = new Set();
+  let temFavoritos = false;
+
+  (AppState.listaAtiva || []).forEach(item => {
+    const cat = item.categoria || 'Diversos';
+    categoriasPresentes.add(cat);
+
+    if (!temFavoritos) {
+      const ehFav = !!(item.favorito || (AppState.catalogo && AppState.catalogo.find(c => String(c.id) === String(item.id) || String(c.id) === String(item.catalogoId))?.favorito));
+      if (ehFav) temFavoritos = true;
+    }
+  });
+
+  // Se o filtro atualmente selecionado não possui itens na lista, reverte suavemente para 'todas'
+  if (AppState.filtroCategoria && AppState.filtroCategoria !== 'todas') {
+    if (AppState.filtroCategoria === 'favoritos') {
+      if (!temFavoritos) {
+        AppState.filtroCategoria = 'todas';
+        categoriaAtivaDespensa = 'todas';
+      }
+    } else {
+      const existeItensFiltro = Array.from(categoriasPresentes).some(cat => categoriasSaoIguais(cat, AppState.filtroCategoria));
+      if (!existeItensFiltro) {
+        AppState.filtroCategoria = 'todas';
+        categoriaAtivaDespensa = 'todas';
+      }
+    }
+  }
+
+  // Atualizar visibilidade das abas estáticas no cabeçalho
+  abas.forEach(aba => {
+    const catAba = aba.getAttribute('data-categoria');
+    if (!catAba || catAba === 'todas') {
+      aba.style.display = ''; // "Geral" sempre visível
+    } else if (catAba === 'favoritos') {
+      aba.style.display = temFavoritos ? '' : 'none';
+    } else {
+      const temItensNesteSetor = Array.from(categoriasPresentes).some(cat => categoriasSaoIguais(cat, catAba));
+      aba.style.display = temItensNesteSetor ? '' : 'none';
+    }
+
+    // Sincronizar estado ativo
+    if (catAba === (AppState.filtroCategoria || 'todas')) {
+      aba.classList.add('ativa');
+    } else {
+      aba.classList.remove('ativa');
+    }
+  });
+
+  // Gerenciar categorias customizadas (que não existem nos botões estáticos do HTML)
+  containerAbas.querySelectorAll('.aba-cat-dinamica').forEach(btnDin => {
+    const catDin = btnDin.getAttribute('data-categoria');
+    const aindaExiste = Array.from(categoriasPresentes).some(cat => categoriasSaoIguais(cat, catDin));
+    if (!aindaExiste) {
+      btnDin.remove();
+    }
+  });
+
+  categoriasPresentes.forEach(catPresente => {
+    const cobertoPorPadrao = Array.from(abas).some(aba => {
+      const catAba = aba.getAttribute('data-categoria');
+      return catAba && catAba !== 'todas' && catAba !== 'favoritos' && categoriasSaoIguais(catPresente, catAba);
+    });
+
+    if (!cobertoPorPadrao && !containerAbas.querySelector(`.aba-cat-dinamica[data-categoria="${catPresente}"]`)) {
+      const btn = document.createElement('button');
+      btn.className = 'despensa-aba-tab aba-cat-dinamica';
+      btn.setAttribute('data-categoria', catPresente);
+      btn.onclick = function() { filtrarCategoriaGeral(catPresente, this); };
+      btn.innerHTML = `<span class="aba-ico">🏷️</span> ${catPresente}`;
+      if (catPresente === AppState.filtroCategoria) btn.classList.add('ativa');
+      containerAbas.appendChild(btn);
+    }
+  });
+
+  if (typeof atualizarAlturaPainelCongeladoCSS === 'function') {
+    atualizarAlturaPainelCongeladoCSS();
+  }
+}
+
 // Renderizar telas
 function renderizarTudo() {
   atualizarChipsMercadoUI();
+  atualizarAbasCategoriasInteligente();
   if (AppState.abaAtiva === 'lista') {
     renderizarListaCompras();
   } else if (AppState.abaAtiva === 'despensa') {
@@ -2503,7 +2646,7 @@ function atualizarCardResumo() {
 
     if (temFiltroCat) {
       const isFav = AppState.filtroCategoria === 'favoritos' && (item.favorito || (AppState.catalogo.find(c => c.id === item.id || c.id === item.catalogoId)?.favorito));
-      if (isFav || item.categoria === AppState.filtroCategoria) {
+      if (isFav || categoriasSaoIguais(item.categoria, AppState.filtroCategoria)) {
         totalCategoria += subtotal;
         itensCategoria++;
         if (item.comprado) {
@@ -3121,6 +3264,8 @@ function renderizarListaCompras() {
   const container = document.getElementById('itens-lista-container');
   if (!container) return;
 
+  atualizarAbasCategoriasInteligente();
+
   // 1. Capturar com precisão a posição de rolagem de todos os contêineres possíveis
   const scrollYAnterior = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
   const scrollXAnterior = window.scrollX || document.documentElement.scrollLeft || document.body.scrollLeft || 0;
@@ -3162,7 +3307,10 @@ function renderizarListaCompras() {
       return !!(item.favorito || (catItem && catItem.favorito));
     });
   } else if (AppState.filtroCategoria && AppState.filtroCategoria !== 'todas') {
-    itensListaParaExibir = itensListaParaExibir.filter(item => (item.categoria || 'Diversos') === AppState.filtroCategoria);
+    itensListaParaExibir = itensListaParaExibir.filter(item => {
+      const catItem = item.categoria || 'Diversos';
+      return categoriasSaoIguais(catItem, AppState.filtroCategoria);
+    });
   }
 
   if (termoBuscaLista) {
@@ -3844,6 +3992,27 @@ function configurarBuscaGlobal() {
 let sugestaoIndiceTeclado = -1;
 let timerInatividadeBusca = null;
 
+// Ativa expansão da busca para a direita ocultando outros botões e mantendo apenas o usuário
+function ativarFocoBuscaTopo() {
+  const header = document.querySelector('.header-otimizado-l1');
+  const containerBusca = document.querySelector('.busca-topo-reduzida');
+  if (header) header.classList.add('busca-focada');
+  if (containerBusca) containerBusca.classList.add('foco-ativo');
+}
+
+// Desativa expansão da busca se o campo for desmarcado e estiver vazio
+function desativarFocoBuscaTopo() {
+  setTimeout(() => {
+    const input = document.getElementById('input-novo-item');
+    if (input && input.value.trim().length === 0 && document.activeElement !== input) {
+      const header = document.querySelector('.header-otimizado-l1');
+      const containerBusca = document.querySelector('.busca-topo-reduzida');
+      if (header) header.classList.remove('busca-focada');
+      if (containerBusca) containerBusca.classList.remove('foco-ativo');
+    }
+  }, 250);
+}
+
 // Remove estado visual de digitação e limpa timer de inatividade
 function resetarEstadoDigitacaoBusca() {
   if (timerInatividadeBusca) {
@@ -3854,6 +4023,11 @@ function resetarEstadoDigitacaoBusca() {
   const inputBusca = document.getElementById('input-novo-item');
   if (containerBusca) containerBusca.classList.remove('digitando-ativo');
   if (inputBusca) inputBusca.classList.remove('digitando-ativo');
+  if (inputBusca && inputBusca.value.trim().length === 0 && document.activeElement !== inputBusca) {
+    const header = document.querySelector('.header-otimizado-l1');
+    if (header) header.classList.remove('busca-focada');
+    if (containerBusca) containerBusca.classList.remove('foco-ativo');
+  }
 }
 
 // Verifica se o termo digitado existe no catálogo e controla a exibição do botão "Adicionar"
@@ -3903,7 +4077,12 @@ function limparCampoBuscaInatividade() {
   const input = document.getElementById('input-novo-item');
   if (input) {
     input.value = '';
+    if (document.activeElement === input) input.blur();
   }
+  const header = document.querySelector('.header-otimizado-l1');
+  const containerBusca = document.querySelector('.busca-topo-reduzida');
+  if (header) header.classList.remove('busca-focada');
+  if (containerBusca) containerBusca.classList.remove('foco-ativo');
   termoBuscaTopo = '';
   termoBuscaDespensa = '';
   termoBuscaLista = '';
@@ -4175,6 +4354,10 @@ function gerenciarTeclasBuscaTopo(event) {
     fecharDropdownSugestoesTopo();
     const input = document.getElementById('input-novo-item');
     if (input) input.blur();
+    const header = document.querySelector('.header-otimizado-l1');
+    const containerBusca = document.querySelector('.busca-topo-reduzida');
+    if (header) header.classList.remove('busca-focada');
+    if (containerBusca) containerBusca.classList.remove('foco-ativo');
     return;
   }
 
@@ -4225,6 +4408,9 @@ function filtrarCategoriaGeral(categoria, botaoEl) {
   // Se clicou na estrela de favoritos e ela já está ativa, desmarca e ativa Geral ('todas')
   if (categoria === 'favoritos' && (AppState.filtroCategoria === 'favoritos' || categoriaAtivaDespensa === 'favoritos')) {
     categoria = 'todas';
+  } else if (categoria === AppState.filtroCategoria && categoria !== 'todas') {
+    // Se clicar na mesma categoria já selecionada, desmarca e volta para 'todas'
+    categoria = 'todas';
   }
 
   AppState.filtroCategoria = categoria;
@@ -4233,7 +4419,8 @@ function filtrarCategoriaGeral(categoria, botaoEl) {
   // Atualiza classes ativas nas abas
   const abas = document.querySelectorAll('.despensa-aba-tab');
   abas.forEach(b => {
-    if (b.getAttribute('data-categoria') === categoria) {
+    const catAba = b.getAttribute('data-categoria');
+    if (catAba === categoria || (catAba === 'todas' && categoria === 'todas')) {
       b.classList.add('ativa');
     } else {
       b.classList.remove('ativa');
@@ -4297,6 +4484,8 @@ function renderizarDespensa() {
   const container = document.getElementById('despensa-grid-container');
   if (!container) return;
   container.innerHTML = '';
+
+  atualizarAbasCategoriasInteligente();
 
   const badgeTotal = document.getElementById('despensa-contador-badge');
 
@@ -4542,7 +4731,27 @@ function alternarFavoritoItem(produtoId, event) {
   mostrarNotificacaoToast(novoStatus ? `⭐ "${nomeReduz}" favoritado!` : `☆ "${nomeReduz}" removido dos favoritos.`);
 }
 
+let despensaPendenteDesmarcarId = null;
+let timerDespensaPendenteDesmarcar = null;
+
+function cancelarDespensaPendenteDesmarcar() {
+  if (timerDespensaPendenteDesmarcar) {
+    clearTimeout(timerDespensaPendenteDesmarcar);
+    timerDespensaPendenteDesmarcar = null;
+  }
+  if (despensaPendenteDesmarcarId) {
+    const cardEl = document.getElementById(`card-despensa-${despensaPendenteDesmarcarId}`);
+    if (cardEl) {
+      cardEl.classList.remove('pendente-desmarcar');
+      const badgePendente = cardEl.querySelector('.badge-confirmar-desmarcar');
+      if (badgePendente) badgePendente.remove();
+    }
+    despensaPendenteDesmarcarId = null;
+  }
+}
+
 // Alterna em TEMPO REAL a inclusão ou remoção em Montar Lista (O item NÃO vai pro final)
+// Lógica anti-toque acidental idêntica à de Compras: 1 clique para marcar; 2 cliques para desmarcar com aviso
 function alternarItemDespensaEmTempoReal(produtoId, event) {
   if (houveArrastoRecente) return;
   if (event && event.stopPropagation) event.stopPropagation();
@@ -4550,49 +4759,73 @@ function alternarItemDespensaEmTempoReal(produtoId, event) {
   const prod = AppState.catalogo.find(p => String(p.id) === String(produtoId));
   if (!prod) return;
 
-  // Inverte o estado de seleção
-  prod.selecionado = !prod.selecionado;
-  // Ao jogar para comprar (ou ao retirar da lista), NUNCA pode vir marcado como comprado!
-  prod.comprado = false;
-  prod.precoRegistradoMercado = 0;
+  // CASO 1: O item AINDA NÃO está selecionado -> Adiciona imediatamente com 1 clique!
+  if (!prod.selecionado) {
+    cancelarDespensaPendenteDesmarcar();
+    prod.selecionado = true;
+    prod.comprado = false;
+    prod.precoRegistradoMercado = 0;
 
-  const chaveIcone = prod.icone || detectarChaveIcone(prod.nome);
-  const precoPadrao = prod.precoMedioDF || (prod.ultimoPreco > 0 ? prod.ultimoPreco : (COTACOES_DF[chaveIcone] ? COTACOES_DF[chaveIcone].atacadao : 10.0));
-  if (!prod.preco) prod.preco = precoPadrao;
-  if (!prod.ultimoPreco) prod.ultimoPreco = precoPadrao;
-  if (!prod.qtde) prod.qtde = 1;
+    const chaveIcone = prod.icone || detectarChaveIcone(prod.nome);
+    const precoPadrao = prod.precoMedioDF || (prod.ultimoPreco > 0 ? prod.ultimoPreco : (COTACOES_DF[chaveIcone] ? COTACOES_DF[chaveIcone].atacadao : 10.0));
+    if (!prod.preco) prod.preco = precoPadrao;
+    if (!prod.ultimoPreco) prod.ultimoPreco = precoPadrao;
+    if (!prod.qtde) prod.qtde = 1;
 
-  // Sincroniza estritamente com a Lista de Compras
-  sincronizarListaAtivaComCatalogo();
+    // Sincroniza estritamente com a Lista de Compras
+    sincronizarListaAtivaComCatalogo();
 
-  if (prod.selecionado) {
     AppState.ultimoEvento = {
       autor: AppState.usuarioAtivo || 'Irandy',
       icone: AppState.usuarioIcone || (AppState.usuarioAtivo === 'Sioneide' ? '👩' : '👨'),
       itens: [prod.nome],
       timestamp: Date.now()
     };
-  }
 
-  // Salva no LocalStorage e sincroniza na Nuvem imediatamente
-  salvarEstado(true);
+    // Salva no LocalStorage e sincroniza na Nuvem imediatamente
+    salvarEstado(true);
 
-  // Atualiza diretamente o card no DOM sem JAMAIS ir pro final da tela nem mudar de ordem!
-  const cardEl = document.getElementById(`card-despensa-${prod.id}`);
-  if (cardEl) {
-    const checkBtn = cardEl.querySelector('.item-check-btn');
-    const contador = cardEl.querySelector('.contador-qtde');
-
-    if (prod.selecionado) {
+    // Atualiza diretamente o card no DOM
+    const cardEl = document.getElementById(`card-despensa-${prod.id}`);
+    if (cardEl) {
+      const checkBtn = cardEl.querySelector('.item-check-btn');
+      const contador = cardEl.querySelector('.contador-qtde');
       cardEl.classList.add('na-lista-montar');
-      cardEl.title = 'Na Lista de Compra (Clique para desmarcar) • Botão direito para editar';
+      cardEl.classList.remove('pendente-desmarcar');
+      const badgePendente = cardEl.querySelector('.badge-confirmar-desmarcar');
+      if (badgePendente) badgePendente.remove();
+      cardEl.title = 'Na Lista de Compra (Clique 2x para desmarcar) • Botão direito para editar';
       if (checkBtn) {
         checkBtn.textContent = '✓';
         checkBtn.classList.add('check-ativo');
       }
       if (contador) contador.style.opacity = '1';
-    } else {
+    }
+
+    atualizarBalaoTotalCategoria(prod.categoria || 'Diversos');
+    renderizarListaCompras();
+    atualizarCardResumo();
+    return;
+  }
+
+  // CASO 2: O item JÁ ESTÁ SELECIONADO -> Exige 2 cliques (ou segundo clique em até 3s)
+  if (String(despensaPendenteDesmarcarId) === String(produtoId)) {
+    // Segundo clique confirmado!
+    cancelarDespensaPendenteDesmarcar();
+    prod.selecionado = false;
+    prod.comprado = false;
+
+    sincronizarListaAtivaComCatalogo();
+    salvarEstado(true);
+
+    const cardEl = document.getElementById(`card-despensa-${prod.id}`);
+    if (cardEl) {
+      const checkBtn = cardEl.querySelector('.item-check-btn');
+      const contador = cardEl.querySelector('.contador-qtde');
       cardEl.classList.remove('na-lista-montar');
+      cardEl.classList.remove('pendente-desmarcar');
+      const badgePendente = cardEl.querySelector('.badge-confirmar-desmarcar');
+      if (badgePendente) badgePendente.remove();
       cardEl.title = 'Clique para marcar e adicionar à Lista de Compra • Botão direito para editar';
       if (checkBtn) {
         checkBtn.textContent = '';
@@ -4600,14 +4833,38 @@ function alternarItemDespensaEmTempoReal(produtoId, event) {
       }
       if (contador) contador.style.opacity = '0.45';
     }
+
+    atualizarBalaoTotalCategoria(prod.categoria || 'Diversos');
+    renderizarListaCompras();
+    atualizarCardResumo();
+
+    const nomeReduz = (typeof obterNomeResumido === 'function') ? obterNomeResumido(prod.nome) : prod.nome;
+    mostrarNotificacaoToast(`🗑️ "${nomeReduz}" retirado da lista.`);
+  } else {
+    // Primeiro clique: entra em estado de aviso / confirmação!
+    cancelarDespensaPendenteDesmarcar();
+    despensaPendenteDesmarcarId = String(produtoId);
+
+    const cardEl = document.getElementById(`card-despensa-${prod.id}`);
+    if (cardEl) {
+      cardEl.classList.add('pendente-desmarcar');
+      const linhaNome = cardEl.querySelector('.item-linha-nome');
+      if (linhaNome && !linhaNome.querySelector('.badge-confirmar-desmarcar')) {
+        const badge = document.createElement('span');
+        badge.className = 'badge-confirmar-desmarcar';
+        badge.textContent = '⚠️ Toque novamente para desmarcar';
+        linhaNome.appendChild(badge);
+      }
+    }
+
+    const nomeReduz = (typeof obterNomeResumido === 'function') ? obterNomeResumido(prod.nome) : prod.nome;
+    mostrarNotificacaoToast(`⚠️ Clique mais uma vez para retirar "${nomeReduz}" da lista.`);
+
+    // Janela de 3 segundos para confirmar com o segundo clique
+    timerDespensaPendenteDesmarcar = setTimeout(() => {
+      cancelarDespensaPendenteDesmarcar();
+    }, 3000);
   }
-
-  // Atualiza imediatamente o balão de total da categoria correspondente
-  atualizarBalaoTotalCategoria(prod.categoria || 'Diversos');
-
-  // Monta em tempo real na Lista de Compra (aqui recebe o que eu faço em Montar Lista)
-  renderizarListaCompras();
-  atualizarCardResumo();
 }
 
 function alterarQuantidadeMontarLista(produtoId, delta, event) {
@@ -5928,7 +6185,7 @@ function removerItem(id, dispararUndo = true) {
 }
 
 // =========================================================================
-// SISTEMA DE RE.UNDO / DESFAZER EXCLUSÃO (BOTÃO VOLTAR ↩️ COM 2 SEGUNDOS)
+// SISTEMA DE RE.UNDO / DESFAZER EXCLUSÃO (BOTÃO VOLTAR ↩️ COM 7 SEGUNDOS)
 // =========================================================================
 let itemParaDesfazer = null;
 let timerDesfazer = null;
@@ -5964,15 +6221,15 @@ function exibirToastDesfazer(nomeItem, tipo, payload) {
   `;
 
   toast.classList.remove('visivel');
-  void toast.offsetWidth; // Força reflow para reiniciar a animação de contagem de 3s
+  void toast.offsetWidth; // Força reflow para reiniciar a animação de contagem de 7s
   toast.classList.add('visivel');
 
-  // Se não clicar em até 3 segundos, cancela o desfazer ("já era")
+  // Se não clicar em até 7 segundos, cancela o desfazer ("já era")
   timerDesfazer = setTimeout(() => {
     toast.classList.remove('visivel');
     itemParaDesfazer = null;
     timerDesfazer = null;
-  }, 3000);
+  }, 7000);
 }
 
 function executarDesfazerExclusao(event) {
@@ -6041,51 +6298,84 @@ function executarDesfazerExclusao(event) {
 }
 
 // =========================================================================
-// ESCALA DE FONTE NA ABA MONTAR LISTA (BOTÕES A- E A+ NO CABEÇALHO)
+// ESCALA DE FONTE DOS CARDS E PREÇOS (BOTÕES 'a' E 'A' NO CABEÇALHO)
 // =========================================================================
-const ESCALAS_FONTE_MONTAR = ['0.65rem', '0.72rem', '0.78rem', '0.86rem', '0.96rem', '1.08rem'];
-let indiceFonteMontar = 2; // Padrão: 0.78rem
+const ESCALAS_FONTE_CARDS = [
+  { fator: 0.75, nomeRem: '0.62rem', precoRem: '0.55rem', subtotalRem: '0.62rem', montarRem: '0.60rem', label: 'Muito Pequena (75%)' },
+  { fator: 0.88, nomeRem: '0.72rem', precoRem: '0.64rem', subtotalRem: '0.72rem', montarRem: '0.69rem', label: 'Pequena (88%)' },
+  { fator: 1.00, nomeRem: '0.82rem', precoRem: '0.72rem', subtotalRem: '0.82rem', montarRem: '0.78rem', label: 'Padrão (100%)' },
+  { fator: 1.15, nomeRem: '0.94rem', precoRem: '0.83rem', subtotalRem: '0.94rem', montarRem: '0.90rem', label: 'Média (115%)' },
+  { fator: 1.30, nomeRem: '1.07rem', precoRem: '0.94rem', subtotalRem: '1.07rem', montarRem: '1.02rem', label: 'Grande (130%)' },
+  { fator: 1.45, nomeRem: '1.19rem', precoRem: '1.05rem', subtotalRem: '1.19rem', montarRem: '1.14rem', label: 'Muito Grande (145%)' },
+  { fator: 1.65, nomeRem: '1.35rem', precoRem: '1.19rem', subtotalRem: '1.35rem', montarRem: '1.29rem', label: 'Extra Grande (165%)' }
+];
+let indiceFonteCards = 2; // Padrão: 100%
 
-function inicializarEscalaFonteMontar() {
-  const salvo = localStorage.getItem('escala_fonte_montar');
+function inicializarEscalaFonteCards() {
+  const salvo = localStorage.getItem('escala_fonte_cards') || localStorage.getItem('escala_fonte_montar');
   if (salvo !== null) {
     const idx = parseInt(salvo, 10);
-    if (!isNaN(idx) && idx >= 0 && idx < ESCALAS_FONTE_MONTAR.length) {
-      indiceFonteMontar = idx;
+    if (!isNaN(idx) && idx >= 0 && idx < ESCALAS_FONTE_CARDS.length) {
+      indiceFonteCards = idx;
     }
   }
-  aplicarEscalaFonteMontar(false);
+  aplicarEscalaFonteCards(false);
 }
 
-function aplicarEscalaFonteMontar(mostrarToast = false) {
-  const tamanhoRem = ESCALAS_FONTE_MONTAR[indiceFonteMontar];
+function aplicarEscalaFonteCards(mostrarToast = false) {
+  const escala = ESCALAS_FONTE_CARDS[indiceFonteCards] || ESCALAS_FONTE_CARDS[2];
+  
+  document.documentElement.style.setProperty('--fator-fonte-cards', escala.fator);
+  document.documentElement.style.setProperty('--fonte-card-nome', escala.nomeRem);
+  document.documentElement.style.setProperty('--fonte-card-preco', escala.precoRem);
+  document.documentElement.style.setProperty('--fonte-card-subtotal', escala.subtotalRem);
+  document.documentElement.style.setProperty('--fonte-montar', escala.montarRem);
+
+  const vLista = document.getElementById('view-lista');
+  if (vLista) {
+    vLista.style.setProperty('--fonte-card-nome', escala.nomeRem);
+    vLista.style.setProperty('--fonte-card-preco', escala.precoRem);
+    vLista.style.setProperty('--fonte-card-subtotal', escala.subtotalRem);
+    vLista.style.setProperty('--fator-fonte-cards', escala.fator);
+  }
   const vDespensa = document.getElementById('view-despensa');
   if (vDespensa) {
-    vDespensa.style.setProperty('--fonte-montar', tamanhoRem);
+    vDespensa.style.setProperty('--fonte-montar', escala.montarRem);
+    vDespensa.style.setProperty('--fonte-card-nome', escala.nomeRem);
+    vDespensa.style.setProperty('--fator-fonte-cards', escala.fator);
   }
-  document.documentElement.style.setProperty('--fonte-montar', tamanhoRem);
+
   try {
-    localStorage.setItem('escala_fonte_montar', indiceFonteMontar);
+    localStorage.setItem('escala_fonte_cards', indiceFonteCards);
+    localStorage.setItem('escala_fonte_montar', indiceFonteCards);
   } catch (e) {}
 
   if (mostrarToast) {
-    const labels = ['Muito Pequena (65%)', 'Pequena (72%)', 'Padrão (78%)', 'Média (86%)', 'Grande (96%)', 'Muito Grande (108%)'];
-    mostrarNotificacaoToast(`🔤 Fonte Criar Lista: ${labels[indiceFonteMontar]}`);
+    mostrarNotificacaoToast(`🔤 Tamanho dos Cards e Preços: ${escala.label}`);
   }
 }
 
-function ajustarFonteMontarLista(direcao) {
-  const novoIndice = indiceFonteMontar + direcao;
+function ajustarFonteCards(direcao) {
+  const novoIndice = indiceFonteCards + direcao;
   if (novoIndice < 0) {
     mostrarNotificacaoToast('Tamanho mínimo de fonte atingido');
     return;
   }
-  if (novoIndice >= ESCALAS_FONTE_MONTAR.length) {
+  if (novoIndice >= ESCALAS_FONTE_CARDS.length) {
     mostrarNotificacaoToast('Tamanho máximo de fonte atingido');
     return;
   }
-  indiceFonteMontar = novoIndice;
-  aplicarEscalaFonteMontar(true);
+  indiceFonteCards = novoIndice;
+  aplicarEscalaFonteCards(true);
+}
+
+// Aliases para manter compatibilidade
+function inicializarEscalaFonteMontar() {
+  inicializarEscalaFonteCards();
+}
+
+function ajustarFonteMontarLista(direcao) {
+  ajustarFonteCards(direcao);
 }
 
 // =========================================================================
@@ -7787,6 +8077,12 @@ function confirmarFinalizarCompra() {
   navegarParaAba('historico');
 }
 
+// Função chamada pelo botão de busca por voz
+function acionarMicrofoneBusca() {
+  const btnMic = document.getElementById('btn-mic-voz');
+  if (btnMic) btnMic.click();
+}
+
 // Microfone / Reconhecimento de Fala (Web Speech API) - Otimizado para PC e Celular
 function configurarReconhecimentoVoz() {
   const btnMic = document.getElementById('btn-mic-voz');
@@ -7832,11 +8128,11 @@ function configurarReconhecimentoVoz() {
     }
     if (delayRemoverEstiloMs > 0) {
       timerRestaurarMic = setTimeout(() => {
-        btnMic.classList.remove('gravando');
+        btnMic.classList.remove('gravando', 'ouvindo');
         btnMic.title = "Pesquisar por voz (Fale no PC ou Celular) [Atalho: Alt+V]";
       }, delayRemoverEstiloMs);
     } else {
-      btnMic.classList.remove('gravando');
+      btnMic.classList.remove('gravando', 'ouvindo');
       btnMic.title = "Pesquisar por voz (Fale no PC ou Celular) [Atalho: Alt+V]";
     }
   }
@@ -7850,7 +8146,7 @@ function configurarReconhecimentoVoz() {
     try {
       recognition.start();
       gravando = true;
-      btnMic.classList.add('gravando');
+      btnMic.classList.add('gravando', 'ouvindo');
       btnMic.title = "Ouvindo... Diga o nome do item no microfone";
       if (inputBusca) {
         placeholderOriginal = inputBusca.placeholder;
