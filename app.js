@@ -2724,7 +2724,7 @@ function atualizarCardResumo() {
     } else if (visaoTotalModo === 'carrinho') {
       valorExibicao = totalCarrinho;
     }
-    elBadgeMobile.textContent = formatarMoeda(valorExibicao, false);
+    elBadgeMobile.textContent = formatarMoeda(valorExibicao, true);
     elBadgeMobile.title = (visaoTotalModo === 'restante') 
       ? `Falta Pegar: ${formatarMoeda(totalRestante)} (Toque para alternar)`
       : (visaoTotalModo === 'carrinho')
