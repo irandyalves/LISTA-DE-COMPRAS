@@ -448,7 +448,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding: 8px 6px;
+  padding: 8px 0 8px 6px;
 }
 
 #btn-nav-comprar {
@@ -461,7 +461,8 @@ body {
   gap: 8px;
   padding: 8px 10px;
   border: 1px solid transparent;
-  border-radius: 8px;
+  border-right: none !important;
+  border-radius: 8px 0 0 8px !important;
   background: transparent;
   cursor: pointer;
   font-size: 0.82rem;
@@ -475,13 +476,13 @@ body {
 .sidebar-nav-item:hover {
   background: #F1F5F9;
   color: var(--text-main);
-  transform: translateX(2px);
 }
 
 .sidebar-nav-item.ativo {
   background: #EEF2FF;
   color: var(--primary);
   border-color: #C7D2FE;
+  border-right: none !important;
   font-weight: 800;
   box-shadow: 0 1px 3px rgba(79, 70, 229, 0.1);
 }
@@ -9595,6 +9596,8 @@ body.tema-escuro .sidebar-nav-item {
   color: #E2E8F0 !important;
   background: rgba(15, 35, 66, 0.45) !important;
   border: 1px solid rgba(147, 197, 253, 0.10) !important;
+  border-right: none !important;
+  border-radius: 8px 0 0 8px !important;
 }
 
 .sidebar-nav-item:hover,
@@ -9602,6 +9605,7 @@ body.tema-escuro .sidebar-nav-item {
 body.tema-escuro .sidebar-nav-item:hover {
   background: rgba(30, 64, 175, 0.42) !important;
   border-color: rgba(96, 165, 250, 0.38) !important;
+  border-right: none !important;
   color: #FFFFFF !important;
 }
 
@@ -9611,6 +9615,8 @@ body.tema-escuro .sidebar-nav-item.ativo {
   background: linear-gradient(135deg, #1E3A8A 0%, #172554 100%) !important;
   color: #FFFFFF !important;
   border-color: #3B82F6 !important;
+  border-right: none !important;
+  border-radius: 8px 0 0 8px !important;
   box-shadow: 0 4px 12px rgba(29, 78, 216, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.16) !important;
 }
 
