@@ -5217,7 +5217,7 @@ function configurarBuscaGlobal() {
     });
   }
 
-  // Tecla global: Se o usuário começar a digitar qualquer letra (na tela principal ou com o modal de Presets aberto)
+  // Tecla global: Se o usuário começar a digitar qualquer letra (na tela principal, na Compra Rápida ou com o modal de Presets aberto)
   document.addEventListener('keydown', (e) => {
     // Se já estiver focado em algum input, textarea ou select, ignora
     const tag = (document.activeElement && document.activeElement.tagName) || '';
@@ -5225,6 +5225,16 @@ function configurarBuscaGlobal() {
 
     // Apenas teclas alfanuméricas simples (sem Ctrl, Alt ou Meta)
     if (e.key && e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
+      // 0. Se o modal de Compra Rápida (FAVOR COMPRAR!!) estiver aberto, já cai direto no campo de pesquisa
+      const modalCR = document.getElementById('modal-compra-rapida');
+      if (modalCR && modalCR.style.display !== 'none' && modalCR.style.display !== '') {
+        const inputCR = document.getElementById('input-busca-compra-rapida');
+        if (inputCR) {
+          inputCR.focus();
+        }
+        return;
+      }
+
       // 1. Se o modal de Presets / Gaveta estiver aberto
       const modalPresets = document.getElementById('modal-presets-lista');
       if (modalPresets && modalPresets.style.display !== 'none' && modalPresets.style.display !== '') {
@@ -13156,7 +13166,7 @@ function finalizarBlocoCompraRapidaAutomatico() {
     atualizarCardResumo();
     atualizarContadorSidebarMontar();
     if (typeof renderizarHistorico === 'function') renderizarHistorico();
-  }, 1350);
+  }, 3000);
 }
 
 function dispensarDestaquesCompraRapida() {
