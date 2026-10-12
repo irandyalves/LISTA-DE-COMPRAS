@@ -740,9 +740,9 @@ body {
 }
 
 
-/* Card de Destaque de Economia (Colado de ponta a ponta nas bordas laterais do slidebar) */
+/* Card de Destaque de Economia (Colado de ponta a ponta e movido +4 posições para baixo) */
 .sidebar-box-economia {
-  margin: 40px 0 auto 0;
+  margin: 200px 0 auto 0;
   width: 100%;
   background: linear-gradient(135deg, #ECFDF5 0%, #F0FDF4 100%);
   border-top: 1.5px solid #A7F3D0;
@@ -9697,6 +9697,7 @@ body.tema-escuro .btn-subopcao-item.ativo .txt-sub {
 .sidebar-box-economia,
 [data-theme="dark"] .sidebar-box-economia,
 body.tema-escuro .sidebar-box-economia {
+  margin-top: 200px !important;
   margin-left: 0 !important;
   margin-right: 0 !important;
   width: 100% !important;
