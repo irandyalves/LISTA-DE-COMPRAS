@@ -132,7 +132,7 @@
   </style>
 
   <!-- CSS Moderno -->
-  <link rel="stylesheet" href="style.css?v=10.72">
+  <link rel="stylesheet" href="style.css?v=10.73">
 </head>
 <body>
 
@@ -161,12 +161,6 @@
 
       <!-- MENUS PRINCIPAIS DA SLIDE BAR (MOVIDOS PARA A BARRA LATERAL FIXA) -->
       <nav class="sidebar-nav">
-        <!-- BOTÃO ATUALIZAR COTAÇÃO (VERDE COM BRILHO) -->
-        <button id="btn-atualizar-cotacao" class="btn-atualizar-cotacao-verde" onclick="atualizarCotacaoManual()" title="Atualizar cotações dos supermercados">
-          <span class="btn-cotacao-icone">⚡</span>
-          <span class="btn-cotacao-texto">ATUALIZAR COTAÇÃO</span>
-        </button>
-
         <button class="sidebar-nav-item nav-item ativo" data-aba="lista" id="btn-nav-comprar" onclick="navegarParaAba('lista');">
           <span class="sidebar-nav-icon">🛒</span>
           <span class="sidebar-nav-text">COMPRAR</span>
@@ -216,6 +210,12 @@
           </button>
         </div>
       </nav>
+
+      <!-- BOTÃO ATUALIZAR COTAÇÃO (REDUZIDO EM 30% NA LARGURA, ANTES DO MELHOR COMPRA HOJE) -->
+      <button id="btn-atualizar-cotacao" class="btn-atualizar-cotacao-verde" onclick="atualizarCotacaoManual()" title="Atualizar cotações dos supermercados">
+        <span class="btn-cotacao-icone">⚡</span>
+        <span class="btn-cotacao-texto">ATUALIZAR COTAÇÃO</span>
+      </button>
 
       <!-- INFORMAÇÃO MOVIDA: COMPRANDO NO ASSAÍ / MELHOR MERCADO E ECONOMIA -->
       <div class="sidebar-box-economia" id="sidebar-box-economia">

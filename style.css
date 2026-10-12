@@ -740,9 +740,9 @@ body {
 }
 
 
-/* Card de Destaque de Economia (Colado de ponta a ponta e movido +4 posições para baixo) */
+/* Card de Destaque de Economia (Colado de ponta a ponta abaixo do botão Atualizar Cotação) */
 .sidebar-box-economia {
-  margin: 200px 0 auto 0;
+  margin: 0 0 auto 0;
   width: 100%;
   background: linear-gradient(135deg, #ECFDF5 0%, #F0FDF4 100%);
   border-top: 1.5px solid #A7F3D0;
@@ -6033,17 +6033,18 @@ body.tema-escuro .drawer-fechar-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  width: 100%;
-  padding: 10px 12px;
-  margin-bottom: 8px;
+  gap: 5px;
+  width: 70%;
+  padding: 8px 8px;
+  margin: 150px auto 10px auto;
   background: linear-gradient(135deg, #10B981 0%, #059669 50%, #047857 100%);
   color: #FFFFFF !important;
   border: 1.5px solid #34D399;
-  border-radius: 10px;
-  font-size: 0.80rem;
+  border-radius: 9px;
+  font-size: 0.66rem;
   font-weight: 800;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
   cursor: pointer;
   overflow: hidden;
   box-shadow: 0 0 14px rgba(16, 185, 129, 0.5), 0 4px 10px rgba(5, 150, 105, 0.35);
@@ -6051,6 +6052,7 @@ body.tema-escuro .drawer-fechar-btn {
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   user-select: none;
   z-index: 1;
+  flex-shrink: 0;
 }
 
 /* Reflexo de brilho passando pelo botão */
@@ -6084,7 +6086,7 @@ body.tema-escuro .drawer-fechar-btn {
 }
 
 .btn-atualizar-cotacao-verde .btn-cotacao-icone {
-  font-size: 1.05rem;
+  font-size: 0.88rem;
   line-height: 1;
   display: inline-block;
   transition: transform 0.3s ease;
@@ -9697,7 +9699,7 @@ body.tema-escuro .btn-subopcao-item.ativo .txt-sub {
 .sidebar-box-economia,
 [data-theme="dark"] .sidebar-box-economia,
 body.tema-escuro .sidebar-box-economia {
-  margin-top: 200px !important;
+  margin-top: 0 !important;
   margin-left: 0 !important;
   margin-right: 0 !important;
   width: 100% !important;
