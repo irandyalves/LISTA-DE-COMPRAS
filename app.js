@@ -3264,6 +3264,13 @@ function atualizarCardEconomiaSidebar(campeaoId, totais, economia) {
 function alternarAbaApp(aba, isUserClick = true) {
   if (!aba) return;
 
+  if (isUserClick && typeof fecharModalCompraRapida === 'function') {
+    const modalCR = document.getElementById('modal-compra-rapida');
+    if (modalCR && modalCR.style.display !== 'none' && modalCR.style.display !== '') {
+      fecharModalCompraRapida();
+    }
+  }
+
   const abaAnterior = AppState.abaAtiva;
   AppState.abaAtiva = aba;
   try {
