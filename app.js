@@ -945,7 +945,7 @@ function carregarLocalmente() {
       const excluidos = new Set((AppState.itensExcluidos || []).map(n => n.toLowerCase().trim()));
       
       if (parsed.catalogo && parsed.catalogo.length > 0) {
-        const catalogoSalvo = parsed.catalogo;
+        const catalogoSalvo = parsed.catalogo.filter(c => !excluidos.has((c.nome || '').toLowerCase().trim()));
         
         // Mapa mestre imutável do catálogo padrão do DF
         const mapaPadrao = new Map();
@@ -1017,7 +1017,7 @@ function carregarLocalmente() {
             c.nome.toLowerCase().trim() === itemSalvo.nome.toLowerCase().trim() ||
             String(c.id) === String(itemSalvo.id)
           );
-          if (!jaExiste) {
+          if (!jaExiste && !excluidos.has((itemSalvo.nome || '').toLowerCase().trim())) {
             AppState.catalogo.unshift({
               id: itemSalvo.id || ('c_custom_' + Date.now()),
               nome: itemSalvo.nome,
@@ -1135,6 +1135,7 @@ function salvarEstado(enviarParaNuvem = true) {
         listaAtiva: AppState.listaAtiva,
         historico: AppState.historico,
         usuarios: AppState.usuarios || [],
+        itensExcluidos: AppState.itensExcluidos || [],
         mercadoReferencia: AppState.mercadoReferencia || 'nenhum',
         cotacaoAtiva: AppState.cotacaoAtiva !== false,
         modoNoMercado: !!AppState.modoNoMercado,
@@ -1238,12 +1239,23 @@ function inicializarNuvem() {
         }
       }
 
+      // 1.5 Sincroniza lista de itens excluídos pelo Administrador (Irandy)
+      if (Array.isArray(dadosNuvem.itensExcluidos)) {
+        AppState.itensExcluidos = dadosNuvem.itensExcluidos.map(n => String(n).toLowerCase().trim()).filter(Boolean);
+      }
+      const setExcluidosNuvem = new Set((AppState.itensExcluidos || []).map(n => String(n).toLowerCase().trim()));
+
       // 2. Merge Granular no Nível de Item do Catálogo para evitar perda de dados por concorrência
       if (dadosNuvem.catalogo && Array.isArray(dadosNuvem.catalogo)) {
+        const catalogoNuvemFiltrado = dadosNuvem.catalogo.filter(it => !setExcluidosNuvem.has((it.nome || '').toLowerCase().trim()));
         if (!AppState.catalogo || AppState.catalogo.length === 0) {
-          AppState.catalogo = dadosNuvem.catalogo;
+          AppState.catalogo = catalogoNuvemFiltrado;
         } else {
-          dadosNuvem.catalogo.forEach(nuvemItem => {
+          // Remove itens locais que foram excluídos pelo Admin na nuvem
+          if (setExcluidosNuvem.size > 0) {
+            AppState.catalogo = AppState.catalogo.filter(p => !setExcluidosNuvem.has((p.nome || '').toLowerCase().trim()));
+          }
+          catalogoNuvemFiltrado.forEach(nuvemItem => {
             let localItem = AppState.catalogo.find(p => String(p.id) === String(nuvemItem.id) || p.nome.toLowerCase().trim() === (nuvemItem.nome || '').toLowerCase().trim());
             if (localItem) {
               const tsLocal = timestampsModificacaoLocalItem[String(localItem.id)] || 0;
@@ -1543,6 +1555,10 @@ function renderizarGridUsuarios() {
   });
 }
 
+function ehUsuarioAdmin() {
+  return (AppState.usuarioAtivo || 'Irandy').toLowerCase().trim() === 'irandy';
+}
+
 function selecionarPerfilUsuario(nome, icone) {
   AppState.usuarioAtivo = nome;
   AppState.usuarioIcone = icone;
@@ -1550,6 +1566,7 @@ function selecionarPerfilUsuario(nome, icone) {
   localStorage.setItem('usuario_icone_ativo', icone);
   atualizarBadgeUsuarioHeader();
   renderizarGridUsuarios();
+  renderizarDespensa();
   fecharModal('modal-perfil-usuario');
   mostrarNotificacaoToast(`👤 Perfil ativo: ${icone} ${nome}`);
 }
@@ -4840,8 +4857,9 @@ function renderizarDespensa() {
 
   const badgeTotal = document.getElementById('despensa-contador-badge');
 
-  // 1. Filtragem por Categoria ou Favoritos
-  let itensExibir = AppState.catalogo;
+  // 1. Filtragem por Categoria ou Favoritos (excluindo itens na lixeira do Admin)
+  const setExcluidos = new Set((AppState.itensExcluidos || []).map(n => String(n).toLowerCase().trim()));
+  let itensExibir = AppState.catalogo.filter(p => !setExcluidos.has((p.nome || '').toLowerCase().trim()));
   if (categoriaAtivaDespensa === 'favoritos') {
     itensExibir = itensExibir.filter(p => !!p.favorito);
   } else if (categoriaAtivaDespensa !== 'todas') {
@@ -4941,6 +4959,7 @@ function alternarFiltroFavoritosCategoria(categoria, event) {
         </div>
       `;
     } else {
+      const isAdmin = ehUsuarioAdmin();
       itens.forEach(prod => {
         let nomeExibicao = (typeof obterNomeResumido === 'function') ? obterNomeResumido(prod.nome) : prod.nome;
         if (AppState.modoResumido) {
@@ -5002,6 +5021,9 @@ function alternarFiltroFavoritosCategoria(categoria, event) {
                     <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
                   </svg>
                 </button>
+                ${isAdmin ? `
+                  <button class="btn-excluir-despensa-admin" title="Excluir produto do catálogo (Admin Irandy)" onclick="event.stopPropagation(); excluirItemDespensaDireto('${prod.id}', true)">✕</button>
+                ` : ''}
                 ${isDespensaPendente ? '<span class="badge-confirmar-desmarcar" title="Clique mais uma vez para desmarcar">⚠️ Toque novamente para desmarcar</span>' : ''}
               </div>
             </div>
@@ -6885,7 +6907,8 @@ function inicializarSwipeDeleteMobile() {
     // --- SUPORTE A TOQUE MOBILE ---
     container.addEventListener('touchstart', (e) => {
       if (e.touches.length > 1) return;
-      if (e.target.closest('button, input, select, a, .contador-qtde, .contador-qtde-tabela, .btn-mic-preco-verde, .badge-preco-real, .btn-favorito-item, .btn-editar-despensa, .item-check-btn, .check-item-comprado')) {
+      if (containerId === 'despensa-grid-container' && !ehUsuarioAdmin()) return;
+      if (e.target.closest('button, input, select, a, .contador-qtde, .contador-qtde-tabela, .btn-mic-preco-verde, .badge-preco-real, .btn-favorito-item, .btn-editar-despensa, .btn-excluir-despensa-admin, .item-check-btn, .check-item-comprado')) {
         return;
       }
 
@@ -6977,7 +7000,8 @@ function inicializarSwipeDeleteMobile() {
 
     container.addEventListener('mousedown', (e) => {
       if (e.button !== 0) return;
-      if (e.target.closest('button, input, select, a, .contador-qtde, .contador-qtde-tabela, .btn-mic-preco-verde, .badge-preco-real, .btn-favorito-item, .btn-editar-despensa, .item-check-btn, .check-item-comprado')) {
+      if (containerId === 'despensa-grid-container' && !ehUsuarioAdmin()) return;
+      if (e.target.closest('button, input, select, a, .contador-qtde, .contador-qtde-tabela, .btn-mic-preco-verde, .badge-preco-real, .btn-favorito-item, .btn-editar-despensa, .btn-excluir-despensa-admin, .item-check-btn, .check-item-comprado')) {
         return;
       }
       const elem = e.target.closest(seletorItem);
@@ -7078,11 +7102,16 @@ function inicializarSwipeDeleteMobile() {
 }
 
 function excluirItemDespensaDireto(produtoId, dispararUndo = true) {
+  if (!ehUsuarioAdmin()) {
+    mostrarNotificacaoToast('🔒 Apenas o administrador (Irandy) pode excluir produtos do catálogo.');
+    return;
+  }
   const index = AppState.catalogo.findIndex(p => String(p.id) === String(produtoId));
   const prod = index >= 0 ? AppState.catalogo[index] : null;
   if (!prod) return;
 
   const nomeItem = prod.nome || 'Item';
+  const nomeNorm = nomeItem.toLowerCase().trim();
   const itemNaLista = AppState.listaAtiva.find(p => String(p.id) === String(produtoId) || String(p.catalogoId) === String(produtoId));
 
   if (prod.selecionado || itemNaLista) {
@@ -7090,7 +7119,9 @@ function excluirItemDespensaDireto(produtoId, dispararUndo = true) {
   }
 
   if (!AppState.itensExcluidos) AppState.itensExcluidos = [];
-  AppState.itensExcluidos.push(prod.nome.toLowerCase().trim());
+  if (!AppState.itensExcluidos.includes(nomeNorm)) {
+    AppState.itensExcluidos.push(nomeNorm);
+  }
   AppState.catalogo = AppState.catalogo.filter(p => String(p.id) !== String(produtoId));
   AppState.listaAtiva = AppState.listaAtiva.filter(p => String(p.id) !== String(produtoId) && String(p.catalogoId) !== String(produtoId));
   salvarEstado(true);
@@ -7106,6 +7137,142 @@ function excluirItemDespensaDireto(produtoId, dispararUndo = true) {
       itemLista: itemNaLista ? { ...itemNaLista } : null
     });
   }
+}
+
+// Lixeira / Itens Ocultos do Catálogo (Exclusivo Admin Irandy)
+function atualizarBadgeItensExcluidosHeader() {
+  const btnMenu = document.getElementById('btn-menu-lixeira-catalogo');
+  const badge = document.getElementById('badge-qtd-excluidos-catalogo');
+  const qtd = Array.isArray(AppState.itensExcluidos) ? AppState.itensExcluidos.length : 0;
+  if (btnMenu) {
+    btnMenu.style.display = ehUsuarioAdmin() ? 'flex' : 'none';
+  }
+  if (badge) {
+    badge.textContent = `${qtd} ${qtd === 1 ? 'item' : 'itens'}`;
+  }
+}
+
+function abrirModalItensExcluidosCatalogo() {
+  if (!ehUsuarioAdmin()) {
+    mostrarNotificacaoToast('🔒 Apenas o administrador (Irandy) pode gerenciar itens ocultos.');
+    return;
+  }
+  const modal = document.getElementById('modal-lixeira-catalogo');
+  if (!modal) return;
+  renderizarListaItensExcluidosModal();
+  modal.style.display = 'flex';
+}
+
+function renderizarListaItensExcluidosModal() {
+  const container = document.getElementById('lista-itens-excluidos-container');
+  const btnRestaurarTodos = document.getElementById('btn-restaurar-todos-catalogo');
+  if (!container) return;
+
+  const lista = Array.isArray(AppState.itensExcluidos) ? [...AppState.itensExcluidos] : [];
+  if (btnRestaurarTodos) {
+    btnRestaurarTodos.style.display = lista.length > 0 ? 'inline-flex' : 'none';
+  }
+
+  if (lista.length === 0) {
+    container.innerHTML = `
+      <div style="text-align: center; padding: 20px 12px; color: var(--text-muted); font-size: 0.84rem;">
+        ✨ Nenhum produto oculto/excluído no momento.
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = lista.map((nomeNorm, idx) => {
+    const itemPadrao = CATALOGO_PADRAO_EXPANDIDO.find(p => p.nome.toLowerCase().trim() === String(nomeNorm).toLowerCase().trim());
+    const nomeExibir = itemPadrao ? itemPadrao.nome : capitalizar(String(nomeNorm));
+    const catExibir = itemPadrao ? itemPadrao.categoria : 'Catálogo';
+    return `
+      <div class="item-lixeira-row">
+        <div class="item-lixeira-info">
+          <strong class="item-lixeira-nome">${escapeHtml(nomeExibir)}</strong>
+          <span class="item-lixeira-cat">${escapeHtml(catExibir)}</span>
+        </div>
+        <button type="button" class="btn-restaurar-item-lixeira" onclick="restaurarItemExcluidoCatalogo(${idx})">
+          ↩️ Restaurar
+        </button>
+      </div>
+    `;
+  }).join('');
+}
+
+function restaurarItemExcluidoCatalogo(indice) {
+  if (!ehUsuarioAdmin() || !Array.isArray(AppState.itensExcluidos)) return;
+  const nomeNorm = AppState.itensExcluidos[indice];
+  if (!nomeNorm) return;
+
+  AppState.itensExcluidos.splice(indice, 1);
+
+  const normLimpo = String(nomeNorm).toLowerCase().trim();
+  const jaExiste = AppState.catalogo.some(p => (p.nome || '').toLowerCase().trim() === normLimpo);
+  if (!jaExiste) {
+    const padrao = CATALOGO_PADRAO_EXPANDIDO.find(p => p.nome.toLowerCase().trim() === normLimpo);
+    if (padrao) {
+      AppState.catalogo.push({ ...padrao, selecionado: false, comprado: false, precoRegistradoMercado: 0, preco: 0 });
+    } else {
+      const nomeCap = capitalizar(normLimpo);
+      AppState.catalogo.push({
+        id: 'c_rest_' + Date.now(),
+        nome: nomeCap,
+        categoria: deduzirCategoria(nomeCap),
+        icone: detectarChaveIcone(nomeCap),
+        precoMedioDF: 10,
+        preco: 0,
+        ultimoPreco: 10,
+        selecionado: false,
+        comprado: false,
+        precoRegistradoMercado: 0,
+        qtde: 1
+      });
+    }
+  }
+
+  salvarEstado(true);
+  renderizarDespensa();
+  renderizarListaItensExcluidosModal();
+  atualizarBadgeItensExcluidosHeader();
+}
+
+function restaurarTodosItensExcluidosCatalogo() {
+  if (!ehUsuarioAdmin() || !Array.isArray(AppState.itensExcluidos) || AppState.itensExcluidos.length === 0) return;
+  const copia = [...AppState.itensExcluidos];
+  AppState.itensExcluidos = [];
+
+  copia.forEach((nomeNorm, i) => {
+    const normLimpo = String(nomeNorm).toLowerCase().trim();
+    const jaExiste = AppState.catalogo.some(p => (p.nome || '').toLowerCase().trim() === normLimpo);
+    if (!jaExiste) {
+      const padrao = CATALOGO_PADRAO_EXPANDIDO.find(p => p.nome.toLowerCase().trim() === normLimpo);
+      if (padrao) {
+        AppState.catalogo.push({ ...padrao, selecionado: false, comprado: false, precoRegistradoMercado: 0, preco: 0 });
+      } else {
+        const nomeCap = capitalizar(normLimpo);
+        AppState.catalogo.push({
+          id: 'c_rest_' + Date.now() + '_' + i,
+          nome: nomeCap,
+          categoria: deduzirCategoria(nomeCap),
+          icone: detectarChaveIcone(nomeCap),
+          precoMedioDF: 10,
+          preco: 0,
+          ultimoPreco: 10,
+          selecionado: false,
+          comprado: false,
+          precoRegistradoMercado: 0,
+          qtde: 1
+        });
+      }
+    }
+  });
+
+  salvarEstado(true);
+  renderizarDespensa();
+  renderizarListaItensExcluidosModal();
+  atualizarBadgeItensExcluidosHeader();
+  fecharModal('modal-lixeira-catalogo');
 }
 
 // Adicionar Item Manualmente pela barra de entrada unificada no topo
@@ -7691,6 +7858,7 @@ function abrirModalOpcoesHeader() {
   atualizarVisualOpcaoCifrao();
   atualizarVisualOpcoesCardsHeader();
   atualizarVisualSliderTempoPesquisa();
+  atualizarBadgeItensExcluidosHeader();
   modal.style.display = 'flex';
 }
 

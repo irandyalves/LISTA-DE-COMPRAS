@@ -10737,3 +10737,135 @@ body.tema-escuro .btn-fechar-sugestoes-topo:hover {
   color: #FFFFFF !important;
 }
 
+/* ==========================================================================
+   BOTÃO ✕ DE EXCLUSÃO DO CATÁLOGO EM CRIAR LISTA (EXCLUSIVO ADMIN IRANDY)
+   ========================================================================== */
+#view-despensa .item-card .btn-excluir-despensa-admin {
+  width: 17px !important;
+  height: 17px !important;
+  min-width: 17px !important;
+  border-radius: 3px !important;
+  border: none !important;
+  background: transparent !important;
+  color: #94A3B8 !important;
+  font-size: 0.66rem !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+  padding: 0 !important;
+  margin-left: 1px !important;
+  flex-shrink: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+
+#view-despensa .item-card .btn-excluir-despensa-admin:hover,
+#view-despensa .item-card .btn-excluir-despensa-admin:active {
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: #EF4444 !important;
+  transform: scale(1.1);
+}
+
+[data-theme="dark"] #view-despensa .item-card .btn-excluir-despensa-admin,
+body.tema-escuro #view-despensa .item-card .btn-excluir-despensa-admin {
+  color: #64748B !important;
+}
+
+[data-theme="dark"] #view-despensa .item-card .btn-excluir-despensa-admin:hover,
+body.tema-escuro #view-despensa .item-card .btn-excluir-despensa-admin:hover {
+  background: rgba(239, 68, 68, 0.22) !important;
+  color: #F87171 !important;
+}
+
+/* Lixeira / Itens Ocultos do Catálogo Modal */
+.lista-itens-excluidos-box {
+  max-height: 55vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 4px 2px;
+}
+
+.item-lixeira-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+}
+
+.item-lixeira-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.item-lixeira-nome {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #0F172A;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item-lixeira-cat {
+  font-size: 0.68rem;
+  color: #64748B;
+}
+
+.btn-restaurar-item-lixeira {
+  background: #ECFDF5;
+  color: #059669;
+  border: 1px solid #A7F3D0;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.btn-restaurar-item-lixeira:hover {
+  background: #10B981;
+  color: #FFFFFF;
+  border-color: #059669;
+}
+
+[data-theme="dark"] .item-lixeira-row,
+body.tema-escuro .item-lixeira-row {
+  background: #1E293B !important;
+  border-color: #334155 !important;
+}
+
+[data-theme="dark"] .item-lixeira-nome,
+body.tema-escuro .item-lixeira-nome {
+  color: #F8FAFC !important;
+}
+
+[data-theme="dark"] .item-lixeira-cat,
+body.tema-escuro .item-lixeira-cat {
+  color: #94A3B8 !important;
+}
+
+[data-theme="dark"] .btn-restaurar-item-lixeira,
+body.tema-escuro .btn-restaurar-item-lixeira {
+  background: rgba(16, 185, 129, 0.16) !important;
+  color: #34D399 !important;
+  border-color: rgba(16, 185, 129, 0.35) !important;
+}
+
+[data-theme="dark"] .btn-restaurar-item-lixeira:hover,
+body.tema-escuro .btn-restaurar-item-lixeira:hover {
+  background: #10B981 !important;
+  color: #FFFFFF !important;
+}
+
+
