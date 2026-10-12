@@ -11245,15 +11245,15 @@ body.tema-escuro .modal-compra-rapida-content {
   color: #F8FAFC;
 }
 
-/* Cabeçalho Enxuto: FAVOR COMPRAR!! ⚡ */
+/* Cabeçalho Enxuto: FAVOR COMPRAR!! (Fundo Azul Escuro, sem raiozinho) */
 .compra-rapida-header {
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
   gap: 10px;
   padding: 12px 16px !important;
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.22) 0%, rgba(234, 88, 12, 0.1) 100%);
-  border-bottom: 1px solid rgba(245, 158, 11, 0.35);
+  background: linear-gradient(135deg, #0B192C 0%, #1E3A8A 100%) !important;
+  border-bottom: 1px solid #1D4ED8 !important;
   flex-shrink: 0;
 }
 
@@ -11267,7 +11267,7 @@ body.tema-escuro .modal-compra-rapida-content {
   margin: 0 !important;
   font-size: 1.18rem !important;
   font-weight: 900 !important;
-  color: #D97706 !important;
+  color: #FBBF24 !important;
   letter-spacing: 0.02em;
 }
 
@@ -11277,9 +11277,7 @@ body.tema-escuro .compra-rapida-titulo {
 }
 
 .compra-rapida-raio-ico {
-  font-size: 1.35rem;
-  filter: drop-shadow(0 2px 6px rgba(245, 158, 11, 0.55));
-  animation: pulsoUrgenteCompraRapida 1.6s infinite ease-in-out;
+  display: none !important;
 }
 
 .modal-fechar-btn {
@@ -11679,11 +11677,7 @@ body.tema-escuro .card-cr-nome {
 }
 
 .card-cr-pontinhos {
-  font-size: 0.68rem;
-  color: #64748B;
-  opacity: 0.65;
-  letter-spacing: 1px;
-  flex-shrink: 0;
+  display: none !important;
 }
 
 .card-cr-qtde-verde {
@@ -11691,7 +11685,11 @@ body.tema-escuro .card-cr-nome {
   font-weight: 900 !important;
   color: #10B981 !important;
   line-height: 1;
-  padding: 1px 3px;
+  padding: 1px 4px;
+  margin-left: auto;
+  margin-right: 2px;
+  min-width: 22px;
+  text-align: right;
   border-radius: 3px;
   flex-shrink: 0;
   cursor: pointer;
@@ -11788,32 +11786,7 @@ body.tema-escuro .compra-rapida-footer {
 }
 
 .compra-rapida-resumo-chips {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  overflow-x: auto;
-  padding-bottom: 2px;
-  max-height: 36px;
-  flex-wrap: wrap;
-}
-
-.cr-chip-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 2px 7px;
-  border-radius: 4px;
-  background: rgba(16, 185, 129, 0.15);
-  border: 1px solid rgba(16, 185, 129, 0.45);
-  color: #10B981;
-  font-size: 0.68rem;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.cr-chip-qtde-verde {
-  color: #10B981;
-  font-weight: 900;
+  display: none !important;
 }
 
 .btn-cr-enviar-aviso {
@@ -11945,9 +11918,9 @@ body.tema-escuro .bpcr-titulo {
    ========================================================================== */
 .secao-header-compra-rapida th,
 .secao-header-compra-rapida td {
-  background: linear-gradient(90deg, rgba(245, 158, 11, 0.25) 0%, rgba(234, 88, 12, 0.14) 100%) !important;
-  border-top: 2px solid #F59E0B !important;
-  border-bottom: 2px solid #F59E0B !important;
+  background: linear-gradient(90deg, #0B192C 0%, #1E3A8A 100%) !important;
+  border-top: 2px solid #1D4ED8 !important;
+  border-bottom: 2px solid #1D4ED8 !important;
 }
 
 .header-compra-rapida-urgente {
@@ -11967,12 +11940,11 @@ body.tema-escuro .bpcr-titulo {
 }
 
 .cr-header-icone-pulse {
-  font-size: 1rem;
-  animation: pulsoUrgenteCompraRapida 1.5s infinite ease-in-out;
+  display: none !important;
 }
 
 .cr-titulo-destaque {
-  color: #B45309 !important;
+  color: #FBBF24 !important;
   font-weight: 900 !important;
   letter-spacing: 0.02em;
 }
