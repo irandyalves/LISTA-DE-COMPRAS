@@ -10868,4 +10868,94 @@ body.tema-escuro .btn-restaurar-item-lixeira:hover {
   color: #FFFFFF !important;
 }
 
+/* ==========================================================================
+   CHECKBOX DE EXCLUSÃO EM LOTE ANTES DO LÁPIS VERDE + BOTÃO NO CABEÇALHO
+   ========================================================================== */
+#view-despensa .item-card .check-lote-excluir-admin {
+  width: 14px !important;
+  height: 14px !important;
+  min-width: 14px !important;
+  margin: 0 2px 0 auto !important;
+  padding: 0 !important;
+  cursor: pointer !important;
+  accent-color: #EF4444 !important;
+  flex-shrink: 0 !important;
+  opacity: 0.72;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
 
+#view-despensa .item-card .check-lote-excluir-admin:hover,
+#view-despensa .item-card .check-lote-excluir-admin:checked {
+  opacity: 1 !important;
+  transform: scale(1.08);
+}
+
+/* Quando o check antes do lápis está presente, o lápis cola logo à direita dele */
+#view-despensa .item-card .check-lote-excluir-admin + .btn-editar-despensa {
+  margin-left: 1px !important;
+}
+
+#view-despensa .item-card.marcado-excluir-lote {
+  border-color: #EF4444 !important;
+  background: rgba(239, 68, 68, 0.10) !important;
+  box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.35) !important;
+}
+
+[data-theme="dark"] #view-despensa .item-card.marcado-excluir-lote,
+body.tema-escuro #view-despensa .item-card.marcado-excluir-lote {
+  border-color: #EF4444 !important;
+  background: rgba(239, 68, 68, 0.18) !important;
+  box-shadow: 0 0 0 1px rgba(248, 113, 113, 0.45) !important;
+}
+
+/* Botão Deletar Selecionados no Cabeçalho */
+.btn-deletar-lote-header {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 7px;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  background: rgba(239, 68, 68, 0.12);
+  color: #FCA5A5;
+  font-size: 0.74rem;
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  flex-shrink: 0;
+}
+
+.btn-deletar-lote-header:hover {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: #EF4444;
+  color: #FFFFFF;
+}
+
+.btn-deletar-lote-header.ativo-com-itens {
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%) !important;
+  border-color: #F87171 !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.45);
+  animation: pulsoBotaoDeletarLote 1.6s infinite ease-in-out;
+}
+
+.btn-deletar-lote-header.ativo-com-itens:hover {
+  background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%) !important;
+  transform: translateY(-1px);
+}
+
+@keyframes pulsoBotaoDeletarLote {
+  0%, 100% { box-shadow: 0 2px 8px rgba(239, 68, 68, 0.45); }
+  50% { box-shadow: 0 0 12px rgba(248, 113, 113, 0.8); }
+}
+
+@media (max-width: 768px) {
+  .btn-deletar-lote-header {
+    height: 28px;
+    padding: 0 7px;
+    font-size: 0.68rem;
+  }
+}

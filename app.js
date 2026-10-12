@@ -1956,6 +1956,9 @@ function atualizarBadgeUsuarioHeader() {
 
   if (icoEl) icoEl.textContent = iconeAtivo;
   if (nomeEl) nomeEl.textContent = nomeAtivo;
+  if (typeof atualizarBotaoDeletarLoteHeader === 'function') {
+    atualizarBotaoDeletarLoteHeader();
+  }
 }
 
 function abrirModalPerfilUsuario() {
@@ -3009,6 +3012,9 @@ function alternarAbaApp(aba, isUserClick = true) {
   if (abasCategorias) abasCategorias.style.display = (AppState.abaAtiva === 'lista' || AppState.abaAtiva === 'despensa') ? 'flex' : 'none';
   if (typeof atualizarVisualBotaoOrdemAlfabetica === 'function') {
     atualizarVisualBotaoOrdemAlfabetica();
+  }
+  if (typeof atualizarBotaoDeletarLoteHeader === 'function') {
+    atualizarBotaoDeletarLoteHeader();
   }
 
   // Controles de Aumentar / Reduzir fonte (a A) visíveis nas abas Comprar e Montar Lista
@@ -5499,9 +5505,11 @@ function alternarFiltroFavoritosCategoria(categoria, event) {
         const isDespensaPendente = (String(despensaPendenteDesmarcarId) === String(prod.id));
         const classeNaLista = estaNaLista ? 'na-lista-montar' : '';
         const classePendenteDesp = isDespensaPendente ? 'pendente-desmarcar' : '';
+        const marcadoExcluirLote = isAdmin && typeof itensSelecionadosExclusaoLote !== 'undefined' && itensSelecionadosExclusaoLote.has(String(prod.id));
+        const classeMarcadoLote = marcadoExcluirLote ? 'marcado-excluir-lote' : '';
 
         htmlItens += `
-          <div class="item-card ${classeNaLista} ${classePendenteDesp}" id="card-despensa-${prod.id}"
+          <div class="item-card ${classeNaLista} ${classePendenteDesp} ${classeMarcadoLote}" id="card-despensa-${prod.id}"
                onclick="alternarItemDespensaEmTempoReal('${prod.id}', event)"
                oncontextmenu="event.preventDefault(); abrirModalEditarNomeDespensa('${prod.id}', event);"
                title="${estaNaLista ? 'Na Lista de Compra (Clique para desmarcar)' : 'Clique para marcar e adicionar à Lista de Compra'} • Botão direito para editar"
@@ -5531,6 +5539,12 @@ function alternarFiltroFavoritosCategoria(categoria, event) {
                   </button>
                 ` : ''}
                 <span class="item-nome" title="${prod.nome}">${nomeExibicao}</span>
+                ${isAdmin ? `
+                  <input type="checkbox" class="check-lote-excluir-admin" id="check-lote-excluir-${prod.id}"
+                         ${marcadoExcluirLote ? 'checked' : ''}
+                         title="Marcar produto para deletar em lote (Admin Irandy)"
+                         onclick="event.stopPropagation(); alternarSelecaoLoteExclusaoDespensa('${prod.id}', this)" />
+                ` : ''}
                 <button class="btn-editar-despensa" title="Editar este produto" onclick="event.stopPropagation(); abrirModalEditarNomeDespensa('${prod.id}', event)">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M12 20h9"></path>
@@ -5570,6 +5584,9 @@ function alternarFiltroFavoritosCategoria(categoria, event) {
     `;
 
     container.appendChild(grupoDiv);
+  }
+  if (typeof atualizarBotaoDeletarLoteHeader === 'function') {
+    atualizarBotaoDeletarLoteHeader();
   }
   atualizarAlturaPainelCongeladoCSS();
 }
@@ -7288,6 +7305,29 @@ function executarDesfazerExclusao(event) {
         }
       }
     }
+  } else if (tipo === 'catalogo_lote' && payload && Array.isArray(payload.itens)) {
+    payload.itens.forEach(entry => {
+      if (!entry || !entry.produto) return;
+      const nomeNorm = (entry.produto.nome || '').toLowerCase().trim();
+      if (AppState.itensExcluidos) {
+        AppState.itensExcluidos = AppState.itensExcluidos.filter(n => n !== nomeNorm);
+      }
+      const existeCat = AppState.catalogo.some(p => String(p.id) === String(entry.produto.id));
+      if (!existeCat) {
+        if (typeof entry.index === 'number' && entry.index >= 0 && entry.index <= AppState.catalogo.length) {
+          AppState.catalogo.splice(entry.index, 0, entry.produto);
+        } else {
+          AppState.catalogo.push(entry.produto);
+        }
+      }
+      if (entry.estavaNaLista && entry.itemLista) {
+        const existeLista = AppState.listaAtiva.some(i => String(i.id) === String(entry.itemLista.id));
+        if (!existeLista) {
+          AppState.listaAtiva.push(entry.itemLista);
+        }
+      }
+    });
+    atualizarBadgeItensExcluidosHeader();
   }
 
   salvarEstado(true);
@@ -7617,6 +7657,123 @@ function inicializarSwipeDeleteMobile() {
   );
 }
 
+// Seleção Múltipla em Lote para Exclusão do Catálogo (Exclusivo Admin Irandy)
+const itensSelecionadosExclusaoLote = new Set();
+
+function alternarSelecaoLoteExclusaoDespensa(produtoId, checkboxEl) {
+  if (!ehUsuarioAdmin()) return;
+  const idStr = String(produtoId);
+  const marcado = checkboxEl ? !!checkboxEl.checked : !itensSelecionadosExclusaoLote.has(idStr);
+  if (marcado) {
+    itensSelecionadosExclusaoLote.add(idStr);
+  } else {
+    itensSelecionadosExclusaoLote.delete(idStr);
+  }
+  const cardEl = document.getElementById(`card-despensa-${idStr}`);
+  if (cardEl) {
+    cardEl.classList.toggle('marcado-excluir-lote', marcado);
+  }
+  atualizarBotaoDeletarLoteHeader();
+}
+
+function atualizarBotaoDeletarLoteHeader() {
+  const btn = document.getElementById('btn-deletar-lote-header');
+  const spanQtd = document.getElementById('qtd-deletar-lote-header');
+  if (!btn) return;
+
+  if (AppState && Array.isArray(AppState.catalogo)) {
+    const idsValidos = new Set(AppState.catalogo.map(p => String(p.id)));
+    Array.from(itensSelecionadosExclusaoLote).forEach(id => {
+      if (!idsValidos.has(String(id))) {
+        itensSelecionadosExclusaoLote.delete(id);
+      }
+    });
+  }
+
+  const isAdminNaDespensa = ehUsuarioAdmin() && AppState && AppState.abaAtiva === 'despensa';
+  const qtd = itensSelecionadosExclusaoLote.size;
+
+  if (spanQtd) spanQtd.textContent = String(qtd);
+
+  if (isAdminNaDespensa) {
+    btn.style.display = 'inline-flex';
+    btn.classList.toggle('ativo-com-itens', qtd > 0);
+    btn.title = qtd > 0
+      ? `Deletar todos os ${qtd} produtos marcados do catálogo`
+      : 'Marque o check antes do lápis verde nos produtos para deletar vários de uma vez';
+  } else {
+    btn.style.display = 'none';
+    btn.classList.remove('ativo-com-itens');
+  }
+}
+
+function excluirItensSelecionadosLoteDespensa() {
+  if (!ehUsuarioAdmin()) {
+    mostrarNotificacaoToast('🔒 Apenas o administrador (Irandy) pode excluir produtos do catálogo.');
+    return;
+  }
+
+  const idsParaExcluir = Array.from(itensSelecionadosExclusaoLote);
+  if (idsParaExcluir.length === 0) {
+    alert('☑️ Marque a caixinha (antes do lápis verde) nos produtos que deseja deletar!');
+    return;
+  }
+
+  const setIds = new Set(idsParaExcluir.map(String));
+  const itensBackup = [];
+  const nomesDesistidos = [];
+
+  if (!AppState.itensExcluidos) AppState.itensExcluidos = [];
+
+  AppState.catalogo.forEach((prod, idx) => {
+    if (setIds.has(String(prod.id))) {
+      const nomeNorm = (prod.nome || '').toLowerCase().trim();
+      if (nomeNorm && !AppState.itensExcluidos.includes(nomeNorm)) {
+        AppState.itensExcluidos.push(nomeNorm);
+      }
+      const itemNaLista = AppState.listaAtiva.find(p => String(p.id) === String(prod.id) || String(p.catalogoId) === String(prod.id));
+      if (prod.selecionado || itemNaLista) {
+        nomesDesistidos.push(prod.nome);
+      }
+      itensBackup.push({
+        produto: { ...prod },
+        index: idx,
+        estavaNaLista: !!itemNaLista,
+        itemLista: itemNaLista ? { ...itemNaLista } : null
+      });
+    }
+  });
+
+  if (itensBackup.length === 0) {
+    itensSelecionadosExclusaoLote.clear();
+    atualizarBotaoDeletarLoteHeader();
+    return;
+  }
+
+  if (nomesDesistidos.length > 0) {
+    registrarEventoSincronizacao('desistiu', nomesDesistidos);
+  }
+
+  AppState.catalogo = AppState.catalogo.filter(p => !setIds.has(String(p.id)));
+  AppState.listaAtiva = AppState.listaAtiva.filter(p => !setIds.has(String(p.id)) && !setIds.has(String(p.catalogoId)));
+  itensSelecionadosExclusaoLote.clear();
+
+  salvarEstado(true);
+  renderizarDespensa();
+  renderizarListaCompras();
+  atualizarCardResumo();
+  atualizarBadgeItensExcluidosHeader();
+  atualizarBotaoDeletarLoteHeader();
+
+  const labelUndo = itensBackup.length === 1
+    ? (itensBackup[0].produto.nome || '1 produto')
+    : `${itensBackup.length} produtos`;
+
+  exibirToastDesfazer(labelUndo, 'catalogo_lote', {
+    itens: itensBackup
+  });
+}
+
 function excluirItemDespensaDireto(produtoId, dispararUndo = true) {
   if (!ehUsuarioAdmin()) {
     mostrarNotificacaoToast('🔒 Apenas o administrador (Irandy) pode excluir produtos do catálogo.');
@@ -7638,12 +7795,15 @@ function excluirItemDespensaDireto(produtoId, dispararUndo = true) {
   if (!AppState.itensExcluidos.includes(nomeNorm)) {
     AppState.itensExcluidos.push(nomeNorm);
   }
+  itensSelecionadosExclusaoLote.delete(String(produtoId));
   AppState.catalogo = AppState.catalogo.filter(p => String(p.id) !== String(produtoId));
   AppState.listaAtiva = AppState.listaAtiva.filter(p => String(p.id) !== String(produtoId) && String(p.catalogoId) !== String(produtoId));
   salvarEstado(true);
   renderizarDespensa();
   renderizarListaCompras();
   atualizarCardResumo();
+  atualizarBadgeItensExcluidosHeader();
+  atualizarBotaoDeletarLoteHeader();
 
   if (dispararUndo) {
     exibirToastDesfazer(nomeItem, 'catalogo', {

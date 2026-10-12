@@ -132,7 +132,7 @@
   </style>
 
   <!-- CSS Moderno -->
-  <link rel="stylesheet" href="style.css?v=10.76">
+  <link rel="stylesheet" href="style.css?v=10.79">
 </head>
 <body>
 
@@ -274,6 +274,9 @@
         </div>
 
         <div class="header-acoes-unificadas">
+          <button type="button" id="btn-deletar-lote-header" class="btn-deletar-lote-header" style="display: none;" onclick="excluirItensSelecionadosLoteDespensa()" title="Deletar todos os produtos marcados (Admin Irandy)">
+            🗑️ Deletar (<span id="qtd-deletar-lote-header">0</span>)
+          </button>
           <div id="badge-total-geral-mobile" class="badge-total-geral-mobile" onclick="alternarVisaoTotal()" title="Total Geral da Compra (Toque para alternar Total/Falta/Pego)">R$ 0,00</div>
           <button id="btn-ordem-alfabetica" class="btn-ordem-az-header ativo" onclick="alternarOrdemAlfabeticaGeral()" title="Ordenar de A a Z">
             A-Z
@@ -1224,7 +1227,7 @@
   <script src="logos_banco.js?v=10.13"></script>
   <script src="icones2d.js"></script>
   <script src="firebase-sync.js"></script>
-  <script src="app.js?v=10.78"></script>
+  <script src="app.js?v=10.79"></script>
 
 </body>
 </html>
