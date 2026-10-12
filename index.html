@@ -132,7 +132,7 @@
   </style>
 
   <!-- CSS Moderno -->
-  <link rel="stylesheet" href="style.css?v=10.83">
+  <link rel="stylesheet" href="style.css?v=10.84">
 </head>
 <body>
 
@@ -167,9 +167,10 @@
 
       <!-- MENUS PRINCIPAIS DA SLIDE BAR (MOVIDOS PARA A BARRA LATERAL FIXA) -->
       <nav class="sidebar-nav">
-        <button class="sidebar-nav-item nav-item ativo" data-aba="lista" id="btn-nav-comprar" onclick="navegarParaAba('lista');">
+        <button class="sidebar-nav-item nav-item ativo" data-aba="lista" id="btn-nav-comprar" onclick="navegarParaAba('lista'); irParaInicioCompraRapida();">
           <span class="sidebar-nav-icon">🛒</span>
           <span class="sidebar-nav-text">COMPRAR</span>
+          <span class="badge-piscando-comprar" id="badge-piscando-comprar-pc" style="display: none;" title="Tem Compra Rápida aguardando no início!">⚡</span>
         </button>
 
         <!-- SUBOPÇÕES DE COMPRAR (REVELAÇÃO CORTINA SUAVE IDENTADA) -->
@@ -938,75 +939,73 @@
     </div>
   </div>
 
-  <!-- MODAL: COMPRA RÁPIDA / EMERGENCIAL DO COTIDIANO -->
+  <!-- MODAL: COMPRA RÁPIDA (FAVOR COMPRAR!! ⚡) -->
   <div id="modal-compra-rapida" class="modal-overlay" style="display: none;" onclick="if(event.target === this) fecharModalCompraRapida()">
     <div class="modal-content modal-compra-rapida-content" onclick="event.stopPropagation()">
-      <!-- Cabeçalho Compra Rápida -->
+      <!-- Cabeçalho Enxuto: FAVOR COMPRAR!! ⚡ -->
       <div class="compra-rapida-header">
-        <div class="compra-rapida-header-esq">
-          <div class="compra-rapida-icone-topo">⚡</div>
-          <div style="min-width: 0;">
-            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-              <h3 class="compra-rapida-titulo">Compra Rápida • Emergencial</h3>
-              <span class="badge-emergencial-pill">AVISO + DESTAQUE</span>
-            </div>
-            <p class="compra-rapida-subtitulo">
-              Escolha itens do cotidiano (ex: 2ª feira, mesmo já tendo lista de 6ª). Eles ficam <strong>destacados no topo de COMPRAR</strong> e enviam aviso imediato!
-            </p>
+        <div class="compra-rapida-header-titulo-wrap">
+          <h3 class="compra-rapida-titulo">FAVOR COMPRAR!!</h3>
+          <span class="compra-rapida-raio-ico">⚡</span>
+        </div>
+        <button type="button" class="modal-fechar-btn" onclick="fecharModalCompraRapida()" title="Fechar">✕</button>
+      </div>
+
+      <!-- Barra Estilo WhatsApp: Digitar ou Falar no Mic (Suporta Lista Inteligente com vírgula) -->
+      <div class="compra-rapida-zap-container">
+        <div class="compra-rapida-zap-bar">
+          <div class="compra-rapida-zap-input-pill">
+            <span class="compra-rapida-zap-lupa">🔍</span>
+            <input type="text" id="input-busca-compra-rapida"
+                   class="input-busca-compra-rapida"
+                   placeholder="Digite ou fale: arroz, feijão, pão, carne, verduras..."
+                   autocomplete="off"
+                   oninput="filtrarItensCompraRapida(this.value)"
+                   onkeydown="if(event.key === 'Enter') { event.preventDefault(); confirmarListaInteligenteCompraRapida(); }">
+            <button type="button" id="btn-limpar-busca-compra-rapida" class="btn-limpar-busca-cr" style="display: none;" onclick="limparBuscaCompraRapida()" title="Limpar texto">✕</button>
           </div>
-        </div>
-        <div class="compra-rapida-header-acoes">
-          <button type="button" class="btn-atalho-presets-nuvem" onclick="fecharModalCompraRapida(); abrirModalPresets();" title="Abrir Listas Salvas na Nuvem e Presets">
-            ☁️ Listas Salvas
+          <button type="button" id="btn-mic-compra-rapida" class="btn-zap-acao btn-zap-mic" onclick="alternarVozCompraRapida(event)" title="Falar lista de produtos no microfone (ex: arroz, feijão, pão, leite)">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+              <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+            </svg>
           </button>
-          <button type="button" class="modal-fechar-btn" onclick="fecharModalCompraRapida()" title="Fechar">✕</button>
+          <button type="button" id="btn-zap-add-compra-rapida" class="btn-zap-acao btn-zap-enviar" style="display: none;" onclick="confirmarListaInteligenteCompraRapida()" title="Adicionar itens reconhecidos na Compra Rápida">
+            ➤
+          </button>
         </div>
+
+        <!-- Faixa de Reconhecimento da Lista Inteligente (aparece ao digitar/falar itens separados por vírgula) -->
+        <div id="cr-smart-preview-bar" class="cr-smart-preview-bar" style="display: none;"></div>
       </div>
 
-      <!-- Barra de Busca / Adicionar Item Emergencial Customizado -->
-      <div class="compra-rapida-busca-bar">
-        <div class="compra-rapida-input-wrap">
-          <span class="compra-rapida-lupa">🔍</span>
-          <input type="text" id="input-busca-compra-rapida"
-                 class="input-busca-compra-rapida"
-                 placeholder="Buscar item do cotidiano ou digitar produto emergencial..."
-                 autocomplete="off"
-                 oninput="filtrarItensCompraRapida(this.value)"
-                 onkeydown="if(event.key === 'Enter') adicionarItemDigitadoCompraRapida()">
-          <button type="button" id="btn-limpar-busca-compra-rapida" class="btn-limpar-busca-cr" style="display: none;" onclick="limparBuscaCompraRapida()">✕</button>
-        </div>
-        <button type="button" id="btn-add-custom-compra-rapida" class="btn-add-custom-cr" style="display: none;" onclick="adicionarItemDigitadoCompraRapida()">
-          ⚡ + Adicionar
-        </button>
-      </div>
-
-      <!-- Abas de Filtro Rápido do Cotidiano -->
+      <!-- Abas de Filtro Rápido (Linha Única Deslizante) -->
       <div class="compra-rapida-categorias-scroll" id="compra-rapida-abas-cat">
-        <button type="button" class="cr-cat-pill ativo" data-cat="cotidiano" onclick="selecionarCategoriaCompraRapida('cotidiano')">⚡ Cotidiano (Mais Pedidos)</button>
+        <button type="button" class="cr-cat-pill ativo" data-cat="cotidiano" onclick="selecionarCategoriaCompraRapida('cotidiano')">⭐ Lista Rápida (Cotidiano)</button>
         <button type="button" class="cr-cat-pill" data-cat="padaria_cafe" onclick="selecionarCategoriaCompraRapida('padaria_cafe')">🥖 Padaria & Café</button>
         <button type="button" class="cr-cat-pill" data-cat="laticinios" onclick="selecionarCategoriaCompraRapida('laticinios')">🥛 Leite, Ovos & Frios</button>
-        <button type="button" class="cr-cat-pill" data-cat="hortifruti" onclick="selecionarCategoriaCompraRapida('hortifruti')">🍎 Hortifrúti do Dia</button>
-        <button type="button" class="cr-cat-pill" data-cat="mistura" onclick="selecionarCategoriaCompraRapida('mistura')">🥩 Mistura Rápida</button>
-        <button type="button" class="cr-cat-pill" data-cat="basicos" onclick="selecionarCategoriaCompraRapida('basicos')">🍚 Básicos & Cozinha</button>
+        <button type="button" class="cr-cat-pill" data-cat="hortifruti" onclick="selecionarCategoriaCompraRapida('hortifruti')">🍎 Hortifrúti</button>
+        <button type="button" class="cr-cat-pill" data-cat="mistura" onclick="selecionarCategoriaCompraRapida('mistura')">🥩 Carnes</button>
+        <button type="button" class="cr-cat-pill" data-cat="basicos" onclick="selecionarCategoriaCompraRapida('basicos')">🍚 Básicos</button>
         <button type="button" class="cr-cat-pill" data-cat="higiene_limpeza" onclick="selecionarCategoriaCompraRapida('higiene_limpeza')">🧻 Higiene & Limpeza</button>
-        <button type="button" class="cr-cat-pill" data-cat="bebidas" onclick="selecionarCategoriaCompraRapida('bebidas')">🥤 Bebidas & Água</button>
-        <button type="button" class="cr-cat-pill" data-cat="todos" onclick="selecionarCategoriaCompraRapida('todos')">🌐 Todo o Catálogo</button>
+        <button type="button" class="cr-cat-pill" data-cat="bebidas" onclick="selecionarCategoriaCompraRapida('bebidas')">🥤 Bebidas</button>
+        <button type="button" class="cr-cat-pill" data-cat="todos" onclick="selecionarCategoriaCompraRapida('todos')">🌐 Todos (Favoritar ⭐)</button>
       </div>
 
-      <!-- Grid Rolável de Produtos do Cotidiano -->
+      <!-- Grid Rolável Vertical de Cards (com barra de rolagem visível e toque suave no celular) -->
       <div id="grid-itens-compra-rapida" class="compra-rapida-grid-body"></div>
 
-      <!-- Bandeja de Selecionados e Botão de Aviso Emergencial -->
+      <!-- Rodapé com Itens Escolhidos e Botão Confirmar -->
       <div class="compra-rapida-footer">
         <div id="compra-rapida-resumo-chips" class="compra-rapida-resumo-chips">
-          <span class="cr-nenhum-txt">Toque nos produtos acima para montar o pedido emergencial do dia.</span>
+          <span class="cr-nenhum-txt">Toque nos produtos acima (ou digite com vírgulas) para montar a Compra Rápida.</span>
         </div>
         <div class="compra-rapida-footer-botoes">
           <button type="button" id="btn-limpar-compra-rapida" class="btn-cr-limpar" onclick="limparTodosCompraRapida()" style="display: none;" title="Desmarcar itens da Compra Rápida">
             🗑️ Limpar
           </button>
           <button type="button" id="btn-enviar-compra-rapida" class="btn-cr-enviar-aviso" onclick="enviarAvisoCompraRapida()">
-            ⚡ Enviar Aviso para COMPRAR (<span id="qtd-btn-enviar-cr">0</span>)
+            ⚡ FAVOR COMPRAR (<span id="qtd-btn-enviar-cr">0</span>)
           </button>
         </div>
       </div>
@@ -1015,7 +1014,7 @@
 
   <!-- BOTTOM NAVIGATION BAR (BARRA INFERIOR FIXA PARA CELULAR - BOTÕES ESPREMIDOS) -->
   <nav class="mobile-bottom-nav">
-    <button class="mobile-nav-btn ativo" data-aba="lista" onclick="navegarParaAba('lista')">
+    <button class="mobile-nav-btn ativo" id="mobile-nav-btn-comprar" data-aba="lista" onclick="navegarParaAba('lista'); irParaInicioCompraRapida();">
       <span class="mobile-nav-icon nav-icon-comprar">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="9" cy="21" r="1"></circle>
@@ -1024,6 +1023,7 @@
         </svg>
       </span>
       <span class="mobile-nav-label">COMPRAR</span>
+      <span id="badge-piscando-comprar-mobile" class="mobile-nav-badge badge-piscando-comprar" style="display: none;">⚡</span>
     </button>
     <button class="mobile-nav-btn" data-aba="despensa" onclick="navegarParaAba('despensa')">
       <span class="mobile-nav-icon nav-icon-criar">📋</span>
@@ -1342,7 +1342,7 @@
   <script src="logos_banco.js?v=10.13"></script>
   <script src="icones2d.js"></script>
   <script src="firebase-sync.js"></script>
-  <script src="app.js?v=10.83"></script>
+  <script src="app.js?v=10.84"></script>
 
 </body>
 </html>

@@ -11217,7 +11217,7 @@ body.tema-escuro #view-despensa .item-card.marcado-excluir-lote {
   50% { transform: scale(1.08); box-shadow: 0 0 12px rgba(245, 158, 11, 0.85); }
 }
 
-/* Modal Compra Rápida */
+/* Modal Compra Rápida (FAVOR COMPRAR!! ⚡) */
 #modal-compra-rapida.modal-overlay,
 .modal-compra-rapida-overlay {
   z-index: 100005 !important;
@@ -11233,110 +11233,61 @@ body.tema-escuro #view-despensa .item-card.marcado-excluir-lote {
   padding: 0 !important;
   border-radius: 16px !important;
   overflow: hidden !important;
-  border: 2px solid rgba(245, 158, 11, 0.55) !important;
+  border: 2px solid rgba(245, 158, 11, 0.65) !important;
   background: #FFFFFF;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.42);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
 }
 
 [data-theme="dark"] .modal-compra-rapida-content,
 body.tema-escuro .modal-compra-rapida-content {
   background: #0F172A !important;
-  border-color: rgba(245, 158, 11, 0.65) !important;
+  border-color: rgba(245, 158, 11, 0.7) !important;
   color: #F8FAFC;
 }
 
-.compra-rapida-header,
-.modal-compra-rapida-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
+/* Cabeçalho Enxuto: FAVOR COMPRAR!! ⚡ */
+.compra-rapida-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
   gap: 10px;
-  padding: 14px 16px 12px;
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.18) 0%, rgba(234, 88, 12, 0.08) 100%);
-  border-bottom: 1px solid rgba(245, 158, 11, 0.3);
+  padding: 12px 16px !important;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.22) 0%, rgba(234, 88, 12, 0.1) 100%);
+  border-bottom: 1px solid rgba(245, 158, 11, 0.35);
   flex-shrink: 0;
 }
 
-.compra-rapida-header-esq,
-.compra-rapida-header-left {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  min-width: 0;
-}
-
-.compra-rapida-icone-topo,
-.compra-rapida-raio-badge {
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #F59E0B 0%, #EA580C 100%);
-  color: #FFFFFF;
-  display: flex;
+.compra-rapida-header-titulo-wrap {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  font-size: 1.25rem;
-  flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.35);
+  gap: 8px;
 }
 
-.compra-rapida-titulo,
-.compra-rapida-titulo-bloco h2 {
-  margin: 0;
-  font-size: 1.05rem;
-  font-weight: 900;
-  color: #B45309;
-  letter-spacing: -0.01em;
+.compra-rapida-titulo {
+  margin: 0 !important;
+  font-size: 1.18rem !important;
+  font-weight: 900 !important;
+  color: #D97706 !important;
+  letter-spacing: 0.02em;
 }
 
 [data-theme="dark"] .compra-rapida-titulo,
-body.tema-escuro .compra-rapida-titulo,
-[data-theme="dark"] .compra-rapida-titulo-bloco h2,
-body.tema-escuro .compra-rapida-titulo-bloco h2 {
+body.tema-escuro .compra-rapida-titulo {
   color: #FBBF24 !important;
 }
 
-.badge-emergencial-pill {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #EA580C 0%, #DC2626 100%);
-  color: #FFFFFF;
-  font-size: 0.64rem;
-  font-weight: 900;
-  letter-spacing: 0.04em;
-}
-
-.compra-rapida-subtitulo,
-.compra-rapida-titulo-bloco p {
-  margin: 3px 0 0;
-  font-size: 0.76rem;
-  line-height: 1.3;
-  color: #475569;
-}
-
-[data-theme="dark"] .compra-rapida-subtitulo,
-body.tema-escuro .compra-rapida-subtitulo,
-[data-theme="dark"] .compra-rapida-titulo-bloco p,
-body.tema-escuro .compra-rapida-titulo-bloco p {
-  color: #CBD5E1 !important;
-}
-
-.compra-rapida-header-acoes,
-.compra-rapida-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
+.compra-rapida-raio-ico {
+  font-size: 1.35rem;
+  filter: drop-shadow(0 2px 6px rgba(245, 158, 11, 0.55));
+  animation: pulsoUrgenteCompraRapida 1.6s infinite ease-in-out;
 }
 
 .modal-fechar-btn {
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
-  border: 1px solid rgba(148, 163, 184, 0.3);
-  background: rgba(148, 163, 184, 0.12);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(148, 163, 184, 0.15);
   color: inherit;
   font-size: 0.95rem;
   font-weight: 800;
@@ -11344,6 +11295,8 @@ body.tema-escuro .compra-rapida-titulo-bloco p {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
 }
 
 .modal-fechar-btn:hover {
@@ -11352,80 +11305,65 @@ body.tema-escuro .compra-rapida-titulo-bloco p {
   border-color: #EF4444;
 }
 
-.btn-atalho-presets-nuvem {
-  padding: 6px 10px;
-  border-radius: 8px;
-  border: 1px solid rgba(59, 130, 246, 0.4);
-  background: rgba(59, 130, 246, 0.12);
-  color: #2563EB;
-  font-size: 0.72rem;
-  font-weight: 800;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.15s ease;
-}
-
-[data-theme="dark"] .btn-atalho-presets-nuvem,
-body.tema-escuro .btn-atalho-presets-nuvem {
-  color: #60A5FA;
-  background: rgba(59, 130, 246, 0.18);
-}
-
-.btn-atalho-presets-nuvem:hover {
-  background: #2563EB;
-  color: #FFFFFF;
-}
-
-/* Barra de busca e inclusão avulsa */
-.compra-rapida-busca-bar,
-.compra-rapida-toolbar {
-  padding: 10px 14px 6px;
+/* Barra Estilo WhatsApp: Digitar ou Falar no Mic + Lista Inteligente */
+.compra-rapida-zap-container {
+  padding: 10px 14px 8px;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 8px;
+  background: rgba(15, 23, 42, 0.03);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.15);
   flex-shrink: 0;
 }
 
-.compra-rapida-input-wrap,
-.compra-rapida-busca-box {
+[data-theme="dark"] .compra-rapida-zap-container,
+body.tema-escuro .compra-rapida-zap-container {
+  background: rgba(15, 23, 42, 0.45);
+}
+
+.compra-rapida-zap-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.compra-rapida-zap-input-pill {
   flex: 1;
   display: flex;
   align-items: center;
-  gap: 6px;
-  background: #F8FAFC;
+  gap: 8px;
+  background: #FFFFFF;
   border: 1.5px solid #CBD5E1;
-  border-radius: 10px;
-  padding: 6px 8px 6px 10px;
+  border-radius: 999px;
+  padding: 7px 12px 7px 14px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-[data-theme="dark"] .compra-rapida-input-wrap,
-body.tema-escuro .compra-rapida-input-wrap,
-[data-theme="dark"] .compra-rapida-busca-box,
-body.tema-escuro .compra-rapida-busca-box {
+[data-theme="dark"] .compra-rapida-zap-input-pill,
+body.tema-escuro .compra-rapida-zap-input-pill {
   background: #1E293B;
   border-color: #334155;
 }
 
-.compra-rapida-input-wrap:focus-within,
-.compra-rapida-busca-box:focus-within {
-  border-color: #F59E0B;
-  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+.compra-rapida-zap-input-pill:focus-within {
+  border-color: #10B981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.22);
 }
 
-.compra-rapida-lupa,
-.compra-rapida-busca-ico {
-  font-size: 0.9rem;
-  opacity: 0.7;
+.compra-rapida-zap-lupa {
+  font-size: 0.92rem;
+  opacity: 0.75;
+  flex-shrink: 0;
 }
 
-.input-busca-compra-rapida,
-.compra-rapida-busca-box input {
+.input-busca-compra-rapida {
   flex: 1;
-  border: none;
-  background: transparent;
-  font-size: 0.85rem;
+  border: none !important;
+  background: transparent !important;
+  font-size: 0.88rem;
   color: inherit;
-  outline: none;
+  outline: none !important;
   min-width: 0;
 }
 
@@ -11434,89 +11372,189 @@ body.tema-escuro .compra-rapida-busca-box {
   height: 22px;
   border-radius: 50%;
   border: none;
-  background: rgba(148, 163, 184, 0.25);
+  background: rgba(148, 163, 184, 0.3);
   color: inherit;
   font-size: 0.72rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
-.btn-add-custom-cr,
-.btn-add-avulso-compra-rapida,
-.btn-criar-avulso-compra-rapida {
-  padding: 7px 12px;
+/* Botões redondos estilo WhatsApp (Microfone Verde e Enviar) */
+.btn-zap-acao {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-zap-mic {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: #FFFFFF;
+  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.35);
+}
+
+.btn-zap-mic.gravando {
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%) !important;
+  animation: pulsoUrgenteCompraRapida 1s infinite ease-in-out;
+}
+
+.btn-zap-enviar {
+  background: linear-gradient(135deg, #F59E0B 0%, #EA580C 100%);
+  color: #FFFFFF;
+  font-size: 1rem;
+  font-weight: 900;
+  box-shadow: 0 3px 10px rgba(234, 88, 12, 0.4);
+}
+
+/* Faixa da Lista Inteligente (aparece ao digitar ex: arroz, feijão, pão, carne, verduras) */
+.cr-smart-preview-bar {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  border-radius: 10px;
+  padding: 6px 10px;
+}
+
+.cr-smart-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.cr-smart-chips-wrap {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  flex: 1;
+}
+
+.cr-smart-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #10B981;
+}
+
+.cr-smart-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(245, 158, 11, 0.2);
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  color: #B45309;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+[data-theme="dark"] .cr-smart-chip,
+body.tema-escuro .cr-smart-chip {
+  color: #FDE68A;
+}
+
+.cr-smart-chip.ja-marcado {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: #10B981;
+  color: #10B981;
+}
+
+.btn-smart-confirmar-todos {
+  padding: 5px 11px;
   border-radius: 8px;
   border: none;
-  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
   color: #FFFFFF;
-  font-size: 0.75rem;
+  font-size: 0.73rem;
   font-weight: 800;
   cursor: pointer;
   white-space: nowrap;
 }
 
-/* Abas de categorias na Compra Rápida */
-.compra-rapida-categorias-scroll,
-.compra-rapida-categorias-bar {
-  display: flex;
+/* Abas de categorias na Compra Rápida (Linha única horizontal) */
+.compra-rapida-categorias-scroll {
+  display: flex !important;
+  flex-wrap: nowrap !important;
   align-items: center;
   gap: 6px;
-  padding: 6px 14px 10px;
-  overflow-x: auto;
-  scrollbar-width: none;
+  padding: 7px 14px;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
   border-bottom: 1px solid rgba(148, 163, 184, 0.2);
   flex-shrink: 0;
 }
 
-.compra-rapida-categorias-scroll::-webkit-scrollbar,
-.compra-rapida-categorias-bar::-webkit-scrollbar {
-  display: none;
-}
-
-.cr-cat-pill,
-.compra-rapida-cat-pill {
+.cr-cat-pill {
   padding: 5px 11px;
   border-radius: 999px;
   border: 1px solid #CBD5E1;
   background: #F1F5F9;
   color: #334155;
-  font-size: 0.74rem;
+  font-size: 0.73rem;
   font-weight: 700;
   white-space: nowrap;
+  flex-shrink: 0;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 [data-theme="dark"] .cr-cat-pill,
-body.tema-escuro .cr-cat-pill,
-[data-theme="dark"] .compra-rapida-cat-pill,
-body.tema-escuro .compra-rapida-cat-pill {
+body.tema-escuro .cr-cat-pill {
   background: #1E293B;
   border-color: #334155;
   color: #CBD5E1;
 }
 
-.cr-cat-pill.ativo,
-.compra-rapida-cat-pill.ativo {
+.cr-cat-pill.ativo {
   background: linear-gradient(135deg, #F59E0B 0%, #EA580C 100%) !important;
   border-color: #F59E0B !important;
   color: #FFFFFF !important;
   box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35);
 }
 
-/* Grid de produtos do cotidiano */
-.compra-rapida-grid-body,
-.compra-rapida-grid {
-  flex: 1;
-  overflow-y: auto;
-  padding: 12px 14px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+/* Grid de Cards com Barra de Rolagem Vertical Visível e Rolagem por Toque no Celular */
+.compra-rapida-grid-body {
+  flex: 1 1 auto !important;
+  overflow-y: scroll !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  touch-action: pan-y !important;
+  overscroll-behavior: contain;
+  padding: 10px 12px !important;
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 8px;
-  min-height: 240px;
-  max-height: 50vh;
+  min-height: 220px;
+  max-height: 48vh;
+  scrollbar-width: thin;
+  scrollbar-color: #F59E0B rgba(148, 163, 184, 0.15);
+}
+
+.compra-rapida-grid-body::-webkit-scrollbar {
+  width: 8px !important;
+  display: block !important;
+}
+
+.compra-rapida-grid-body::-webkit-scrollbar-track {
+  background: rgba(148, 163, 184, 0.12);
+  border-radius: 8px;
+}
+
+.compra-rapida-grid-body::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #F59E0B 0%, #EA580C 100%);
+  border-radius: 8px;
 }
 
 .compra-rapida-empty-search {
@@ -11529,12 +11567,23 @@ body.tema-escuro .compra-rapida-cat-pill {
   gap: 10px;
 }
 
+.btn-criar-avulso-compra-rapida {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(135deg, #F59E0B 0%, #EA580C 100%);
+  color: #FFFFFF;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
 .card-item-compra-rapida {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 6px;
-  padding: 9px 10px;
+  padding: 8px 10px;
   border-radius: 11px;
   border: 1.5px solid #E2E8F0;
   background: #F8FAFC;
@@ -11555,7 +11604,7 @@ body.tema-escuro .card-item-compra-rapida {
 
 .card-item-compra-rapida.selecionado-urgente {
   border-color: #F59E0B !important;
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.16) 0%, rgba(234, 88, 12, 0.08) 100%) !important;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.18) 0%, rgba(234, 88, 12, 0.08) 100%) !important;
   box-shadow: 0 2px 10px rgba(245, 158, 11, 0.22);
 }
 
@@ -11621,6 +11670,36 @@ body.tema-escuro .card-cr-meta {
   color: #10B981;
 }
 
+/* Botão Estrela para Favoritar como pertencente à Lista Rápida */
+.btn-fav-cotidiano-cr {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #64748B;
+  font-size: 0.95rem;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  opacity: 0.55;
+  transition: all 0.15s ease;
+}
+
+.btn-fav-cotidiano-cr:hover {
+  opacity: 1;
+  transform: scale(1.12);
+}
+
+.btn-fav-cotidiano-cr.ativo {
+  color: #F59E0B !important;
+  opacity: 1;
+  text-shadow: 0 0 6px rgba(245, 158, 11, 0.45);
+}
+
 .card-cr-check {
   width: 26px;
   height: 26px;
@@ -11639,15 +11718,6 @@ body.tema-escuro .card-cr-meta {
   background: linear-gradient(135deg, #F59E0B 0%, #EA580C 100%);
   border-color: #EA580C;
   color: #FFFFFF;
-}
-
-.card-cr-aviso-lista {
-  font-size: 0.65rem;
-  font-weight: 700;
-  color: #3B82F6;
-  background: rgba(59, 130, 246, 0.1);
-  padding: 2px 6px;
-  border-radius: 5px;
 }
 
 .card-cr-controles {
@@ -11708,7 +11778,7 @@ body.tema-escuro .card-cr-qtde-box {
 
 /* Rodapé do modal Compra Rápida */
 .compra-rapida-footer {
-  padding: 10px 14px 14px;
+  padding: 10px 14px 12px;
   background: #F8FAFC;
   border-top: 1px solid rgba(245, 158, 11, 0.3);
   display: flex;
@@ -11728,8 +11798,7 @@ body.tema-escuro .compra-rapida-footer {
   gap: 8px;
 }
 
-.btn-cr-limpar,
-.btn-limpar-selecao-cr {
+.btn-cr-limpar {
   border: 1px solid rgba(239, 68, 68, 0.35);
   background: rgba(239, 68, 68, 0.14);
   color: #EF4444;
@@ -11747,7 +11816,7 @@ body.tema-escuro .compra-rapida-footer {
   gap: 6px;
   overflow-x: auto;
   padding-bottom: 2px;
-  max-height: 54px;
+  max-height: 48px;
   flex-wrap: wrap;
 }
 
@@ -11777,8 +11846,7 @@ body.tema-escuro .cr-chip-item {
   color: #FDE68A;
 }
 
-.btn-cr-enviar-aviso,
-.btn-enviar-compra-rapida {
+.btn-cr-enviar-aviso {
   flex: 1;
   width: 100%;
   padding: 11px 16px;
@@ -11786,22 +11854,111 @@ body.tema-escuro .cr-chip-item {
   border: none;
   background: linear-gradient(135deg, #F59E0B 0%, #EA580C 100%);
   color: #FFFFFF;
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   font-weight: 900;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
   cursor: pointer;
   box-shadow: 0 4px 14px rgba(234, 88, 12, 0.4);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.btn-cr-enviar-aviso:hover,
-.btn-enviar-compra-rapida:hover {
+.btn-cr-enviar-aviso:hover {
   transform: translateY(-1px);
   box-shadow: 0 6px 18px rgba(234, 88, 12, 0.55);
 }
 
 /* ==========================================================================
-   DESTAQUE NO TOPO DO "COMPRAR" PARA OS ITENS DE COMPRA RÁPIDA (EMERGENCIAL)
+   PISCANDO EM "COMPRAR" E BANNER NO INÍCIO DE TUDO
+   ========================================================================== */
+@keyframes piscarAlertaCompraRapida {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7), inset 0 0 0 1.5px #F59E0B;
+  }
+  50% {
+    box-shadow: 0 0 16px 3px rgba(234, 88, 12, 0.85), inset 0 0 0 2px #FDE047;
+    background: rgba(245, 158, 11, 0.25) !important;
+  }
+}
+
+#btn-nav-comprar.tem-compra-rapida-piscando,
+#mobile-nav-btn-comprar.tem-compra-rapida-piscando {
+  animation: piscarAlertaCompraRapida 1.2s infinite ease-in-out !important;
+}
+
+.badge-piscando-comprar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 6px;
+  margin-left: auto;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #F59E0B 0%, #DC2626 100%);
+  color: #FFFFFF !important;
+  font-size: 0.68rem;
+  font-weight: 900;
+  animation: pulsoUrgenteCompraRapida 0.9s infinite ease-in-out;
+}
+
+.banner-piscando-compra-rapida {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0 0 8px 0;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, rgba(245, 158, 11, 0.25) 0%, rgba(234, 88, 12, 0.18) 100%);
+  border: 1.5px solid #F59E0B;
+  cursor: pointer;
+  animation: piscarAlertaCompraRapida 1.6s infinite ease-in-out;
+}
+
+.bpcr-esq {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.bpcr-raio {
+  font-size: 1.05rem;
+}
+
+.bpcr-titulo {
+  font-size: 0.8rem;
+  font-weight: 900;
+  color: #D97706;
+}
+
+[data-theme="dark"] .bpcr-titulo,
+body.tema-escuro .bpcr-titulo {
+  color: #FBBF24;
+}
+
+.bpcr-itens {
+  font-size: 0.76rem;
+  font-weight: 700;
+  opacity: 0.9;
+}
+
+.bpcr-acao {
+  font-size: 0.72rem;
+  font-weight: 900;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #EA580C;
+  color: #FFFFFF;
+  white-space: nowrap;
+}
+
+.flash-destaque-inicio th,
+.flash-destaque-inicio td {
+  animation: piscarAlertaCompraRapida 0.6s 3 ease-in-out !important;
+}
+
+/* ==========================================================================
+   DESTAQUE NO TOPO DO "COMPRAR" PARA OS ITENS DE COMPRA RÁPIDA (FAVOR COMPRAR!!)
    ========================================================================== */
 .secao-header-compra-rapida th,
 .secao-header-compra-rapida td {
@@ -11923,19 +12080,17 @@ body.tema-escuro .btn-cr-header-concluir {
 }
 
 @media (max-width: 640px) {
-  .compra-rapida-grid-body,
-  .compra-rapida-grid {
-    grid-template-columns: 1fr;
-    max-height: 52vh;
+  .compra-rapida-grid-body {
+    grid-template-columns: 1fr !important;
+    max-height: 52vh !important;
   }
-  .compra-rapida-header,
-  .modal-compra-rapida-header {
-    padding: 12px;
+  .compra-rapida-header {
+    padding: 10px 14px !important;
   }
-  .compra-rapida-titulo,
-  .compra-rapida-titulo-bloco h2 {
-    font-size: 0.95rem;
+  .compra-rapida-titulo {
+    font-size: 1.05rem !important;
   }
 }
+
 
 
