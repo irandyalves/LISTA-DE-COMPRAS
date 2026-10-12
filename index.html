@@ -947,36 +947,51 @@
     })();
   </script>
 
-  <!-- MODAL DE PORTARIA / LOGIN POR CELULAR OU E-MAIL -->
+  <!-- MODAL DE PORTARIA / LOGIN COM CONTA GOOGLE OU CREDENCIAL -->
   <div id="modal-login-portaria" class="modal-overlay" style="display: none; z-index: 99999; background: rgba(15, 23, 42, 0.92); backdrop-filter: blur(8px);">
     <div class="modal-content" style="max-width: 400px; border-radius: 16px; padding: 20px;">
       <div style="text-align: center; margin-bottom: 14px;">
         <div style="font-size: 2.3rem; line-height: 1; margin-bottom: 6px;">🛒🔐</div>
         <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-main); margin: 0 0 4px 0;">Acesso Restrito da Família</h3>
         <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0; line-height: 1.35;">
-          Identifique-se com seu <strong>Celular (WhatsApp)</strong> ou <strong>E-mail</strong> cadastrado para entrar na Lista de Compras:
+          Toque abaixo para entrar com a <strong>Conta Google</strong> do seu aparelho (você só fará isso na 1ª vez):
         </p>
       </div>
 
-      <!-- ABA 1: LOGIN DIRETO -->
+      <!-- ABA 1: LOGIN COM GOOGLE (PRINCIPAL) + ALTERNATIVA -->
       <div id="box-portaria-login">
-        <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px;">
-          <label style="font-size: 0.76rem; font-weight: 700; color: var(--text-main);">📱 Celular ou 📧 E-mail:</label>
-          <input type="text" id="input-login-credencial" class="input-gestor-texto"
-                 style="width: 100%; padding: 11px 12px; font-size: 0.92rem; border-radius: 10px;"
-                 placeholder="Ex: 61 99641-0996 ou seu e-mail"
-                 autocomplete="username"
-                 onkeydown="if(event.key==='Enter') realizarLoginPortaria()" />
-        </div>
+        <button type="button" id="btn-entrar-google-portaria" onclick="entrarComContaGoogle()"
+                style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px 14px; border-radius: 10px; border: 1.5px solid #CBD5E1; background: #FFFFFF; color: #0F172A; font-size: 0.92rem; font-weight: 800; cursor: pointer; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12); margin-bottom: 12px; transition: all 0.15s ease;">
+          <svg width="20" height="20" viewBox="0 0 48 48">
+            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+          </svg>
+          <span>Entrar com a Conta Google</span>
+        </button>
 
         <div id="msg-erro-login-portaria" style="display: none; background: #FEF2F2; color: #DC2626; border: 1px solid #FECACA; border-radius: 8px; padding: 8px 10px; font-size: 0.76rem; margin-bottom: 10px; line-height: 1.35;"></div>
 
-        <button type="button" class="btn-adicionar" style="width: 100%; padding: 11px; font-size: 0.9rem; font-weight: 800; border-radius: 10px;" onclick="realizarLoginPortaria()">
-          🔓 Entrar na Lista
-        </button>
+        <div style="display: flex; align-items: center; gap: 8px; margin: 10px 0;">
+          <hr style="flex: 1; border: none; border-top: 1px solid var(--border);">
+          <span style="font-size: 0.68rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">ou entrar por e-mail / celular</span>
+          <hr style="flex: 1; border: none; border-top: 1px solid var(--border);">
+        </div>
 
-        <div style="text-align: center; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border);">
-          <button type="button" onclick="alternarFormSolicitarCadastroPortaria(true)" style="background: none; border: none; color: #3B82F6; font-size: 0.76rem; font-weight: 700; cursor: pointer; text-decoration: underline;">
+        <div style="display: flex; gap: 6px; margin-bottom: 6px;">
+          <input type="text" id="input-login-credencial" class="input-gestor-texto"
+                 style="flex: 1; padding: 9px 11px; font-size: 0.84rem; border-radius: 8px;"
+                 placeholder="E-mail ou Celular cadastrado"
+                 autocomplete="username"
+                 onkeydown="if(event.key==='Enter') realizarLoginPortaria()" />
+          <button type="button" class="btn-adicionar" style="padding: 9px 14px; font-size: 0.82rem; font-weight: 800; border-radius: 8px; white-space: nowrap;" onclick="realizarLoginPortaria()">
+            Entrar
+          </button>
+        </div>
+
+        <div style="text-align: center; margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border);">
+          <button type="button" onclick="alternarFormSolicitarCadastroPortaria(true)" style="background: none; border: none; color: #3B82F6; font-size: 0.75rem; font-weight: 700; cursor: pointer; text-decoration: underline;">
             Não está cadastrado? Solicitar acesso ao Administrador
           </button>
         </div>
@@ -1202,13 +1217,14 @@
   </div>
 
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
   <!-- Módulos da Aplicação -->
   <script src="logos_banco.js?v=10.13"></script>
   <script src="icones2d.js"></script>
   <script src="firebase-sync.js"></script>
-  <script src="app.js?v=10.77"></script>
+  <script src="app.js?v=10.78"></script>
 
 </body>
 </html>

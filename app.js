@@ -1613,6 +1613,11 @@ function verificarAutenticacaoAcesso(veioDaNuvem = false) {
   const modalLogin = document.getElementById('modal-login-portaria');
   if (!modalLogin) return;
 
+  // Inicializa listener da Conta Google (Firebase Auth) uma única vez
+  if (!window._firebaseAuthGoogleInicializado) {
+    inicializarAutenticacaoGoogle();
+  }
+
   // 1. Verifica se já existe sessão autenticada neste aparelho
   const sessaoStr = localStorage.getItem('app_login_autorizado_v1');
   if (sessaoStr) {
@@ -1643,7 +1648,7 @@ function verificarAutenticacaoAcesso(veioDaNuvem = false) {
       const aprovado = buscarUsuarioPorCredencial(pend.celular || pend.email || '');
       if (aprovado) {
         localStorage.removeItem('app_solicitacao_pendente_v1');
-        efetivarLoginUsuario(aprovado);
+        efetivarLoginUsuario(aprovado, 'aprovado');
         return;
       }
     } catch (e) {}
@@ -1651,20 +1656,142 @@ function verificarAutenticacaoAcesso(veioDaNuvem = false) {
 
   // 3. Caso contrário, exibe a Portaria de Login
   modalLogin.style.display = 'flex';
-  if (!veioDaNuvem) {
-    setTimeout(() => {
-      const inp = document.getElementById('input-login-credencial');
-      if (inp) inp.focus();
-    }, 120);
+}
+
+function inicializarAutenticacaoGoogle() {
+  if (typeof firebase === 'undefined' || typeof firebase.auth !== 'function') return;
+  try {
+    if (!firebase.apps.length && typeof FirebaseSync !== 'undefined' && FirebaseSync.carregarConfig()) {
+      firebase.initializeApp(FirebaseSync.config);
+    }
+    window._firebaseAuthGoogleInicializado = true;
+    const auth = firebase.auth();
+
+    // Mantém logado para sempre no celular/PC após o 1º toque
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(() => {});
+
+    // Captura retorno caso o celular tenha usado redirect em vez de popup
+    auth.getRedirectResult().then((result) => {
+      if (result && result.user) {
+        processarUsuarioAutenticadoGoogle(result.user);
+      }
+    }).catch((err) => {
+      if (err && err.code) mostrarErroGoogleAuth(err);
+    });
+
+    // Se o aparelho já estiver autenticado no Firebase Auth, valida automaticamente
+    auth.onAuthStateChanged((user) => {
+      if (user && user.email) {
+        const sessaoAtual = localStorage.getItem('app_login_autorizado_v1');
+        if (!sessaoAtual) {
+          processarUsuarioAutenticadoGoogle(user, true);
+        }
+      }
+    });
+  } catch (e) {
+    console.warn('Aviso ao inicializar Firebase Auth:', e);
   }
 }
 
-function efetivarLoginUsuario(usr) {
+function processarUsuarioAutenticadoGoogle(googleUser, silencioso = false) {
+  if (!googleUser || !googleUser.email) return;
+  const emailGoogle = String(googleUser.email).toLowerCase().trim();
+  const erroEl = document.getElementById('msg-erro-login-portaria');
+
+  const usrAutorizado = buscarUsuarioPorCredencial(emailGoogle);
+  if (usrAutorizado) {
+    if (erroEl) erroEl.style.display = 'none';
+    efetivarLoginUsuario(usrAutorizado, 'google');
+  } else if (!silencioso) {
+    if (erroEl) {
+      erroEl.innerHTML = `🚫 A conta Google <strong>${escapeHtml(emailGoogle)}</strong> não está na lista de autorizados.<br><small>Toque abaixo em <strong>"Solicitar Acesso ao Administrador"</strong> para enviar seu pedido ao Irandy.</small>`;
+      erroEl.style.display = 'block';
+    }
+    //Já deixa pré-preenchido caso queira solicitar acesso
+    const inpNome = document.getElementById('input-solicitacao-nome');
+    const inpEmail = document.getElementById('input-solicitacao-email');
+    if (inpNome && !inpNome.value && googleUser.displayName) inpNome.value = googleUser.displayName;
+    if (inpEmail) inpEmail.value = emailGoogle;
+  }
+}
+
+function mostrarErroGoogleAuth(err) {
+  const erroEl = document.getElementById('msg-erro-login-portaria');
+  if (!erroEl) return;
+  const code = (err && err.code) || '';
+  if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') {
+    return;
+  }
+  if (code === 'auth/operation-not-allowed' || code === 'auth/configuration-not-found') {
+    erroEl.innerHTML = `⚠️ <strong>Falta ativar 1 chave no painel Google Firebase:</strong><br>Acesse <a href="https://console.firebase.google.com/project/lista-compras-d55dc/authentication/providers" target="_blank" style="color:#2563EB;font-weight:800;text-decoration:underline;">Firebase Authentication → Sign-in method</a>, clique em <strong>Google → Ativar → Salvar</strong>.`;
+    erroEl.style.display = 'block';
+    return;
+  }
+  if (code === 'auth/unauthorized-domain') {
+    const dominioAtual = window.location.hostname || 'este domínio';
+    erroEl.innerHTML = `⚠️ Adicione o domínio <strong>${escapeHtml(dominioAtual)}</strong> em <a href="https://console.firebase.google.com/project/lista-compras-d55dc/authentication/settings" target="_blank" style="color:#2563EB;font-weight:800;text-decoration:underline;">Authentication → Settings → Domínios Autorizados</a>.`;
+    erroEl.style.display = 'block';
+    return;
+  }
+  erroEl.innerHTML = `⚠️ Não foi possível concluir o login Google (${escapeHtml(code || err.message || 'erro')}).`;
+  erroEl.style.display = 'block';
+}
+
+async function entrarComContaGoogle() {
+  const erroEl = document.getElementById('msg-erro-login-portaria');
+  const btnGoogle = document.getElementById('btn-entrar-google-portaria');
+  if (erroEl) erroEl.style.display = 'none';
+
+  if (typeof firebase === 'undefined' || typeof firebase.auth !== 'function') {
+    if (erroEl) {
+      erroEl.textContent = '⚠️ SDK do Google Auth ainda carregando. Tente novamente em 2 segundos.';
+      erroEl.style.display = 'block';
+    }
+    return;
+  }
+
+  try {
+    if (!window._firebaseAuthGoogleInicializado) {
+      inicializarAutenticacaoGoogle();
+    }
+    if (btnGoogle) {
+      btnGoogle.disabled = true;
+      btnGoogle.style.opacity = '0.75';
+    }
+
+    const auth = firebase.auth();
+    const provider = new firebase.auth.GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
+
+    try {
+      const result = await auth.signInWithPopup(provider);
+      if (result && result.user) {
+        processarUsuarioAutenticadoGoogle(result.user);
+      }
+    } catch (popupErr) {
+      const pCode = (popupErr && popupErr.code) || '';
+      // Se estiver no navegador interno do WhatsApp ou celular bloqueando popup, usa Redirect automático
+      if (pCode === 'auth/popup-blocked' || pCode === 'auth/operation-not-supported-in-this-environment') {
+        await auth.signInWithRedirect(provider);
+        return;
+      }
+      mostrarErroGoogleAuth(popupErr);
+    }
+  } finally {
+    if (btnGoogle) {
+      btnGoogle.disabled = false;
+      btnGoogle.style.opacity = '1';
+    }
+  }
+}
+
+function efetivarLoginUsuario(usr, metodo = 'credencial') {
   if (!usr) return;
   localStorage.setItem('app_login_autorizado_v1', JSON.stringify({
     id: usr.id,
     nome: usr.nome,
-    credencial: usr.celular || usr.email || '',
+    credencial: usr.email || usr.celular || '',
+    metodo: metodo,
     loginEm: Date.now()
   }));
   AppState.usuarioAtivo = usr.nome;
@@ -1689,7 +1816,7 @@ function realizarLoginPortaria() {
 
   if (!valor) {
     if (erroEl) {
-      erroEl.textContent = '⚠️ Digite seu número de celular (WhatsApp) ou seu e-mail cadastrado.';
+      erroEl.textContent = '⚠️ Use o botão "Entrar com o Google" acima ou digite seu celular/e-mail.';
       erroEl.style.display = 'block';
     }
     if (input) input.focus();
@@ -1698,12 +1825,20 @@ function realizarLoginPortaria() {
 
   const usr = buscarUsuarioPorCredencial(valor);
   if (usr) {
+    // Proteção extra: O perfil Administrador (Irandy) exige Login oficial com a Conta Google se digitarem apenas o telefone
+    if (usr.admin && !valor.toLowerCase().includes('irandyalves@gmail.com')) {
+      if (erroEl) {
+        erroEl.innerHTML = '🔒 <strong>Proteção do Administrador:</strong> Para entrar como <strong>Irandy</strong>, clique no botão <strong>"Entrar com o Google"</strong> acima (protegido contra uso do seu número por terceiros).';
+        erroEl.style.display = 'block';
+      }
+      return;
+    }
     if (erroEl) erroEl.style.display = 'none';
     if (input) input.value = '';
-    efetivarLoginUsuario(usr);
+    efetivarLoginUsuario(usr, 'credencial');
   } else {
     if (erroEl) {
-      erroEl.innerHTML = '🚫 Celular ou e-mail não encontrado na lista de autorizados.<br><small>Verifique os dados ou clique abaixo em <strong>"Solicitar Cadastro ao Administrador"</strong>.</small>';
+      erroEl.innerHTML = '🚫 Celular ou e-mail não encontrado na lista de autorizados.<br><small>Clique em <strong>"Entrar com o Google"</strong> ou solicite acesso abaixo.</small>';
       erroEl.style.display = 'block';
     }
   }
@@ -1741,7 +1876,7 @@ function enviarSolicitacaoAcessoPortaria() {
 
   // Se já for um usuário autorizado, já entra direto
   const jaCadastrado = buscarUsuarioPorCredencial(celular) || buscarUsuarioPorCredencial(email);
-  if (jaCadastrado) {
+  if (jaCadastrado && !jaCadastrado.admin) {
     efetivarLoginUsuario(jaCadastrado);
     return;
   }
@@ -1801,6 +1936,11 @@ function recusarSolicitacaoAcesso(reqId) {
 
 function fazerLogoutPortaria() {
   localStorage.removeItem('app_login_autorizado_v1');
+  try {
+    if (typeof firebase !== 'undefined' && typeof firebase.auth === 'function') {
+      firebase.auth().signOut().catch(() => {});
+    }
+  } catch (e) {}
   fecharModal('modal-perfil-usuario');
   alternarFormSolicitarCadastroPortaria(false);
   verificarAutenticacaoAcesso(false);
