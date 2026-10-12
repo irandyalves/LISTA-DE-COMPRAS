@@ -11681,14 +11681,15 @@ const IDS_COTIDIANO_COMPRA_RAPIDA = [
   'beb_coca_lata_350', 'beb_suco_prats_laranja', 'beb_sococo_1l'
 ];
 
-// Termos genéricos de grupo (trazem de 8 a 10 opções sem exibir quantidade verde enquanto não marcados)
+// Termos genéricos de grupo (trazem até 20 opções sem exibir quantidade verde enquanto não marcados)
 const TERMOS_GRUPO_OPCOES_CR = new Set([
-  'carne', 'carnes',
-  'verdura', 'verduras', 'legume', 'legumes', 'salada',
+  'carne', 'carnes', 'mistura',
+  'verdura', 'verduras', 'legume', 'legumes', 'salada', 'hortifruti',
+  'grao', 'graos', 'grão', 'grãos', 'basico', 'basicos', 'básico', 'básicos',
   'fruta', 'frutas'
 ]);
 
-// Dicionário Inteligente de Termos Rápidos (ex: "arroz, feijão, pão, carne, verduras")
+// Dicionário Inteligente de Termos Rápidos (ex: "arroz, feijão, pão, carne, verduras, grãos")
 const MAPA_TERMOS_INTELIGENTES_CR = {
   'arroz': ['b_arroz_5kg'],
   'feijao': ['b_feijao_car'],
@@ -11703,8 +11704,24 @@ const MAPA_TERMOS_INTELIGENTES_CR = {
   'pão francês': ['pad_pao_frances'],
   'pao de queijo': ['pad_pao_queijo'],
   'pão de queijo': ['pad_pao_queijo'],
-  'carne': ['c_contrafile', 'c_alcatra', 'c_patinho', 'c_picanha', 'c_costela', 'c_fraldinha', 'c_maminha', 'c_acem_cubos', 'f_peito_osso', 'c_calabresa'],
-  'carnes': ['c_contrafile', 'c_alcatra', 'c_patinho', 'c_picanha', 'c_costela', 'c_fraldinha', 'c_maminha', 'c_acem_cubos', 'f_peito_osso', 'c_calabresa'],
+  'carne': [
+    'c_contrafile', 'c_alcatra', 'c_patinho', 'c_picanha', 'c_costela',
+    'c_fraldinha', 'c_maminha', 'c_acem_cubos', 'c_acem_moido', 'c_coxao_mole',
+    'c_coxao_duro', 'c_file_mignon', 'c_cupim', 'c_musculo', 'c_lagarto',
+    'f_peito_osso', 'f_coxa_sobre', 'f_sassami', 'c_calabresa', 'c_toscana'
+  ],
+  'carnes': [
+    'c_contrafile', 'c_alcatra', 'c_patinho', 'c_picanha', 'c_costela',
+    'c_fraldinha', 'c_maminha', 'c_acem_cubos', 'c_acem_moido', 'c_coxao_mole',
+    'c_coxao_duro', 'c_file_mignon', 'c_cupim', 'c_musculo', 'c_lagarto',
+    'f_peito_osso', 'f_coxa_sobre', 'f_sassami', 'c_calabresa', 'c_toscana'
+  ],
+  'mistura': [
+    'c_contrafile', 'c_alcatra', 'c_patinho', 'c_picanha', 'c_costela',
+    'c_fraldinha', 'c_maminha', 'c_acem_cubos', 'c_acem_moido', 'c_coxao_mole',
+    'c_coxao_duro', 'c_file_mignon', 'c_cupim', 'c_musculo', 'c_lagarto',
+    'f_peito_osso', 'f_coxa_sobre', 'f_sassami', 'c_calabresa', 'c_toscana'
+  ],
   'carne moida': ['c_patinho'],
   'carne moída': ['c_patinho'],
   'bife': ['c_contrafile'],
@@ -11712,13 +11729,102 @@ const MAPA_TERMOS_INTELIGENTES_CR = {
   'peito de frango': ['f_peito_osso'],
   'linguica': ['c_calabresa'],
   'linguiça': ['c_calabresa'],
-  'verdura': ['h_alface_cresp', 'h_tomate_sal', 'h_cheiro_verde', 'h_cebola_br', 'h_batata', 'h_cenoura', 'h_couve', 'h_abobrinha', 'h_pepino', 'h_pimentao_vd'],
-  'verduras': ['h_alface_cresp', 'h_tomate_sal', 'h_cheiro_verde', 'h_cebola_br', 'h_batata', 'h_cenoura', 'h_couve', 'h_abobrinha', 'h_pepino', 'h_pimentao_vd'],
-  'salada': ['h_alface_cresp', 'h_tomate_sal', 'h_cheiro_verde', 'h_cebola_br', 'h_cenoura', 'h_couve', 'h_pepino', 'h_alface_amer', 'h_rucula', 'h_beterraba'],
-  'legume': ['h_batata', 'h_cenoura', 'h_tomate_sal', 'h_cebola_br', 'h_abobrinha', 'h_pepino', 'h_pimentao_vd', 'h_beterraba', 'h_chuchu', 'h_mandioca'],
-  'legumes': ['h_batata', 'h_cenoura', 'h_tomate_sal', 'h_cebola_br', 'h_abobrinha', 'h_pepino', 'h_pimentao_vd', 'h_beterraba', 'h_chuchu', 'h_mandioca'],
-  'fruta': ['h_banana_prata', 'h_maca_gala', 'h_mamao', 'h_laranja', 'h_limao', 'h_abacaxi', 'h_melancia', 'h_uva', 'h_morango', 'h_abacate'],
-  'frutas': ['h_banana_prata', 'h_maca_gala', 'h_mamao', 'h_laranja', 'h_limao', 'h_abacaxi', 'h_melancia', 'h_uva', 'h_morango', 'h_abacate'],
+  'verdura': [
+    'h_alface_cresp', 'h_alface_amer', 'h_tomate_sal', 'h_tomate_ita', 'h_cheiro_verde',
+    'h_cebola_br', 'h_cebola_rx', 'h_batata', 'h_cenoura', 'h_couve',
+    'h_rucula', 'h_espinafre', 'h_brocolis_ninja', 'h_couve_flor', 'h_repolho_verde',
+    'h_abobrinha', 'h_pepino', 'h_pimentao_vd', 'h_beterraba', 'h_chuchu'
+  ],
+  'verduras': [
+    'h_alface_cresp', 'h_alface_amer', 'h_tomate_sal', 'h_tomate_ita', 'h_cheiro_verde',
+    'h_cebola_br', 'h_cebola_rx', 'h_batata', 'h_cenoura', 'h_couve',
+    'h_rucula', 'h_espinafre', 'h_brocolis_ninja', 'h_couve_flor', 'h_repolho_verde',
+    'h_abobrinha', 'h_pepino', 'h_pimentao_vd', 'h_beterraba', 'h_chuchu'
+  ],
+  'hortifruti': [
+    'h_alface_cresp', 'h_tomate_sal', 'h_cheiro_verde', 'h_cebola_br', 'h_alho',
+    'h_batata', 'h_cenoura', 'h_couve', 'h_banana_prata', 'h_maca_gala',
+    'h_limao', 'h_laranja', 'h_mamao', 'h_abobrinha', 'h_pepino',
+    'h_pimentao_vd', 'h_beterraba', 'h_chuchu', 'h_mandioca', 'h_brocolis_ninja'
+  ],
+  'salada': [
+    'h_alface_cresp', 'h_alface_amer', 'h_tomate_sal', 'h_tomate_cereja', 'h_cheiro_verde',
+    'h_cebola_br', 'h_cebola_rx', 'h_cenoura', 'h_couve', 'h_pepino',
+    'h_rucula', 'h_agriao', 'h_espinafre', 'h_beterraba', 'h_repolho_verde',
+    'h_repolho_roxo', 'h_brocolis_ninja', 'h_couve_flor', 'h_acelga', 'h_limao'
+  ],
+  'legume': [
+    'h_batata', 'h_batatadoce', 'h_cenoura', 'h_beterraba', 'h_tomate_sal',
+    'h_tomate_ita', 'h_cebola_br', 'h_cebola_rx', 'h_alho', 'h_abobrinha',
+    'h_berinjela', 'h_chuchu', 'h_pepino', 'h_pimentao_vd', 'h_pimentao_col',
+    'h_mandioca', 'h_quiabo', 'h_abobora', 'h_vagem', 'h_inhame'
+  ],
+  'legumes': [
+    'h_batata', 'h_batatadoce', 'h_cenoura', 'h_beterraba', 'h_tomate_sal',
+    'h_tomate_ita', 'h_cebola_br', 'h_cebola_rx', 'h_alho', 'h_abobrinha',
+    'h_berinjela', 'h_chuchu', 'h_pepino', 'h_pimentao_vd', 'h_pimentao_col',
+    'h_mandioca', 'h_quiabo', 'h_abobora', 'h_vagem', 'h_inhame'
+  ],
+  'grao': [
+    'b_arroz_5kg', 'b_arroz_parb', 'b_arroz_int', 'b_feijao_car', 'b_feijao_pt',
+    'b_feijao_fradinho', 'b_feijao_vermelho', 'b_feijao_branco', 'b_lentilha', 'b_grao_bico',
+    'b_ervilha_seca', 'b_pipoca', 'b_farinha_cuscuz', 'b_aveia_flocos', 'b_granola_trad',
+    'b_chia_graos', 'b_linhaca_dourada', 'b_quinoa_graos', 'b_milho_lata', 'b_ervilha_lata'
+  ],
+  'graos': [
+    'b_arroz_5kg', 'b_arroz_parb', 'b_arroz_int', 'b_feijao_car', 'b_feijao_pt',
+    'b_feijao_fradinho', 'b_feijao_vermelho', 'b_feijao_branco', 'b_lentilha', 'b_grao_bico',
+    'b_ervilha_seca', 'b_pipoca', 'b_farinha_cuscuz', 'b_aveia_flocos', 'b_granola_trad',
+    'b_chia_graos', 'b_linhaca_dourada', 'b_quinoa_graos', 'b_milho_lata', 'b_ervilha_lata'
+  ],
+  'grão': [
+    'b_arroz_5kg', 'b_arroz_parb', 'b_arroz_int', 'b_feijao_car', 'b_feijao_pt',
+    'b_feijao_fradinho', 'b_feijao_vermelho', 'b_feijao_branco', 'b_lentilha', 'b_grao_bico',
+    'b_ervilha_seca', 'b_pipoca', 'b_farinha_cuscuz', 'b_aveia_flocos', 'b_granola_trad',
+    'b_chia_graos', 'b_linhaca_dourada', 'b_quinoa_graos', 'b_milho_lata', 'b_ervilha_lata'
+  ],
+  'grãos': [
+    'b_arroz_5kg', 'b_arroz_parb', 'b_arroz_int', 'b_feijao_car', 'b_feijao_pt',
+    'b_feijao_fradinho', 'b_feijao_vermelho', 'b_feijao_branco', 'b_lentilha', 'b_grao_bico',
+    'b_ervilha_seca', 'b_pipoca', 'b_farinha_cuscuz', 'b_aveia_flocos', 'b_granola_trad',
+    'b_chia_graos', 'b_linhaca_dourada', 'b_quinoa_graos', 'b_milho_lata', 'b_ervilha_lata'
+  ],
+  'basico': [
+    'b_arroz_5kg', 'b_feijao_car', 'b_feijao_pt', 'b_cafe', 'b_acucar_ref',
+    'b_acucar_cris', 'b_oleo_soja', 'b_azeite', 'b_macarrao_esp', 'b_macarrao_par',
+    'b_sal_ref', 'b_farinha_trigo', 'b_farinha_mand', 'b_fuba', 'b_extrato_tomate',
+    'b_molho_tomate_sache', 'b_achoc_nescau', 'b_milho_lata', 'b_maionese_pote', 'b_pipoca'
+  ],
+  'basicos': [
+    'b_arroz_5kg', 'b_feijao_car', 'b_feijao_pt', 'b_cafe', 'b_acucar_ref',
+    'b_acucar_cris', 'b_oleo_soja', 'b_azeite', 'b_macarrao_esp', 'b_macarrao_par',
+    'b_sal_ref', 'b_farinha_trigo', 'b_farinha_mand', 'b_fuba', 'b_extrato_tomate',
+    'b_molho_tomate_sache', 'b_achoc_nescau', 'b_milho_lata', 'b_maionese_pote', 'b_pipoca'
+  ],
+  'básico': [
+    'b_arroz_5kg', 'b_feijao_car', 'b_feijao_pt', 'b_cafe', 'b_acucar_ref',
+    'b_acucar_cris', 'b_oleo_soja', 'b_azeite', 'b_macarrao_esp', 'b_macarrao_par',
+    'b_sal_ref', 'b_farinha_trigo', 'b_farinha_mand', 'b_fuba', 'b_extrato_tomate',
+    'b_molho_tomate_sache', 'b_achoc_nescau', 'b_milho_lata', 'b_maionese_pote', 'b_pipoca'
+  ],
+  'básicos': [
+    'b_arroz_5kg', 'b_feijao_car', 'b_feijao_pt', 'b_cafe', 'b_acucar_ref',
+    'b_acucar_cris', 'b_oleo_soja', 'b_azeite', 'b_macarrao_esp', 'b_macarrao_par',
+    'b_sal_ref', 'b_farinha_trigo', 'b_farinha_mand', 'b_fuba', 'b_extrato_tomate',
+    'b_molho_tomate_sache', 'b_achoc_nescau', 'b_milho_lata', 'b_maionese_pote', 'b_pipoca'
+  ],
+  'fruta': [
+    'h_banana_prata', 'h_banana_nanica', 'h_maca_gala', 'h_maca_fuji', 'h_mamao',
+    'h_laranja', 'h_limao', 'h_abacaxi', 'h_melancia', 'h_melao',
+    'h_uva', 'h_morango', 'h_abacate', 'h_manga', 'h_manga_tommy',
+    'h_maracuja', 'h_maracuja_doce', 'h_caqui', 'h_jabuticaba', 'h_pitaya'
+  ],
+  'frutas': [
+    'h_banana_prata', 'h_banana_nanica', 'h_maca_gala', 'h_maca_fuji', 'h_mamao',
+    'h_laranja', 'h_limao', 'h_abacaxi', 'h_melancia', 'h_melao',
+    'h_uva', 'h_morango', 'h_abacate', 'h_manga', 'h_manga_tommy',
+    'h_maracuja', 'h_maracuja_doce', 'h_caqui', 'h_jabuticaba', 'h_pitaya'
+  ],
   'leite': ['l_leite_int'],
   'ovo': ['l_ovos_30'],
   'ovos': ['l_ovos_30'],
