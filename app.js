@@ -1472,9 +1472,11 @@ function carregarUsuariosCadastrados() {
   }
   AppState.usuarios = [
     { id: 'usr_irandy', nome: 'Irandy', icone: '👨', papel: 'Marido / No Mercado' },
-    { id: 'usr_sioneide', nome: 'Sioneide', icone: '👩', papel: 'Patroa / Pedidos' }
+    { id: 'usr_sioneide', nome: 'Sioneide', icone: '👩', papel: 'Patroa / Pedidos' },
+    { id: 'usr_pitucha', nome: 'Pitucha', icone: '👵', papel: 'filha' },
+    { id: 'usr_pichuco', nome: 'Pichuco', icone: '👦', papel: 'filho' }
   ];
-  salvarUsuariosCadastrados();
+  localStorage.setItem('app_usuarios_cadastrados', JSON.stringify(AppState.usuarios));
 }
 
 function salvarUsuariosCadastrados() {
