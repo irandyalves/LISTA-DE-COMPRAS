@@ -4545,9 +4545,10 @@ function renderizarListaCompras() {
         badgeCompradorHtml = `<span class="badge-comprado-por" title="Pego por ${item.compradoPor}"><span class="ico-mao-comprador">✊</span> <span class="nome-comprador-txt">${item.compradoPor}</span></span>`;
       }
 
+      let tagCompraRapidaHtml = '';
       let tagNovoPedidoHtml = '';
       if (item.compraRapida && !item.comprado) {
-        tagNovoPedidoHtml = `<span class="tag-compra-rapida-card" onclick="event.stopPropagation(); dispensarDestaqueItemCompraRapida('${item.id}')" title="Compra Rápida Emergencial pedida por ${escapeHtml(item.adicionadoPor || 'Casa')} (Clique para tirar destaque)">⚡ URGENTE (${escapeHtml(item.adicionadoPor || 'Casa')})</span>`;
+        tagCompraRapidaHtml = `<span class="tag-compra-rapida-card" onclick="event.stopPropagation(); dispensarDestaqueItemCompraRapida('${item.id}')" title="Compra Rápida pedida por ${escapeHtml(item.adicionadoPor || 'Casa')} (Clique para tirar destaque)"><span class="tag-cr-urg-txt">URG.</span> <span class="tag-cr-autor-preto">(${escapeHtml(item.adicionadoPor || 'Casa')})</span></span>`;
       } else if (item.novoPedidoCasa && !item.comprado) {
         tagNovoPedidoHtml = `<span class="tag-novo-pedido-casa" onclick="event.stopPropagation(); dispensarAlertaNovoPedido('${item.id}')" title="Novo pedido de ${item.adicionadoPor || 'Casa'} (Clique para dispensar)">🔴 Novo (${item.adicionadoPor || 'Casa'})</span>`;
       }
@@ -4591,6 +4592,7 @@ function renderizarListaCompras() {
                 <div class="mcol-prod-preco-grupo">
                   ${badgeCompradorHtml}
                   ${favBtnHtml}
+                  ${tagCompraRapidaHtml}
                   <button type="button" class="btn-mic-preco-verde" id="btn-mic-item-${item.id}" onclick="ouvirPrecoItem('${item.id}', this, event)" title="Ditar preço por voz no PC ou Celular (fale ex: 1,10, 55 centavos ou 4 e 35)">
                     <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor">
                       <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>

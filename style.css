@@ -12015,16 +12015,27 @@ body.tema-escuro .btn-cr-header-concluir {
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  padding: 2px 7px;
+  padding: 2px 6px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #F59E0B 0%, #EA580C 100%);
+  background: linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%);
   color: #FFFFFF !important;
-  font-size: 0.64rem;
+  font-size: 0.62rem;
   font-weight: 900;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  flex-shrink: 0;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(234, 88, 12, 0.35);
-  animation: pulsoUrgenteCompraRapida 2s infinite ease-in-out;
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.35);
+}
+
+.tag-cr-urg-txt {
+  color: #FFFFFF !important;
+  font-weight: 900;
+}
+
+.tag-cr-autor-preto {
+  color: #000000 !important;
+  font-weight: 900 !important;
 }
 
 /* Banner flutuante quando chega um aviso de Compra Rápida da Patroa */
