@@ -881,6 +881,7 @@ document.addEventListener('DOMContentLoaded', () => {
   inicializarTema();
   carregarLocalmente();
   sanearTodaListaHortifruti();
+  verificarAutenticacaoAcesso();
   atualizarBadgeUsuarioHeader();
   atualizarUIModoNoMercado();
   atualizarUIModoResumido();
@@ -1135,6 +1136,7 @@ function salvarEstado(enviarParaNuvem = true) {
         listaAtiva: AppState.listaAtiva,
         historico: AppState.historico,
         usuarios: AppState.usuarios || [],
+        solicitacoesAcesso: AppState.solicitacoesAcesso || [],
         itensExcluidos: AppState.itensExcluidos || [],
         mercadoReferencia: AppState.mercadoReferencia || 'nenhum',
         cotacaoAtiva: AppState.cotacaoAtiva !== false,
@@ -1289,9 +1291,14 @@ function inicializarNuvem() {
         AppState.historico = dadosNuvem.historico;
       }
 
+      if (Array.isArray(dadosNuvem.solicitacoesAcesso)) {
+        AppState.solicitacoesAcesso = dadosNuvem.solicitacoesAcesso;
+      }
+
       if (dadosNuvem.usuarios && Array.isArray(dadosNuvem.usuarios) && dadosNuvem.usuarios.length > 0) {
-        AppState.usuarios = dadosNuvem.usuarios;
+        AppState.usuarios = garantirCadastrosPadraoFamilia(dadosNuvem.usuarios);
         localStorage.setItem('app_usuarios_cadastrados', JSON.stringify(AppState.usuarios));
+        verificarAutenticacaoAcesso(true);
         atualizarBadgeUsuarioHeader();
         renderizarGridUsuarios();
       }
@@ -1465,9 +1472,80 @@ function fecharAvisoPatroa() {
 }
 
 // ========================================================
-// GESTOR DE USUÁRIOS DINÂMICO (CRIAÇÃO, EDIÇÃO E SELEÇÃO)
+// GESTOR DE USUÁRIOS DINÂMICO & PORTARIA DE ACESSO (LOGIN)
 // ========================================================
 let usuarioEmEdicaoId = null;
+
+const USUARIOS_FAMILIA_PADRAO = [
+  {
+    id: 'usr_irandy',
+    nome: 'Irandy',
+    icone: '👨',
+    papel: 'Administrador',
+    email: 'irandyalves@gmail.com',
+    celular: '61 99641-0996',
+    admin: true
+  },
+  {
+    id: 'usr_sioneide',
+    nome: 'Sioneide',
+    icone: '👩',
+    papel: 'Patroa',
+    email: 'sioneid@gmail.com',
+    celular: '61 99641-0998',
+    admin: false
+  },
+  {
+    id: 'usr_pitucha',
+    nome: 'Pitucha',
+    icone: '👵',
+    papel: 'Filha',
+    email: 'stelazzalves@gmai.com',
+    celular: '61 99611-0425',
+    admin: false
+  },
+  {
+    id: 'usr_pitucho',
+    nome: 'Pitucho',
+    icone: '👦',
+    papel: 'Filho',
+    email: 'moai.do.morro@gmail.com',
+    celular: '61 99112-0246',
+    admin: false
+  }
+];
+
+function garantirCadastrosPadraoFamilia(lista) {
+  const resultado = Array.isArray(lista) ? lista.map(u => ({ ...u })) : [];
+
+  // Migra eventual registro antigo 'Pichuco' para 'Pitucho'
+  resultado.forEach(u => {
+    if ((u.nome || '').toLowerCase().trim() === 'pichuco' || u.id === 'usr_pichuco') {
+      u.id = 'usr_pitucho';
+      u.nome = 'Pitucho';
+    }
+  });
+
+  USUARIOS_FAMILIA_PADRAO.forEach(padrao => {
+    const existente = resultado.find(u =>
+      u.id === padrao.id ||
+      (u.nome || '').toLowerCase().trim() === padrao.nome.toLowerCase().trim()
+    );
+    if (existente) {
+      existente.id = padrao.id;
+      if (!existente.email) existente.email = padrao.email;
+      if (!existente.celular) existente.celular = padrao.celular;
+      if (!existente.papel || existente.papel === 'Marido / No Mercado' || existente.papel === 'Patroa / Pedidos' || existente.papel === 'filha' || existente.papel === 'filho') {
+        existente.papel = padrao.papel;
+      }
+      existente.admin = !!padrao.admin;
+    } else {
+      resultado.push({ ...padrao });
+    }
+  });
+
+  return resultado;
+}
 
 function carregarUsuariosCadastrados() {
   const salvos = localStorage.getItem('app_usuarios_cadastrados');
@@ -1475,25 +1553,257 @@ function carregarUsuariosCadastrados() {
     try {
       const parsed = JSON.parse(salvos);
       if (Array.isArray(parsed) && parsed.length > 0) {
-        AppState.usuarios = parsed;
+        AppState.usuarios = garantirCadastrosPadraoFamilia(parsed);
+        localStorage.setItem('app_usuarios_cadastrados', JSON.stringify(AppState.usuarios));
         return;
       }
     } catch (e) {
       console.warn("Erro ao ler usuarios cadastrados:", e);
     }
   }
-  AppState.usuarios = [
-    { id: 'usr_irandy', nome: 'Irandy', icone: '👨', papel: 'Marido / No Mercado' },
-    { id: 'usr_sioneide', nome: 'Sioneide', icone: '👩', papel: 'Patroa / Pedidos' },
-    { id: 'usr_pitucha', nome: 'Pitucha', icone: '👵', papel: 'filha' },
-    { id: 'usr_pichuco', nome: 'Pichuco', icone: '👦', papel: 'filho' }
-  ];
+  AppState.usuarios = garantirCadastrosPadraoFamilia([]);
   localStorage.setItem('app_usuarios_cadastrados', JSON.stringify(AppState.usuarios));
 }
 
 function salvarUsuariosCadastrados() {
   localStorage.setItem('app_usuarios_cadastrados', JSON.stringify(AppState.usuarios || []));
   salvarEstado(true);
+}
+
+function normalizarCelularLogin(valor) {
+  const digitos = String(valor || '').replace(/\D/g, '');
+  if (digitos.length >= 9) return digitos.slice(-9);
+  if (digitos.length === 8) return digitos;
+  return '';
+}
+
+function normalizarEmailLogin(valor) {
+  let em = String(valor || '').toLowerCase().trim();
+  if (!em.includes('@')) return '';
+  em = em.replace(/@gmai\.com$/, '@gmail.com');
+  if (em === 'sioneide@gmail.com') em = 'sioneid@gmail.com';
+  return em;
+}
+
+function buscarUsuarioPorCredencial(termoRaw) {
+  const termo = String(termoRaw || '').trim();
+  if (!termo) return null;
+
+  const celBusca = normalizarCelularLogin(termo);
+  const emailBusca = normalizarEmailLogin(termo);
+  const emailLiteral = termo.toLowerCase();
+
+  return (AppState.usuarios || []).find(u => {
+    if (celBusca) {
+      const celUsr = normalizarCelularLogin(u.celular || '');
+      if (celUsr && celUsr === celBusca) return true;
+    }
+    if (emailBusca || emailLiteral.includes('@')) {
+      const emUsrNorm = normalizarEmailLogin(u.email || '');
+      const emUsrLit = String(u.email || '').toLowerCase().trim();
+      if ((emailBusca && emUsrNorm === emailBusca) || (emUsrLit && emUsrLit === emailLiteral)) {
+        return true;
+      }
+    }
+    return false;
+  }) || null;
+}
+
+function verificarAutenticacaoAcesso(veioDaNuvem = false) {
+  const modalLogin = document.getElementById('modal-login-portaria');
+  if (!modalLogin) return;
+
+  // 1. Verifica se já existe sessão autenticada neste aparelho
+  const sessaoStr = localStorage.getItem('app_login_autorizado_v1');
+  if (sessaoStr) {
+    try {
+      const sessao = JSON.parse(sessaoStr);
+      const usrEncontrado = (AppState.usuarios || []).find(u =>
+        u.id === sessao.id ||
+        (u.nome || '').toLowerCase().trim() === String(sessao.nome || '').toLowerCase().trim()
+      ) || buscarUsuarioPorCredencial(sessao.credencial || '');
+
+      if (usrEncontrado) {
+        AppState.usuarioAtivo = usrEncontrado.nome;
+        AppState.usuarioIcone = usrEncontrado.icone || '👤';
+        localStorage.setItem('usuario_nome_ativo', usrEncontrado.nome);
+        localStorage.setItem('usuario_icone_ativo', usrEncontrado.icone || '👤');
+        modalLogin.style.display = 'none';
+        atualizarBadgeUsuarioHeader();
+        return;
+      }
+    } catch (e) {}
+  }
+
+  // 2. Verifica se havia uma solicitação pendente que acabou de ser aprovada pelo Admin
+  const pendenteStr = localStorage.getItem('app_solicitacao_pendente_v1');
+  if (pendenteStr) {
+    try {
+      const pend = JSON.parse(pendenteStr);
+      const aprovado = buscarUsuarioPorCredencial(pend.celular || pend.email || '');
+      if (aprovado) {
+        localStorage.removeItem('app_solicitacao_pendente_v1');
+        efetivarLoginUsuario(aprovado);
+        return;
+      }
+    } catch (e) {}
+  }
+
+  // 3. Caso contrário, exibe a Portaria de Login
+  modalLogin.style.display = 'flex';
+  if (!veioDaNuvem) {
+    setTimeout(() => {
+      const inp = document.getElementById('input-login-credencial');
+      if (inp) inp.focus();
+    }, 120);
+  }
+}
+
+function efetivarLoginUsuario(usr) {
+  if (!usr) return;
+  localStorage.setItem('app_login_autorizado_v1', JSON.stringify({
+    id: usr.id,
+    nome: usr.nome,
+    credencial: usr.celular || usr.email || '',
+    loginEm: Date.now()
+  }));
+  AppState.usuarioAtivo = usr.nome;
+  AppState.usuarioIcone = usr.icone || '👤';
+  localStorage.setItem('usuario_nome_ativo', usr.nome);
+  localStorage.setItem('usuario_icone_ativo', usr.icone || '👤');
+
+  const modalLogin = document.getElementById('modal-login-portaria');
+  if (modalLogin) modalLogin.style.display = 'none';
+
+  atualizarBadgeUsuarioHeader();
+  renderizarGridUsuarios();
+  renderizarDespensa();
+  renderizarListaCompras();
+  mostrarNotificacaoToast(`🔓 Bem-vindo(a), ${usr.icone || '👤'} ${usr.nome} (${usr.papel || 'Acesso Liberado'})!`);
+}
+
+function realizarLoginPortaria() {
+  const input = document.getElementById('input-login-credencial');
+  const erroEl = document.getElementById('msg-erro-login-portaria');
+  const valor = input ? input.value.trim() : '';
+
+  if (!valor) {
+    if (erroEl) {
+      erroEl.textContent = '⚠️ Digite seu número de celular (WhatsApp) ou seu e-mail cadastrado.';
+      erroEl.style.display = 'block';
+    }
+    if (input) input.focus();
+    return;
+  }
+
+  const usr = buscarUsuarioPorCredencial(valor);
+  if (usr) {
+    if (erroEl) erroEl.style.display = 'none';
+    if (input) input.value = '';
+    efetivarLoginUsuario(usr);
+  } else {
+    if (erroEl) {
+      erroEl.innerHTML = '🚫 Celular ou e-mail não encontrado na lista de autorizados.<br><small>Verifique os dados ou clique abaixo em <strong>"Solicitar Cadastro ao Administrador"</strong>.</small>';
+      erroEl.style.display = 'block';
+    }
+  }
+}
+
+function alternarFormSolicitarCadastroPortaria(mostrar) {
+  const boxLogin = document.getElementById('box-portaria-login');
+  const boxCadastro = document.getElementById('box-portaria-cadastro');
+  const erroEl = document.getElementById('msg-erro-login-portaria');
+  if (erroEl) erroEl.style.display = 'none';
+  if (boxLogin) boxLogin.style.display = mostrar ? 'none' : 'block';
+  if (boxCadastro) boxCadastro.style.display = mostrar ? 'block' : 'none';
+}
+
+function enviarSolicitacaoAcessoPortaria() {
+  const inpNome = document.getElementById('input-solicitacao-nome');
+  const inpPapel = document.getElementById('input-solicitacao-papel');
+  const inpCel = document.getElementById('input-solicitacao-celular');
+  const inpEmail = document.getElementById('input-solicitacao-email');
+  const msgStatus = document.getElementById('msg-status-solicitacao-portaria');
+
+  const nome = inpNome ? inpNome.value.trim() : '';
+  const papel = inpPapel ? inpPapel.value.trim() : 'Convidado(a)';
+  const celular = inpCel ? inpCel.value.trim() : '';
+  const email = inpEmail ? inpEmail.value.trim() : '';
+
+  if (!nome || (!celular && !email)) {
+    if (msgStatus) {
+      msgStatus.style.display = 'block';
+      msgStatus.style.color = '#DC2626';
+      msgStatus.textContent = '⚠️ Informe seu Nome e pelo menos o Celular ou E-mail.';
+    }
+    return;
+  }
+
+  // Se já for um usuário autorizado, já entra direto
+  const jaCadastrado = buscarUsuarioPorCredencial(celular) || buscarUsuarioPorCredencial(email);
+  if (jaCadastrado) {
+    efetivarLoginUsuario(jaCadastrado);
+    return;
+  }
+
+  const novaReq = {
+    id: 'req_' + Date.now(),
+    nome: capitalizar(nome),
+    papel: papel || 'Família',
+    celular: celular,
+    email: email.toLowerCase(),
+    icone: '👤',
+    criadoEm: new Date().toISOString()
+  };
+
+  if (!Array.isArray(AppState.solicitacoesAcesso)) AppState.solicitacoesAcesso = [];
+  AppState.solicitacoesAcesso.push(novaReq);
+  localStorage.setItem('app_solicitacao_pendente_v1', JSON.stringify(novaReq));
+  salvarEstado(true);
+
+  if (msgStatus) {
+    msgStatus.style.display = 'block';
+    msgStatus.style.color = '#059669';
+    msgStatus.innerHTML = '⏳ <strong>Solicitação enviada para Irandy (Administrador)!</strong><br>Assim que ele aprovar, seu acesso será liberado automaticamente.';
+  }
+}
+
+function aprovarSolicitacaoAcesso(reqId) {
+  if (!ehUsuarioAdmin()) return;
+  const listaReq = Array.isArray(AppState.solicitacoesAcesso) ? AppState.solicitacoesAcesso : [];
+  const req = listaReq.find(r => r.id === reqId);
+  if (!req) return;
+
+  const novoUsr = {
+    id: 'usr_' + Date.now(),
+    nome: capitalizar(req.nome),
+    icone: req.icone || '👤',
+    papel: req.papel || 'Família',
+    celular: req.celular || '',
+    email: req.email || '',
+    admin: false
+  };
+
+  AppState.usuarios.push(novoUsr);
+  AppState.solicitacoesAcesso = listaReq.filter(r => r.id !== reqId);
+  salvarUsuariosCadastrados();
+  renderizarGridUsuarios();
+  mostrarNotificacaoToast(`✅ Acesso de "${novoUsr.nome}" aprovado e liberado!`);
+}
+
+function recusarSolicitacaoAcesso(reqId) {
+  if (!ehUsuarioAdmin()) return;
+  AppState.solicitacoesAcesso = (AppState.solicitacoesAcesso || []).filter(r => r.id !== reqId);
+  salvarEstado(true);
+  renderizarGridUsuarios();
+  mostrarNotificacaoToast('🗑️ Solicitação recusada.');
+}
+
+function fazerLogoutPortaria() {
+  localStorage.removeItem('app_login_autorizado_v1');
+  fecharModal('modal-perfil-usuario');
+  alternarFormSolicitarCadastroPortaria(false);
+  verificarAutenticacaoAcesso(false);
 }
 
 function atualizarBadgeUsuarioHeader() {
@@ -1521,6 +1831,40 @@ function renderizarGridUsuarios() {
   const grid = document.getElementById('grid-usuarios-cards');
   if (!grid) return;
 
+  const isAdmin = ehUsuarioAdmin();
+  const painelNovo = document.getElementById('painel-novo-usuario');
+  if (painelNovo && !usuarioEmEdicaoId) {
+    painelNovo.style.display = isAdmin ? 'block' : 'none';
+  }
+
+  // Renderiza solicitações pendentes para o Admin Irandy
+  const boxPendentes = document.getElementById('box-solicitacoes-pendentes-admin');
+  if (boxPendentes) {
+    const reqs = Array.isArray(AppState.solicitacoesAcesso) ? AppState.solicitacoesAcesso : [];
+    if (isAdmin && reqs.length > 0) {
+      boxPendentes.style.display = 'block';
+      boxPendentes.innerHTML = `
+        <div style="font-size: 0.78rem; font-weight: 800; color: #B45309; margin-bottom: 6px;">
+          🔔 Solicitações de Acesso Pendentes (${reqs.length})
+        </div>
+        ${reqs.map(r => `
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 8px; background: #FFFFFF; border: 1px solid #FDE68A; border-radius: 6px; margin-bottom: 4px;">
+            <div style="font-size: 0.74rem; line-height: 1.3;">
+              <strong>${escapeHtml(r.nome)}</strong> (${escapeHtml(r.papel || 'Família')})<br>
+              <span style="color: #64748B;">${escapeHtml(r.celular || '')} ${r.email ? '• ' + escapeHtml(r.email) : ''}</span>
+            </div>
+            <div style="display: flex; gap: 4px; flex-shrink: 0;">
+              <button type="button" onclick="aprovarSolicitacaoAcesso('${r.id}')" style="background: #10B981; color: white; border: none; border-radius: 5px; padding: 4px 8px; font-size: 0.7rem; font-weight: 700; cursor: pointer;">✓ Aprovar</button>
+              <button type="button" onclick="recusarSolicitacaoAcesso('${r.id}')" style="background: #FEE2E2; color: #DC2626; border: none; border-radius: 5px; padding: 4px 8px; font-size: 0.7rem; font-weight: 700; cursor: pointer;">✕</button>
+            </div>
+          </div>
+        `).join('')}
+      `;
+    } else {
+      boxPendentes.style.display = 'none';
+    }
+  }
+
   const nomeAtivo = (AppState.usuarioAtivo || 'Irandy').toLowerCase().trim();
   grid.innerHTML = '';
 
@@ -1531,23 +1875,37 @@ function renderizarGridUsuarios() {
     card.id = `card-usr-${usr.id}`;
 
     const iconeEscapado = (usr.icone || '👤');
+    const contatoInfo = [usr.celular, usr.email].filter(Boolean).join(' • ');
 
     card.innerHTML = `
+      ${isAdmin ? `
       <div class="perfil-card-acoes-topo">
-        <button type="button" class="btn-acao-perfil btn-editar-perfil" onclick="iniciarEdicaoUsuario('${usr.id}', event)" title="Editar nome, avatar e papel">✏️</button>
-        ${(AppState.usuarios || []).length > 1 ? `
+        <button type="button" class="btn-acao-perfil btn-editar-perfil" onclick="iniciarEdicaoUsuario('${usr.id}', event)" title="Editar nome, celular, e-mail e papel">✏️</button>
+        ${(AppState.usuarios || []).length > 1 && !usr.admin ? `
           <button type="button" class="btn-acao-perfil btn-excluir-perfil" onclick="removerUsuarioPerfil('${usr.id}', event)" title="Excluir este perfil">🗑️</button>
         ` : ''}
       </div>
+      ` : ''}
       <div class="perfil-avatar">${iconeEscapado}</div>
-      <strong class="perfil-nome">${usr.nome}</strong>
-      <span class="perfil-desc">${usr.papel || 'Usuário'}</span>
-      ${isAtivo ? '<span class="badge-perfil-ativo">✓ Ativo</span>' : ''}
+      <strong class="perfil-nome">${escapeHtml(usr.nome)}</strong>
+      <span class="perfil-desc">${escapeHtml(usr.papel || 'Usuário')}</span>
+      ${contatoInfo ? `<span class="perfil-contato-mini" style="font-size: 0.62rem; color: #64748B; text-align: center; line-height: 1.2; margin-top: 2px; word-break: break-all;">${escapeHtml(usr.celular || '')}<br>${escapeHtml(usr.email || '')}</span>` : ''}
+      ${isAtivo ? '<span class="badge-perfil-ativo">✓ Logado</span>' : ''}
     `;
 
     card.onclick = (e) => {
       if (!e.target.closest('.perfil-card-acoes-topo')) {
-        selecionarPerfilUsuario(usr.nome, usr.icone || '👤');
+        if (isAtivo) {
+          fecharModal('modal-perfil-usuario');
+          return;
+        }
+        // Somente o Admin Irandy pode alternar direto; demais perfis precisam autenticar com o celular/e-mail do perfil desejado
+        if (isAdmin) {
+          efetivarLoginUsuario(usr);
+          fecharModal('modal-perfil-usuario');
+        } else {
+          mostrarNotificacaoToast(`🔒 Para entrar como ${usr.nome}, clique em "Trocar Conta / Sair" e informe o celular ou e-mail de ${usr.nome}.`);
+        }
       }
     };
 
@@ -1572,8 +1930,14 @@ function selecionarPerfilUsuario(nome, icone) {
 }
 
 function adicionarNovoUsuarioPerfil() {
+  if (!ehUsuarioAdmin()) {
+    mostrarNotificacaoToast("🔒 Apenas o Administrador (Irandy) pode cadastrar usuários.");
+    return;
+  }
   const inputNome = document.getElementById('input-novo-usuario-nome');
   const inputPapel = document.getElementById('input-novo-usuario-papel');
+  const inputCelular = document.getElementById('input-novo-usuario-celular');
+  const inputEmail = document.getElementById('input-novo-usuario-email');
   const selectIcone = document.getElementById('input-novo-usuario-icone');
 
   const nome = inputNome ? inputNome.value.trim() : '';
@@ -1589,36 +1953,39 @@ function adicionarNovoUsuarioPerfil() {
     return;
   }
 
-  const papel = (inputPapel && inputPapel.value.trim()) ? inputPapel.value.trim() : 'Pedidos';
+  const papel = (inputPapel && inputPapel.value.trim()) ? inputPapel.value.trim() : 'Família';
+  const celular = inputCelular ? inputCelular.value.trim() : '';
+  const email = inputEmail ? inputEmail.value.trim().toLowerCase() : '';
   const icone = selectIcone ? selectIcone.value : '👤';
 
   const novoUsr = {
     id: 'usr_' + Date.now(),
     nome: capitalizar(nome),
     icone: icone,
-    papel: papel
+    papel: papel,
+    celular: celular,
+    email: email,
+    admin: false
   };
 
   if (!AppState.usuarios) AppState.usuarios = [];
   AppState.usuarios.push(novoUsr);
   salvarUsuariosCadastrados();
 
-  AppState.usuarioAtivo = novoUsr.nome;
-  AppState.usuarioIcone = novoUsr.icone;
-  localStorage.setItem('usuario_nome_ativo', novoUsr.nome);
-  localStorage.setItem('usuario_icone_ativo', novoUsr.icone);
-
   atualizarBadgeUsuarioHeader();
   renderizarGridUsuarios();
 
   if (inputNome) inputNome.value = '';
   if (inputPapel) inputPapel.value = '';
+  if (inputCelular) inputCelular.value = '';
+  if (inputEmail) inputEmail.value = '';
 
-  mostrarNotificacaoToast(`✅ Card de "${novoUsr.nome}" criado e ativado com sucesso!`);
+  mostrarNotificacaoToast(`✅ Usuário "${novoUsr.nome}" cadastrado com sucesso!`);
 }
 
 function iniciarEdicaoUsuario(usrId, ev) {
   if (ev) ev.stopPropagation();
+  if (!ehUsuarioAdmin()) return;
   const usr = (AppState.usuarios || []).find(u => u.id === usrId);
   if (!usr) return;
 
@@ -1628,10 +1995,14 @@ function iniciarEdicaoUsuario(usrId, ev) {
   const painelNovo = document.getElementById('painel-novo-usuario');
   const inputNome = document.getElementById('input-edit-usuario-nome');
   const inputPapel = document.getElementById('input-edit-usuario-papel');
+  const inputCelular = document.getElementById('input-edit-usuario-celular');
+  const inputEmail = document.getElementById('input-edit-usuario-email');
   const selectIcone = document.getElementById('input-edit-usuario-icone');
 
   if (inputNome) inputNome.value = usr.nome;
   if (inputPapel) inputPapel.value = usr.papel || '';
+  if (inputCelular) inputCelular.value = usr.celular || '';
+  if (inputEmail) inputEmail.value = usr.email || '';
   if (selectIcone) selectIcone.value = usr.icone || '👤';
 
   if (painelNovo) painelNovo.style.display = 'none';
@@ -1645,12 +2016,14 @@ function iniciarEdicaoUsuario(usrId, ev) {
 }
 
 function salvarEdicaoUsuario() {
-  if (!usuarioEmEdicaoId) return;
+  if (!usuarioEmEdicaoId || !ehUsuarioAdmin()) return;
   const usr = (AppState.usuarios || []).find(u => u.id === usuarioEmEdicaoId);
   if (!usr) return;
 
   const inputNome = document.getElementById('input-edit-usuario-nome');
   const inputPapel = document.getElementById('input-edit-usuario-papel');
+  const inputCelular = document.getElementById('input-edit-usuario-celular');
+  const inputEmail = document.getElementById('input-edit-usuario-email');
   const selectIcone = document.getElementById('input-edit-usuario-icone');
 
   const novoNome = inputNome ? inputNome.value.trim() : '';
@@ -1662,6 +2035,8 @@ function salvarEdicaoUsuario() {
   const nomeAnterior = usr.nome;
   usr.nome = capitalizar(novoNome);
   usr.papel = inputPapel ? inputPapel.value.trim() : usr.papel;
+  usr.celular = inputCelular ? inputCelular.value.trim() : (usr.celular || '');
+  usr.email = inputEmail ? inputEmail.value.trim().toLowerCase() : (usr.email || '');
   usr.icone = selectIcone ? selectIcone.value : usr.icone;
 
   salvarUsuariosCadastrados();
@@ -1684,18 +2059,19 @@ function cancelarEdicaoUsuario() {
   const painelEdicao = document.getElementById('painel-edicao-usuario');
   const painelNovo = document.getElementById('painel-novo-usuario');
   if (painelEdicao) painelEdicao.style.display = 'none';
-  if (painelNovo) painelNovo.style.display = 'block';
+  if (painelNovo) painelNovo.style.display = ehUsuarioAdmin() ? 'block' : 'none';
 }
 
 function removerUsuarioPerfil(usrId, ev) {
   if (ev) ev.stopPropagation();
+  if (!ehUsuarioAdmin()) return;
   if (!AppState.usuarios || AppState.usuarios.length <= 1) {
     mostrarNotificacaoToast("⚠️ Mantenha pelo menos um usuário cadastrado.");
     return;
   }
 
   const usr = AppState.usuarios.find(u => u.id === usrId);
-  if (!usr) return;
+  if (!usr || usr.admin) return;
 
   if (!confirm(`Deseja realmente excluir o perfil de "${usr.nome}"?`)) return;
 
