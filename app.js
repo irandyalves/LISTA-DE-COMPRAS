@@ -8471,6 +8471,8 @@ window.addEventListener('keydown', (e) => {
     }
 
     // Outros modais abertos
+    fecharModal('modal-opcoes-header');
+    fecharModal('modal-perfil-usuario');
     fecharModal('modal-marcas');
     fecharModal('modal-subir-lista');
     fecharModal('modal-finalizar');
