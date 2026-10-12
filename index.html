@@ -132,7 +132,7 @@
   </style>
 
   <!-- CSS Moderno -->
-  <link rel="stylesheet" href="style.css?v=10.91">
+  <link rel="stylesheet" href="style.css?v=10.93">
 </head>
 <body>
 
@@ -961,16 +961,17 @@
         <div class="compra-rapida-zap-bar">
           <div class="compra-rapida-zap-input-pill">
             <span class="compra-rapida-zap-lupa">🔍</span>
-            <input type="text" id="input-busca-compra-rapida"
-                   class="input-busca-compra-rapida"
-                   placeholder="Digite ou fale: arroz, feijão, pão, carne, verduras..."
-                   autocomplete="off"
-                   oninput="filtrarItensCompraRapida(this.value)"
-                   onkeydown="if(event.key === 'Enter') { event.preventDefault(); confirmarListaInteligenteCompraRapida(); }">
+            <textarea id="input-busca-compra-rapida"
+                      rows="3"
+                      class="input-busca-compra-rapida"
+                      placeholder="Digite ou fale: arroz, feijão, pão, carne, verduras..."
+                      autocomplete="off"
+                      oninput="filtrarItensCompraRapida(this.value)"
+                      onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); confirmarListaInteligenteCompraRapida(); }"></textarea>
             <button type="button" id="btn-limpar-busca-compra-rapida" class="btn-limpar-busca-cr" style="display: none;" onclick="limparBuscaCompraRapida()" title="Limpar texto">✕</button>
           </div>
           <button type="button" id="btn-mic-compra-rapida" class="btn-zap-acao btn-zap-mic" onclick="alternarVozCompraRapida(event)" title="Falar lista de produtos no microfone (ex: arroz, feijão, pão, leite)">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor">
               <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
               <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
             </svg>
@@ -1338,7 +1339,7 @@
   <script src="logos_banco.js?v=10.13"></script>
   <script src="icones2d.js"></script>
   <script src="firebase-sync.js"></script>
-  <script src="app.js?v=10.91"></script>
+  <script src="app.js?v=10.93"></script>
 
 </body>
 </html>

@@ -4545,12 +4545,11 @@ function renderizarListaCompras() {
         badgeCompradorHtml = `<span class="badge-comprado-por" title="Pego por ${item.compradoPor}"><span class="ico-mao-comprador">✊</span> <span class="nome-comprador-txt">${item.compradoPor}</span></span>`;
       }
 
-      let tagCompraRapidaHtml = '';
-      let tagNovoPedidoHtml = '';
+      let tagAutorPedidoHtml = '';
       if (item.compraRapida && !item.comprado) {
-        tagCompraRapidaHtml = `<span class="tag-compra-rapida-card" onclick="event.stopPropagation(); dispensarDestaqueItemCompraRapida('${item.id}')" title="Compra Rápida pedida por ${escapeHtml(item.adicionadoPor || 'Casa')} (Clique para tirar destaque)"><span class="tag-cr-urg-txt">URG.</span> <span class="tag-cr-autor-preto">(${escapeHtml(item.adicionadoPor || 'Casa')})</span></span>`;
+        tagAutorPedidoHtml = `<span class="tag-compra-rapida-card" onclick="event.stopPropagation(); dispensarDestaqueItemCompraRapida('${item.id}')" title="Compra Rápida pedida por ${escapeHtml(item.adicionadoPor || 'Casa')} (Clique para tirar destaque)"><span class="tag-cr-autor-preto">${escapeHtml(item.adicionadoPor || 'Casa')}</span></span>`;
       } else if (item.novoPedidoCasa && !item.comprado) {
-        tagNovoPedidoHtml = `<span class="tag-novo-pedido-casa" onclick="event.stopPropagation(); dispensarAlertaNovoPedido('${item.id}')" title="Novo pedido de ${item.adicionadoPor || 'Casa'} (Clique para dispensar)">🔴 Novo (${item.adicionadoPor || 'Casa'})</span>`;
+        tagAutorPedidoHtml = `<span class="tag-novo-pedido-casa" onclick="event.stopPropagation(); dispensarAlertaNovoPedido('${item.id}')" title="Pedido de ${escapeHtml(item.adicionadoPor || 'Casa')} (Clique para dispensar)">${escapeHtml(item.adicionadoPor || 'Casa')}</span>`;
       }
 
       let favBtnHtml = '';
@@ -4586,13 +4585,12 @@ function renderizarListaCompras() {
                 <div class="mcol-prod-info-esquerda">
                   <span class="mcol-prod-nome ${item.comprado && !isPendente ? 'texto-riscado' : ''}" onclick="alternarItemComprado('${item.id}')" title="${item.nome}">${nomeExibicao}</span>
                   ${marcaHtml}
-                  ${tagNovoPedidoHtml}
                   ${badgePendente}
                 </div>
                 <div class="mcol-prod-preco-grupo">
                   ${badgeCompradorHtml}
+                  ${tagAutorPedidoHtml}
                   ${favBtnHtml}
-                  ${tagCompraRapidaHtml}
                   <button type="button" class="btn-mic-preco-verde" id="btn-mic-item-${item.id}" onclick="ouvirPrecoItem('${item.id}', this, event)" title="Ditar preço por voz no PC ou Celular (fale ex: 1,10, 55 centavos ou 4 e 35)">
                     <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor">
                       <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
@@ -7103,43 +7101,14 @@ function atualizarVisualItemLinha(item, isPendente = false) {
       badgePendenteEl.remove();
     }
 
-    // Atualiza tag de compra rápida ou novo pedido de casa
-    let tagRapidaEl = infoEsquerda.querySelector('.tag-compra-rapida-card');
-    let tagNovoEl = infoEsquerda.querySelector('.tag-novo-pedido-casa');
-    if (item.compraRapida && !item.comprado) {
-      if (tagNovoEl) tagNovoEl.remove();
-      if (!tagRapidaEl) {
-        tagRapidaEl = document.createElement('span');
-        tagRapidaEl.className = 'tag-compra-rapida-card';
-        tagRapidaEl.title = `Compra Rápida Emergencial de ${item.adicionadoPor || 'Casa'} (Clique para tirar destaque)`;
-        tagRapidaEl.onclick = (e) => {
-          e.stopPropagation();
-          dispensarDestaqueItemCompraRapida(item.id);
-        };
-        infoEsquerda.appendChild(tagRapidaEl);
-      }
-      tagRapidaEl.textContent = `⚡ URGENTE (${item.adicionadoPor || 'Casa'})`;
-    } else {
-      if (tagRapidaEl) tagRapidaEl.remove();
-      if (item.novoPedidoCasa && !item.comprado) {
-        if (!tagNovoEl) {
-          tagNovoEl = document.createElement('span');
-          tagNovoEl.className = 'tag-novo-pedido-casa';
-          tagNovoEl.title = `Novo pedido de ${item.adicionadoPor || 'Casa'} (Clique para dispensar)`;
-          tagNovoEl.onclick = (e) => {
-            e.stopPropagation();
-            dispensarAlertaNovoPedido(item.id);
-          };
-          infoEsquerda.appendChild(tagNovoEl);
-        }
-        tagNovoEl.textContent = `🔴 Novo (${item.adicionadoPor || 'Casa'})`;
-      } else if (tagNovoEl) {
-        tagNovoEl.remove();
-      }
-    }
+    // Remove eventuais tags antigas da esquerda
+    const oldRapidaEsq = infoEsquerda.querySelector('.tag-compra-rapida-card');
+    if (oldRapidaEsq) oldRapidaEsq.remove();
+    const oldNovoEsq = infoEsquerda.querySelector('.tag-novo-pedido-casa');
+    if (oldNovoEsq) oldNovoEsq.remove();
   }
 
-  // Atualiza badge de quem comprou (alinhado à direita no grupo de preço)
+  // Atualiza badge de quem comprou e ticket do autor (alinhado à direita, antes da estrelinha)
   const precoGrupo = tr.querySelector('.mcol-prod-preco-grupo');
   if (precoGrupo) {
     let badgeCompradoEl = precoGrupo.querySelector('.badge-comprado-por');
@@ -7153,6 +7122,42 @@ function atualizarVisualItemLinha(item, isPendente = false) {
       badgeCompradoEl.innerHTML = `<span class="ico-mao-comprador">✊</span> <span class="nome-comprador-txt">${item.compradoPor}</span>`;
     } else if (badgeCompradoEl) {
       badgeCompradoEl.remove();
+    }
+
+    const favBtnEl = precoGrupo.querySelector('.btn-favorito-item') || precoGrupo.querySelector('.btn-mic-preco-verde');
+    let tagRapidaEl = precoGrupo.querySelector('.tag-compra-rapida-card');
+    let tagNovoEl = precoGrupo.querySelector('.tag-novo-pedido-casa');
+
+    if (item.compraRapida && !item.comprado) {
+      if (tagNovoEl) tagNovoEl.remove();
+      if (!tagRapidaEl) {
+        tagRapidaEl = document.createElement('span');
+        tagRapidaEl.className = 'tag-compra-rapida-card';
+        tagRapidaEl.title = `Compra Rápida pedida por ${item.adicionadoPor || 'Casa'} (Clique para tirar destaque)`;
+        tagRapidaEl.onclick = (e) => {
+          e.stopPropagation();
+          dispensarDestaqueItemCompraRapida(item.id);
+        };
+        precoGrupo.insertBefore(tagRapidaEl, favBtnEl || null);
+      }
+      tagRapidaEl.innerHTML = `<span class="tag-cr-autor-preto">${escapeHtml(item.adicionadoPor || 'Casa')}</span>`;
+    } else {
+      if (tagRapidaEl) tagRapidaEl.remove();
+      if (item.novoPedidoCasa && !item.comprado) {
+        if (!tagNovoEl) {
+          tagNovoEl = document.createElement('span');
+          tagNovoEl.className = 'tag-novo-pedido-casa';
+          tagNovoEl.title = `Pedido de ${item.adicionadoPor || 'Casa'} (Clique para dispensar)`;
+          tagNovoEl.onclick = (e) => {
+            e.stopPropagation();
+            dispensarAlertaNovoPedido(item.id);
+          };
+          precoGrupo.insertBefore(tagNovoEl, favBtnEl || null);
+        }
+        tagNovoEl.textContent = `${item.adicionadoPor || 'Casa'}`;
+      } else if (tagNovoEl) {
+        tagNovoEl.remove();
+      }
     }
   }
   const strayBadge = tr.querySelector('.mcol-prod-card-cell > .badge-confirmar-desmarcar');
@@ -12257,6 +12262,11 @@ function renderizarGridCompraRapida() {
   const produtos = obterProdutosFiltradosCompraRapida();
   const termo = (estadoCompraRapida.termoBusca || '').trim();
   const favSet = obterSetFavoritosCompraRapida();
+  const detectadosSet = new Set(
+    (estadoCompraRapida.itensInteligentesDetectados || [])
+      .map(d => d && d.prod ? String(d.prod.id) : '')
+      .filter(Boolean)
+  );
 
   if (produtos.length === 0) {
     grid.innerHTML = `
@@ -12274,6 +12284,7 @@ function renderizarGridCompraRapida() {
     const idStr = String(prod.id);
     const selecionadoObj = estadoCompraRapida.selecionadosTemp.get(idStr);
     const estaMarcado = !!selecionadoObj;
+    const ehFiltradoTopo = estaMarcado || detectadosSet.has(idStr);
     const qtdeDigitada = estadoCompraRapida.qtdesDigitadasPorId && estadoCompraRapida.qtdesDigitadasPorId.get(idStr);
     const qtde = qtdeDigitada || (selecionadoObj ? (selecionadoObj.qtde || 1) : (prod.qtde || 1));
     const qtdeFmt = String(qtde).padStart(2, '0');
@@ -12285,7 +12296,7 @@ function renderizarGridCompraRapida() {
       : '🛒';
 
     return `
-      <div class="card-item-compra-rapida ${estaMarcado ? 'selecionado-urgente' : ''}"
+      <div class="card-item-compra-rapida ${estaMarcado ? 'selecionado-urgente' : ''} ${ehFiltradoTopo ? 'item-filtrado-bold' : ''}"
            onclick="alternarItemCompraRapida('${escapeHtml(idStr)}', event)">
         <div class="card-cr-topo">
           <div class="card-cr-icone">${svgIcone}</div>

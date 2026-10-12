@@ -9469,21 +9469,23 @@ body.tema-escuro .card-ranking-stats {
   transform: scale(1.04);
 }
 
-/* 2. Tag "NOVO (Nome)" no próprio item da lista */
+/* 2. Tag de quem pediu o item (ex: Irandy / Sioneide) alinhada à direita, antes da estrelinha */
 .tag-novo-pedido-casa {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   background: #FEE2E2;
   color: #DC2626;
   border: 1px solid #FCA5A5;
-  border-radius: 12px;
-  font-size: 0.65rem;
+  border-radius: 999px;
+  font-size: 0.64rem;
   font-weight: 800;
-  padding: 1px 6px;
+  padding: 2px 7px;
   cursor: pointer;
-  margin-left: 4px;
+  margin-left: 0;
+  margin-right: 2px;
   white-space: nowrap;
-  animation: pulsarTagNovo 2s infinite ease-in-out;
+  flex-shrink: 0;
   user-select: none;
 }
 
@@ -11222,18 +11224,19 @@ body.tema-escuro #view-despensa .item-card.marcado-excluir-lote {
 .modal-compra-rapida-overlay {
   z-index: 100005 !important;
   backdrop-filter: blur(5px);
+  padding: 6px !important;
 }
 
 .modal-compra-rapida-content {
-  width: 95% !important;
-  max-width: 780px !important;
-  max-height: 88vh !important;
+  width: 98vw !important;
+  max-width: 98vw !important;
+  max-height: 92vh !important;
   display: flex !important;
   flex-direction: column !important;
   padding: 0 !important;
-  border-radius: 16px !important;
+  border-radius: 12px !important;
   overflow: hidden !important;
-  border: 2px solid rgba(245, 158, 11, 0.65) !important;
+  border: 2px solid rgba(245, 158, 11, 0.85) !important;
   background: #FFFFFF;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
 }
@@ -11241,7 +11244,7 @@ body.tema-escuro #view-despensa .item-card.marcado-excluir-lote {
 [data-theme="dark"] .modal-compra-rapida-content,
 body.tema-escuro .modal-compra-rapida-content {
   background: #0F172A !important;
-  border-color: rgba(245, 158, 11, 0.7) !important;
+  border-color: rgba(245, 158, 11, 0.85) !important;
   color: #F8FAFC;
 }
 
@@ -11326,9 +11329,9 @@ body.tema-escuro .compra-rapida-titulo {
   border-color: #EF4444;
 }
 
-/* Barra Estilo WhatsApp: Digitar ou Falar no Mic + Lista Inteligente */
+/* Barra Estilo WhatsApp: Digitar (3 linhas, cantos menos arredondados) ou Falar no Mic (40% menor) */
 .compra-rapida-zap-container {
-  padding: 10px 14px 8px;
+  padding: 8px 12px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -11351,12 +11354,12 @@ body.tema-escuro .compra-rapida-zap-container {
 .compra-rapida-zap-input-pill {
   flex: 1;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
   background: #FFFFFF;
   border: 1.5px solid #CBD5E1;
-  border-radius: 999px;
-  padding: 7px 12px 7px 14px;
+  border-radius: 8px !important;
+  padding: 6px 10px;
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
@@ -11376,37 +11379,48 @@ body.tema-escuro .compra-rapida-zap-input-pill {
   font-size: 0.92rem;
   opacity: 0.75;
   flex-shrink: 0;
+  margin-top: 2px;
 }
 
 .input-busca-compra-rapida {
   flex: 1;
   border: none !important;
   background: transparent !important;
+  font-family: inherit;
   font-size: 0.88rem;
+  line-height: 1.35 !important;
+  min-height: 3.9em !important;
+  height: 3.9em !important;
+  resize: vertical;
   color: inherit;
   outline: none !important;
   min-width: 0;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 .btn-limpar-busca-cr {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   border: none;
   background: rgba(148, 163, 184, 0.3);
   color: inherit;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  margin-top: 2px;
 }
 
-/* Botões redondos estilo WhatsApp (Microfone Verde e Enviar) */
+/* Botão de microfone reduzido em 40% (de 40px para 24px) */
 .btn-zap-acao {
-  width: 40px;
-  height: 40px;
+  width: 24px !important;
+  height: 24px !important;
+  min-width: 24px !important;
+  min-height: 24px !important;
   border-radius: 50%;
   border: none;
   display: inline-flex;
@@ -11414,13 +11428,14 @@ body.tema-escuro .compra-rapida-zap-input-pill {
   justify-content: center;
   cursor: pointer;
   flex-shrink: 0;
+  padding: 0 !important;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .btn-zap-mic {
   background: linear-gradient(135deg, #10B981 0%, #059669 100%);
   color: #FFFFFF;
-  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.35);
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35);
 }
 
 .btn-zap-mic.gravando {
@@ -11685,9 +11700,9 @@ body.tema-escuro .card-item-compra-rapida {
 
 .card-cr-nome {
   font-size: var(--fonte-card-nome, 0.78rem) !important;
-  font-weight: 700 !important;
+  font-weight: 400 !important;
   line-height: 1.15 !important;
-  color: #0F172A;
+  color: #334155;
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
@@ -11695,7 +11710,21 @@ body.tema-escuro .card-item-compra-rapida {
 
 [data-theme="dark"] .card-cr-nome,
 body.tema-escuro .card-cr-nome {
-  color: #F8FAFC;
+  color: #CBD5E1;
+}
+
+.card-item-compra-rapida.selecionado-urgente .card-cr-nome,
+.card-item-compra-rapida.item-filtrado-bold .card-cr-nome {
+  font-weight: 800 !important;
+  color: #0F172A !important;
+}
+
+[data-theme="dark"] .card-item-compra-rapida.selecionado-urgente .card-cr-nome,
+body.tema-escuro .card-item-compra-rapida.selecionado-urgente .card-cr-nome,
+[data-theme="dark"] .card-item-compra-rapida.item-filtrado-bold .card-cr-nome,
+body.tema-escuro .card-item-compra-rapida.item-filtrado-bold .card-cr-nome {
+  font-weight: 800 !important;
+  color: #FFFFFF !important;
 }
 
 .card-cr-pontinhos {
