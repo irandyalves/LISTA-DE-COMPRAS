@@ -7187,6 +7187,54 @@ body.tema-escuro .drawer-fechar-btn {
   color: #451A03;
 }
 
+/* Estilo em VERMELHO para quando desiste de comprar o item */
+.toast-aviso-patroa.modo-desistencia .toast-patroa-conteudo {
+  background: linear-gradient(135deg, #DC2626 0%, #991B1B 100%) !important;
+  border: 2px solid #FCA5A5 !important;
+  box-shadow: 0 10px 28px -3px rgba(220, 38, 38, 0.55), 0 4px 10px -2px rgba(0, 0, 0, 0.25) !important;
+  animation: pulseDesistenciaPatroa 1.8s infinite ease-in-out !important;
+}
+
+@keyframes pulseDesistenciaPatroa {
+  0%, 100% { box-shadow: 0 10px 25px -3px rgba(220, 38, 38, 0.5); }
+  50% { box-shadow: 0 12px 32px 4px rgba(239, 68, 68, 0.8); }
+}
+
+.toast-aviso-patroa.modo-desistencia .toast-patroa-titulo {
+  color: #FEE2E2 !important;
+  font-weight: 700 !important;
+}
+
+.toast-aviso-patroa.modo-desistencia .toast-patroa-nome-autor {
+  color: #FFFFFF !important;
+  font-weight: 900 !important;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.toast-aviso-patroa.modo-desistencia .toast-patroa-itens {
+  color: #FFFFFF !important;
+  background: rgba(0, 0, 0, 0.22);
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  margin-top: 2px;
+  font-weight: 900 !important;
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+  text-decoration-color: #FCA5A5;
+}
+
+.toast-aviso-patroa.modo-desistencia .toast-patroa-fechar {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: #FFFFFF !important;
+}
+
+.toast-aviso-patroa.modo-desistencia .toast-patroa-fechar:hover {
+  background: rgba(255, 255, 255, 0.35) !important;
+  color: #FFFFFF !important;
+}
+
 /* ========================================================
    BOTÃO FINALIZAR COMPRA NA BARRA INFERIOR MOBILE
 ======================================================== */

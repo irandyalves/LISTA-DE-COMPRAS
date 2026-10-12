@@ -1145,6 +1145,21 @@ function salvarEstado(enviarParaNuvem = true) {
   }
 }
 
+// Registra um evento de sincronização (adição ou desistência) e marca como gerado neste aparelho
+function registrarEventoSincronizacao(tipo, itens) {
+  const ts = Date.now();
+  const listaItens = Array.isArray(itens) ? itens : [itens];
+  AppState.ultimoEvento = {
+    tipo: tipo || 'adicionado',
+    autor: AppState.usuarioAtivo || 'Sioneide',
+    icone: AppState.usuarioIcone || (AppState.usuarioAtivo === 'Sioneide' ? '👩' : '👨'),
+    itens: listaItens,
+    timestamp: ts
+  };
+  window._ultimoEventoGeradoLocalTs = ts;
+  localStorage.setItem('ultimo_evento_notificado_ts', String(ts));
+}
+
 // Conectar e gerenciar Nuvem Google (Firebase)
 function inicializarNuvem() {
   FirebaseSync.inicializar(
@@ -1153,30 +1168,54 @@ function inicializarNuvem() {
 
       const agora = Date.now();
 
-      // 1. Verifica se houve novo pedido vindo da outra pessoa (ex: Patroa Sioneide / Empregada / Filhos mandando itens)
+      // 1. Verifica se houve novo pedido ou desistência vindo de casa (ex: Patroa Sioneide / Empregada / Filhos)
       if (dadosNuvem.ultimoEvento && dadosNuvem.ultimoEvento.timestamp) {
         const evento = dadosNuvem.ultimoEvento;
         const ultimoProcessado = Number(localStorage.getItem('ultimo_evento_notificado_ts') || 0);
+        const geradoNesteAparelho = (window._ultimoEventoGeradoLocalTs && Number(window._ultimoEventoGeradoLocalTs) === Number(evento.timestamp));
 
-        // Se o evento foi criado há menos de 120 segundos e ainda não foi mostrado
-        if (evento.timestamp > ultimoProcessado && (agora - evento.timestamp) < 120000) {
+        // Se o evento foi criado recentemente e ainda não foi mostrado neste aparelho
+        if (!geradoNesteAparelho && evento.timestamp > ultimoProcessado && (agora - evento.timestamp) < 180000) {
           const meuNome = (AppState.usuarioAtivo || 'Irandy').toLowerCase().trim();
-          const autorEvento = (evento.autor || '').toLowerCase().trim();
+          const autorEventoRaw = (evento.autor || 'Sioneide').trim();
+          const autorEventoNorm = autorEventoRaw.toLowerCase();
 
-          // Se quem enviou o item NÃO foi este aparelho (veio do cônjuge/patroa/empregada)
-          if (autorEvento && autorEvento !== meuNome) {
-            localStorage.setItem('ultimo_evento_notificado_ts', String(evento.timestamp));
+          // Se o outro aparelho estiver com o mesmo perfil por engano, exibe Sioneide para identificar casa
+          const nomeExibir = (autorEventoNorm && autorEventoNorm !== meuNome) ? autorEventoRaw : 'Sioneide';
+          const tipoEvento = evento.tipo || 'adicionado';
+
+          localStorage.setItem('ultimo_evento_notificado_ts', String(evento.timestamp));
+
+          if (tipoEvento === 'desistiu') {
+            tocarAvisoSonoroDesistencia();
+            exibirAvisoPedidoPatroa(nomeExibir, evento.itens, evento.icone || '👩', 'desistiu');
+
+            // Desmarca os itens imediatamente no catálogo local
+            if (Array.isArray(evento.itens)) {
+              evento.itens.forEach(nomeItem => {
+                const nomeNorm = String(nomeItem).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+                const pCat = AppState.catalogo.find(p => p.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim() === nomeNorm)
+                  || AppState.catalogo.find(p => p.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().includes(nomeNorm));
+                if (pCat) {
+                  pCat.selecionado = false;
+                  pCat.comprado = false;
+                  pCat.novoPedidoCasa = false;
+                }
+              });
+            }
+          } else {
             tocarAvisoSonoroNotificacao();
-            exibirAvisoPedidoPatroa(evento.autor, evento.itens, evento.icone || '👩');
+            exibirAvisoPedidoPatroa(nomeExibir, evento.itens, evento.icone || '👩', 'adicionado');
 
             // Marca os itens como novos pedidos de casa no catálogo local
             if (Array.isArray(evento.itens)) {
               evento.itens.forEach(nomeItem => {
                 const nomeNorm = String(nomeItem).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
-                const pCat = AppState.catalogo.find(p => p.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().includes(nomeNorm));
+                const pCat = AppState.catalogo.find(p => p.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim() === nomeNorm)
+                  || AppState.catalogo.find(p => p.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().includes(nomeNorm));
                 if (pCat && !pCat.comprado) {
                   pCat.novoPedidoCasa = true;
-                  pCat.adicionadoPor = evento.autor;
+                  pCat.adicionadoPor = nomeExibir;
                   pCat.adicionadoEm = evento.timestamp;
                 }
               });
@@ -1293,35 +1332,84 @@ function tocarAvisoSonoroNotificacao() {
   }
 }
 
-// Banner Flutuante de Pedido da Patroa (Sioneide)
+// Reproduz aviso sonoro de desistência/cancelamento (tom descendente)
+function tocarAvisoSonoroDesistencia() {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+
+    const tocarNota = (freq, start, duration) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + start);
+      gain.gain.setValueAtTime(0.32, ctx.currentTime + start);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + duration);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(ctx.currentTime + start);
+      osc.stop(ctx.currentTime + start + duration);
+    };
+
+    // Alerta descendente (659Hz -> 392Hz)
+    tocarNota(659.25, 0, 0.25);
+    tocarNota(392.00, 0.20, 0.45);
+  } catch (e) {
+    console.warn("Áudio de desistência não executado:", e);
+  }
+}
+
+// Banner Flutuante de Pedido ou Desistência da Patroa (Sioneide)
 let timerAvisoPatroa = null;
-function exibirAvisoPedidoPatroa(autor, itens, icone = '👩') {
+function exibirAvisoPedidoPatroa(autor, itens, icone = '👩', tipo = 'adicionado') {
   const banner = document.getElementById('toast-aviso-patroa');
   const tituloEl = document.getElementById('toast-patroa-titulo');
   const itensEl = document.getElementById('toast-patroa-itens');
+  const iconeEl = banner ? banner.querySelector('.toast-patroa-icone') : null;
   if (!banner) return;
 
-  const nomeAutor = (autor || 'Sioneide').toUpperCase();
+  const nomeRaw = (autor || 'Sioneide').trim();
+  const nomeFormatado = nomeRaw.charAt(0).toUpperCase() + nomeRaw.slice(1).toLowerCase();
+  const nomeUpper = nomeRaw.toUpperCase();
   const listaTexto = Array.isArray(itens) ? itens.join(', ') : String(itens);
 
-  if (tituloEl) {
-    tituloEl.innerHTML = `<strong class="toast-patroa-nome-autor">${nomeAutor}</strong> | pediu para comprar:`;
+  if (tipo === 'desistiu') {
+    banner.classList.add('modo-desistencia');
+    if (iconeEl) iconeEl.textContent = '🚫';
+    if (tituloEl) {
+      tituloEl.innerHTML = `<strong class="toast-patroa-nome-autor">${escapeHtml(nomeFormatado)}</strong> desistiu de comprar o item:`;
+    }
+    if (itensEl) {
+      itensEl.textContent = listaTexto;
+    }
+  } else {
+    banner.classList.remove('modo-desistencia');
+    if (iconeEl) iconeEl.textContent = '🔔';
+    if (tituloEl) {
+      tituloEl.innerHTML = `<strong class="toast-patroa-nome-autor">${escapeHtml(nomeUpper)}</strong> | pediu para comprar:`;
+    }
+    if (itensEl) {
+      itensEl.textContent = listaTexto;
+    }
   }
-  if (itensEl) itensEl.textContent = listaTexto;
 
   banner.style.display = 'flex';
   banner.classList.add('visivel');
 
-  // Vibração suave no celular
+  // Vibração no celular
   if (typeof navigator !== 'undefined' && navigator.vibrate) {
-    try { navigator.vibrate([250, 100, 250]); } catch(e){}
+    try {
+      navigator.vibrate(tipo === 'desistiu' ? [300, 120, 300, 120, 300] : [250, 100, 250]);
+    } catch(e){}
   }
 
-  // Permanece aberto na tela (com botão fechar manual e auto-dismiss de 25s)
+  // Some automaticamente depois de alguns segundos (10s para desistência, 18s para pedido)
   clearTimeout(timerAvisoPatroa);
+  const tempoExibicao = tipo === 'desistiu' ? 10000 : 18000;
   timerAvisoPatroa = setTimeout(() => {
     fecharAvisoPatroa();
-  }, 25000);
+  }, tempoExibicao);
 }
 
 function fecharAvisoPatroa() {
@@ -1329,6 +1417,7 @@ function fecharAvisoPatroa() {
   if (banner) {
     banner.style.display = 'none';
     banner.classList.remove('visivel');
+    banner.classList.remove('modo-desistencia');
   }
   clearTimeout(timerAvisoPatroa);
 }
@@ -4500,41 +4589,46 @@ function alternarItemPeloDropdown(itemId, event) {
   if (event) event.stopPropagation();
 
   let prod = AppState.catalogo.find(p => String(p.id) === String(itemId) || String(p.catalogoId) === String(itemId));
+  let criadoDoPadrao = false;
   if (!prod) {
     const padrao = CATALOGO_PADRAO_EXPANDIDO.find(p => String(p.id) === String(itemId));
     if (padrao) {
-      prod = { ...padrao, selecionado: true, qtde: 1 };
+      prod = { ...padrao, selecionado: false, qtde: 1 };
       AppState.catalogo.unshift(prod);
+      criadoDoPadrao = true;
     }
   }
 
   if (prod) {
-    prod.selecionado = true;
-    prod.comprado = false;
-    prod.precoRegistradoMercado = 0;
-    prod.adicionadoPor = AppState.usuarioAtivo || 'Irandy';
-    prod.adicionadoEm = Date.now();
-    prod.novoPedidoCasa = (AppState.abaAtiva === 'despensa');
-
-    if (AppState.abaAtiva === 'despensa') {
-      prod.qtde = prod.qtde || 1;
+    // Se estiver na aba Criar Lista (despensa) e o item já estava marcado, desmarca (desiste)
+    if (AppState.abaAtiva === 'despensa' && prod.selecionado && !criadoDoPadrao) {
+      prod.selecionado = false;
+      prod.comprado = false;
+      prod.novoPedidoCasa = false;
+      sincronizarListaAtivaComCatalogo();
+      registrarEventoSincronizacao('desistiu', [prod.nome]);
+      registrarTimestampModificacaoItem(prod.id);
     } else {
-      // Aba Lista de Compra: se já estiver na lista ativa, incrementa quantidade
-      const jaNaLista = AppState.listaAtiva.find(i => String(i.id) === String(prod.id));
-      if (jaNaLista) {
-        jaNaLista.qtde = (jaNaLista.qtde || 1) + 1;
+      prod.selecionado = true;
+      prod.comprado = false;
+      prod.precoRegistradoMercado = 0;
+      prod.adicionadoPor = AppState.usuarioAtivo || 'Irandy';
+      prod.adicionadoEm = Date.now();
+      prod.novoPedidoCasa = (AppState.abaAtiva === 'despensa');
+
+      if (AppState.abaAtiva === 'despensa') {
+        prod.qtde = prod.qtde || 1;
+      } else {
+        // Aba Lista de Compra: se já estiver na lista ativa, incrementa quantidade
+        const jaNaLista = AppState.listaAtiva.find(i => String(i.id) === String(prod.id));
+        if (jaNaLista) {
+          jaNaLista.qtde = (jaNaLista.qtde || 1) + 1;
+        }
       }
+      sincronizarListaAtivaComCatalogo();
+      registrarEventoSincronizacao('adicionado', [prod.nome]);
+      registrarTimestampModificacaoItem(prod.id);
     }
-    sincronizarListaAtivaComCatalogo();
-
-    AppState.ultimoEvento = {
-      autor: AppState.usuarioAtivo || 'Irandy',
-      icone: AppState.usuarioIcone || (AppState.usuarioAtivo === 'Sioneide' ? '👩' : '👨'),
-      itens: [prod.nome],
-      timestamp: Date.now()
-    };
-
-    registrarTimestampModificacaoItem(prod.id);
   }
 
   salvarEstado(true);
@@ -5008,12 +5102,7 @@ function alternarItemDespensaEmTempoReal(produtoId, event) {
     // Sincroniza estritamente com a Lista de Compras
     sincronizarListaAtivaComCatalogo();
 
-    AppState.ultimoEvento = {
-      autor: AppState.usuarioAtivo || 'Irandy',
-      icone: AppState.usuarioIcone || (AppState.usuarioAtivo === 'Sioneide' ? '👩' : '👨'),
-      itens: [prod.nome],
-      timestamp: Date.now()
-    };
+    registrarEventoSincronizacao('adicionado', [prod.nome]);
 
     // Salva no LocalStorage e sincroniza na Nuvem imediatamente
     registrarTimestampModificacaoItem(prod.id);
@@ -5044,11 +5133,14 @@ function alternarItemDespensaEmTempoReal(produtoId, event) {
 
   // CASO 2: O item JÁ ESTÁ SELECIONADO -> Exige 2 cliques (ou segundo clique em até 3s)
   if (String(despensaPendenteDesmarcarId) === String(produtoId)) {
-    // Segundo clique confirmado!
+    // Segundo clique confirmado (desistiu de comprar o item)!
     cancelarDespensaPendenteDesmarcar();
     prod.selecionado = false;
     prod.comprado = false;
+    prod.novoPedidoCasa = false;
 
+    registrarTimestampModificacaoItem(prod.id);
+    registrarEventoSincronizacao('desistiu', [prod.nome]);
     sincronizarListaAtivaComCatalogo();
     salvarEstado(true);
 
@@ -5176,11 +5268,17 @@ function executarExclusaoConfirmada() {
 
   const prod = AppState.catalogo.find(p => String(p.id) === String(itemParaExcluirId));
   if (prod) {
+    if (prod.selecionado) {
+      registrarEventoSincronizacao('desistiu', [prod.nome]);
+    }
     if (!AppState.itensExcluidos) AppState.itensExcluidos = [];
     AppState.itensExcluidos.push(prod.nome.toLowerCase().trim());
     AppState.catalogo = AppState.catalogo.filter(p => String(p.id) !== String(itemParaExcluirId));
+    sincronizarListaAtivaComCatalogo();
     salvarEstado(true);
     renderizarDespensa();
+    renderizarListaCompras();
+    atualizarCardResumo();
   }
 
   fecharModal('modal-confirm-exclusao');
@@ -6494,8 +6592,11 @@ function removerItem(id, dispararUndo = true) {
   if (prod) {
     prod.selecionado = false;
     prod.comprado = false;
+    prod.novoPedidoCasa = false;
     prod.precoRegistradoMercado = 0;
+    registrarTimestampModificacaoItem(prod.id);
   }
+  registrarEventoSincronizacao('desistiu', [nomeItem]);
   AppState.listaAtiva = AppState.listaAtiva.filter(i => String(i.id) !== String(id) && String(i.catalogoId) !== String(id));
   salvarEstado(true);
   renderizarListaCompras();
@@ -6952,6 +7053,10 @@ function excluirItemDespensaDireto(produtoId, dispararUndo = true) {
   const nomeItem = prod.nome || 'Item';
   const itemNaLista = AppState.listaAtiva.find(p => String(p.id) === String(produtoId) || String(p.catalogoId) === String(produtoId));
 
+  if (prod.selecionado || itemNaLista) {
+    registrarEventoSincronizacao('desistiu', [nomeItem]);
+  }
+
   if (!AppState.itensExcluidos) AppState.itensExcluidos = [];
   AppState.itensExcluidos.push(prod.nome.toLowerCase().trim());
   AppState.catalogo = AppState.catalogo.filter(p => String(p.id) !== String(produtoId));
@@ -7023,12 +7128,7 @@ function adicionarItemRapido() {
 
     sincronizarListaAtivaComCatalogo();
 
-    AppState.ultimoEvento = {
-      autor: AppState.usuarioAtivo || 'Irandy',
-      icone: AppState.usuarioIcone || (AppState.usuarioAtivo === 'Sioneide' ? '👩' : '👨'),
-      itens: [nomeLimpo],
-      timestamp: Date.now()
-    };
+    registrarEventoSincronizacao('adicionado', [nomeLimpo]);
 
     termoBuscaDespensa = '';
     termoBuscaTopo = '';
@@ -7911,12 +8011,7 @@ function adicionarProdutoPorTexto(textoCompleto) {
 
   sincronizarListaAtivaComCatalogo();
 
-  AppState.ultimoEvento = {
-    autor: AppState.usuarioAtivo || 'Irandy',
-    icone: AppState.usuarioIcone || (AppState.usuarioAtivo === 'Sioneide' ? '👩' : '👨'),
-    itens: [capitalizar(nome)],
-    timestamp: Date.now()
-  };
+  registrarEventoSincronizacao('adicionado', [capitalizar(nome)]);
 
   salvarEstado(true);
   renderizarListaCompras();
