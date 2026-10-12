@@ -11280,13 +11280,36 @@ body.tema-escuro .compra-rapida-titulo {
   display: none !important;
 }
 
+.compra-rapida-header-acoes-dir {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.controles-fonte-cr-modal {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 4px;
+}
+
+.controles-fonte-cr-modal .btn-fonte-header {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  color: #FFFFFF !important;
+}
+
+.controles-fonte-cr-modal .btn-fonte-header:hover {
+  background: rgba(251, 191, 36, 0.25) !important;
+  border-color: #FBBF24 !important;
+}
+
 .modal-fechar-btn {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  border: 1px solid rgba(148, 163, 184, 0.35);
-  background: rgba(148, 163, 184, 0.15);
-  color: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
   font-size: 0.95rem;
   font-weight: 800;
   cursor: pointer;
@@ -11595,16 +11618,15 @@ body.tema-escuro .cr-cat-pill {
   cursor: pointer;
 }
 
-/* Cards fininhos (altura reduzida em 70%, linha única sem subtítulo) */
+/* Cards fininhos (altura reduzida em 70%, linha única sem subtítulo, escalável com a/A) */
 .card-item-compra-rapida {
   display: flex !important;
   flex-direction: row !important;
   align-items: center !important;
   justify-content: space-between !important;
-  height: 30px !important;
   min-height: 30px !important;
-  max-height: 30px !important;
-  padding: 2px 8px !important;
+  height: auto !important;
+  padding: 4px 8px !important;
   border-radius: 5px !important;
   border: 1px solid #E2E8F0;
   background: #F8FAFC;
@@ -11662,9 +11684,9 @@ body.tema-escuro .card-item-compra-rapida {
 }
 
 .card-cr-nome {
-  font-size: 0.76rem !important;
+  font-size: var(--fonte-card-nome, 0.78rem) !important;
   font-weight: 700 !important;
-  line-height: 1 !important;
+  line-height: 1.15 !important;
   color: #0F172A;
   white-space: nowrap !important;
   overflow: hidden !important;

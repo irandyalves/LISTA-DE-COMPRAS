@@ -7656,6 +7656,10 @@ function aplicarEscalaFonteCards(mostrarToast = false) {
     vDespensa.style.setProperty('--fonte-montar', escala.montarRem);
     vDespensa.style.setProperty('--fonte-card-nome', escala.nomeRem);
   }
+  const modalCR = document.getElementById('modal-compra-rapida');
+  if (modalCR) {
+    modalCR.style.setProperty('--fonte-card-nome', escala.nomeRem);
+  }
 
   try {
     localStorage.setItem('escala_fonte_cards', indiceFonteCards);
@@ -12195,6 +12199,57 @@ function obterProdutosFiltradosCompraRapida() {
   return catalogo.filter(p => p.categoria === cat);
 }
 
+// Formata o nome do card na Compra Rápida com no máximo 2 palavras principais + 3ª palavra (medida/kilo) + "...."
+// Ex: "Macarrão Espaguete 500g....", "Banana Prata kilo....", "Café Torrado 500g...."
+function formatarNomeCardCompraRapida(nomeOriginal) {
+  if (!nomeOriginal) return '';
+  const bruto = String(nomeOriginal).trim();
+
+  // 1. Detecta medida/unidade para a 3ª palavra
+  let terceiraPalavra = '';
+  if (/\(\s*kg\s*\)/i.test(bruto) || /\b(?:por\s+)?kg\b/i.test(bruto) && !/\b\d+\s*kg\b/i.test(bruto)) {
+    terceiraPalavra = 'kilo';
+  } else {
+    const matchMedida = bruto.match(/\b(\d+(?:[.,]\d+)?\s*(?:kg|kilo|g|gr|mg|ml|l|lt|un|und|dz))\b/i);
+    if (matchMedida) {
+      terceiraPalavra = matchMedida[1].replace(/\s+/g, '');
+    } else if (/\bkilo\b/i.test(bruto)) {
+      terceiraPalavra = 'kilo';
+    } else if (/\(\s*unidade\s*\)|\bunidade\b/i.test(bruto)) {
+      terceiraPalavra = 'un';
+    }
+  }
+
+  // 2. Extrai no máximo 2 palavras principais do nome (sem parênteses e sem preposições/embalagens)
+  const semParenteses = bruto
+    .replace(/\([^)]*\)/g, ' ')
+    .replace(/\[[^\]]*\]/g, ' ')
+    .replace(/\b\d+(?:[.,]\d+)?\s*(?:kg|kilo|g|gr|mg|ml|l|lt|un|und|dz)\b/gi, ' ')
+    .replace(/[\/,-]+/g, ' ')
+    .trim();
+
+  const ignorar = new Set([
+    'de', 'da', 'do', 'das', 'dos', 'com', 'sem', 'e', 'ou', 'em', 'no', 'na', 'nos', 'nas',
+    'para', 'por', 'ao', 'aos', 'a', 'o', 'as', 'os', 'tipo', 'c', 'pct', 'pacote', 'caixa',
+    'bandeja', 'garrafa', 'pote', 'lata', 'saco', 'fardo', 'vidro', 'rolo', 'folha', 'unidade',
+    'un', 'und', 'kg', 'kilo'
+  ]);
+
+  const palavrasValidas = semParenteses
+    .split(/\s+/)
+    .map(p => p.replace(/^[.,;:!?]+|[.,;:!?]+$/g, ''))
+    .filter(p => p.length > 1 && !ignorar.has(p.toLowerCase()) && !/^\d+$/.test(p));
+
+  const duasPrimeiras = palavrasValidas.slice(0, 2);
+  if (!terceiraPalavra && palavrasValidas.length >= 3) {
+    terceiraPalavra = palavrasValidas[2];
+  }
+
+  const base = duasPrimeiras.length > 0 ? duasPrimeiras.join(' ') : bruto.split(/\s+/).slice(0, 2).join(' ');
+  const finalTxt = terceiraPalavra ? `${base} ${terceiraPalavra}` : base;
+  return `${finalTxt.replace(/\.+$/, '')}....`;
+}
+
 function renderizarGridCompraRapida() {
   const grid = document.getElementById('grid-itens-compra-rapida');
   if (!grid) return;
@@ -12223,6 +12278,7 @@ function renderizarGridCompraRapida() {
     const qtde = qtdeDigitada || (selecionadoObj ? (selecionadoObj.qtde || 1) : (prod.qtde || 1));
     const qtdeFmt = String(qtde).padStart(2, '0');
     const ehFavRapida = favSet.has(idStr);
+    const nomeCurto3Palavras = formatarNomeCardCompraRapida(prod.nome);
 
     const svgIcone = (typeof obterIcone2D === 'function')
       ? obterIcone2D(prod.nome, prod.icone)
@@ -12234,7 +12290,7 @@ function renderizarGridCompraRapida() {
         <div class="card-cr-topo">
           <div class="card-cr-icone">${svgIcone}</div>
           <div class="card-cr-linha-nome-qtde">
-            <span class="card-cr-nome" title="${escapeHtml(prod.nome)}">${escapeHtml(prod.nome)}</span>
+            <span class="card-cr-nome" title="${escapeHtml(prod.nome)}">${escapeHtml(nomeCurto3Palavras)}</span>
           </div>
           <span class="card-cr-qtde-verde" onclick="ciclarQtdeCompraRapida('${escapeHtml(idStr)}', event)" title="Quantidade: ${qtdeFmt} (Toque para aumentar)">${qtdeFmt}</span>
           <button type="button"
