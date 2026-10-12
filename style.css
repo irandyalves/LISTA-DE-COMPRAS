@@ -346,29 +346,37 @@ body {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 12px 10px 10px 10px;
-  border-bottom: 1.5px solid var(--border);
+  padding: 12px 0 0 0;
+  border-bottom: none;
   background: #F8FAFC;
+}
+
+.sidebar-header .sidebar-brand {
+  padding: 0 10px;
 }
 
 .sidebar-header .bloco-carrinho-total {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 10px;
+  padding: 10px 12px;
+  margin: 0 !important;
   background: #FFFFFF;
-  border: 1.5px solid #E2E8F0;
-  border-radius: 10px;
+  border-top: 1.5px solid #E2E8F0;
+  border-bottom: 1.5px solid #E2E8F0;
+  border-left: none !important;
+  border-right: none !important;
+  border-radius: 0 !important;
   box-shadow: 0 2px 5px rgba(15, 23, 42, 0.05);
   cursor: pointer;
   transition: all 0.2s ease;
-  width: 100%;
+  width: 100% !important;
 }
 
 .sidebar-header .bloco-carrinho-total:hover {
-  border-color: #C7D2FE;
+  border-top-color: #C7D2FE;
+  border-bottom-color: #C7D2FE;
   box-shadow: 0 4px 10px rgba(79, 70, 229, 0.1);
-  transform: translateY(-1px);
 }
 
 .sidebar-header .carrinho-icon-xl {
@@ -9495,7 +9503,8 @@ body.tema-escuro .sidebar-esquerda {
 [data-theme="dark"] .sidebar-header,
 body.tema-escuro .sidebar-header {
   background: rgba(8, 22, 44, 0.55) !important;
-  border-bottom: 1.5px solid rgba(59, 130, 246, 0.24) !important;
+  border-bottom: none !important;
+  padding: 12px 0 0 0 !important;
   backdrop-filter: blur(4px);
 }
 
@@ -9517,20 +9526,29 @@ body.tema-escuro .sidebar-footer-item {
 body.tema-escuro .sidebar-brand {
   color: #F0F9FF !important;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  padding: 0 10px !important;
 }
 
 .sidebar-header .bloco-carrinho-total,
 [data-theme="dark"] .sidebar-header .bloco-carrinho-total,
 body.tema-escuro .sidebar-header .bloco-carrinho-total {
+  margin: 0 !important;
+  width: 100% !important;
+  padding: 10px 12px !important;
   background: linear-gradient(145deg, rgba(19, 47, 84, 0.92) 0%, rgba(11, 29, 54, 0.96) 100%) !important;
-  border: 1.5px solid rgba(59, 130, 246, 0.38) !important;
+  border-top: 1.5px solid rgba(59, 130, 246, 0.42) !important;
+  border-bottom: 1.5px solid rgba(59, 130, 246, 0.42) !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-radius: 0 !important;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.10) !important;
 }
 
 .sidebar-header .bloco-carrinho-total:hover,
 [data-theme="dark"] .sidebar-header .bloco-carrinho-total:hover,
 body.tema-escuro .sidebar-header .bloco-carrinho-total:hover {
-  border-color: #60A5FA !important;
+  border-top-color: #60A5FA !important;
+  border-bottom-color: #60A5FA !important;
   background: linear-gradient(145deg, rgba(25, 59, 104, 0.95) 0%, rgba(15, 38, 71, 0.98) 100%) !important;
 }
 
