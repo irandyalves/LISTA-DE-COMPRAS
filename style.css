@@ -7866,8 +7866,8 @@ body[data-aba-ativa="historico"] .painel-topo-congelado {
   box-sizing: border-box !important;
   margin: 0 !important;
   padding: 0 !important;
-  border-bottom: none !important;
-  box-shadow: none !important;
+  border-bottom: 1.5px solid #334155 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
   background: #0F172A !important;
 }
 
@@ -7892,7 +7892,7 @@ body[data-aba-ativa="historico"] .header-otimizado-l1 {
 /* Espaçamento superior no Histórico para o conteúdo começar exatamente abaixo da linha de trava */
 body.aba-historico .app-container,
 body[data-aba-ativa="historico"] .app-container {
-  padding-top: var(--altura-topo-congelado, 94px) !important;
+  padding-top: var(--altura-topo-congelado, 48px) !important;
 }
 
 body.aba-historico #view-historico,

@@ -56,8 +56,7 @@
     html[data-aba-ativa="historico"] #btn-mic-voz,
     html[data-aba-ativa="historico"] .busca-topo-reduzida,
     html[data-aba-ativa="historico"] #btn-perfil-usuario { display: none !important; }
-    html[data-aba-ativa="historico"] #historico-topo-integrado,
-    html[data-aba-ativa="historico"] #historico-barra-controles { display: flex !important; }
+    html[data-aba-ativa="historico"] #historico-topo-integrado { display: flex !important; }
 
     html[data-aba-ativa="despensa"] .mobile-nav-btn[data-aba="lista"],
     html[data-aba-ativa="historico"] .mobile-nav-btn[data-aba="lista"],
@@ -133,7 +132,7 @@
   </style>
 
   <!-- CSS Moderno -->
-  <link rel="stylesheet" href="style.css?v=10.68">
+  <link rel="stylesheet" href="style.css?v=10.69">
 </head>
 <body>
 
@@ -329,21 +328,6 @@
           </button>
           <button class="despensa-aba-tab" data-categoria="Diversos" onclick="filtrarCategoriaGeral('Diversos', this)">
             <span class="aba-ico">📦</span> Diversos
-          </button>
-        </div>
-      </div>
-
-      <!-- Barra de Filtros e Modos de Visão do Histórico (CONGELADA / TRAVADA COM LINHA DIVISÓRIA) -->
-      <div id="historico-barra-controles" class="historico-barra-controles" style="display: none;">
-        <div class="historico-tabs-modo">
-          <button type="button" class="tab-modo-hist ativa" id="tab-hist-compras" onclick="alternarModoHistorico('compras')">
-            🛒 Por Compras
-          </button>
-          <button type="button" class="tab-modo-hist" id="tab-hist-itens" onclick="alternarModoHistorico('itens')">
-            📈 Por Item
-          </button>
-          <button type="button" class="tab-modo-hist" id="tab-hist-mais-comprados" onclick="alternarModoHistorico('mais_comprados')">
-            🏆 Mais Comprados por Mim
           </button>
         </div>
       </div>
