@@ -1156,6 +1156,8 @@ function registrarEventoSincronizacao(tipo, itens) {
     itens: listaItens,
     timestamp: ts
   };
+  if (!window._eventosGeradosLocalmente) window._eventosGeradosLocalmente = new Set();
+  window._eventosGeradosLocalmente.add(String(ts));
   window._ultimoEventoGeradoLocalTs = ts;
   localStorage.setItem('ultimo_evento_notificado_ts', String(ts));
 }
@@ -1167,15 +1169,27 @@ function inicializarNuvem() {
       if (!dadosNuvem) return;
 
       const agora = Date.now();
+      const ehPrimeiroSnapshot = !window._primeiroSnapshotNuvemRecebido;
+      window._primeiroSnapshotNuvemRecebido = true;
 
       // 1. Verifica se houve novo pedido ou desistência vindo de casa (ex: Patroa Sioneide / Empregada / Filhos)
       if (dadosNuvem.ultimoEvento && dadosNuvem.ultimoEvento.timestamp) {
         const evento = dadosNuvem.ultimoEvento;
-        const ultimoProcessado = Number(localStorage.getItem('ultimo_evento_notificado_ts') || 0);
-        const geradoNesteAparelho = (window._ultimoEventoGeradoLocalTs && Number(window._ultimoEventoGeradoLocalTs) === Number(evento.timestamp));
+        const tsEventoStr = String(evento.timestamp);
+        const ultimoProcessadoStr = String(localStorage.getItem('ultimo_evento_notificado_ts') || '0');
+        const geradoNesteAparelho = (window._eventosGeradosLocalmente && window._eventosGeradosLocalmente.has(tsEventoStr))
+          || (window._ultimoEventoGeradoLocalTs && String(window._ultimoEventoGeradoLocalTs) === tsEventoStr);
 
-        // Se o evento foi criado recentemente e ainda não foi mostrado neste aparelho
-        if (!geradoNesteAparelho && evento.timestamp > ultimoProcessado && (agora - evento.timestamp) < 180000) {
+        // No primeiro carregamento da página, só mostra se for muito recente (< 45s); depois disso, qualquer novo timestamp dispara na hora (imune a diferença de relógio entre PC e Celular)
+        const deveNotificar = !geradoNesteAparelho && (tsEventoStr !== ultimoProcessadoStr) && (
+          !ehPrimeiroSnapshot || Math.abs(agora - Number(evento.timestamp)) < 45000
+        );
+
+        if (ehPrimeiroSnapshot && !deveNotificar) {
+          localStorage.setItem('ultimo_evento_notificado_ts', tsEventoStr);
+        }
+
+        if (deveNotificar) {
           const meuNome = (AppState.usuarioAtivo || 'Irandy').toLowerCase().trim();
           const autorEventoRaw = (evento.autor || 'Sioneide').trim();
           const autorEventoNorm = autorEventoRaw.toLowerCase();
@@ -1184,7 +1198,7 @@ function inicializarNuvem() {
           const nomeExibir = (autorEventoNorm && autorEventoNorm !== meuNome) ? autorEventoRaw : 'Sioneide';
           const tipoEvento = evento.tipo || 'adicionado';
 
-          localStorage.setItem('ultimo_evento_notificado_ts', String(evento.timestamp));
+          localStorage.setItem('ultimo_evento_notificado_ts', tsEventoStr);
 
           if (tipoEvento === 'desistiu') {
             tocarAvisoSonoroDesistencia();
@@ -1360,6 +1374,16 @@ function tocarAvisoSonoroDesistencia() {
   }
 }
 
+// Escapa caracteres especiais HTML com segurança
+function escapeHtml(texto) {
+  return String(texto == null ? '' : texto)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 // Banner Flutuante de Pedido ou Desistência da Patroa (Sioneide)
 let timerAvisoPatroa = null;
 function exibirAvisoPedidoPatroa(autor, itens, icone = '👩', tipo = 'adicionado') {
@@ -1394,8 +1418,11 @@ function exibirAvisoPedidoPatroa(autor, itens, icone = '👩', tipo = 'adicionad
     }
   }
 
-  banner.style.display = 'flex';
   banner.classList.add('visivel');
+  banner.style.setProperty('display', 'flex', 'important');
+  banner.style.setProperty('opacity', '1', 'important');
+  banner.style.setProperty('pointer-events', 'auto', 'important');
+  banner.style.setProperty('transform', 'translateX(-50%) translateY(0)', 'important');
 
   // Vibração no celular
   if (typeof navigator !== 'undefined' && navigator.vibrate) {
@@ -1415,9 +1442,12 @@ function exibirAvisoPedidoPatroa(autor, itens, icone = '👩', tipo = 'adicionad
 function fecharAvisoPatroa() {
   const banner = document.getElementById('toast-aviso-patroa');
   if (banner) {
-    banner.style.display = 'none';
     banner.classList.remove('visivel');
     banner.classList.remove('modo-desistencia');
+    banner.style.setProperty('display', 'none', 'important');
+    banner.style.removeProperty('opacity');
+    banner.style.removeProperty('pointer-events');
+    banner.style.removeProperty('transform');
   }
   clearTimeout(timerAvisoPatroa);
 }
