@@ -750,6 +750,9 @@ let AppState = {
   ],
   ultimoEvento: null,
   itensExcluidos: [],
+  meuPreset: null,
+  listasSalvasNuvem: [],
+  presetsEditadosNuvem: {},
   catalogo: [...CATALOGO_PADRAO_EXPANDIDO],
 
   // Itens atualmente marcados para a compra (sincronizados com os selecionados em Montar Lista)
@@ -1052,12 +1055,44 @@ function carregarLocalmente() {
       if (parsed.historico && Array.isArray(parsed.historico) && parsed.historico.length >= 2) {
         AppState.historico = parsed.historico;
       }
+      if (parsed.meuPreset) {
+        AppState.meuPreset = parsed.meuPreset;
+        localStorage.setItem('meu_preset_usuario_v1', JSON.stringify(parsed.meuPreset));
+      }
+      if (Array.isArray(parsed.listasSalvasNuvem)) {
+        AppState.listasSalvasNuvem = parsed.listasSalvasNuvem;
+        localStorage.setItem('listas_salvas_nuvem_v1', JSON.stringify(parsed.listasSalvasNuvem));
+      }
+      if (parsed.presetsEditadosNuvem && typeof parsed.presetsEditadosNuvem === 'object') {
+        AppState.presetsEditadosNuvem = parsed.presetsEditadosNuvem;
+        localStorage.setItem('presets_editados_nuvem_v1', JSON.stringify(parsed.presetsEditadosNuvem));
+      }
     } catch (e) {
       console.error("Erro ao carregar dados locais:", e);
     }
   } else {
     AppState.catalogo = [...CATALOGO_PADRAO_EXPANDIDO];
     sincronizarListaAtivaComCatalogo();
+  }
+
+  // Fallback para presets salvos anteriormente no localStorage individual
+  if (!AppState.meuPreset) {
+    try {
+      const mpSalvo = localStorage.getItem('meu_preset_usuario_v1');
+      if (mpSalvo) AppState.meuPreset = JSON.parse(mpSalvo);
+    } catch (e) {}
+  }
+  if (!Array.isArray(AppState.listasSalvasNuvem) || AppState.listasSalvasNuvem.length === 0) {
+    try {
+      const lsSalvo = localStorage.getItem('listas_salvas_nuvem_v1');
+      if (lsSalvo) AppState.listasSalvasNuvem = JSON.parse(lsSalvo) || [];
+    } catch (e) {}
+  }
+  if (!AppState.presetsEditadosNuvem || Object.keys(AppState.presetsEditadosNuvem).length === 0) {
+    try {
+      const peSalvo = localStorage.getItem('presets_editados_nuvem_v1');
+      if (peSalvo) AppState.presetsEditadosNuvem = JSON.parse(peSalvo) || {};
+    } catch (e) {}
   }
 }
 
@@ -1114,6 +1149,9 @@ function salvarEstado(enviarParaNuvem = true) {
     historico: AppState.historico,
     usuarios: AppState.usuarios || [],
     itensExcluidos: AppState.itensExcluidos || [],
+    meuPreset: AppState.meuPreset || null,
+    listasSalvasNuvem: AppState.listasSalvasNuvem || [],
+    presetsEditadosNuvem: AppState.presetsEditadosNuvem || {},
     cotacaoAtiva: AppState.cotacaoAtiva,
     modoNoMercado: AppState.modoNoMercado || false,
     modoResumido: AppState.modoResumido || false,
@@ -1138,6 +1176,9 @@ function salvarEstado(enviarParaNuvem = true) {
         usuarios: AppState.usuarios || [],
         solicitacoesAcesso: AppState.solicitacoesAcesso || [],
         itensExcluidos: AppState.itensExcluidos || [],
+        meuPreset: AppState.meuPreset || null,
+        listasSalvasNuvem: AppState.listasSalvasNuvem || [],
+        presetsEditadosNuvem: AppState.presetsEditadosNuvem || {},
         mercadoReferencia: AppState.mercadoReferencia || 'nenhum',
         cotacaoAtiva: AppState.cotacaoAtiva !== false,
         modoNoMercado: !!AppState.modoNoMercado,
@@ -1305,6 +1346,31 @@ function inicializarNuvem() {
 
       if (dadosNuvem.mercadoReferencia && dadosNuvem.mercadoReferencia !== 'todos') {
         AppState.mercadoReferencia = dadosNuvem.mercadoReferencia;
+      }
+
+      if (dadosNuvem.meuPreset && typeof dadosNuvem.meuPreset === 'object') {
+        AppState.meuPreset = dadosNuvem.meuPreset;
+        localStorage.setItem('meu_preset_usuario_v1', JSON.stringify(dadosNuvem.meuPreset));
+      }
+
+      if (Array.isArray(dadosNuvem.listasSalvasNuvem)) {
+        AppState.listasSalvasNuvem = dadosNuvem.listasSalvasNuvem;
+        localStorage.setItem('listas_salvas_nuvem_v1', JSON.stringify(dadosNuvem.listasSalvasNuvem));
+      }
+
+      if (dadosNuvem.presetsEditadosNuvem && typeof dadosNuvem.presetsEditadosNuvem === 'object') {
+        AppState.presetsEditadosNuvem = dadosNuvem.presetsEditadosNuvem;
+        localStorage.setItem('presets_editados_nuvem_v1', JSON.stringify(dadosNuvem.presetsEditadosNuvem));
+        if (typeof sincronizarPresetsPadraoComEdicoesNuvem === 'function') {
+          sincronizarPresetsPadraoComEdicoesNuvem();
+        }
+      }
+
+      // Se o modal de Presets estiver aberto, atualiza a visualização em tempo real
+      const modalPresetsEl = document.getElementById('modal-presets-lista');
+      if (modalPresetsEl && modalPresetsEl.style.display !== 'none' && modalPresetsEl.style.display !== '') {
+        if (typeof atualizarStatusMeuPreset === 'function') atualizarStatusMeuPreset();
+        if (typeof renderizarListasSalvasNuvem === 'function') renderizarListasSalvasNuvem();
       }
 
       // No celular (somente mobile), não traga preços até serem registrados
@@ -2798,6 +2864,7 @@ function obterPrecoEstimadoMercado(item, redeId) {
 function alternarSidebar(abrir) {
   const sidebar = document.getElementById('sidebar-esquerda');
   const overlay = document.getElementById('sidebar-overlay');
+  const btnMobileSidebar = document.getElementById('mobile-nav-btn-sidebar');
   if (!sidebar) return;
 
   const estaAberta = sidebar.classList.contains('aberta');
@@ -2806,10 +2873,12 @@ function alternarSidebar(abrir) {
   if (deveAbrir) {
     sidebar.classList.add('aberta');
     if (overlay) overlay.classList.add('aberta');
-    document.body.style.overflow = (window.innerWidth <= 768) ? 'hidden' : '';
+    if (btnMobileSidebar) btnMobileSidebar.classList.add('ativo');
+    document.body.style.overflow = (window.innerWidth <= 820) ? 'hidden' : '';
   } else {
     sidebar.classList.remove('aberta');
     if (overlay) overlay.classList.remove('aberta');
+    if (btnMobileSidebar) btnMobileSidebar.classList.remove('ativo');
     document.body.style.overflow = '';
   }
 }
@@ -2904,7 +2973,7 @@ function alternarAbaApp(aba, isUserClick = true) {
   if (typeof cancelarDespensaPendenteDesmarcar === 'function') cancelarDespensaPendenteDesmarcar();
 
   // Sincroniza classes ativas em todos os menus (sidebar, inferior celular e desktop)
-  document.querySelectorAll('.nav-item, .sidebar-nav-item, .mobile-nav-btn').forEach(b => {
+  document.querySelectorAll('.nav-item[data-aba], .sidebar-nav-item[data-aba], .mobile-nav-btn[data-aba]').forEach(b => {
     if (b.getAttribute('data-aba') === aba) b.classList.add('ativo');
     else b.classList.remove('ativo');
   });
@@ -10121,14 +10190,143 @@ const PRESETS_LISTA = [
 
 let presetAbertoDetalhesId = null;
 
+// Sincroniza eventuais edições salvas na nuvem nos presets padrão
+function sincronizarPresetsPadraoComEdicoesNuvem() {
+  if (!AppState.presetsEditadosNuvem || typeof AppState.presetsEditadosNuvem !== 'object') return;
+  PRESETS_LISTA.forEach(p => {
+    const idsEditados = AppState.presetsEditadosNuvem[p.id];
+    if (Array.isArray(idsEditados)) {
+      p.ids = [...idsEditados];
+    }
+  });
+}
+
+// Empacota a lista atualmente escolhida (produtos selecionados, quantidades, marcas e itens customizados)
+function obterDadosListaEscolhidaAtual() {
+  const itensMarcados = (AppState.catalogo || []).filter(p => !!p.selecionado);
+  const ids = itensMarcados.map(p => p.id);
+  const itensDetalhes = {};
+  const itensCustom = [];
+
+  itensMarcados.forEach(p => {
+    itensDetalhes[p.id] = {
+      qtde: p.qtde || 1,
+      marca: p.marca || null
+    };
+    const ehPadrao = CATALOGO_PADRAO_EXPANDIDO.some(cp => cp.id === p.id);
+    if (!ehPadrao) {
+      itensCustom.push({
+        id: p.id,
+        nome: p.nome,
+        categoria: p.categoria || 'Geral',
+        icone: p.icone || 'diversos',
+        precoMedioDF: p.precoMedioDF || p.preco || 0,
+        ultimoPreco: p.ultimoPreco || p.preco || 0
+      });
+    }
+  });
+
+  const agora = new Date();
+  const dataFormatada = agora.toLocaleDateString('pt-BR') + ' às ' + agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+  return {
+    data: dataFormatada,
+    timestamp: Date.now(),
+    autor: AppState.usuarioAtivo || 'Irandy',
+    ids,
+    itensDetalhes,
+    itensCustom
+  };
+}
+
+// Sincroniza imediatamente com a Nuvem Firebase
+function forcarSincronizacaoImediataNuvem() {
+  salvarEstado(true);
+  if (typeof FirebaseSync !== 'undefined' && FirebaseSync.estaConectado) {
+    FirebaseSync.sincronizarComNuvem({
+      catalogo: AppState.catalogo,
+      listaAtiva: AppState.listaAtiva,
+      historico: AppState.historico,
+      usuarios: AppState.usuarios || [],
+      solicitacoesAcesso: AppState.solicitacoesAcesso || [],
+      itensExcluidos: AppState.itensExcluidos || [],
+      meuPreset: AppState.meuPreset || null,
+      listasSalvasNuvem: AppState.listasSalvasNuvem || [],
+      presetsEditadosNuvem: AppState.presetsEditadosNuvem || {},
+      mercadoReferencia: AppState.mercadoReferencia || 'nenhum',
+      cotacaoAtiva: AppState.cotacaoAtiva !== false,
+      modoNoMercado: !!AppState.modoNoMercado,
+      modoResumido: !!AppState.modoResumido,
+      ultimoEvento: AppState.ultimoEvento || null
+    });
+  }
+}
+
+// Renderiza os cards das listas personalizadas gravadas na nuvem pelo usuário
+function renderizarListasSalvasNuvem() {
+  const bloco = document.getElementById('bloco-minhas-listas-nuvem');
+  const container = document.getElementById('container-listas-salvas-nuvem');
+  if (!bloco || !container) return;
+
+  const listas = Array.isArray(AppState.listasSalvasNuvem) ? AppState.listasSalvasNuvem : [];
+  if (listas.length === 0) {
+    bloco.style.display = 'none';
+    container.innerHTML = '';
+    return;
+  }
+
+  bloco.style.display = 'block';
+  let html = '';
+  listas.forEach(lista => {
+    const qtdItens = Array.isArray(lista.ids) ? lista.ids.length : 0;
+    const dataTxt = lista.data ? ` • ${lista.data}` : '';
+    html += `
+      <div class="card-preset-item card-preset-nuvem-salva" id="card-preset-box-${lista.id}">
+        <div class="card-preset-topo">
+          <div class="card-preset-icone">☁️</div>
+          <div style="flex: 1; min-width: 0;">
+            <h4 class="card-preset-titulo">${escapeHtml(lista.nome || 'Minha Lista Salva')}</h4>
+            <div style="font-size: 0.68rem; color: #38BDF8; font-weight: 600;">Gravada na nuvem${escapeHtml(dataTxt)}</div>
+          </div>
+          <button type="button" class="btn-excluir-lista-nuvem" onclick="excluirListaSalvaNuvem('${lista.id}', event)" title="Excluir esta lista da nuvem">🗑️</button>
+        </div>
+        <div class="card-preset-rodape">
+          <button id="btn-toggle-preset-${lista.id}" class="btn-ver-itens-preset" onclick="alternarDetalhesItensPreset('${lista.id}')" title="Clique para ver os ${qtdItens} produtos desta lista">
+            📋 ${qtdItens} produtos <span>▸</span>
+          </button>
+          <div class="card-preset-acoes">
+            <button class="btn-preset-adicionar" onclick="aplicarPreset('${lista.id}', 'adicionar')" title="Somar estes itens mantendo os atuais">
+              + Somar
+            </button>
+            <button class="btn-preset-substituir" onclick="aplicarPreset('${lista.id}', 'substituir')" title="Substituir toda a lista por esta lista da nuvem">
+              ✓ Aplicar Lista
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+  container.innerHTML = html;
+}
+
 // Abrir Modal de Presets e renderizar os cards
 function abrirModalPresets() {
   const modal = document.getElementById('modal-presets-lista');
   const container = document.getElementById('container-lista-presets');
   if (!modal || !container) return;
 
+  // No celular, fecha a slidebar se estiver aberta ao abrir Lista Rápida
+  if (window.innerWidth <= 820) {
+    alternarSidebar(false);
+  }
+
+  const btnMobilePresets = document.getElementById('mobile-nav-btn-presets');
+  if (btnMobilePresets) btnMobilePresets.classList.add('ativo');
+
+  sincronizarPresetsPadraoComEdicoesNuvem();
   fecharDetalhesPreset();
   atualizarStatusMeuPreset();
+  renderizarListasSalvasNuvem();
 
   let html = '';
   PRESETS_LISTA.forEach(preset => {
@@ -10206,41 +10404,6 @@ function abrirDetalhesItensPreset(presetId) {
   drawer.style.display = 'flex';
 }
 
-// Renderiza a lista de itens do 2º modal (Gaveta Direita) com suporte a busca geral e exclusão
-function renderizarItensDrawerPreset(presetId, termoBusca = '') {
-  let titulo = '';
-  let icone = '📋';
-  let itemIds = [];
-
-  if (presetId === 'meu_preset') {
-    titulo = 'Meu Preset Salvo';
-    icone = '💾';
-    const salvoStr = localStorage.getItem('meu_preset_usuario_v1');
-    if (salvoStr) {
-      try {
-        const dados = JSON.parse(salvoStr);
-        itemIds = dados.ids || [];
-      } catch (e) {}
-    }
-  } else {
-    const preset = PRESETS_LISTA.find(p => p.id === presetId);
-    if (preset) {
-      titulo = preset.nome;
-      icone = preset.icone;
-      itemIds = preset.ids || [];
-    }
-  }
-
-  const iconeEl = document.getElementById('drawer-icone');
-  const tituloEl = document.getElementById('drawer-titulo');
-  const subtituloEl = document.getElementById('drawer-subtitulo');
-  if (iconeEl) iconeEl.textContent = icone;
-  if (tituloEl) tituloEl.textContent = titulo;
-  if (subtituloEl) subtituloEl.textContent = `${itemIds.length} produtos`;
-
-  const containerLista = document.getElementById('drawer-lista-itens');
-  if (!containerLista) return;
-
 let ordemAlfabeticaDrawer = true;
 
 function alternarOrdemAlfabeticaDrawer() {
@@ -10256,6 +10419,46 @@ function alternarOrdemAlfabeticaDrawer() {
   }
   mostrarNotificacaoToast(ordemAlfabeticaDrawer ? "🔤 Catálogo ordenado de A a Z" : "📋 Ordem original do catálogo");
 }
+
+// Obtém o objeto de preset (seja meu_preset, lista salva na nuvem ou preset padrão)
+function obterObjetoPresetPorId(presetId) {
+  if (presetId === 'meu_preset') {
+    if (!AppState.meuPreset) {
+      const salvoStr = localStorage.getItem('meu_preset_usuario_v1');
+      if (salvoStr) {
+        try { AppState.meuPreset = JSON.parse(salvoStr); } catch (e) {}
+      }
+    }
+    return {
+      id: 'meu_preset',
+      nome: 'Minha Lista Escolhida (Nuvem)',
+      icone: '☁️',
+      ids: (AppState.meuPreset && Array.isArray(AppState.meuPreset.ids)) ? AppState.meuPreset.ids : []
+    };
+  }
+  const listaNuvem = (AppState.listasSalvasNuvem || []).find(l => l.id === presetId);
+  if (listaNuvem) {
+    return listaNuvem;
+  }
+  return PRESETS_LISTA.find(p => p.id === presetId) || null;
+}
+
+// Renderiza a lista de itens do 2º modal (Gaveta Direita) com suporte a busca geral e exclusão
+function renderizarItensDrawerPreset(presetId, termoBusca = '') {
+  const objPreset = obterObjetoPresetPorId(presetId);
+  const titulo = objPreset ? objPreset.nome : 'Itens do Preset';
+  const icone = objPreset ? (objPreset.icone || '📋') : '📋';
+  const itemIds = (objPreset && Array.isArray(objPreset.ids)) ? objPreset.ids : [];
+
+  const iconeEl = document.getElementById('drawer-icone');
+  const tituloEl = document.getElementById('drawer-titulo');
+  const subtituloEl = document.getElementById('drawer-subtitulo');
+  if (iconeEl) iconeEl.textContent = icone;
+  if (tituloEl) tituloEl.textContent = titulo;
+  if (subtituloEl) subtituloEl.textContent = `${itemIds.length} produtos`;
+
+  const containerLista = document.getElementById('drawer-lista-itens');
+  if (!containerLista) return;
 
   const termoNormalizado = (termoBusca || '').trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
@@ -10445,7 +10648,7 @@ function limparBuscaDrawerPreset() {
   }
 }
 
-// Remover item do preset
+// Remover item do preset (sincronizado na Nuvem)
 function removerItemDoPreset(presetId, itemId, event) {
   if (event) {
     event.stopPropagation();
@@ -10453,57 +10656,33 @@ function removerItemDoPreset(presetId, itemId, event) {
   }
 
   if (presetId === 'meu_preset') {
-    const salvoStr = localStorage.getItem('meu_preset_usuario_v1');
-    if (salvoStr) {
-      try {
-        const dados = JSON.parse(salvoStr);
-        dados.ids = (dados.ids || []).filter(id => id !== itemId);
-        localStorage.setItem('meu_preset_usuario_v1', JSON.stringify(dados));
-        atualizarStatusMeuPreset();
-      } catch (e) {}
-    }
-  } else {
-    const preset = PRESETS_LISTA.find(p => p.id === presetId);
-    if (preset) {
-      preset.ids = preset.ids.filter(id => id !== itemId);
-      const btnCard = document.getElementById(`btn-toggle-preset-${presetId}`);
-      if (btnCard) {
-        btnCard.innerHTML = `📋 ${preset.ids.length} produtos <span>▸</span>`;
+    if (!AppState.meuPreset) {
+      const salvoStr = localStorage.getItem('meu_preset_usuario_v1');
+      if (salvoStr) {
+        try { AppState.meuPreset = JSON.parse(salvoStr); } catch (e) {}
       }
     }
-  }
-
-  const inputBusca = document.getElementById('input-busca-drawer-preset');
-  const termoAtual = inputBusca ? inputBusca.value : '';
-  renderizarItensDrawerPreset(presetId, termoAtual);
-  mostrarNotificacaoToast('🗑️ Item removido do preset!');
-}
-
-// Adicionar item do catálogo geral ao preset
-function adicionarItemAoPreset(presetId, itemId, event) {
-  if (event) {
-    event.stopPropagation();
-    event.preventDefault();
-  }
-
-  if (presetId === 'meu_preset') {
-    const salvoStr = localStorage.getItem('meu_preset_usuario_v1');
-    let dados = { data: new Date().toLocaleDateString('pt-BR'), ids: [] };
-    if (salvoStr) {
-      try { dados = JSON.parse(salvoStr); } catch (e) {}
-    }
-    if (!dados.ids) dados.ids = [];
-    if (!dados.ids.includes(itemId)) {
-      dados.ids.push(itemId);
-      localStorage.setItem('meu_preset_usuario_v1', JSON.stringify(dados));
+    if (AppState.meuPreset) {
+      AppState.meuPreset.ids = (AppState.meuPreset.ids || []).filter(id => id !== itemId);
+      localStorage.setItem('meu_preset_usuario_v1', JSON.stringify(AppState.meuPreset));
+      forcarSincronizacaoImediataNuvem();
       atualizarStatusMeuPreset();
     }
   } else {
-    const preset = PRESETS_LISTA.find(p => p.id === presetId);
-    if (preset) {
-      if (!preset.ids) preset.ids = [];
-      if (!preset.ids.includes(itemId)) {
-        preset.ids.push(itemId);
+    const listaNuvem = (AppState.listasSalvasNuvem || []).find(l => l.id === presetId);
+    if (listaNuvem) {
+      listaNuvem.ids = (listaNuvem.ids || []).filter(id => id !== itemId);
+      localStorage.setItem('listas_salvas_nuvem_v1', JSON.stringify(AppState.listasSalvasNuvem));
+      forcarSincronizacaoImediataNuvem();
+      renderizarListasSalvasNuvem();
+    } else {
+      const preset = PRESETS_LISTA.find(p => p.id === presetId);
+      if (preset) {
+        preset.ids = preset.ids.filter(id => id !== itemId);
+        if (!AppState.presetsEditadosNuvem) AppState.presetsEditadosNuvem = {};
+        AppState.presetsEditadosNuvem[presetId] = [...preset.ids];
+        localStorage.setItem('presets_editados_nuvem_v1', JSON.stringify(AppState.presetsEditadosNuvem));
+        forcarSincronizacaoImediataNuvem();
         const btnCard = document.getElementById(`btn-toggle-preset-${presetId}`);
         if (btnCard) {
           btnCard.innerHTML = `📋 ${preset.ids.length} produtos <span>▸</span>`;
@@ -10515,7 +10694,59 @@ function adicionarItemAoPreset(presetId, itemId, event) {
   const inputBusca = document.getElementById('input-busca-drawer-preset');
   const termoAtual = inputBusca ? inputBusca.value : '';
   renderizarItensDrawerPreset(presetId, termoAtual);
-  mostrarNotificacaoToast('✓ Item adicionado ao preset!');
+  mostrarNotificacaoToast('🗑️ Item removido e salvo na nuvem!');
+}
+
+// Adicionar item do catálogo geral ao preset (sincronizado na Nuvem)
+function adicionarItemAoPreset(presetId, itemId, event) {
+  if (event) {
+    event.stopPropagation();
+    event.preventDefault();
+  }
+
+  if (presetId === 'meu_preset') {
+    let dados = AppState.meuPreset || { data: new Date().toLocaleDateString('pt-BR'), ids: [] };
+    if (!dados.ids) dados.ids = [];
+    if (!dados.ids.includes(itemId)) {
+      dados.ids.push(itemId);
+      AppState.meuPreset = dados;
+      localStorage.setItem('meu_preset_usuario_v1', JSON.stringify(dados));
+      forcarSincronizacaoImediataNuvem();
+      atualizarStatusMeuPreset();
+    }
+  } else {
+    const listaNuvem = (AppState.listasSalvasNuvem || []).find(l => l.id === presetId);
+    if (listaNuvem) {
+      if (!listaNuvem.ids) listaNuvem.ids = [];
+      if (!listaNuvem.ids.includes(itemId)) {
+        listaNuvem.ids.push(itemId);
+        localStorage.setItem('listas_salvas_nuvem_v1', JSON.stringify(AppState.listasSalvasNuvem));
+        forcarSincronizacaoImediataNuvem();
+        renderizarListasSalvasNuvem();
+      }
+    } else {
+      const preset = PRESETS_LISTA.find(p => p.id === presetId);
+      if (preset) {
+        if (!preset.ids) preset.ids = [];
+        if (!preset.ids.includes(itemId)) {
+          preset.ids.push(itemId);
+          if (!AppState.presetsEditadosNuvem) AppState.presetsEditadosNuvem = {};
+          AppState.presetsEditadosNuvem[presetId] = [...preset.ids];
+          localStorage.setItem('presets_editados_nuvem_v1', JSON.stringify(AppState.presetsEditadosNuvem));
+          forcarSincronizacaoImediataNuvem();
+          const btnCard = document.getElementById(`btn-toggle-preset-${presetId}`);
+          if (btnCard) {
+            btnCard.innerHTML = `📋 ${preset.ids.length} produtos <span>▸</span>`;
+          }
+        }
+      }
+    }
+  }
+
+  const inputBusca = document.getElementById('input-busca-drawer-preset');
+  const termoAtual = inputBusca ? inputBusca.value : '';
+  renderizarItensDrawerPreset(presetId, termoAtual);
+  mostrarNotificacaoToast('☁️ Item adicionado ao preset na nuvem!');
 }
 
 // Fechar painel lateral
@@ -10532,6 +10763,8 @@ function fecharDetalhesPreset() {
 // Fechar todo o modal de presets e gaveta
 function fecharModalPresetsCompleto() {
   fecharDetalhesPreset();
+  const btnMobilePresets = document.getElementById('mobile-nav-btn-presets');
+  if (btnMobilePresets) btnMobilePresets.classList.remove('ativo');
   fecharModal('modal-presets-lista');
 }
 
@@ -10549,81 +10782,202 @@ function aoClicarForaModalPresets(event) {
   }
 }
 
-// Aplicar preset aos itens do catálogo
-function aplicarPreset(presetId, modo = 'substituir') {
-  const preset = PRESETS_LISTA.find(p => p.id === presetId);
-  if (!preset) return;
+// Restaura itens customizados, quantidades e marcas ao aplicar uma lista salva
+function restaurarItensPresetNoCatalogo(dadosLista, modo = 'substituir') {
+  if (!dadosLista) return 0;
+
+  if (Array.isArray(dadosLista.itensCustom)) {
+    dadosLista.itensCustom.forEach(custom => {
+      const existe = AppState.catalogo.find(c => c.id === custom.id || (c.nome || '').toLowerCase().trim() === (custom.nome || '').toLowerCase().trim());
+      if (!existe) {
+        AppState.catalogo.unshift({
+          ...custom,
+          selecionado: false,
+          comprado: false,
+          qtde: 1
+        });
+      }
+    });
+  }
 
   if (modo === 'substituir') {
     AppState.catalogo.forEach(it => { it.selecionado = false; });
   }
 
-  const idSet = new Set(preset.ids);
+  const idSet = new Set(dadosLista.ids || []);
+  const detalhes = dadosLista.itensDetalhes || {};
   let marcadosCount = 0;
 
   AppState.catalogo.forEach(it => {
     if (idSet.has(it.id)) {
       it.selecionado = true;
+      if (detalhes[it.id]) {
+        if (detalhes[it.id].qtde) it.qtde = detalhes[it.id].qtde;
+        if (detalhes[it.id].marca !== undefined) it.marca = detalhes[it.id].marca;
+      }
       marcadosCount++;
     }
   });
 
-  sincronizarListaAtivaComCatalogo();
-  salvarEstado(true);
-  renderizarTudo();
-  fecharModalPresetsCompleto();
-
-  mostrarNotificacaoToast(`✓ Preset "${preset.nome}" aplicado com ${marcadosCount} itens!`);
+  return marcadosCount;
 }
 
-// Salvar a seleção atual como "Meu Preset"
+// Aplicar preset ou lista salva na nuvem aos itens do catálogo
+function aplicarPreset(presetId, modo = 'substituir') {
+  const objPreset = obterObjetoPresetPorId(presetId);
+  if (!objPreset) return;
+
+  const marcadosCount = restaurarItensPresetNoCatalogo(objPreset, modo);
+
+  sincronizarListaAtivaComCatalogo();
+  forcarSincronizacaoImediataNuvem();
+  renderizarTudo();
+  atualizarContadorSidebarMontar();
+  fecharModalPresetsCompleto();
+
+  mostrarNotificacaoToast(`✓ Lista "${objPreset.nome}" aplicada com ${marcadosCount} itens!`);
+}
+
+// Salvar a seleção atual como "Minha Lista Escolhida" na Nuvem
 function salvarComoMeuPreset() {
-  const selecionados = AppState.catalogo.filter(p => p.selecionado).map(p => p.id);
+  const selecionados = (AppState.catalogo || []).filter(p => p.selecionado);
   if (selecionados.length === 0) {
-    alert('⚠️ Selecione pelo menos 1 produto em "Criar Lista" antes de salvar seu favorito!');
+    alert('⚠️ Selecione pelo menos 1 produto na sua lista antes de gravar na nuvem!');
     return;
   }
 
-  const dadosPreset = {
-    data: new Date().toLocaleDateString('pt-BR'),
-    ids: selecionados
-  };
-
+  const dadosPreset = obterDadosListaEscolhidaAtual();
+  AppState.meuPreset = dadosPreset;
   localStorage.setItem('meu_preset_usuario_v1', JSON.stringify(dadosPreset));
+
+  // Se o usuário também preencheu um nome no campo de nova lista, já grava também na lista nomeada
+  const inputNome = document.getElementById('input-nome-lista-nuvem');
+  const nomeDigitado = inputNome ? inputNome.value.trim() : '';
+  if (nomeDigitado) {
+    if (!Array.isArray(AppState.listasSalvasNuvem)) AppState.listasSalvasNuvem = [];
+    const novaLista = {
+      id: 'nuvem_lista_' + Date.now(),
+      nome: nomeDigitado,
+      icone: '☁️',
+      ...dadosPreset
+    };
+    AppState.listasSalvasNuvem.unshift(novaLista);
+    localStorage.setItem('listas_salvas_nuvem_v1', JSON.stringify(AppState.listasSalvasNuvem));
+    inputNome.value = '';
+    renderizarListasSalvasNuvem();
+  }
+
+  forcarSincronizacaoImediataNuvem();
   atualizarStatusMeuPreset();
-  mostrarNotificacaoToast(`⭐ Lista favorita gravada com ${selecionados.length} itens!`);
+
+  // Feedback visual no botão
+  const btnGravar = document.getElementById('btn-gravar-lista-escolhida');
+  if (btnGravar) {
+    const htmlOriginal = btnGravar.innerHTML;
+    btnGravar.innerHTML = `✓ Gravado na Nuvem (${selecionados.length})!`;
+    btnGravar.classList.add('gravado-sucesso');
+    setTimeout(() => {
+      btnGravar.innerHTML = htmlOriginal;
+      btnGravar.classList.remove('gravado-sucesso');
+    }, 2400);
+  }
+
+  mostrarNotificacaoToast(`☁️ Lista escolhida gravada na nuvem com ${selecionados.length} itens!`);
 }
 
-// Carregar Meu Preset
+// Salvar a lista escolhida como uma Nova Lista Nomeada na Nuvem
+function salvarNovaListaEscolhidaNuvem() {
+  const selecionados = (AppState.catalogo || []).filter(p => p.selecionado);
+  if (selecionados.length === 0) {
+    alert('⚠️ Selecione pelo menos 1 produto na sua lista antes de gravar na nuvem!');
+    return;
+  }
+
+  const inputNome = document.getElementById('input-nome-lista-nuvem');
+  let nomeLista = inputNome ? inputNome.value.trim() : '';
+  if (!nomeLista) {
+    const numListas = (Array.isArray(AppState.listasSalvasNuvem) ? AppState.listasSalvasNuvem.length : 0) + 1;
+    nomeLista = `Minha Lista #${numListas} (${new Date().toLocaleDateString('pt-BR')})`;
+  }
+
+  const dadosPreset = obterDadosListaEscolhidaAtual();
+
+  // Atualiza também o favorito principal na nuvem
+  AppState.meuPreset = dadosPreset;
+  localStorage.setItem('meu_preset_usuario_v1', JSON.stringify(dadosPreset));
+
+  if (!Array.isArray(AppState.listasSalvasNuvem)) AppState.listasSalvasNuvem = [];
+  const novaLista = {
+    id: 'nuvem_lista_' + Date.now(),
+    nome: nomeLista,
+    icone: '☁️',
+    ...dadosPreset
+  };
+  AppState.listasSalvasNuvem.unshift(novaLista);
+  localStorage.setItem('listas_salvas_nuvem_v1', JSON.stringify(AppState.listasSalvasNuvem));
+
+  if (inputNome) inputNome.value = '';
+
+  forcarSincronizacaoImediataNuvem();
+  atualizarStatusMeuPreset();
+  renderizarListasSalvasNuvem();
+
+  const btnNova = document.getElementById('btn-salvar-nova-lista-nuvem');
+  if (btnNova) {
+    const txtOrig = btnNova.innerHTML;
+    btnNova.innerHTML = '✓ Salva na Nuvem!';
+    setTimeout(() => { btnNova.innerHTML = txtOrig; }, 2200);
+  }
+
+  mostrarNotificacaoToast(`☁️ Lista "${nomeLista}" gravada na nuvem com ${selecionados.length} itens!`);
+}
+
+// Excluir uma lista personalizada salva na nuvem
+function excluirListaSalvaNuvem(listaId, event) {
+  if (event) {
+    event.stopPropagation();
+    event.preventDefault();
+  }
+  if (!Array.isArray(AppState.listasSalvasNuvem)) return;
+  const alvo = AppState.listasSalvasNuvem.find(l => l.id === listaId);
+  if (!alvo) return;
+
+  AppState.listasSalvasNuvem = AppState.listasSalvasNuvem.filter(l => l.id !== listaId);
+  localStorage.setItem('listas_salvas_nuvem_v1', JSON.stringify(AppState.listasSalvasNuvem));
+
+  if (presetAbertoDetalhesId === listaId) {
+    fecharDetalhesPreset();
+  }
+
+  forcarSincronizacaoImediataNuvem();
+  renderizarListasSalvasNuvem();
+  mostrarNotificacaoToast(`🗑️ Lista "${alvo.nome}" removida da nuvem.`);
+}
+
+// Carregar Meu Preset da Nuvem / Local
 function aplicarMeuPreset(modo = 'substituir') {
-  const salvoStr = localStorage.getItem('meu_preset_usuario_v1');
-  if (!salvoStr) {
-    alert('Nenhuma lista favorita foi gravada ainda.');
+  let dados = AppState.meuPreset;
+  if (!dados) {
+    const salvoStr = localStorage.getItem('meu_preset_usuario_v1');
+    if (salvoStr) {
+      try { dados = JSON.parse(salvoStr); } catch (e) {}
+    }
+  }
+  if (!dados || !Array.isArray(dados.ids) || dados.ids.length === 0) {
+    alert('Nenhuma lista favorita foi gravada na nuvem ainda.');
     return;
   }
 
   try {
-    const dados = JSON.parse(salvoStr);
-    const idSet = new Set(dados.ids || []);
-
-    if (modo === 'substituir') {
-      AppState.catalogo.forEach(it => { it.selecionado = false; });
-    }
-
-    let count = 0;
-    AppState.catalogo.forEach(it => {
-      if (idSet.has(it.id)) {
-        it.selecionado = true;
-        count++;
-      }
-    });
+    const count = restaurarItensPresetNoCatalogo(dados, modo);
 
     sincronizarListaAtivaComCatalogo();
-    salvarEstado(true);
+    forcarSincronizacaoImediataNuvem();
     renderizarTudo();
+    atualizarContadorSidebarMontar();
     fecharModalPresetsCompleto();
 
-    mostrarNotificacaoToast(`⚡ Favorito carregado com ${count} itens!`);
+    mostrarNotificacaoToast(`⚡ Lista favorita da nuvem carregada com ${count} itens!`);
   } catch (e) {
     console.error('Erro ao carregar preset', e);
   }
@@ -10633,34 +10987,55 @@ function aplicarMeuPreset(modo = 'substituir') {
 function atualizarStatusMeuPreset() {
   const statusEl = document.getElementById('meu-preset-status');
   const btnCarregar = document.getElementById('btn-carregar-meu-preset');
+  const btnSomar = document.getElementById('btn-somar-meu-preset');
+  const badgeAtual = document.getElementById('badge-lista-atual-preset');
+
+  const qtdAtualMarcados = (AppState.catalogo || []).filter(p => p.selecionado).length;
+  if (badgeAtual) {
+    badgeAtual.textContent = `${qtdAtualMarcados} selecionados agora`;
+  }
+
   if (!statusEl || !btnCarregar) return;
 
-  const salvoStr = localStorage.getItem('meu_preset_usuario_v1');
-  if (salvoStr) {
-    try {
-      const dados = JSON.parse(salvoStr);
-      statusEl.innerHTML = `
-        <span style="display: inline-flex; align-items: center; gap: 6px;">
-          <strong style="color: #059669;">✓ ${dados.ids.length} itens salvos</strong> em ${dados.data}
-          <button class="btn-meu-preset-ver-itens" onclick="alternarDetalhesItensPreset('meu_preset')" title="Ver itens gravados">📋 Ver Itens</button>
-        </span>
-      `;
-      btnCarregar.disabled = false;
-    } catch(e) {
-      statusEl.textContent = 'Nenhuma lista personalizada salva ainda.';
-      btnCarregar.disabled = true;
+  let dados = AppState.meuPreset;
+  if (!dados) {
+    const salvoStr = localStorage.getItem('meu_preset_usuario_v1');
+    if (salvoStr) {
+      try {
+        dados = JSON.parse(salvoStr);
+        AppState.meuPreset = dados;
+      } catch (e) {}
     }
+  }
+
+  if (dados && Array.isArray(dados.ids) && dados.ids.length > 0) {
+    statusEl.innerHTML = `
+      <span style="display: inline-flex; align-items: center; flex-wrap: wrap; gap: 6px;">
+        <strong style="color: #10B981;">☁️ ✓ ${dados.ids.length} itens salvos na nuvem</strong> <span>em ${escapeHtml(dados.data || '')}</span>
+        <button id="btn-toggle-preset-meu_preset" class="btn-meu-preset-ver-itens" onclick="alternarDetalhesItensPreset('meu_preset')" title="Ver itens gravados na nuvem">📋 Ver Itens</button>
+      </span>
+    `;
+    btnCarregar.disabled = false;
+    if (btnSomar) btnSomar.disabled = false;
   } else {
-    statusEl.textContent = 'Nenhuma lista personalizada salva ainda.';
+    statusEl.textContent = 'Nenhuma lista personalizada salva na nuvem ainda.';
     btnCarregar.disabled = true;
+    if (btnSomar) btnSomar.disabled = true;
   }
 }
 
 // Notificação Toast rápida e discreta
 function mostrarNotificacaoToast(mensagem) {
-  // Em COMPRAR e CRIAR LISTA, não exibe toasts/modais de mensagem flutuantes
+  // Em COMPRAR e CRIAR LISTA, permite notificações de Compra Finalizada e de Gravação na Nuvem / Presets
   if (AppState && (AppState.abaAtiva === 'lista' || AppState.abaAtiva === 'despensa')) {
-    if (!mensagem.includes('🎉 Compra finalizada')) {
+    const ehToastPermitido = mensagem.includes('🎉 Compra finalizada') ||
+                             mensagem.includes('☁️') ||
+                             mensagem.includes('nuvem') ||
+                             mensagem.includes('Nuvem') ||
+                             mensagem.includes('Lista') ||
+                             mensagem.includes('Preset') ||
+                             mensagem.includes('Favorito');
+    if (!ehToastPermitido) {
       return;
     }
   }
