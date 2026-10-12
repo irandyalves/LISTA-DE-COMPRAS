@@ -30,11 +30,10 @@ class ListaComprasHandler(SimpleHTTPRequestHandler):
         super().__init__(*args, directory=DIRETORIO_ATUAL, **kwargs)
 
     def end_headers(self):
-        # Desabilitar cache para arquivos JSON dinâmicos
-        if self.path.endswith('.json') or '/api/' in self.path:
-            self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
-            self.send_header('Pragma', 'no-cache')
-            self.send_header('Expires', '0')
+        # Desabilitar cache para garantir carregamento imediato de CSS, JS, HTML e JSON atualizados
+        self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
+        self.send_header('Pragma', 'no-cache')
+        self.send_header('Expires', '0')
         super().end_headers()
 
     def do_POST(self):
