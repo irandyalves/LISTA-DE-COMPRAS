@@ -11174,3 +11174,647 @@ body.tema-escuro #view-despensa .item-card.marcado-excluir-lote {
     font-size: 0.68rem;
   }
 }
+
+/* ==========================================================================
+   ⚡ COMPRA RÁPIDA • PRODUTOS DO COTIDIANO E DESTAQUE EMERGENCIAL NO COMPRAR
+   ========================================================================== */
+
+/* Badge de contagem no menu PC e no rodapé Mobile */
+.badge-compra-rapida-urgente {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  margin-left: auto;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #F59E0B 0%, #EA580C 100%);
+  color: #FFFFFF;
+  font-size: 0.68rem;
+  font-weight: 900;
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.45);
+  animation: pulsoUrgenteCompraRapida 1.8s infinite ease-in-out;
+}
+
+.mobile-nav-item {
+  position: relative;
+}
+
+.mobile-badge-urgente {
+  position: absolute;
+  top: 2px;
+  right: 10px;
+  margin-left: 0;
+  min-width: 16px;
+  height: 16px;
+  font-size: 0.62rem;
+  padding: 0 4px;
+}
+
+@keyframes pulsoUrgenteCompraRapida {
+  0%, 100% { transform: scale(1); box-shadow: 0 2px 6px rgba(245, 158, 11, 0.45); }
+  50% { transform: scale(1.08); box-shadow: 0 0 12px rgba(245, 158, 11, 0.85); }
+}
+
+/* Modal Compra Rápida */
+.modal-compra-rapida-overlay {
+  z-index: 3200;
+  backdrop-filter: blur(5px);
+}
+
+.modal-compra-rapida-content {
+  width: 95%;
+  max-width: 720px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  padding: 0 !important;
+  border-radius: 16px !important;
+  overflow: hidden;
+  border: 2px solid rgba(245, 158, 11, 0.55) !important;
+  background: #FFFFFF;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.38);
+}
+
+[data-theme="dark"] .modal-compra-rapida-content,
+body.tema-escuro .modal-compra-rapida-content {
+  background: #0F172A !important;
+  border-color: rgba(245, 158, 11, 0.65) !important;
+  color: #F8FAFC;
+}
+
+.modal-compra-rapida-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 16px 12px;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.16) 0%, rgba(234, 88, 12, 0.08) 100%);
+  border-bottom: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.compra-rapida-header-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+}
+
+.compra-rapida-raio-badge {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #F59E0B 0%, #EA580C 100%);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.35);
+}
+
+.compra-rapida-titulo-bloco h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: #B45309;
+  letter-spacing: -0.01em;
+}
+
+[data-theme="dark"] .compra-rapida-titulo-bloco h2,
+body.tema-escuro .compra-rapida-titulo-bloco h2 {
+  color: #FBBF24 !important;
+}
+
+.compra-rapida-titulo-bloco p {
+  margin: 3px 0 0;
+  font-size: 0.76rem;
+  line-height: 1.3;
+  color: #475569;
+}
+
+[data-theme="dark"] .compra-rapida-titulo-bloco p,
+body.tema-escuro .compra-rapida-titulo-bloco p {
+  color: #CBD5E1 !important;
+}
+
+.compra-rapida-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.btn-atalho-presets-nuvem {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  background: rgba(59, 130, 246, 0.12);
+  color: #2563EB;
+  font-size: 0.72rem;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+[data-theme="dark"] .btn-atalho-presets-nuvem,
+body.tema-escuro .btn-atalho-presets-nuvem {
+  color: #60A5FA;
+  background: rgba(59, 130, 246, 0.18);
+}
+
+.btn-atalho-presets-nuvem:hover {
+  background: #2563EB;
+  color: #FFFFFF;
+}
+
+/* Barra de busca e inclusão avulsa */
+.compra-rapida-toolbar {
+  padding: 10px 14px 6px;
+}
+
+.compra-rapida-busca-box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #F8FAFC;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 10px;
+  padding: 4px 6px 4px 10px;
+}
+
+[data-theme="dark"] .compra-rapida-busca-box,
+body.tema-escuro .compra-rapida-busca-box {
+  background: #1E293B;
+  border-color: #334155;
+}
+
+.compra-rapida-busca-box:focus-within {
+  border-color: #F59E0B;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+}
+
+.compra-rapida-busca-ico {
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+
+.compra-rapida-busca-box input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 0.85rem;
+  color: inherit;
+  outline: none;
+  min-width: 0;
+}
+
+.btn-limpar-busca-cr {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(148, 163, 184, 0.25);
+  color: inherit;
+  font-size: 0.75rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-add-avulso-compra-rapida {
+  padding: 6px 11px;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  color: #FFFFFF;
+  font-size: 0.75rem;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* Abas de categorias na Compra Rápida */
+.compra-rapida-categorias-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px 10px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.compra-rapida-categorias-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.compra-rapida-cat-pill {
+  padding: 5px 11px;
+  border-radius: 999px;
+  border: 1px solid #CBD5E1;
+  background: #F1F5F9;
+  color: #334155;
+  font-size: 0.74rem;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+[data-theme="dark"] .compra-rapida-cat-pill,
+body.tema-escuro .compra-rapida-cat-pill {
+  background: #1E293B;
+  border-color: #334155;
+  color: #CBD5E1;
+}
+
+.compra-rapida-cat-pill.ativo {
+  background: linear-gradient(135deg, #F59E0B 0%, #EA580C 100%) !important;
+  border-color: #F59E0B !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35);
+}
+
+/* Grid de produtos do cotidiano */
+.compra-rapida-grid {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 14px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(205px, 1fr));
+  gap: 8px;
+  max-height: 48vh;
+}
+
+.card-item-compra-rapida {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 9px 10px;
+  border-radius: 11px;
+  border: 1.5px solid #E2E8F0;
+  background: #F8FAFC;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+[data-theme="dark"] .card-item-compra-rapida,
+body.tema-escuro .card-item-compra-rapida {
+  background: #1E293B;
+  border-color: #334155;
+}
+
+.card-item-compra-rapida:hover {
+  border-color: #F59E0B;
+}
+
+.card-item-compra-rapida.selecionado-urgente {
+  border-color: #F59E0B !important;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.16) 0%, rgba(234, 88, 12, 0.08) 100%) !important;
+  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.22);
+}
+
+.card-cr-topo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-cr-icone {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.card-cr-icone svg {
+  width: 26px;
+  height: 26px;
+}
+
+.card-cr-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-cr-nome {
+  font-size: 0.8rem;
+  font-weight: 800;
+  line-height: 1.2;
+  color: #0F172A;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+[data-theme="dark"] .card-cr-nome,
+body.tema-escuro .card-cr-nome {
+  color: #F8FAFC;
+}
+
+.card-cr-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+  font-size: 0.68rem;
+  color: #64748B;
+}
+
+[data-theme="dark"] .card-cr-meta,
+body.tema-escuro .card-cr-meta {
+  color: #94A3B8;
+}
+
+.card-cr-preco {
+  font-weight: 800;
+  color: #10B981;
+}
+
+.card-cr-check {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  border: 1.5px solid #CBD5E1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 900;
+  color: #64748B;
+  flex-shrink: 0;
+}
+
+.card-cr-check.ativo {
+  background: linear-gradient(135deg, #F59E0B 0%, #EA580C 100%);
+  border-color: #EA580C;
+  color: #FFFFFF;
+}
+
+.card-cr-aviso-lista {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #3B82F6;
+  background: rgba(59, 130, 246, 0.1);
+  padding: 2px 6px;
+  border-radius: 5px;
+}
+
+.card-cr-controles {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 5px;
+  border-top: 1px dashed rgba(245, 158, 11, 0.35);
+}
+
+.card-cr-tag-urgente {
+  font-size: 0.66rem;
+  font-weight: 900;
+  color: #D97706;
+  letter-spacing: 0.03em;
+}
+
+[data-theme="dark"] .card-cr-tag-urgente,
+body.tema-escuro .card-cr-tag-urgente {
+  color: #FBBF24;
+}
+
+.card-cr-qtde-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(15, 23, 42, 0.08);
+  padding: 2px 5px;
+  border-radius: 7px;
+}
+
+[data-theme="dark"] .card-cr-qtde-box,
+body.tema-escuro .card-cr-qtde-box {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.btn-cr-qtde {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  border: none;
+  background: #F59E0B;
+  color: #FFFFFF;
+  font-weight: 900;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.val-cr-qtde {
+  font-size: 0.78rem;
+  font-weight: 900;
+  min-width: 16px;
+  text-align: center;
+}
+
+/* Rodapé do modal Compra Rápida */
+.compra-rapida-footer {
+  padding: 10px 14px 14px;
+  background: #F8FAFC;
+  border-top: 1px solid rgba(245, 158, 11, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+[data-theme="dark"] .compra-rapida-footer,
+body.tema-escuro .compra-rapida-footer {
+  background: #0B1120;
+}
+
+.compra-rapida-resumo-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: #D97706;
+}
+
+[data-theme="dark"] .compra-rapida-resumo-topo,
+body.tema-escuro .compra-rapida-resumo-topo {
+  color: #FBBF24;
+}
+
+.btn-limpar-selecao-cr {
+  border: none;
+  background: rgba(239, 68, 68, 0.14);
+  color: #EF4444;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.compra-rapida-resumo-chips {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  max-height: 54px;
+  flex-wrap: wrap;
+}
+
+.cr-chip-vazio {
+  font-size: 0.73rem;
+  color: #64748B;
+  font-style: italic;
+}
+
+.cr-chip-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(245, 158, 11, 0.18);
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  color: #B45309;
+  font-size: 0.7rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+[data-theme="dark"] .cr-chip-item,
+body.tema-escuro .cr-chip-item {
+  color: #FDE68A;
+}
+
+.btn-enviar-compra-rapida {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 11px;
+  border: none;
+  background: linear-gradient(135deg, #F59E0B 0%, #EA580C 100%);
+  color: #FFFFFF;
+  font-size: 0.92rem;
+  font-weight: 900;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.4);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-enviar-compra-rapida:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(234, 88, 12, 0.55);
+}
+
+/* ==========================================================================
+   DESTAQUE NO TOPO DO "COMPRAR" PARA OS ITENS DE COMPRA RÁPIDA (EMERGENCIAL)
+   ========================================================================== */
+.secao-header-compra-rapida td {
+  background: linear-gradient(90deg, rgba(245, 158, 11, 0.26) 0%, rgba(234, 88, 12, 0.16) 100%) !important;
+  border-top: 2px solid #F59E0B !important;
+  border-bottom: 2px solid #F59E0B !important;
+}
+
+.secao-header-compra-rapida .mcol-cat-sep-title {
+  color: #B45309 !important;
+  font-weight: 900 !important;
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+[data-theme="dark"] .secao-header-compra-rapida .mcol-cat-sep-title,
+body.tema-escuro .secao-header-compra-rapida .mcol-cat-sep-title {
+  color: #FBBF24 !important;
+}
+
+.badge-aviso-emergencial-topo {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #EA580C;
+  color: #FFFFFF !important;
+  font-size: 0.65rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  box-shadow: 0 2px 6px rgba(234, 88, 12, 0.4);
+}
+
+.btn-limpar-destaque-rapida {
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  background: rgba(255, 255, 255, 0.7);
+  color: #B45309;
+  font-size: 0.66rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+[data-theme="dark"] .btn-limpar-destaque-rapida,
+body.tema-escuro .btn-limpar-destaque-rapida {
+  background: rgba(15, 23, 42, 0.7);
+  color: #FDE68A;
+}
+
+/* Linha do produto emergencial no COMPRAR */
+.mcol-tr-item.tr-item-compra-rapida:not(.item-linha-comprado) .mcol-prod-card-cell {
+  border-left: 4px solid #F59E0B !important;
+  background: linear-gradient(90deg, rgba(245, 158, 11, 0.14) 0%, rgba(245, 158, 11, 0.03) 100%) !important;
+}
+
+.tag-compra-rapida-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #F59E0B 0%, #EA580C 100%);
+  color: #FFFFFF !important;
+  font-size: 0.64rem;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(234, 88, 12, 0.35);
+  animation: pulsoUrgenteCompraRapida 2s infinite ease-in-out;
+}
+
+/* Banner flutuante quando chega um aviso de Compra Rápida da Patroa */
+#toast-aviso-patroa.modo-compra-rapida {
+  background: linear-gradient(135deg, #EA580C 0%, #B45309 100%) !important;
+  border: 2px solid #FDE047 !important;
+  box-shadow: 0 12px 32px rgba(234, 88, 12, 0.6) !important;
+}
+
+@media (max-width: 640px) {
+  .compra-rapida-grid {
+    grid-template-columns: 1fr;
+    max-height: 52vh;
+  }
+  .modal-compra-rapida-header {
+    padding: 12px;
+  }
+  .compra-rapida-titulo-bloco h2 {
+    font-size: 0.95rem;
+  }
+}
+

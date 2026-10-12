@@ -833,6 +833,7 @@ function sincronizarListaAtivaComCatalogo() {
       prod.compradoPorIcone = null;
       prod.compradoEm = null;
       prod.precoRegistradoMercado = 0;
+      prod.compraRapida = false;
     }
   });
 
@@ -874,9 +875,14 @@ function sincronizarListaAtivaComCatalogo() {
         adicionadoPor: prod.adicionadoPor || null,
         adicionadoEm: prod.adicionadoEm || null,
         novoPedidoCasa: !!prod.novoPedidoCasa,
+        compraRapida: !!prod.compraRapida,
         origemPreco: prod.origemPreco || null
       };
     });
+
+  if (typeof atualizarBadgeCompraRapida === 'function') {
+    atualizarBadgeCompraRapida();
+  }
 }
 
 // Inicialização da Aplicação
@@ -1006,6 +1012,9 @@ function carregarLocalmente() {
             c.qtde = itemSalvo.qtde || 1;
             c.comprado = !!itemSalvo.comprado;
             c.marca = itemSalvo.marca || null;
+            c.compraRapida = !!(itemSalvo.compraRapida || c.compraRapida);
+            c.novoPedidoCasa = !!(itemSalvo.novoPedidoCasa || c.novoPedidoCasa);
+            c.adicionadoPor = itemSalvo.adicionadoPor || c.adicionadoPor || null;
             if (c.precoMedioDF && itemSalvo.preco < (c.precoMedioDF * 0.7)) {
               c.preco = c.precoMedioDF;
             } else {
@@ -1033,7 +1042,10 @@ function carregarLocalmente() {
               dataUltimoPreco: itemSalvo.dataUltimoPreco || new Date().toISOString().slice(0, 10),
               selecionado: true,
               qtde: itemSalvo.qtde || 1,
-              comprado: !!itemSalvo.comprado
+              comprado: !!itemSalvo.comprado,
+              compraRapida: !!itemSalvo.compraRapida,
+              novoPedidoCasa: !!itemSalvo.novoPedidoCasa,
+              adicionadoPor: itemSalvo.adicionadoPor || null
             });
           }
         });
@@ -1251,13 +1263,34 @@ function inicializarNuvem() {
             // Desmarca os itens imediatamente no catálogo local
             if (Array.isArray(evento.itens)) {
               evento.itens.forEach(nomeItem => {
-                const nomeNorm = String(nomeItem).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+                const nomeLimpo = String(nomeItem).replace(/\s*\(\d+x\)\s*$/i, '');
+                const nomeNorm = nomeLimpo.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
                 const pCat = AppState.catalogo.find(p => p.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim() === nomeNorm)
                   || AppState.catalogo.find(p => p.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().includes(nomeNorm));
                 if (pCat) {
                   pCat.selecionado = false;
                   pCat.comprado = false;
                   pCat.novoPedidoCasa = false;
+                  pCat.compraRapida = false;
+                }
+              });
+            }
+          } else if (tipoEvento === 'compra_rapida') {
+            tocarAvisoSonoroCompraRapida();
+            exibirAvisoPedidoPatroa(nomeExibir, evento.itens, evento.icone || '⚡', 'compra_rapida');
+
+            if (Array.isArray(evento.itens)) {
+              evento.itens.forEach(nomeItem => {
+                const nomeLimpo = String(nomeItem).replace(/\s*\(\d+x\)\s*$/i, '');
+                const nomeNorm = nomeLimpo.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+                const pCat = AppState.catalogo.find(p => p.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim() === nomeNorm)
+                  || AppState.catalogo.find(p => p.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().includes(nomeNorm));
+                if (pCat && !pCat.comprado) {
+                  pCat.selecionado = true;
+                  pCat.compraRapida = true;
+                  pCat.novoPedidoCasa = true;
+                  pCat.adicionadoPor = nomeExibir;
+                  pCat.adicionadoEm = evento.timestamp;
                 }
               });
             }
@@ -1268,7 +1301,8 @@ function inicializarNuvem() {
             // Marca os itens como novos pedidos de casa no catálogo local
             if (Array.isArray(evento.itens)) {
               evento.itens.forEach(nomeItem => {
-                const nomeNorm = String(nomeItem).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+                const nomeLimpo = String(nomeItem).replace(/\s*\(\d+x\)\s*$/i, '');
+                const nomeNorm = nomeLimpo.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
                 const pCat = AppState.catalogo.find(p => p.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim() === nomeNorm)
                   || AppState.catalogo.find(p => p.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().includes(nomeNorm));
                 if (pCat && !pCat.comprado) {
@@ -1317,6 +1351,9 @@ function inicializarNuvem() {
                 localItem.adicionadoPor = nuvemItem.adicionadoPor || localItem.adicionadoPor || null;
                 if (nuvemItem.novoPedidoCasa !== undefined) {
                   localItem.novoPedidoCasa = nuvemItem.novoPedidoCasa;
+                }
+                if (nuvemItem.compraRapida !== undefined) {
+                  localItem.compraRapida = !!nuvemItem.compraRapida;
                 }
               }
             } else {
@@ -1371,6 +1408,12 @@ function inicializarNuvem() {
       if (modalPresetsEl && modalPresetsEl.style.display !== 'none' && modalPresetsEl.style.display !== '') {
         if (typeof atualizarStatusMeuPreset === 'function') atualizarStatusMeuPreset();
         if (typeof renderizarListasSalvasNuvem === 'function') renderizarListasSalvasNuvem();
+      }
+
+      // Se o modal de Compra Rápida estiver aberto, atualiza em tempo real
+      const modalCompraRapidaEl = document.getElementById('modal-compra-rapida');
+      if (modalCompraRapidaEl && modalCompraRapidaEl.style.display !== 'none' && modalCompraRapidaEl.style.display !== '') {
+        if (typeof renderizarGridCompraRapida === 'function') renderizarGridCompraRapida();
       }
 
       // No celular (somente mobile), não traga preços até serem registrados
@@ -1431,6 +1474,35 @@ function tocarAvisoSonoroNotificacao() {
   }
 }
 
+// Reproduz aviso sonoro especial de Compra Rápida Emergencial (3 toques vibrantes de urgência)
+function tocarAvisoSonoroCompraRapida() {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+
+    const tocarNota = (freq, start, duration) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + start);
+      gain.gain.setValueAtTime(0.34, ctx.currentTime + start);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + duration);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(ctx.currentTime + start);
+      osc.stop(ctx.currentTime + start + duration);
+    };
+
+    // Toque triplo ascendente de emergência (659Hz -> 880Hz -> 1046Hz)
+    tocarNota(659.25, 0, 0.22);
+    tocarNota(880.00, 0.16, 0.24);
+    tocarNota(1046.50, 0.34, 0.55);
+  } catch (e) {
+    console.warn("Áudio de compra rápida não executado:", e);
+  }
+}
+
 // Reproduz aviso sonoro de desistência/cancelamento (tom descendente)
 function tocarAvisoSonoroDesistencia() {
   try {
@@ -1469,7 +1541,7 @@ function escapeHtml(texto) {
     .replace(/'/g, '&#39;');
 }
 
-// Banner Flutuante de Pedido ou Desistência da Patroa (Sioneide)
+// Banner Flutuante de Pedido, Compra Rápida ou Desistência da Patroa (Sioneide)
 let timerAvisoPatroa = null;
 function exibirAvisoPedidoPatroa(autor, itens, icone = '👩', tipo = 'adicionado') {
   const banner = document.getElementById('toast-aviso-patroa');
@@ -1481,7 +1553,10 @@ function exibirAvisoPedidoPatroa(autor, itens, icone = '👩', tipo = 'adicionad
   const nomeRaw = (autor || 'Sioneide').trim();
   const nomeFormatado = nomeRaw.charAt(0).toUpperCase() + nomeRaw.slice(1).toLowerCase();
   const nomeUpper = nomeRaw.toUpperCase();
-  const listaTexto = Array.isArray(itens) ? itens.join(', ') : String(itens);
+  const listaItensArr = Array.isArray(itens) ? itens : [String(itens)];
+  const listaTexto = listaItensArr.join(', ');
+
+  banner.classList.remove('modo-desistencia', 'modo-compra-rapida');
 
   if (tipo === 'desistiu') {
     banner.classList.add('modo-desistencia');
@@ -1492,8 +1567,16 @@ function exibirAvisoPedidoPatroa(autor, itens, icone = '👩', tipo = 'adicionad
     if (itensEl) {
       itensEl.textContent = listaTexto;
     }
+  } else if (tipo === 'compra_rapida') {
+    banner.classList.add('modo-compra-rapida');
+    if (iconeEl) iconeEl.textContent = '⚡';
+    if (tituloEl) {
+      tituloEl.innerHTML = `<span class="badge-toast-compra-rapida">⚡ COMPRA RÁPIDA EMERGENCIAL (${listaItensArr.length})</span> <strong class="toast-patroa-nome-autor">${escapeHtml(nomeUpper)}</strong> pediu para trazer hoje:`;
+    }
+    if (itensEl) {
+      itensEl.textContent = listaTexto;
+    }
   } else {
-    banner.classList.remove('modo-desistencia');
     if (iconeEl) iconeEl.textContent = '🔔';
     if (tituloEl) {
       tituloEl.innerHTML = `<strong class="toast-patroa-nome-autor">${escapeHtml(nomeUpper)}</strong> | pediu para comprar:`;
@@ -1512,16 +1595,31 @@ function exibirAvisoPedidoPatroa(autor, itens, icone = '👩', tipo = 'adicionad
   // Vibração no celular
   if (typeof navigator !== 'undefined' && navigator.vibrate) {
     try {
-      navigator.vibrate(tipo === 'desistiu' ? [300, 120, 300, 120, 300] : [250, 100, 250]);
+      if (tipo === 'compra_rapida') {
+        navigator.vibrate([320, 100, 320, 100, 480]);
+      } else if (tipo === 'desistiu') {
+        navigator.vibrate([300, 120, 300, 120, 300]);
+      } else {
+        navigator.vibrate([250, 100, 250]);
+      }
     } catch(e){}
   }
 
-  // Some automaticamente depois de alguns segundos (10s para desistência, 18s para pedido)
+  // Some automaticamente depois de alguns segundos (10s para desistência, 25s para compra rápida, 18s para pedido)
   clearTimeout(timerAvisoPatroa);
-  const tempoExibicao = tipo === 'desistiu' ? 10000 : 18000;
+  const tempoExibicao = tipo === 'desistiu' ? 10000 : (tipo === 'compra_rapida' ? 25000 : 18000);
   timerAvisoPatroa = setTimeout(() => {
     fecharAvisoPatroa();
   }, tempoExibicao);
+}
+
+function irParaCompraAoClicarAvisoPatroa(event) {
+  if (event && event.target && event.target.closest('.toast-patroa-fechar')) return;
+  fecharAvisoPatroa();
+  if (typeof navegarParaAba === 'function') {
+    navegarParaAba('lista');
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function fecharAvisoPatroa() {
@@ -1529,6 +1627,7 @@ function fecharAvisoPatroa() {
   if (banner) {
     banner.classList.remove('visivel');
     banner.classList.remove('modo-desistencia');
+    banner.classList.remove('modo-compra-rapida');
     banner.style.setProperty('display', 'none', 'important');
     banner.style.removeProperty('opacity');
     banner.style.removeProperty('pointer-events');
@@ -4064,7 +4163,7 @@ function atualizarBalaoTotalCategoria(categoria) {
   // 2. Atualizar balão em Comprar (view-lista)
   const balaoComprar = document.getElementById(`balao-total-comprar-${chaveId}`);
   if (balaoComprar) {
-    const itensListaCat = AppState.listaAtiva.filter(i => (i.categoria || 'Diversos') === categoria);
+    const itensListaCat = AppState.listaAtiva.filter(i => !i.compraRapida && (i.categoria || 'Diversos') === categoria);
     const totalComprar = itensListaCat.reduce((acc, i) => {
       const precoI = (ehDispositivoMobile && Number(i.precoRegistradoMercado) > 0)
         ? Number(i.precoRegistradoMercado)
@@ -4080,6 +4179,22 @@ function atualizarBalaoTotalCategoria(categoria) {
       balaoComprar.classList.add('vazio');
     }
   }
+
+  // 3. Atualizar balão de Compra Rápida Emergencial se existir
+  const balaoCR = document.getElementById('balao-total-comprar-_compra_r_pida___emergencial') || document.getElementById('balao-total-comprar-compra_rapida');
+  if (balaoCR) {
+    const itensCR = AppState.listaAtiva.filter(i => !!i.compraRapida);
+    const totalCR = itensCR.reduce((acc, i) => {
+      const precoI = (ehDispositivoMobile && Number(i.precoRegistradoMercado) > 0)
+        ? Number(i.precoRegistradoMercado)
+        : (Number(i.precoRegistradoMercado) > 0 ? Number(i.precoRegistradoMercado) : (Number(i.preco) || Number(i.precoMedioDF) || 0));
+      return acc + (i.qtde || 1) * precoI;
+    }, 0);
+    const valorCREl = balaoCR.querySelector('.balao-valor');
+    if (valorCREl) valorCREl.textContent = formatarMoeda(totalCR);
+    if (totalCR > 0) balaoCR.classList.remove('vazio');
+    else balaoCR.classList.add('vazio');
+  }
 }
 
 // Renderizar a Lista de Compras Ativa (com Ícones 2D Coloridos)
@@ -4088,6 +4203,9 @@ function renderizarListaCompras() {
   if (!container) return;
 
   atualizarAbasCategoriasInteligente();
+  if (typeof atualizarBadgeCompraRapida === 'function') {
+    atualizarBadgeCompraRapida();
+  }
 
   // 1. Capturar com precisão a posição de rolagem de todos os contêineres possíveis
   const scrollYAnterior = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
@@ -4113,7 +4231,7 @@ function renderizarListaCompras() {
         <div style="width: 64px; height: 64px; margin: 0 auto 12px;">${ICONS_2D.padrao}</div>
         <h3 style="font-weight: 700; color: var(--text-main);">Sua lista está vazia!</h3>
         <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">
-          Digite um item acima, use o microfone por voz ou escolha itens frequentes na aba <strong>Criar Lista</strong>.
+          Digite um item acima, use o microfone por voz, abra a <strong>⚡ Compra Rápida</strong> ou escolha itens na aba <strong>Criar Lista</strong>.
         </p>
       </div>
     `;
@@ -4215,9 +4333,16 @@ function renderizarListaCompras() {
 
   const numColunas = (ocultarMercados ? 3 : (3 + chavesRedes.length)) + 1;
 
-  // Agrupar itens por Categoria
+  // Agrupar itens: 1º Bloco Destacado no Topo = Compra Rápida / Emergencial; depois categorias normais
+  const CHAVE_GRUPO_COMPRA_RAPIDA = '⚡ COMPRA RÁPIDA / EMERGENCIAL';
   const grupos = {};
+  const itensEmergencia = itensListaParaExibir.filter(it => !!it.compraRapida);
+  if (itensEmergencia.length > 0) {
+    grupos[CHAVE_GRUPO_COMPRA_RAPIDA] = itensEmergencia.map((item, idx) => ({ ...item, indexOriginal: idx }));
+  }
+
   itensListaParaExibir.forEach((item, index) => {
+    if (item.compraRapida) return; // Já está destacado no bloco de Compra Rápida no topo
     const cat = item.categoria || 'Diversos';
     if (!grupos[cat]) grupos[cat] = [];
     grupos[cat].push({ ...item, indexOriginal: index });
@@ -4226,6 +4351,8 @@ function renderizarListaCompras() {
   let linhasTabelaHtml = '';
 
   for (const [categoria, itens] of Object.entries(grupos)) {
+    const ehGrupoCompraRapida = (categoria === CHAVE_GRUPO_COMPRA_RAPIDA);
+
     // Ordenação dinâmica dentro da categoria:
     // Itens NÃO pegos primeiro (A-Z ou ordem padrão)
     // Itens PEGANTE/COMPRADOS vão para o final da seção (A-Z entre os comprados)
@@ -4259,7 +4386,7 @@ function renderizarListaCompras() {
       `;
     }
 
-    const catChave = sanitizarChaveId(categoria);
+    const catChave = ehGrupoCompraRapida ? 'compra_rapida' : sanitizarChaveId(categoria);
     const totalCatComprar = itens.reduce((acc, i) => {
       const p = (ehDispositivoMobile && Number(i.precoRegistradoMercado) > 0)
         ? Number(i.precoRegistradoMercado)
@@ -4269,21 +4396,48 @@ function renderizarListaCompras() {
     const temValorComprar = totalCatComprar > 0;
     const thAcoesHtml = isMobile ? '' : `<th class="mcol-th-acoes">${botaoOlhoHtml}</th>`;
 
-    linhasTabelaHtml += `
-      <tr class="mcol-tr-categoria-separador">
-        <th colspan="3" class="mcol-th-categoria-col">
-          <div class="categoria-titulo-tabela">
-            <span class="categoria-nome-txt">${categoria}</span>
-            <span class="categoria-qtd-badge">(${itens.length} ${itens.length === 1 ? 'item' : 'itens'})</span>
-            <div class="balao-total-categoria ${temValorComprar ? '' : 'vazio'}" id="balao-total-comprar-${catChave}" title="Total da Categoria">
-              <span class="balao-valor">${formatarMoeda(totalCatComprar)}</span>
+    if (ehGrupoCompraRapida) {
+      const autorEmergencia = (itens.find(i => i.adicionadoPor)?.adicionadoPor) || 'Casa';
+      const faltamPegarCR = itens.filter(i => !i.comprado).length;
+      linhasTabelaHtml += `
+        <tr class="mcol-tr-categoria-separador secao-header-compra-rapida">
+          <th colspan="3" class="mcol-th-categoria-col">
+            <div class="categoria-titulo-tabela header-compra-rapida-urgente">
+              <div class="cr-header-bloco-esq">
+                <span class="cr-header-icone-pulse">⚡</span>
+                <span class="categoria-nome-txt cr-titulo-destaque">COMPRA RÁPIDA • EMERGENCIAL</span>
+                <span class="cr-badge-autor-pedido">Pedido: ${escapeHtml(autorEmergencia)} (${faltamPegarCR > 0 ? `faltam ${faltamPegarCR}` : 'todos pegos ✓'})</span>
+              </div>
+              <div class="cr-header-bloco-dir">
+                <div class="balao-total-categoria ${temValorComprar ? '' : 'vazio'}" id="balao-total-comprar-compra_rapida" title="Total da Compra Rápida">
+                  <span class="balao-valor">${formatarMoeda(totalCatComprar)}</span>
+                </div>
+                <button type="button" class="btn-cr-header-acao btn-cr-header-add" onclick="abrirModalCompraRapida()" title="Adicionar ou editar produtos da Compra Rápida">+ Itens</button>
+                <button type="button" class="btn-cr-header-acao btn-cr-header-concluir" onclick="dispensarDestaquesCompraRapida()" title="Tirar o destaque de emergência destes itens">✓ Tirar Destaque</button>
+              </div>
             </div>
-          </div>
-        </th>
-        ${colunasCabecalhoMercados}
-        ${thAcoesHtml}
-      </tr>
-    `;
+          </th>
+          ${colunasCabecalhoMercados}
+          ${thAcoesHtml}
+        </tr>
+      `;
+    } else {
+      linhasTabelaHtml += `
+        <tr class="mcol-tr-categoria-separador">
+          <th colspan="3" class="mcol-th-categoria-col">
+            <div class="categoria-titulo-tabela">
+              <span class="categoria-nome-txt">${categoria}</span>
+              <span class="categoria-qtd-badge">(${itens.length} ${itens.length === 1 ? 'item' : 'itens'})</span>
+              <div class="balao-total-categoria ${temValorComprar ? '' : 'vazio'}" id="balao-total-comprar-${catChave}" title="Total da Categoria">
+                <span class="balao-valor">${formatarMoeda(totalCatComprar)}</span>
+              </div>
+            </div>
+          </th>
+          ${colunasCabecalhoMercados}
+          ${thAcoesHtml}
+        </tr>
+      `;
+    }
 
     // Linhas de Itens
     const nomesResumidosVistos = new Set();
@@ -4377,7 +4531,9 @@ function renderizarListaCompras() {
       }
 
       let tagNovoPedidoHtml = '';
-      if (item.novoPedidoCasa && !item.comprado) {
+      if (item.compraRapida && !item.comprado) {
+        tagNovoPedidoHtml = `<span class="tag-compra-rapida-card" onclick="event.stopPropagation(); dispensarDestaqueItemCompraRapida('${item.id}')" title="Compra Rápida Emergencial pedida por ${escapeHtml(item.adicionadoPor || 'Casa')} (Clique para tirar destaque)">⚡ URGENTE (${escapeHtml(item.adicionadoPor || 'Casa')})</span>`;
+      } else if (item.novoPedidoCasa && !item.comprado) {
         tagNovoPedidoHtml = `<span class="tag-novo-pedido-casa" onclick="event.stopPropagation(); dispensarAlertaNovoPedido('${item.id}')" title="Novo pedido de ${item.adicionadoPor || 'Casa'} (Clique para dispensar)">🔴 Novo (${item.adicionadoPor || 'Casa'})</span>`;
       }
 
@@ -4395,7 +4551,7 @@ function renderizarListaCompras() {
       }
 
       linhasTabelaHtml += `
-        <tr class="mcol-tr-item ${item.comprado ? 'item-linha-comprado' : ''} ${classePendente}" id="tr-item-${item.id}">
+        <tr class="mcol-tr-item ${item.compraRapida ? 'tr-item-compra-rapida' : ''} ${item.comprado ? 'item-linha-comprado' : ''} ${classePendente}" id="tr-item-${item.id}">
           <td class="mcol-td-check" onclick="alternarItemComprado('${item.id}')">
             <input type="checkbox" class="check-item-comprado" ${item.comprado ? 'checked="checked"' : ''} 
                    onclick="event.stopPropagation(); alternarItemComprado('${item.id}')" 
@@ -6877,7 +7033,7 @@ function atualizarVisualItemLinha(item, isPendente = false) {
   const tr = document.getElementById(`tr-item-${item.id}`);
   if (!tr) return false;
 
-  tr.className = `mcol-tr-item ${item.comprado ? 'item-linha-comprado' : ''} ${isPendente ? 'pendente-desmarcar' : ''}`;
+  tr.className = `mcol-tr-item ${item.comprado ? 'item-linha-comprado' : ''} ${item.compraRapida ? 'tr-item-compra-rapida' : ''} ${isPendente ? 'pendente-desmarcar' : ''}`;
 
   const chk = tr.querySelector('.check-item-comprado');
   if (chk) {
@@ -6918,22 +7074,39 @@ function atualizarVisualItemLinha(item, isPendente = false) {
       badgePendenteEl.remove();
     }
 
-    // Atualiza tag novo pedido de casa
+    // Atualiza tag de compra rápida ou novo pedido de casa
+    let tagRapidaEl = infoEsquerda.querySelector('.tag-compra-rapida-card');
     let tagNovoEl = infoEsquerda.querySelector('.tag-novo-pedido-casa');
-    if (item.novoPedidoCasa && !item.comprado) {
-      if (!tagNovoEl) {
-        tagNovoEl = document.createElement('span');
-        tagNovoEl.className = 'tag-novo-pedido-casa';
-        tagNovoEl.title = `Novo pedido de ${item.adicionadoPor || 'Casa'} (Clique para dispensar)`;
-        tagNovoEl.onclick = (e) => {
+    if (item.compraRapida && !item.comprado) {
+      if (tagNovoEl) tagNovoEl.remove();
+      if (!tagRapidaEl) {
+        tagRapidaEl = document.createElement('span');
+        tagRapidaEl.className = 'tag-compra-rapida-card';
+        tagRapidaEl.title = `Compra Rápida Emergencial de ${item.adicionadoPor || 'Casa'} (Clique para tirar destaque)`;
+        tagRapidaEl.onclick = (e) => {
           e.stopPropagation();
-          dispensarAlertaNovoPedido(item.id);
+          dispensarDestaqueItemCompraRapida(item.id);
         };
-        infoEsquerda.appendChild(tagNovoEl);
+        infoEsquerda.appendChild(tagRapidaEl);
       }
-      tagNovoEl.textContent = `🔴 Novo (${item.adicionadoPor || 'Casa'})`;
-    } else if (tagNovoEl) {
-      tagNovoEl.remove();
+      tagRapidaEl.textContent = `⚡ URGENTE (${item.adicionadoPor || 'Casa'})`;
+    } else {
+      if (tagRapidaEl) tagRapidaEl.remove();
+      if (item.novoPedidoCasa && !item.comprado) {
+        if (!tagNovoEl) {
+          tagNovoEl = document.createElement('span');
+          tagNovoEl.className = 'tag-novo-pedido-casa';
+          tagNovoEl.title = `Novo pedido de ${item.adicionadoPor || 'Casa'} (Clique para dispensar)`;
+          tagNovoEl.onclick = (e) => {
+            e.stopPropagation();
+            dispensarAlertaNovoPedido(item.id);
+          };
+          infoEsquerda.appendChild(tagNovoEl);
+        }
+        tagNovoEl.textContent = `🔴 Novo (${item.adicionadoPor || 'Casa'})`;
+      } else if (tagNovoEl) {
+        tagNovoEl.remove();
+      }
     }
   }
 
@@ -7068,14 +7241,16 @@ function alternarItemComprado(id) {
 
     registrarTimestampModificacaoItem(item.id);
     salvarEstado(true);
+    if (typeof atualizarBadgeCompraRapida === 'function') atualizarBadgeCompraRapida();
 
+    const catAlvo = item.compraRapida ? '⚡ COMPRA RÁPIDA / EMERGENCIAL' : (item.categoria || 'Diversos');
     const atualizouDOM = atualizarVisualItemLinha(item, false);
     if (atualizouDOM) {
       setTimeout(() => {
         reordenarLinhaNaCategoria(item);
       }, 120);
       atualizarCardResumo();
-      atualizarBalaoTotalCategoria(item.categoria || 'Diversos');
+      atualizarBalaoTotalCategoria(catAlvo);
       atualizarCardEconomiaSidebar();
     } else {
       renderizarListaCompras();
@@ -7111,14 +7286,16 @@ function alternarItemComprado(id) {
 
     registrarTimestampModificacaoItem(item.id);
     salvarEstado(true);
+    if (typeof atualizarBadgeCompraRapida === 'function') atualizarBadgeCompraRapida();
 
+    const catAlvo = item.compraRapida ? '⚡ COMPRA RÁPIDA / EMERGENCIAL' : (item.categoria || 'Diversos');
     const atualizouDOM = atualizarVisualItemLinha(item, false);
     if (atualizouDOM) {
       setTimeout(() => {
         reordenarLinhaNaCategoria(item);
       }, 120);
       atualizarCardResumo();
-      atualizarBalaoTotalCategoria(item.categoria || 'Diversos');
+      atualizarBalaoTotalCategoria(catAlvo);
       atualizarCardEconomiaSidebar();
     } else {
       renderizarListaCompras();
@@ -7168,7 +7345,8 @@ function alterarQuantidade(id, delta) {
 
     salvarEstado(true);
     atualizarCardResumo();
-    atualizarBalaoTotalCategoria(item.categoria || 'Diversos');
+    const catAlvo = item.compraRapida ? '⚡ COMPRA RÁPIDA / EMERGENCIAL' : (item.categoria || 'Diversos');
+    atualizarBalaoTotalCategoria(catAlvo);
 
     const inputQtde = document.querySelector(`#tr-item-${id} .input-qtde-tabela`);
     if (inputQtde) {
@@ -7195,7 +7373,8 @@ function definirQuantidadeDireta(id, novoValor) {
 
     salvarEstado(true);
     atualizarCardResumo();
-    atualizarBalaoTotalCategoria(item.categoria || 'Diversos');
+    const catAlvo = item.compraRapida ? '⚡ COMPRA RÁPIDA / EMERGENCIAL' : (item.categoria || 'Diversos');
+    atualizarBalaoTotalCategoria(catAlvo);
 
     const inputQtde = document.querySelector(`#tr-item-${id} .input-qtde-tabela`);
     if (inputQtde) {
@@ -7240,7 +7419,7 @@ function removerItem(id, dispararUndo = true) {
   if (!itemRemovido) return;
 
   const nomeItem = itemRemovido.nome || 'Item';
-  const catItem = itemRemovido.categoria || 'Diversos';
+  const catItem = itemRemovido.compraRapida ? '⚡ COMPRA RÁPIDA / EMERGENCIAL' : (itemRemovido.categoria || 'Diversos');
   const catId = itemRemovido.catalogoId || itemRemovido.id;
 
   // Desmarca no catálogo se for produto do catálogo
@@ -7249,6 +7428,7 @@ function removerItem(id, dispararUndo = true) {
     prod.selecionado = false;
     prod.comprado = false;
     prod.novoPedidoCasa = false;
+    prod.compraRapida = false;
     prod.precoRegistradoMercado = 0;
     registrarTimestampModificacaoItem(prod.id);
   }
@@ -7258,6 +7438,7 @@ function removerItem(id, dispararUndo = true) {
   renderizarListaCompras();
   renderizarDespensa();
   atualizarCardResumo();
+  if (typeof atualizarBadgeCompraRapida === 'function') atualizarBadgeCompraRapida();
   if (catItem) atualizarBalaoTotalCategoria(catItem);
 
   if (dispararUndo) {
@@ -11030,10 +11211,13 @@ function atualizarStatusMeuPreset() {
 
 // Notificação Toast rápida e discreta
 function mostrarNotificacaoToast(mensagem) {
-  // Em COMPRAR e CRIAR LISTA, permite notificações de Compra Finalizada e de Gravação na Nuvem / Presets
+  // Em COMPRAR e CRIAR LISTA, permite notificações de Compra Finalizada, Gravação na Nuvem / Presets e Compra Rápida
   if (AppState && (AppState.abaAtiva === 'lista' || AppState.abaAtiva === 'despensa')) {
     const ehToastPermitido = mensagem.includes('🎉 Compra finalizada') ||
                              mensagem.includes('☁️') ||
+                             mensagem.includes('⚡') ||
+                             mensagem.includes('Emergencial') ||
+                             mensagem.includes('Compra Rápida') ||
                              mensagem.includes('nuvem') ||
                              mensagem.includes('Nuvem') ||
                              mensagem.includes('Lista') ||
@@ -11127,4 +11311,504 @@ async function atualizarCotacaoManual() {
     }, 2200);
   }
 }
+
+// =========================================================================
+// ⚡ COMPRA RÁPIDA • PRODUTOS DO COTIDIANO / PEDIDO EMERGENCIAL DE CASA
+// =========================================================================
+// Permite escolher rapidamente produtos do dia a dia (ex: Leite, Pão, Ovos,
+// Café, Manteiga, Frutas, etc.) que entram em destaque no topo do COMPRAR
+// e disparam um aviso em tempo real para quem vai passar no mercado.
+
+const IDS_COTIDIANO_COMPRA_RAPIDA = [
+  // Padaria & Laticínios Matinais
+  'l_leite_int', 'pad_pao_frances', 'pad_pao_forma', 'l_ovos_30',
+  'l_manteiga', 'l_requeijao', 'l_mussarela', 'l_presunto',
+  'pad_pao_queijo', 'l_creme_leite', 'l_leite_cond', 'l_iogurte',
+  // Básicos do Dia a Dia
+  'b_cafe', 'b_acucar_ref', 'b_arroz_5kg', 'b_feijao_car',
+  'b_oleo_soja', 'b_macarrao_esp', 'b_extrato_tomate', 'b_sal_ref',
+  'b_farinha_trigo', 'b_achoc_nescau',
+  // Hortifrúti Emergencial
+  'h_banana_prata', 'h_tomate_sal', 'h_cebola_br', 'h_alho',
+  'h_batata', 'h_alface_cresp', 'h_limao', 'h_cenoura',
+  'h_cheiro_verde', 'h_maca_gala',
+  // Carnes Rápidas da Semana
+  'c_patinho', 'f_peito_osso', 'c_contrafile', 'c_calabresa', 'f_coxa_sobre',
+  // Limpeza & Higiene Urgente
+  'hig_papel_dup', 'limp_detergente', 'hig_sab_barra', 'hig_creme_dent',
+  'limp_sabao', 'limp_qboa', 'limp_esponja', 'limp_saco_lixo',
+  // Bebidas Rápidas
+  'beb_coca_lata_350', 'beb_suco_prats_laranja', 'beb_sococo_1l'
+];
+
+let estadoCompraRapida = {
+  categoriaFiltro: 'cotidiano',
+  termoBusca: '',
+  selecionadosTemp: new Map() // id -> { id, qtde, novoEnvio }
+};
+
+function abrirModalCompraRapida() {
+  const modal = document.getElementById('modal-compra-rapida');
+  if (!modal) return;
+
+  // Inicializa o mapa temporário com os itens que já estão marcados como compraRapida
+  estadoCompraRapida.selecionadosTemp = new Map();
+  (AppState.catalogo || []).forEach(prod => {
+    if (prod.selecionado && prod.compraRapida && !prod.comprado) {
+      estadoCompraRapida.selecionadosTemp.set(String(prod.id), {
+        id: prod.id,
+        qtde: prod.qtde || 1,
+        jaEstava: true
+      });
+    }
+  });
+
+  estadoCompraRapida.categoriaFiltro = 'cotidiano';
+  estadoCompraRapida.termoBusca = '';
+
+  const inputBusca = document.getElementById('input-busca-compra-rapida');
+  if (inputBusca) inputBusca.value = '';
+  const btnLimpar = document.getElementById('btn-limpar-busca-compra-rapida');
+  if (btnLimpar) btnLimpar.style.display = 'none';
+
+  document.querySelectorAll('#compra-rapida-abas-cat .compra-rapida-cat-pill').forEach(btn => {
+    btn.classList.toggle('ativo', btn.getAttribute('data-cat') === 'cotidiano');
+  });
+
+  modal.style.display = 'flex';
+
+  const btnMobile = document.getElementById('mobile-nav-btn-presets');
+  if (btnMobile) btnMobile.classList.add('ativo');
+  const btnSidebar = document.getElementById('btn-nav-compra-rapida');
+  if (btnSidebar) btnSidebar.classList.add('ativo');
+
+  renderizarGridCompraRapida();
+  atualizarRodapeModalCompraRapida();
+}
+
+function fecharModalCompraRapida() {
+  const modal = document.getElementById('modal-compra-rapida');
+  if (modal) modal.style.display = 'none';
+
+  const btnMobile = document.getElementById('mobile-nav-btn-presets');
+  if (btnMobile) btnMobile.classList.remove('ativo');
+  const btnSidebar = document.getElementById('btn-nav-compra-rapida');
+  if (btnSidebar) btnSidebar.classList.remove('ativo');
+}
+
+function aoClicarForaModalCompraRapida(event) {
+  const content = document.querySelector('.modal-compra-rapida-content');
+  if (content && !content.contains(event.target)) {
+    fecharModalCompraRapida();
+  }
+}
+
+function selecionarCategoriaCompraRapida(cat) {
+  estadoCompraRapida.categoriaFiltro = cat || 'cotidiano';
+  document.querySelectorAll('#compra-rapida-abas-cat .compra-rapida-cat-pill').forEach(btn => {
+    btn.classList.toggle('ativo', btn.getAttribute('data-cat') === estadoCompraRapida.categoriaFiltro);
+  });
+  renderizarGridCompraRapida();
+}
+
+function filtrarItensCompraRapida(termo) {
+  estadoCompraRapida.termoBusca = (termo || '').trim();
+  const btnLimpar = document.getElementById('btn-limpar-busca-compra-rapida');
+  if (btnLimpar) {
+    btnLimpar.style.display = estadoCompraRapida.termoBusca.length > 0 ? 'flex' : 'none';
+  }
+  renderizarGridCompraRapida();
+}
+
+function limparBuscaCompraRapida() {
+  const input = document.getElementById('input-busca-compra-rapida');
+  if (input) input.value = '';
+  filtrarItensCompraRapida('');
+}
+
+function obterProdutosFiltradosCompraRapida() {
+  const catalogo = AppState.catalogo || [];
+  const termo = (estadoCompraRapida.termoBusca || '').toLowerCase();
+  const cat = estadoCompraRapida.categoriaFiltro;
+
+  // Se há termo de busca, pesquisa em todo o catálogo
+  if (termo.length > 0) {
+    const resultados = catalogo.filter(p =>
+      (p.nome || '').toLowerCase().includes(termo) ||
+      (p.categoria || '').toLowerCase().includes(termo)
+    );
+    return resultados.slice(0, 80);
+  }
+
+  // Sem busca: se categoria for 'cotidiano', retorna os itens mais usados do dia a dia + qualquer item já selecionado na compra rápida
+  if (cat === 'cotidiano') {
+    const mapaCat = new Map();
+    catalogo.forEach(p => mapaCat.set(String(p.id), p));
+
+    const listaCotidiano = [];
+    const adicionadosSet = new Set();
+
+    // 1. Primeiro coloca os que já estão selecionados no modal de compra rápida
+    estadoCompraRapida.selecionadosTemp.forEach((dados, idStr) => {
+      const prod = mapaCat.get(idStr);
+      if (prod && !adicionadosSet.has(idStr)) {
+        listaCotidiano.push(prod);
+        adicionadosSet.add(idStr);
+      }
+    });
+
+    // 2. Depois os itens curados do cotidiano na ordem de prioridade
+    IDS_COTIDIANO_COMPRA_RAPIDA.forEach(idRef => {
+      const prod = mapaCat.get(String(idRef));
+      if (prod && !adicionadosSet.has(String(prod.id))) {
+        listaCotidiano.push(prod);
+        adicionadosSet.add(String(prod.id));
+      }
+    });
+
+    return listaCotidiano;
+  }
+
+  // Filtro por categoria específica
+  return catalogo.filter(p => p.categoria === cat);
+}
+
+function renderizarGridCompraRapida() {
+  const grid = document.getElementById('grid-itens-compra-rapida');
+  if (!grid) return;
+
+  const produtos = obterProdutosFiltradosCompraRapida();
+  const termo = (estadoCompraRapida.termoBusca || '').trim();
+
+  if (produtos.length === 0) {
+    grid.innerHTML = `
+      <div class="compra-rapida-empty-search">
+        <p>Nenhum produto encontrado para "<strong>${escapeHtml(termo)}</strong>" no catálogo.</p>
+        <button type="button" class="btn-criar-avulso-compra-rapida" onclick="adicionarItemDigitadoCompraRapida()">
+          ⚡ Adicionar "${escapeHtml(termo)}" como Item Emergencial
+        </button>
+      </div>
+    `;
+    return;
+  }
+
+  grid.innerHTML = produtos.map(prod => {
+    const idStr = String(prod.id);
+    const selecionadoObj = estadoCompraRapida.selecionadosTemp.get(idStr);
+    const estaMarcado = !!selecionadoObj;
+    const qtde = selecionadoObj ? (selecionadoObj.qtde || 1) : (prod.qtde || 1);
+    const jaNaListaSexta = prod.selecionado && !prod.compraRapida && !prod.comprado;
+
+    const svgIcone = typeof obterSvgProduto === 'function' ? obterSvgProduto(prod.icone, prod.nome) : '🛒';
+    const precoRef = Number(prod.preco || prod.ultimoPreco || prod.precoMedioDF || 0);
+    const precoFmt = precoRef > 0 ? precoRef.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '';
+
+    return `
+      <div class="card-item-compra-rapida ${estaMarcado ? 'selecionado-urgente' : ''} ${jaNaListaSexta ? 'ja-na-lista-normal' : ''}"
+           onclick="alternarItemCompraRapida('${escapeHtml(idStr)}', event)">
+        <div class="card-cr-topo">
+          <div class="card-cr-icone">${svgIcone}</div>
+          <div class="card-cr-info">
+            <span class="card-cr-nome">${escapeHtml(prod.nome)}</span>
+            <div class="card-cr-meta">
+              <span class="card-cr-cat">${escapeHtml(prod.categoria || 'Diversos')}</span>
+              ${precoFmt ? `<span class="card-cr-preco">${precoFmt}</span>` : ''}
+            </div>
+          </div>
+          <div class="card-cr-check ${estaMarcado ? 'ativo' : ''}">
+            ${estaMarcado ? '⚡' : '+'}
+          </div>
+        </div>
+
+        ${jaNaListaSexta && !estaMarcado ? `
+          <div class="card-cr-aviso-lista">📋 Já está na lista normal (Toque para destacar como Urgente)</div>
+        ` : ''}
+
+        ${estaMarcado ? `
+          <div class="card-cr-controles" onclick="event.stopPropagation()">
+            <span class="card-cr-tag-urgente">⚡ EMERGENCIAL</span>
+            <div class="card-cr-qtde-box">
+              <button type="button" class="btn-cr-qtde" onclick="alterarQtdeCompraRapida('${escapeHtml(idStr)}', -1, event)">−</button>
+              <span class="val-cr-qtde">${qtde}</span>
+              <button type="button" class="btn-cr-qtde" onclick="alterarQtdeCompraRapida('${escapeHtml(idStr)}', 1, event)">+</button>
+            </div>
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+function alternarItemCompraRapida(prodId, event) {
+  if (event) event.stopPropagation();
+  const idStr = String(prodId);
+
+  if (estadoCompraRapida.selecionadosTemp.has(idStr)) {
+    estadoCompraRapida.selecionadosTemp.delete(idStr);
+  } else {
+    const prod = (AppState.catalogo || []).find(p => String(p.id) === idStr);
+    estadoCompraRapida.selecionadosTemp.set(idStr, {
+      id: prod ? prod.id : prodId,
+      qtde: (prod && prod.qtde) ? prod.qtde : 1,
+      novoEnvio: true
+    });
+  }
+
+  renderizarGridCompraRapida();
+  atualizarRodapeModalCompraRapida();
+}
+
+function alterarQtdeCompraRapida(prodId, delta, event) {
+  if (event) event.stopPropagation();
+  const idStr = String(prodId);
+  const itemObj = estadoCompraRapida.selecionadosTemp.get(idStr);
+  if (!itemObj) return;
+
+  let novaQtde = (itemObj.qtde || 1) + delta;
+  if (novaQtde < 1) novaQtde = 1;
+  itemObj.qtde = novaQtde;
+
+  renderizarGridCompraRapida();
+  atualizarRodapeModalCompraRapida();
+}
+
+function adicionarItemDigitadoCompraRapida() {
+  const input = document.getElementById('input-busca-compra-rapida');
+  const texto = input ? input.value.trim() : '';
+  if (!texto) {
+    if (input) input.focus();
+    return;
+  }
+
+  // Verifica se já existe produto com mesmo nome no catálogo
+  let prodExistente = (AppState.catalogo || []).find(
+    p => (p.nome || '').toLowerCase().trim() === texto.toLowerCase()
+  );
+
+  if (!prodExistente) {
+    const novoId = 'cr_custom_' + Date.now();
+    prodExistente = {
+      id: novoId,
+      nome: texto.charAt(0).toUpperCase() + texto.slice(1),
+      categoria: estadoCompraRapida.categoriaFiltro !== 'cotidiano' ? estadoCompraRapida.categoriaFiltro : 'Diversos',
+      icone: 'sacola',
+      preco: 0,
+      precoMedioDF: 0,
+      ultimoPreco: 0,
+      qtde: 1,
+      selecionado: false,
+      comprado: false
+    };
+    AppState.catalogo.unshift(prodExistente);
+  }
+
+  estadoCompraRapida.selecionadosTemp.set(String(prodExistente.id), {
+    id: prodExistente.id,
+    qtde: 1,
+    novoEnvio: true
+  });
+
+  if (input) input.value = '';
+  estadoCompraRapida.termoBusca = '';
+  const btnLimpar = document.getElementById('btn-limpar-busca-compra-rapida');
+  if (btnLimpar) btnLimpar.style.display = 'none';
+
+  renderizarGridCompraRapida();
+  atualizarRodapeModalCompraRapida();
+  mostrarNotificacaoToast(`⚡ "${prodExistente.nome}" marcado para Compra Rápida!`);
+}
+
+function limparTodosCompraRapida() {
+  estadoCompraRapida.selecionadosTemp.clear();
+  renderizarGridCompraRapida();
+  atualizarRodapeModalCompraRapida();
+}
+
+function atualizarRodapeModalCompraRapida() {
+  const count = estadoCompraRapida.selecionadosTemp.size;
+  const countEl = document.getElementById('compra-rapida-count-selecionados');
+  const chipsContainer = document.getElementById('compra-rapida-resumo-chips');
+  const btnLimpar = document.getElementById('btn-limpar-selecao-compra-rapida');
+  const btnEnviar = document.getElementById('btn-enviar-compra-rapida');
+
+  if (countEl) {
+    countEl.textContent = `${count} ${count === 1 ? 'produto emergencial selecionado' : 'produtos emergenciais selecionados'}`;
+  }
+  if (btnLimpar) {
+    btnLimpar.style.display = count > 0 ? 'inline-flex' : 'none';
+  }
+  if (btnEnviar) {
+    btnEnviar.innerHTML = count > 0
+      ? `⚡ Enviar ${count} ${count === 1 ? 'Item' : 'Itens'} de Aviso para COMPRAR`
+      : `⚡ Atualizar Compra Rápida`;
+  }
+
+  if (chipsContainer) {
+    if (count === 0) {
+      chipsContainer.innerHTML = `<span class="cr-chip-vazio">Toque nos produtos acima para montar o aviso rápido...</span>`;
+    } else {
+      const chipsHtml = [];
+      estadoCompraRapida.selecionadosTemp.forEach((obj, idStr) => {
+        const prod = (AppState.catalogo || []).find(p => String(p.id) === idStr);
+        if (prod) {
+          const nomeCurto = (prod.nome || '').split('(')[0].trim();
+          chipsHtml.push(`
+            <span class="cr-chip-item" onclick="alternarItemCompraRapida('${escapeHtml(idStr)}', event)" title="Toque para remover">
+              ⚡ ${escapeHtml(nomeCurto)} <strong>x${obj.qtde || 1}</strong> ✕
+            </span>
+          `);
+        }
+      });
+      chipsContainer.innerHTML = chipsHtml.join('');
+    }
+  }
+}
+
+function enviarAvisoCompraRapida() {
+  const usuarioAtual = AppState.usuarioAtivo || 'Casa';
+  const agora = Date.now();
+  const nomesAdicionados = [];
+
+  // 1. Desmarca flag compraRapida dos itens que foram removidos da seleção rápida
+  (AppState.catalogo || []).forEach(prod => {
+    const idStr = String(prod.id);
+    if (prod.compraRapida && !estadoCompraRapida.selecionadosTemp.has(idStr)) {
+      prod.compraRapida = false;
+      registrarTimestampModificacaoItem(prod.id);
+    }
+  });
+
+  (AppState.listaAtiva || []).forEach(item => {
+    const idStr = String(item.catalogoId || item.id);
+    if (item.compraRapida && !estadoCompraRapida.selecionadosTemp.has(idStr)) {
+      item.compraRapida = false;
+      registrarTimestampModificacaoItem(item.id);
+    }
+  });
+
+  // 2. Marca todos os itens escolhidos na Compra Rápida como selecionados + compraRapida = true
+  estadoCompraRapida.selecionadosTemp.forEach((dados, idStr) => {
+    const prod = (AppState.catalogo || []).find(p => String(p.id) === idStr);
+    if (prod) {
+      prod.selecionado = true;
+      prod.comprado = false;
+      prod.compraRapida = true;
+      prod.novoPedidoCasa = true;
+      prod.qtde = dados.qtde || 1;
+      prod.adicionadoPor = usuarioAtual;
+      prod.adicionadoEm = agora;
+      registrarTimestampModificacaoItem(prod.id);
+
+      const nomeCurto = (prod.nome || '').split('(')[0].trim();
+      nomesAdicionados.push(dados.qtde > 1 ? `${nomeCurto} (${dados.qtde}x)` : nomeCurto);
+    }
+  });
+
+  // 3. Sincroniza listaAtiva com o catálogo
+  sincronizarListaAtivaComCatalogo();
+
+  // Garante que todos os itens em listaAtiva correspondentes recebam compraRapida = true
+  (AppState.listaAtiva || []).forEach(item => {
+    const idStr = String(item.catalogoId || item.id);
+    if (estadoCompraRapida.selecionadosTemp.has(idStr)) {
+      const dados = estadoCompraRapida.selecionadosTemp.get(idStr);
+      item.compraRapida = true;
+      item.novoPedidoCasa = true;
+      item.comprado = false;
+      item.qtde = dados.qtde || 1;
+      item.adicionadoPor = usuarioAtual;
+      item.adicionadoEm = agora;
+    }
+  });
+
+  // 4. Registra evento especial 'compra_rapida' para disparar alerta urgente na nuvem!
+  if (nomesAdicionados.length > 0) {
+    registrarEventoSincronizacao('compra_rapida', nomesAdicionados);
+  }
+
+  salvarEstado(true);
+  if (typeof forcarSincronizacaoImediataNuvem === 'function') {
+    forcarSincronizacaoImediataNuvem();
+  }
+
+  fecharModalCompraRapida();
+  atualizarBadgeCompraRapida();
+  renderizarTudo();
+  atualizarContadorSidebarMontar();
+
+  // Leva o usuário direto para a aba COMPRAR para ver o destaque no topo
+  if (nomesAdicionados.length > 0) {
+    mudarAba('lista');
+    if (typeof tocarAvisoSonoroCompraRapida === 'function') {
+      tocarAvisoSonoroCompraRapida();
+    }
+    mostrarNotificacaoToast(`⚡ Aviso de Compra Rápida enviado (${nomesAdicionados.length} ${nomesAdicionados.length === 1 ? 'item destacado' : 'itens destacados'} no COMPRAR)!`);
+  } else {
+    renderizarListaCompras();
+    mostrarNotificacaoToast('⚡ Destaques de Compra Rápida atualizados.');
+  }
+}
+
+function dispensarDestaqueItemCompraRapida(id) {
+  const item = (AppState.listaAtiva || []).find(i => String(i.id) === String(id));
+  if (item) {
+    item.compraRapida = false;
+    item.novoPedidoCasa = false;
+    const cat = (AppState.catalogo || []).find(c => String(c.id) === String(id) || String(c.id) === String(item.catalogoId));
+    if (cat) {
+      cat.compraRapida = false;
+      cat.novoPedidoCasa = false;
+    }
+    registrarTimestampModificacaoItem(item.id);
+    salvarEstado(true);
+    atualizarBadgeCompraRapida();
+    renderizarListaCompras();
+  }
+}
+
+function dispensarDestaquesCompraRapida() {
+  (AppState.listaAtiva || []).forEach(i => {
+    if (i.compraRapida) {
+      i.compraRapida = false;
+      i.novoPedidoCasa = false;
+      registrarTimestampModificacaoItem(i.id);
+    }
+  });
+  (AppState.catalogo || []).forEach(c => {
+    if (c.compraRapida) {
+      c.compraRapida = false;
+      c.novoPedidoCasa = false;
+      registrarTimestampModificacaoItem(c.id);
+    }
+  });
+  salvarEstado(true);
+  atualizarBadgeCompraRapida();
+  renderizarListaCompras();
+  mostrarNotificacaoToast('✓ Itens movidos para suas categorias normais da lista.');
+}
+
+function atualizarBadgeCompraRapida() {
+  const qtdUrgentes = (AppState.listaAtiva || []).filter(i => i.compraRapida && !i.comprado).length;
+
+  const badgeSidebar = document.getElementById('sidebar-compra-rapida-badge');
+  if (badgeSidebar) {
+    if (qtdUrgentes > 0) {
+      badgeSidebar.textContent = qtdUrgentes;
+      badgeSidebar.style.display = 'inline-flex';
+    } else {
+      badgeSidebar.style.display = 'none';
+    }
+  }
+
+  const badgeMobile = document.getElementById('mobile-nav-badge-compra-rapida');
+  if (badgeMobile) {
+    if (qtdUrgentes > 0) {
+      badgeMobile.textContent = qtdUrgentes;
+      badgeMobile.style.display = 'inline-flex';
+    } else {
+      badgeMobile.style.display = 'none';
+    }
+  }
+}
+
 
