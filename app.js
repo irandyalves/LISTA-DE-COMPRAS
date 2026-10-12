@@ -11876,10 +11876,21 @@ const MAPA_TERMOS_INTELIGENTES_CR = {
 let estadoCompraRapida = {
   categoriaFiltro: 'cotidiano',
   termoBusca: '',
+  ordemAlfabetica: false,
   selecionadosTemp: new Map(), // id -> { id, qtde, novoEnvio, jaEstava, adicionadoEmOriginal }
   favoritosIds: null,          // Set de IDs favoritados para a Lista Rápida
   itensInteligentesDetectados: [] // Array de { prod, qtde, termoOriginal, ehOpcaoGrupo }
 };
+
+function alternarOrdemAlfabeticaCompraRapida() {
+  estadoCompraRapida.ordemAlfabetica = !estadoCompraRapida.ordemAlfabetica;
+  const btn = document.getElementById('btn-ordem-az-compra-rapida');
+  if (btn) {
+    btn.classList.toggle('ativo', estadoCompraRapida.ordemAlfabetica);
+  }
+  renderizarGridCompraRapida();
+  mostrarNotificacaoToast(estadoCompraRapida.ordemAlfabetica ? '🔤 Ordenado de A a Z' : '📋 Ordem padrão restaurada');
+}
 
 function normalizarTextoCR(txt) {
   return (txt || '')
@@ -11974,6 +11985,8 @@ function abrirModalCompraRapida() {
   if (btnZapAdd) btnZapAdd.style.display = 'none';
   const previewBar = document.getElementById('cr-smart-preview-bar');
   if (previewBar) previewBar.style.display = 'none';
+  const btnOrdemAz = document.getElementById('btn-ordem-az-compra-rapida');
+  if (btnOrdemAz) btnOrdemAz.classList.toggle('ativo', !!estadoCompraRapida.ordemAlfabetica);
 
   document.querySelectorAll('#compra-rapida-abas-cat .cr-cat-pill').forEach(btn => {
     btn.classList.toggle('ativo', btn.getAttribute('data-cat') === 'cotidiano');
@@ -12553,6 +12566,7 @@ function obterProdutosFiltradosCompraRapida() {
   const termo = (estadoCompraRapida.termoBusca || '').trim();
   const cat = estadoCompraRapida.categoriaFiltro;
   const favSet = obterSetFavoritosCompraRapida();
+  let resultado = [];
 
   // Se há termo de busca (simples, com número antes/depois ou lista inteligente com vírgulas)
   if (termo.length > 0) {
@@ -12588,11 +12602,9 @@ function obterProdutosFiltradosCompraRapida() {
       });
     }
 
-    return listaBusca.slice(0, 80);
-  }
-
-  // Sem busca: aba 'cotidiano' mostra os selecionados + todos os favoritados como Lista Rápida (⭐)
-  if (cat === 'cotidiano') {
+    resultado = listaBusca.slice(0, 80);
+  } else if (cat === 'cotidiano') {
+    // Sem busca: aba 'cotidiano' mostra os selecionados + todos os favoritados como Lista Rápida (⭐)
     const mapaCat = new Map();
     catalogo.forEach(p => mapaCat.set(String(p.id), p));
 
@@ -12617,39 +12629,36 @@ function obterProdutosFiltradosCompraRapida() {
       }
     });
 
-    return listaCotidiano;
-  }
-
-  if (cat === 'padaria_cafe') {
-    return catalogo.filter(p =>
+    resultado = listaCotidiano;
+  } else if (cat === 'padaria_cafe') {
+    resultado = catalogo.filter(p =>
       p.categoria === 'Padaria e Lanches' ||
       (p.nome || '').toLowerCase().includes('café') ||
       (p.nome || '').toLowerCase().includes('achocolatado')
     );
-  }
-  if (cat === 'laticinios') {
-    return catalogo.filter(p => p.categoria === 'Laticínios e Frios');
-  }
-  if (cat === 'hortifruti') {
-    return catalogo.filter(p => p.categoria === 'Hortifrúti');
-  }
-  if (cat === 'mistura') {
-    return catalogo.filter(p => p.categoria === 'Carnes e Proteínas');
-  }
-  if (cat === 'basicos') {
-    return catalogo.filter(p => p.categoria === 'Básicos e Grãos');
-  }
-  if (cat === 'higiene_limpeza') {
-    return catalogo.filter(p => p.categoria === 'Higiene' || p.categoria === 'Limpeza');
-  }
-  if (cat === 'bebidas') {
-    return catalogo.filter(p => p.categoria === 'Bebidas');
-  }
-  if (cat === 'todos') {
-    return catalogo;
+  } else if (cat === 'laticinios') {
+    resultado = catalogo.filter(p => p.categoria === 'Laticínios e Frios');
+  } else if (cat === 'hortifruti') {
+    resultado = catalogo.filter(p => p.categoria === 'Hortifrúti');
+  } else if (cat === 'mistura') {
+    resultado = catalogo.filter(p => p.categoria === 'Carnes e Proteínas');
+  } else if (cat === 'basicos') {
+    resultado = catalogo.filter(p => p.categoria === 'Básicos e Grãos');
+  } else if (cat === 'higiene_limpeza') {
+    resultado = catalogo.filter(p => p.categoria === 'Higiene' || p.categoria === 'Limpeza');
+  } else if (cat === 'bebidas') {
+    resultado = catalogo.filter(p => p.categoria === 'Bebidas');
+  } else if (cat === 'todos') {
+    resultado = [...catalogo];
+  } else {
+    resultado = catalogo.filter(p => p.categoria === cat);
   }
 
-  return catalogo.filter(p => p.categoria === cat);
+  if (estadoCompraRapida.ordemAlfabetica) {
+    return [...resultado].sort((a, b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR', { sensitivity: 'base' }));
+  }
+
+  return resultado;
 }
 
 // Formata o nome do card na Compra Rápida com no máximo 2 palavras principais + 3ª palavra (medida/kilo) + "...."
@@ -12919,9 +12928,7 @@ function atualizarRodapeModalCompraRapida() {
     btnLimpar.style.display = count > 0 ? 'inline-flex' : 'none';
   }
   if (btnEnviar) {
-    btnEnviar.innerHTML = count > 0
-      ? `FAVOR COMPRAR!! (${count} ${count === 1 ? 'item' : 'itens'})`
-      : `Confirmar Compra Rápida (0)`;
+    btnEnviar.textContent = 'Adicionar à Compra Rápida';
   }
 }
 

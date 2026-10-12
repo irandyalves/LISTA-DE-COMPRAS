@@ -11295,6 +11295,30 @@ body.tema-escuro .compra-rapida-titulo {
   gap: 8px;
 }
 
+.btn-ordem-az-cr {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  color: #FFFFFF !important;
+  font-size: 0.72rem !important;
+  font-weight: 800 !important;
+  padding: 3px 7px !important;
+  border-radius: 5px !important;
+  cursor: pointer !important;
+  line-height: 1.2 !important;
+  transition: all 0.15s ease;
+}
+
+.btn-ordem-az-cr:hover {
+  background: rgba(251, 191, 36, 0.25) !important;
+  border-color: #FBBF24 !important;
+}
+
+.btn-ordem-az-cr.ativo {
+  background: rgba(251, 191, 36, 0.22) !important;
+  border-color: #FBBF24 !important;
+  color: #FBBF24 !important;
+}
+
 .controles-fonte-cr-modal {
   display: inline-flex !important;
   align-items: center;
@@ -11382,10 +11406,7 @@ body.tema-escuro .compra-rapida-zap-input-pill {
 }
 
 .compra-rapida-zap-lupa {
-  font-size: 0.92rem;
-  opacity: 0.75;
-  flex-shrink: 0;
-  margin-top: 2px;
+  display: none !important;
 }
 
 .input-busca-compra-rapida {
