@@ -16,13 +16,19 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   
-  <!-- Anti-Flicker Instantâneo: Aplica a aba salva imediatamente antes de pintar a tela -->
+  <!-- Anti-Flicker Instantâneo: Aplica a aba e o tema salvos imediatamente antes de pintar a tela -->
   <script>
     (function() {
       try {
         var aba = localStorage.getItem('app_aba_ativa') || 'lista';
         if (aba && ['lista', 'despensa', 'historico', 'mercados'].indexOf(aba) !== -1) {
           document.documentElement.setAttribute('data-aba-ativa', aba);
+        }
+        var tema = localStorage.getItem('app_tema') || 'dark';
+        localStorage.setItem('app_tema', tema);
+        document.documentElement.setAttribute('data-theme', tema);
+        if (tema === 'dark') {
+          document.documentElement.classList.add('tema-escuro');
         }
       } catch (e) {}
     })();
@@ -125,7 +131,7 @@
   </style>
 
   <!-- CSS Moderno -->
-  <link rel="stylesheet" href="style.css?v=10.58">
+  <link rel="stylesheet" href="style.css?v=10.60">
 </head>
 <body>
 
@@ -277,6 +283,9 @@
           <button id="btn-perfil-usuario" class="btn-perfil-usuario-header" onclick="abrirModalPerfilUsuario()" title="Identificar quem está enviando itens (Irandy / Sioneide)">
             <span id="ico-perfil-header" class="ico-perfil-header">👨</span>
             <span id="nome-perfil-header" class="nome-perfil-header">Irandy</span>
+          </button>
+          <button id="btn-tema-rapido" class="btn-tema-header" type="button" onclick="alternarTemaEscuro()" title="Alternar Tema Escuro / Claro">
+            <span id="ico-tema-rapido">🌙</span>
           </button>
           <button class="btn-menu-opcoes" onclick="abrirModalOpcoesHeader()" title="Mais opções (Zerar, Importar, CSV, Nuvem)">
             ⚙️
@@ -1100,7 +1109,7 @@
   <script src="logos_banco.js?v=10.13"></script>
   <script src="icones2d.js"></script>
   <script src="firebase-sync.js"></script>
-  <script src="app.js?v=10.58"></script>
+  <script src="app.js?v=10.60"></script>
 
 </body>
 </html>

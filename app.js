@@ -7532,30 +7532,37 @@ function atualizarVisualOpcaoCifrao() {
 
 // Gerenciador de Tema Escuro / Claro
 function inicializarTema() {
-  const temaSalvo = localStorage.getItem('app_tema') || 'light';
+  const temaSalvo = localStorage.getItem('app_tema') || 'dark';
   aplicarTema(temaSalvo);
 }
 
 function aplicarTema(tema) {
   const isDark = (tema === 'dark');
   document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  document.documentElement.classList.toggle('tema-escuro', isDark);
   if (document.body) {
     document.body.classList.toggle('tema-escuro', isDark);
+  }
+  const metaTheme = document.querySelector('meta[name="theme-color"]');
+  if (metaTheme) {
+    metaTheme.setAttribute('content', isDark ? '#0F172A' : '#4F46E5');
   }
   localStorage.setItem('app_tema', isDark ? 'dark' : 'light');
   atualizarVisualTema();
 }
 
 function alternarTemaEscuro() {
-  const atual = localStorage.getItem('app_tema') || 'light';
+  const atual = localStorage.getItem('app_tema') || 'dark';
   const novoTema = (atual === 'dark') ? 'light' : 'dark';
   aplicarTema(novoTema);
 }
 
 function atualizarVisualTema() {
-  const isDark = (localStorage.getItem('app_tema') === 'dark');
+  const isDark = ((localStorage.getItem('app_tema') || 'dark') === 'dark');
   const badge = document.getElementById('badge-status-tema');
   const label = document.getElementById('label-tema-escuro');
+  const icoRapido = document.getElementById('ico-tema-rapido');
+  const btnRapido = document.getElementById('btn-tema-rapido');
   if (badge) {
     badge.textContent = isDark ? 'Ativo' : 'Desativado';
     badge.style.background = isDark ? '#312E81' : '#F1F5F9';
@@ -7563,6 +7570,12 @@ function atualizarVisualTema() {
   }
   if (label) {
     label.textContent = isDark ? '☀️ Modo Claro' : '🌙 Tema Escuro';
+  }
+  if (icoRapido) {
+    icoRapido.textContent = isDark ? '☀️' : '🌙';
+  }
+  if (btnRapido) {
+    btnRapido.title = isDark ? 'Mudar para Tema Claro' : 'Mudar para Tema Escuro';
   }
 }
 
