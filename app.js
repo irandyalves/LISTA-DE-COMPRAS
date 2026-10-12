@@ -823,9 +823,9 @@ let AppState = {
   ]
 };
 
-// Sincroniza a Lista de Compra: SÓ MOSTRA O QUE FOR SELECIONADO EM MONTAR LISTA
+// Sincroniza a Lista de Compra e a Compra Rápida de forma 100% independente (sem misturar uma coisa com a outra)
 function sincronizarListaAtivaComCatalogo() {
-  // Garante que qualquer produto não selecionado tenha comprado = false no catálogo
+  // 1. Garante limpeza independente: itens fora da Lista Normal limpam só a Lista Normal; itens fora da Compra Rápida limpam só a Compra Rápida
   AppState.catalogo.forEach(prod => {
     if (!prod.selecionado) {
       prod.comprado = false;
@@ -833,52 +833,169 @@ function sincronizarListaAtivaComCatalogo() {
       prod.compradoPorIcone = null;
       prod.compradoEm = null;
       prod.precoRegistradoMercado = 0;
-      prod.compraRapida = false;
+    }
+    if (!prod.compraRapida) {
+      prod.compradoCR = false;
+      prod.compradoPorCR = null;
+      prod.compradoPorIconeCR = null;
+      prod.compradoEmCR = null;
+      prod.precoRegistradoCR = 0;
     }
   });
 
-  AppState.listaAtiva = AppState.catalogo
-    .filter(prod => !!prod.selecionado)
-    .map(prod => {
-      const padrao = CATALOGO_PADRAO_EXPANDIDO.find(p => p.id === prod.id || p.nome.toLowerCase().trim() === prod.nome.toLowerCase().trim());
-      const precoReferenciaDF = (padrao && padrao.precoMedioDF) || prod.precoMedioDF || prod.preco || 0;
+  // 2. Coleta itens da Compra Rápida (independente de prod.selecionado)
+  const selecionadosCRUnicos = [];
+  const mapaCRPorNome = new Map();
+  const idsCRVistos = new Set();
 
-      // No celular (somente mobile): não traz preços, vêm todos 0,00 até falar no mic
-      let precoRegistrado = 0;
-      if (ehDispositivoMobile) {
-        precoRegistrado = (prod.precoRegistradoMercado && Number(prod.precoRegistradoMercado) > 0) 
-          ? Number(prod.precoRegistradoMercado) 
-          : 0;
-      } else {
-        precoRegistrado = (prod.precoRegistradoMercado && Number(prod.precoRegistradoMercado) > 0) 
-          ? Number(prod.precoRegistradoMercado) 
-          : (Number(prod.preco) || 0);
+  AppState.catalogo.forEach(prod => {
+    if (!prod || !prod.compraRapida) return;
+    const idStr = String(prod.id);
+    const chaveNome = (prod.nome || '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    if (idsCRVistos.has(idStr)) return;
+
+    if (chaveNome && mapaCRPorNome.has(chaveNome)) {
+      const existente = mapaCRPorNome.get(chaveNome);
+      if ((Number(prod.adicionadoEmCR) || 0) > (Number(existente.adicionadoEmCR) || 0)) {
+        existente.adicionadoEmCR = prod.adicionadoEmCR;
+        existente.adicionadoPorCR = prod.adicionadoPorCR || existente.adicionadoPorCR;
+        existente.qtdeCR = prod.qtdeCR || existente.qtdeCR || 1;
+        if (!prod.compradoCR) existente.compradoCR = false;
       }
+      prod.compraRapida = false;
+      return;
+    }
 
-      return {
-        id: prod.id,
-        catalogoId: prod.id,
-        nome: prod.nome,
-        categoria: prod.categoria || deduzirCategoria(prod.nome),
-        icone: prod.icone || detectarChaveIcone(prod.nome),
-        marca: prod.marca || null,
-        qtde: prod.qtde || 1,
-        precoReferencia: precoReferenciaDF,
-        preco: precoRegistrado, // No mobile, rigorosamente 0.00
-        precoRegistradoMercado: precoRegistrado,
-        ultimoPreco: prod.ultimoPreco || precoReferenciaDF,
-        dataUltimoPreco: prod.dataUltimoPreco || new Date().toISOString().slice(0, 10),
-        comprado: !!prod.comprado,
-        compradoPor: prod.compradoPor || null,
-        compradoPorIcone: prod.compradoPorIcone || null,
-        compradoEm: prod.compradoEm || null,
-        adicionadoPor: prod.adicionadoPor || null,
-        adicionadoEm: prod.adicionadoEm || null,
-        novoPedidoCasa: !!prod.novoPedidoCasa,
-        compraRapida: !!prod.compraRapida,
-        origemPreco: prod.origemPreco || null
-      };
-    });
+    idsCRVistos.add(idStr);
+    if (chaveNome) mapaCRPorNome.set(chaveNome, prod);
+    selecionadosCRUnicos.push(prod);
+  });
+
+  // 3. Coleta itens da Lista de Compras Normal (independente de prod.compraRapida)
+  const selecionadosListaUnicos = [];
+  const mapaListaPorNome = new Map();
+  const idsListaVistos = new Set();
+
+  AppState.catalogo.forEach(prod => {
+    if (!prod || !prod.selecionado) return;
+    const idStr = String(prod.id);
+    const chaveNome = (prod.nome || '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    if (idsListaVistos.has(idStr)) return;
+
+    if (chaveNome && mapaListaPorNome.has(chaveNome)) {
+      const existente = mapaListaPorNome.get(chaveNome);
+      existente.novoPedidoCasa = !!(existente.novoPedidoCasa || prod.novoPedidoCasa);
+      if ((Number(prod.adicionadoEm) || 0) > (Number(existente.adicionadoEm) || 0)) {
+        existente.adicionadoEm = prod.adicionadoEm;
+        existente.adicionadoPor = prod.adicionadoPor || existente.adicionadoPor;
+        existente.qtde = prod.qtde || existente.qtde || 1;
+        if (!prod.comprado) existente.comprado = false;
+      }
+      prod.selecionado = false;
+      return;
+    }
+
+    idsListaVistos.add(idStr);
+    if (chaveNome) mapaListaPorNome.set(chaveNome, prod);
+    selecionadosListaUnicos.push(prod);
+  });
+
+  const montarItemCR = (prod) => {
+    const padrao = CATALOGO_PADRAO_EXPANDIDO.find(p => p.id === prod.id || p.nome.toLowerCase().trim() === prod.nome.toLowerCase().trim());
+    const precoReferenciaDF = (padrao && padrao.precoMedioDF) || prod.precoMedioDF || prod.preco || 0;
+
+    let precoRegistrado = 0;
+    if (ehDispositivoMobile) {
+      precoRegistrado = (prod.precoRegistradoCR && Number(prod.precoRegistradoCR) > 0)
+        ? Number(prod.precoRegistradoCR)
+        : 0;
+    } else {
+      precoRegistrado = (prod.precoRegistradoCR && Number(prod.precoRegistradoCR) > 0)
+        ? Number(prod.precoRegistradoCR)
+        : (Number(prod.preco) || 0);
+    }
+
+    return {
+      id: `cr_item_${prod.id}`,
+      catalogoId: prod.id,
+      nome: prod.nome,
+      categoria: prod.categoria || deduzirCategoria(prod.nome),
+      icone: prod.icone || detectarChaveIcone(prod.nome),
+      marca: prod.marca || null,
+      qtde: prod.qtdeCR || 1,
+      precoReferencia: precoReferenciaDF,
+      preco: precoRegistrado,
+      precoRegistradoMercado: precoRegistrado,
+      ultimoPreco: prod.ultimoPreco || precoReferenciaDF,
+      dataUltimoPreco: prod.dataUltimoPreco || new Date().toISOString().slice(0, 10),
+      comprado: !!prod.compradoCR,
+      compradoPor: prod.compradoPorCR || null,
+      compradoPorIcone: prod.compradoPorIconeCR || null,
+      compradoEm: prod.compradoEmCR || null,
+      adicionadoPor: prod.adicionadoPorCR || prod.adicionadoPor || 'Casa',
+      adicionadoEm: prod.adicionadoEmCR || prod.adicionadoEm || null,
+      novoPedidoCasa: false,
+      compraRapida: true,
+      origemPreco: prod.origemPreco || null
+    };
+  };
+
+  const montarItemListaNormal = (prod) => {
+    const padrao = CATALOGO_PADRAO_EXPANDIDO.find(p => p.id === prod.id || p.nome.toLowerCase().trim() === prod.nome.toLowerCase().trim());
+    const precoReferenciaDF = (padrao && padrao.precoMedioDF) || prod.precoMedioDF || prod.preco || 0;
+
+    let precoRegistrado = 0;
+    if (ehDispositivoMobile) {
+      precoRegistrado = (prod.precoRegistradoMercado && Number(prod.precoRegistradoMercado) > 0) 
+        ? Number(prod.precoRegistradoMercado) 
+        : 0;
+    } else {
+      precoRegistrado = (prod.precoRegistradoMercado && Number(prod.precoRegistradoMercado) > 0) 
+        ? Number(prod.precoRegistradoMercado) 
+        : (Number(prod.preco) || 0);
+    }
+
+    return {
+      id: prod.id,
+      catalogoId: prod.id,
+      nome: prod.nome,
+      categoria: prod.categoria || deduzirCategoria(prod.nome),
+      icone: prod.icone || detectarChaveIcone(prod.nome),
+      marca: prod.marca || null,
+      qtde: prod.qtde || 1,
+      precoReferencia: precoReferenciaDF,
+      preco: precoRegistrado,
+      precoRegistradoMercado: precoRegistrado,
+      ultimoPreco: prod.ultimoPreco || precoReferenciaDF,
+      dataUltimoPreco: prod.dataUltimoPreco || new Date().toISOString().slice(0, 10),
+      comprado: !!prod.comprado,
+      compradoPor: prod.compradoPor || null,
+      compradoPorIcone: prod.compradoPorIcone || null,
+      compradoEm: prod.compradoEm || null,
+      adicionadoPor: prod.adicionadoPor || null,
+      adicionadoEm: prod.adicionadoEm || null,
+      novoPedidoCasa: !!prod.novoPedidoCasa,
+      compraRapida: false,
+      origemPreco: prod.origemPreco || null
+    };
+  };
+
+  AppState.listaAtiva = [
+    ...selecionadosCRUnicos.map(montarItemCR),
+    ...selecionadosListaUnicos.map(montarItemListaNormal)
+  ];
 
   if (typeof atualizarBadgeCompraRapida === 'function') {
     atualizarBadgeCompraRapida();
@@ -991,48 +1108,73 @@ function carregarLocalmente() {
         AppState.catalogo = CATALOGO_PADRAO_EXPANDIDO.filter(it => !excluidos.has(it.nome.toLowerCase().trim())).map(it => ({ ...it }));
       }
 
-      // Sincroniza quem está selecionado no catálogo com base no que foi salvo
+      // Sincroniza quem está na Lista de Compras (selecionado) e quem está na Compra Rápida (compraRapida) de forma separada
       if (parsed.listaAtiva && Array.isArray(parsed.listaAtiva)) {
-        const nomesNaLista = new Set(parsed.listaAtiva.map(it => it.nome.toLowerCase().trim()));
-        const idsNaLista = new Set(parsed.listaAtiva.map(it => String(it.id)));
+        const itensListaNormalSalva = parsed.listaAtiva.filter(it => !it.compraRapida);
+        const itensCRSalva = parsed.listaAtiva.filter(it => !!it.compraRapida);
+
+        const nomesNaListaNormal = new Set(itensListaNormalSalva.map(it => (it.nome || '').toLowerCase().trim()));
+        const idsNaListaNormal = new Set(itensListaNormalSalva.map(it => String(it.catalogoId || it.id)));
+
+        const nomesNaCR = new Set(itensCRSalva.map(it => (it.nome || '').toLowerCase().trim()));
+        const idsNaCR = new Set(itensCRSalva.map(it => String(it.catalogoId || String(it.id).replace(/^cr_item_/, ''))));
 
         AppState.catalogo.forEach(c => {
-          const estaNaLista = nomesNaLista.has(c.nome.toLowerCase().trim()) || idsNaLista.has(String(c.id));
-          if (estaNaLista) {
-            c.selecionado = true;
-          } else if (c.selecionado === undefined) {
-            c.selecionado = false;
-          }
+          const nomeNormC = (c.nome || '').toLowerCase().trim();
+          const idStrC = String(c.id);
 
-          const itemSalvo = parsed.listaAtiva.find(it => 
-            it.nome.toLowerCase().trim() === c.nome.toLowerCase().trim() || 
-            String(it.id) === String(c.id)
+          const estaNaListaNormal = nomesNaListaNormal.has(nomeNormC) || idsNaListaNormal.has(idStrC);
+          const estaNaCR = nomesNaCR.has(nomeNormC) || idsNaCR.has(idStrC);
+
+          // Se em versões anteriores o item estava marcado como compraRapida e tinha selecionado=true apenas por mistura, corrige:
+          c.selecionado = estaNaListaNormal;
+          c.compraRapida = estaNaCR || !!c.compraRapida;
+
+          const itemNormalSalvo = itensListaNormalSalva.find(it =>
+            (it.nome || '').toLowerCase().trim() === nomeNormC ||
+            String(it.catalogoId || it.id) === idStrC
           );
-          if (itemSalvo) {
-            c.qtde = itemSalvo.qtde || 1;
-            c.comprado = !!itemSalvo.comprado;
-            c.marca = itemSalvo.marca || null;
-            c.compraRapida = !!(itemSalvo.compraRapida || c.compraRapida);
-            c.novoPedidoCasa = !!(itemSalvo.novoPedidoCasa || c.novoPedidoCasa);
-            c.adicionadoPor = itemSalvo.adicionadoPor || c.adicionadoPor || null;
-            if (c.precoMedioDF && itemSalvo.preco < (c.precoMedioDF * 0.7)) {
+          if (itemNormalSalvo) {
+            c.qtde = itemNormalSalvo.qtde || 1;
+            c.comprado = !!itemNormalSalvo.comprado;
+            c.marca = itemNormalSalvo.marca || c.marca || null;
+            c.novoPedidoCasa = !!(itemNormalSalvo.novoPedidoCasa || c.novoPedidoCasa);
+            c.adicionadoPor = itemNormalSalvo.adicionadoPor || c.adicionadoPor || null;
+            if (c.precoMedioDF && itemNormalSalvo.preco < (c.precoMedioDF * 0.7)) {
               c.preco = c.precoMedioDF;
             } else {
-              c.preco = itemSalvo.preco || c.precoMedioDF;
+              c.preco = itemNormalSalvo.preco || c.precoMedioDF;
             }
-            c.origemPreco = itemSalvo.origemPreco || null;
+            c.origemPreco = itemNormalSalvo.origemPreco || null;
+          }
+
+          const itemCRSalvo = itensCRSalva.find(it =>
+            (it.nome || '').toLowerCase().trim() === nomeNormC ||
+            String(it.catalogoId || String(it.id).replace(/^cr_item_/, '')) === idStrC
+          );
+          if (itemCRSalvo) {
+            c.compraRapida = true;
+            c.qtdeCR = itemCRSalvo.qtde || c.qtdeCR || 1;
+            c.compradoCR = !!(itemCRSalvo.comprado || c.compradoCR);
+            c.compradoPorCR = itemCRSalvo.compradoPor || c.compradoPorCR || null;
+            c.compradoPorIconeCR = itemCRSalvo.compradoPorIcone || c.compradoPorIconeCR || null;
+            c.compradoEmCR = itemCRSalvo.compradoEm || c.compradoEmCR || null;
+            c.adicionadoPorCR = itemCRSalvo.adicionadoPor || c.adicionadoPorCR || 'Casa';
+            c.adicionadoEmCR = itemCRSalvo.adicionadoEm || c.adicionadoEmCR || null;
           }
         });
 
-        // Garante que qualquer item customizado da lista que não estava no catálogo seja adicionado
+        // Garante que qualquer item customizado da lista que não estava no catálogo seja adicionado na seção correta
         parsed.listaAtiva.forEach(itemSalvo => {
+          const idLimpo = String(itemSalvo.catalogoId || String(itemSalvo.id || '').replace(/^cr_item_/, ''));
           const jaExiste = AppState.catalogo.find(c => 
-            c.nome.toLowerCase().trim() === itemSalvo.nome.toLowerCase().trim() ||
-            String(c.id) === String(itemSalvo.id)
+            c.nome.toLowerCase().trim() === (itemSalvo.nome || '').toLowerCase().trim() ||
+            String(c.id) === idLimpo
           );
           if (!jaExiste && !excluidos.has((itemSalvo.nome || '').toLowerCase().trim())) {
+            const ehCR = !!itemSalvo.compraRapida;
             AppState.catalogo.unshift({
-              id: itemSalvo.id || ('c_custom_' + Date.now()),
+              id: idLimpo || ('c_custom_' + Date.now()),
               nome: itemSalvo.nome,
               categoria: itemSalvo.categoria || deduzirCategoria(itemSalvo.nome),
               icone: itemSalvo.icone || detectarChaveIcone(itemSalvo.nome),
@@ -1040,12 +1182,16 @@ function carregarLocalmente() {
               preco: itemSalvo.preco || 0,
               ultimoPreco: itemSalvo.ultimoPreco || itemSalvo.preco || 0,
               dataUltimoPreco: itemSalvo.dataUltimoPreco || new Date().toISOString().slice(0, 10),
-              selecionado: true,
-              qtde: itemSalvo.qtde || 1,
-              comprado: !!itemSalvo.comprado,
-              compraRapida: !!itemSalvo.compraRapida,
-              novoPedidoCasa: !!itemSalvo.novoPedidoCasa,
-              adicionadoPor: itemSalvo.adicionadoPor || null
+              selecionado: !ehCR,
+              qtde: !ehCR ? (itemSalvo.qtde || 1) : 1,
+              comprado: !ehCR ? !!itemSalvo.comprado : false,
+              compraRapida: ehCR,
+              qtdeCR: ehCR ? (itemSalvo.qtde || 1) : 1,
+              compradoCR: ehCR ? !!itemSalvo.comprado : false,
+              adicionadoPorCR: ehCR ? (itemSalvo.adicionadoPor || 'Casa') : null,
+              adicionadoEmCR: ehCR ? (itemSalvo.adicionadoEm || Date.now()) : null,
+              novoPedidoCasa: !ehCR ? !!itemSalvo.novoPedidoCasa : false,
+              adicionadoPor: !ehCR ? (itemSalvo.adicionadoPor || null) : null
             });
           }
         });
@@ -1057,6 +1203,9 @@ function carregarLocalmente() {
           if (!p.precoRegistradoMercado) {
             p.precoRegistradoMercado = 0;
             p.preco = 0;
+          }
+          if (!p.precoRegistradoCR) {
+            p.precoRegistradoCR = 0;
           }
         });
       }
@@ -1264,7 +1413,7 @@ function inicializarNuvem() {
             tocarAvisoSonoroDesistencia();
             exibirAvisoPedidoPatroa(nomeExibir, evento.itens, evento.icone || '👩', 'desistiu');
 
-            // Desmarca os itens imediatamente no catálogo local
+            // Desmarca os itens imediatamente na Lista de Compras (sem mexer na Compra Rápida)
             if (Array.isArray(evento.itens)) {
               evento.itens.forEach(nomeItem => {
                 const nomeLimpo = String(nomeItem).replace(/\s*\(\d+x\)\s*$/i, '');
@@ -1275,26 +1424,29 @@ function inicializarNuvem() {
                   pCat.selecionado = false;
                   pCat.comprado = false;
                   pCat.novoPedidoCasa = false;
-                  pCat.compraRapida = false;
                 }
               });
             }
           } else if (tipoEvento === 'compra_rapida') {
+            window._notificouCompraRapidaNesteCiclo = true;
             tocarAvisoSonoroCompraRapida();
             exibirAvisoPedidoPatroa(nomeExibir, evento.itens, evento.icone || '⚡', 'compra_rapida');
 
             if (Array.isArray(evento.itens)) {
-              evento.itens.forEach(nomeItem => {
+              const tsNovo = Number(evento.timestamp) || agora;
+              evento.itens.forEach((nomeItem, idxItem) => {
+                const matchQtde = String(nomeItem).match(/\((\d+)x\)\s*$/i);
+                const qtdeExtraida = matchQtde ? parseInt(matchQtde[1], 10) : null;
                 const nomeLimpo = String(nomeItem).replace(/\s*\(\d+x\)\s*$/i, '');
                 const nomeNorm = nomeLimpo.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
                 const pCat = AppState.catalogo.find(p => p.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim() === nomeNorm)
                   || AppState.catalogo.find(p => p.nome.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().includes(nomeNorm));
-                if (pCat && !pCat.comprado) {
-                  pCat.selecionado = true;
+                if (pCat) {
                   pCat.compraRapida = true;
-                  pCat.novoPedidoCasa = true;
-                  pCat.adicionadoPor = nomeExibir;
-                  pCat.adicionadoEm = evento.timestamp;
+                  pCat.compradoCR = false;
+                  if (qtdeExtraida && qtdeExtraida > 0) pCat.qtdeCR = qtdeExtraida;
+                  pCat.adicionadoPorCR = nomeExibir;
+                  pCat.adicionadoEmCR = tsNovo + (evento.itens.length - idxItem);
                 }
               });
             }
@@ -1329,6 +1481,9 @@ function inicializarNuvem() {
       // 2. Merge Granular no Nível de Item do Catálogo para evitar perda de dados por concorrência
       if (dadosNuvem.catalogo && Array.isArray(dadosNuvem.catalogo)) {
         const catalogoNuvemFiltrado = dadosNuvem.catalogo.filter(it => !setExcluidosNuvem.has((it.nome || '').toLowerCase().trim()));
+        const novosItensCRSilenciosos = [];
+        let autorCRSilencioso = null;
+
         if (!AppState.catalogo || AppState.catalogo.length === 0) {
           AppState.catalogo = catalogoNuvemFiltrado;
         } else {
@@ -1337,13 +1492,31 @@ function inicializarNuvem() {
             AppState.catalogo = AppState.catalogo.filter(p => !setExcluidosNuvem.has((p.nome || '').toLowerCase().trim()));
           }
           catalogoNuvemFiltrado.forEach(nuvemItem => {
-            let localItem = AppState.catalogo.find(p => String(p.id) === String(nuvemItem.id) || p.nome.toLowerCase().trim() === (nuvemItem.nome || '').toLowerCase().trim());
+            const normNuvem = (nuvemItem.nome || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+            let localItem = AppState.catalogo.find(p =>
+              String(p.id) === String(nuvemItem.id) ||
+              (p.nome || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim() === normNuvem
+            );
             if (localItem) {
               const tsLocal = timestampsModificacaoLocalItem[String(localItem.id)] || 0;
               const modificadoLocalRecente = tsLocal > 0 && (agora - tsLocal) < 2000;
 
               // Se este item específico NÃO foi modificado no último segundo aqui, atualiza com a nuvem
               if (!modificadoLocalRecente) {
+                const eraCRAtivo = !!(localItem.compraRapida && !localItem.compradoCR);
+                const virouCRAtivo = !!(nuvemItem.compraRapida && !nuvemItem.compradoCR);
+                const tsAdicAntigo = Number(localItem.adicionadoEmCR || localItem.adicionadoEm) || 0;
+                const tsAdicNuvem = Number(nuvemItem.adicionadoEmCR || nuvemItem.adicionadoEm) || 0;
+
+                if (virouCRAtivo && (!eraCRAtivo || (tsAdicNuvem > tsAdicAntigo + 1500))) {
+                  const nomeCurto = (nuvemItem.nome || '').split('(')[0].trim();
+                  const q = nuvemItem.qtdeCR || nuvemItem.qtde || 1;
+                  novosItensCRSilenciosos.push(q > 1 ? `${nomeCurto} (${q}x)` : nomeCurto);
+                  if (nuvemItem.adicionadoPorCR || nuvemItem.adicionadoPor) {
+                    autorCRSilencioso = nuvemItem.adicionadoPorCR || nuvemItem.adicionadoPor;
+                  }
+                }
+
                 localItem.selecionado = !!nuvemItem.selecionado;
                 localItem.comprado = !!nuvemItem.comprado;
                 localItem.compradoPor = nuvemItem.compradoPor || null;
@@ -1353,19 +1526,47 @@ function inicializarNuvem() {
                 localItem.marca = nuvemItem.marca || localItem.marca || null;
                 localItem.precoRegistradoMercado = nuvemItem.precoRegistradoMercado || 0;
                 localItem.adicionadoPor = nuvemItem.adicionadoPor || localItem.adicionadoPor || null;
+                localItem.adicionadoEm = nuvemItem.adicionadoEm || localItem.adicionadoEm || null;
                 if (nuvemItem.novoPedidoCasa !== undefined) {
                   localItem.novoPedidoCasa = nuvemItem.novoPedidoCasa;
                 }
                 if (nuvemItem.compraRapida !== undefined) {
                   localItem.compraRapida = !!nuvemItem.compraRapida;
                 }
+                localItem.compradoCR = !!nuvemItem.compradoCR;
+                localItem.compradoPorCR = nuvemItem.compradoPorCR || null;
+                localItem.compradoPorIconeCR = nuvemItem.compradoPorIconeCR || null;
+                localItem.compradoEmCR = nuvemItem.compradoEmCR || null;
+                localItem.qtdeCR = nuvemItem.qtdeCR || localItem.qtdeCR || 1;
+                localItem.precoRegistradoCR = nuvemItem.precoRegistradoCR || 0;
+                localItem.adicionadoPorCR = nuvemItem.adicionadoPorCR || localItem.adicionadoPorCR || null;
+                localItem.adicionadoEmCR = nuvemItem.adicionadoEmCR || localItem.adicionadoEmCR || null;
               }
             } else {
               // Item novo cadastrado na nuvem
               AppState.catalogo.push(nuvemItem);
+              if (nuvemItem.compraRapida && !nuvemItem.compradoCR) {
+                const nomeCurto = (nuvemItem.nome || '').split('(')[0].trim();
+                const q = nuvemItem.qtdeCR || nuvemItem.qtde || 1;
+                novosItensCRSilenciosos.push(q > 1 ? `${nomeCurto} (${q}x)` : nomeCurto);
+                if (nuvemItem.adicionadoPorCR || nuvemItem.adicionadoPor) {
+                  autorCRSilencioso = nuvemItem.adicionadoPorCR || nuvemItem.adicionadoPor;
+                }
+              }
             }
           });
         }
+
+        // Se a patroa adicionou itens na Compra Rápida marcando cards diretamente (mesmo sem disparar evento separado), exibe o aviso flutuante!
+        if (!ehPrimeiroSnapshot && !window._notificouCompraRapidaNesteCiclo && novosItensCRSilenciosos.length > 0) {
+          const meuNome = (AppState.usuarioAtivo || 'Irandy').toLowerCase().trim();
+          const autorNorm = (autorCRSilencioso || 'Sioneide').toLowerCase().trim();
+          const nomeExibir = (autorNorm && autorNorm !== meuNome) ? autorCRSilencioso : 'Sioneide';
+          tocarAvisoSonoroCompraRapida();
+          exibirAvisoPedidoPatroa(nomeExibir, novosItensCRSilenciosos, '⚡', 'compra_rapida');
+        }
+        window._notificouCompraRapidaNesteCiclo = false;
+
         sincronizarListaAtivaComCatalogo();
       }
 
@@ -3368,7 +3569,7 @@ function atualizarAbasCategoriasInteligente() {
   let totalFav = 0;
   let temFavoritos = false;
 
-  (AppState.listaAtiva || []).forEach(item => {
+  (AppState.listaAtiva || []).filter(item => !item.compraRapida).forEach(item => {
     const cat = item.categoria || 'Diversos';
     categoriasPresentes.add(cat);
     contagemPorCat[cat] = (contagemPorCat[cat] || 0) + 1;
@@ -3887,8 +4088,12 @@ function ouvirPrecoItem(itemId, btnEl, ev) {
   if (item.catalogoId) {
     const catItem = AppState.catalogo.find(c => String(c.id) === String(item.catalogoId));
     if (catItem) {
-      catItem.precoRegistradoMercado = 0;
-      catItem.preco = 0;
+      if (item.compraRapida) {
+        catItem.precoRegistradoCR = 0;
+      } else {
+        catItem.precoRegistradoMercado = 0;
+        catItem.preco = 0;
+      }
     }
   }
 
@@ -3944,8 +4149,12 @@ function ouvirPrecoItem(itemId, btnEl, ev) {
       if (item.catalogoId) {
         const catItem = AppState.catalogo.find(c => String(c.id) === String(item.catalogoId));
         if (catItem) {
-          catItem.precoRegistradoMercado = precoExtraido;
-          catItem.preco = precoExtraido;
+          if (item.compraRapida) {
+            catItem.precoRegistradoCR = precoExtraido;
+          } else {
+            catItem.precoRegistradoMercado = precoExtraido;
+            catItem.preco = precoExtraido;
+          }
         }
       }
       salvarEstado(true);
@@ -3959,7 +4168,8 @@ function ouvirPrecoItem(itemId, btnEl, ev) {
         renderizarListaCompras();
       }
       atualizarCardResumo();
-      atualizarBalaoTotalCategoria(item.categoria || 'Diversos');
+      const catAlvo = item.compraRapida ? '⚡ COMPRA RÁPIDA / EMERGENCIAL' : (item.categoria || 'Diversos');
+      atualizarBalaoTotalCategoria(catAlvo);
     } else {
       mostrarNotificacaoToast(`⚠️ Não identifiquei o valor falado ("${melhorTexto || 'silêncio'}"). Tente novamente ou clique no valor para digitar.`);
     }
@@ -4092,8 +4302,12 @@ function limparPrecoModal() {
     if (item.catalogoId) {
       const catItem = AppState.catalogo.find(c => String(c.id) === String(item.catalogoId));
       if (catItem) {
-        catItem.precoRegistradoMercado = 0;
-        catItem.preco = 0;
+        if (item.compraRapida) {
+          catItem.precoRegistradoCR = 0;
+        } else {
+          catItem.precoRegistradoMercado = 0;
+          catItem.preco = 0;
+        }
       }
     }
     salvarEstado(true);
@@ -4126,8 +4340,12 @@ function confirmarSalvarPrecoModal() {
   if (item.catalogoId) {
     const catItem = AppState.catalogo.find(c => String(c.id) === String(item.catalogoId));
     if (catItem) {
-      catItem.precoRegistradoMercado = valorFinal;
-      catItem.preco = valorFinal;
+      if (item.compraRapida) {
+        catItem.precoRegistradoCR = valorFinal;
+      } else {
+        catItem.precoRegistradoMercado = valorFinal;
+        catItem.preco = valorFinal;
+      }
     }
   }
   salvarEstado(true);
@@ -4353,7 +4571,17 @@ function renderizarListaCompras() {
   // Agrupar itens: 1º Bloco Destacado no Topo = Compra Rápida / Emergencial; depois categorias normais
   const CHAVE_GRUPO_COMPRA_RAPIDA = '⚡ COMPRA RÁPIDA / EMERGENCIAL';
   const grupos = {};
-  const itensEmergencia = itensListaParaExibir.filter(it => !!it.compraRapida);
+  const nomesEmergenciaVistos = new Set();
+  const idsEmergenciaVistos = new Set();
+  const itensEmergencia = itensListaParaExibir.filter(it => {
+    if (!it || !it.compraRapida) return false;
+    const idKey = String(it.id);
+    const nomeKey = (it.nome || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+    if (idsEmergenciaVistos.has(idKey) || (nomeKey && nomesEmergenciaVistos.has(nomeKey))) return false;
+    idsEmergenciaVistos.add(idKey);
+    if (nomeKey) nomesEmergenciaVistos.add(nomeKey);
+    return true;
+  });
   if (itensEmergencia.length > 0) {
     grupos[CHAVE_GRUPO_COMPRA_RAPIDA] = itensEmergencia.map((item, idx) => ({ ...item, indexOriginal: idx }));
   }
@@ -4371,13 +4599,20 @@ function renderizarListaCompras() {
     const ehGrupoCompraRapida = (categoria === CHAVE_GRUPO_COMPRA_RAPIDA);
 
     // Ordenação dinâmica dentro da categoria:
-    // Itens NÃO pegos primeiro (A-Z ou ordem padrão)
-    // Itens PEGANTE/COMPRADOS vão para o final da seção (A-Z entre os comprados)
+    // Itens NÃO pegos primeiro; em Compra Rápida, os itens recém-adicionados entram sempre EM CIMA!
+    // Itens COMPRADOS vão para o final da seção
     itens.sort((a, b) => {
       const aComp = a.comprado ? 1 : 0;
       const bComp = b.comprado ? 1 : 0;
       if (aComp !== bComp) {
         return aComp - bComp; // 0 (não pego) vem antes de 1 (pego)
+      }
+      if (ehGrupoCompraRapida && !a.comprado && !b.comprado) {
+        const tsA = Number(a.adicionadoEm) || 0;
+        const tsB = Number(b.adicionadoEm) || 0;
+        if (tsA !== tsB) {
+          return tsB - tsA; // Mais novos entram no topo de FAVOR COMPRAR!!
+        }
       }
       if (AppState.modoCotacao === 'alfabetico') {
         return (a.nome || '').localeCompare(b.nome || '', 'pt-BR', { sensitivity: 'base' });
@@ -7264,13 +7499,21 @@ function alternarItemComprado(id) {
     item.compradoEm = Date.now();
     item.novoPedidoCasa = false;
 
-    const catItem = AppState.catalogo.find(c => String(c.id) === String(item.id) || String(c.id) === String(item.catalogoId));
+    const catItem = AppState.catalogo.find(c => String(c.id) === String(item.catalogoId || item.id));
     if (catItem) {
-      catItem.comprado = true;
-      catItem.compradoPor = item.compradoPor;
-      catItem.compradoPorIcone = item.compradoPorIcone;
-      catItem.compradoEm = item.compradoEm;
-      catItem.novoPedidoCasa = false;
+      if (item.compraRapida) {
+        catItem.compradoCR = true;
+        catItem.compradoPorCR = item.compradoPor;
+        catItem.compradoPorIconeCR = item.compradoPorIcone;
+        catItem.compradoEmCR = item.compradoEm;
+      } else {
+        catItem.comprado = true;
+        catItem.compradoPor = item.compradoPor;
+        catItem.compradoPorIcone = item.compradoPorIcone;
+        catItem.compradoEm = item.compradoEm;
+        catItem.novoPedidoCasa = false;
+      }
+      registrarTimestampModificacaoItem(catItem.id);
     }
 
     registrarTimestampModificacaoItem(item.id);
@@ -7291,8 +7534,23 @@ function alternarItemComprado(id) {
       atualizarCardResumo();
     }
 
-    // Finalização Automática quando marcar o último item da lista
-    const todosComprados = AppState.listaAtiva.length > 0 && AppState.listaAtiva.every(i => i.comprado);
+    // Quando marcar todos os itens de FAVOR COMPRAR!! (Compra Rápida), exibe modalzinho "Compra finalizada!" e some em seguida!
+    if (item.compraRapida) {
+      const itensCR = (AppState.listaAtiva || []).filter(i => i.compraRapida);
+      const todosCRComprados = itensCR.length > 0 && itensCR.every(i => i.comprado);
+      if (todosCRComprados) {
+        setTimeout(() => {
+          if (typeof finalizarBlocoCompraRapidaAutomatico === 'function') {
+            finalizarBlocoCompraRapidaAutomatico();
+          }
+        }, 220);
+      }
+      return;
+    }
+
+    // Finalização Automática quando marcar o último item da Lista de Compras normal
+    const itensListaNormal = (AppState.listaAtiva || []).filter(i => !i.compraRapida);
+    const todosComprados = itensListaNormal.length > 0 && itensListaNormal.every(i => i.comprado);
     if (todosComprados) {
       setTimeout(() => {
         abrirModalFinalizarCompra(true);
@@ -7310,12 +7568,20 @@ function alternarItemComprado(id) {
     item.compradoPorIcone = null;
     item.compradoEm = null;
 
-    const catItem = AppState.catalogo.find(c => String(c.id) === String(item.id) || String(c.id) === String(item.catalogoId));
+    const catItem = AppState.catalogo.find(c => String(c.id) === String(item.catalogoId || item.id));
     if (catItem) {
-      catItem.comprado = false;
-      catItem.compradoPor = null;
-      catItem.compradoPorIcone = null;
-      catItem.compradoEm = null;
+      if (item.compraRapida) {
+        catItem.compradoCR = false;
+        catItem.compradoPorCR = null;
+        catItem.compradoPorIconeCR = null;
+        catItem.compradoEmCR = null;
+      } else {
+        catItem.comprado = false;
+        catItem.compradoPor = null;
+        catItem.compradoPorIcone = null;
+        catItem.compradoEm = null;
+      }
+      registrarTimestampModificacaoItem(catItem.id);
     }
 
     registrarTimestampModificacaoItem(item.id);
@@ -7372,9 +7638,17 @@ function alterarQuantidade(id, delta) {
     if (novaQtde < 1) novaQtde = 1;
     item.qtde = novaQtde;
 
-    const prodCat = AppState.catalogo.find(p => String(p.id) === String(id) || String(p.catalogoId) === String(id));
+    const prodCat = AppState.catalogo.find(p => String(p.id) === String(item.catalogoId || item.id));
     if (prodCat) {
-      prodCat.qtde = novaQtde;
+      if (item.compraRapida) {
+        prodCat.qtdeCR = novaQtde;
+        if (typeof estadoCompraRapida !== 'undefined' && estadoCompraRapida.selecionadosTemp && estadoCompraRapida.selecionadosTemp.has(String(prodCat.id))) {
+          estadoCompraRapida.selecionadosTemp.get(String(prodCat.id)).qtde = novaQtde;
+        }
+      } else {
+        prodCat.qtde = novaQtde;
+      }
+      registrarTimestampModificacaoItem(prodCat.id);
     }
 
     salvarEstado(true);
@@ -7400,9 +7674,17 @@ function definirQuantidadeDireta(id, novoValor) {
     if (isNaN(val) || val < 1) val = 1;
     item.qtde = val;
 
-    const prodCat = AppState.catalogo.find(p => String(p.id) === String(id) || String(p.catalogoId) === String(id));
+    const prodCat = AppState.catalogo.find(p => String(p.id) === String(item.catalogoId || item.id));
     if (prodCat) {
-      prodCat.qtde = val;
+      if (item.compraRapida) {
+        prodCat.qtdeCR = val;
+        if (typeof estadoCompraRapida !== 'undefined' && estadoCompraRapida.selecionadosTemp && estadoCompraRapida.selecionadosTemp.has(String(prodCat.id))) {
+          estadoCompraRapida.selecionadosTemp.get(String(prodCat.id)).qtde = val;
+        }
+      } else {
+        prodCat.qtde = val;
+      }
+      registrarTimestampModificacaoItem(prodCat.id);
     }
 
     salvarEstado(true);
@@ -7448,7 +7730,7 @@ function alterarPrecoItem(id, novoPrecoStr, redeRef) {
 }
 
 function removerItem(id, dispararUndo = true) {
-  const index = AppState.listaAtiva.findIndex(i => String(i.id) === String(id) || String(i.catalogoId) === String(id));
+  const index = AppState.listaAtiva.findIndex(i => String(i.id) === String(id));
   const itemRemovido = index >= 0 ? AppState.listaAtiva[index] : null;
   if (!itemRemovido) return;
 
@@ -7456,22 +7738,35 @@ function removerItem(id, dispararUndo = true) {
   const catItem = itemRemovido.compraRapida ? '⚡ COMPRA RÁPIDA / EMERGENCIAL' : (itemRemovido.categoria || 'Diversos');
   const catId = itemRemovido.catalogoId || itemRemovido.id;
 
-  // Desmarca no catálogo se for produto do catálogo
+  // Desmarca apenas a seção correspondente (Compra Rápida ou Lista de Compras), sem misturar uma com a outra
   const prod = AppState.catalogo.find(p => String(p.id) === String(catId) || `item_despensa_${p.id}` === String(id));
   if (prod) {
-    prod.selecionado = false;
-    prod.comprado = false;
-    prod.novoPedidoCasa = false;
-    prod.compraRapida = false;
-    prod.precoRegistradoMercado = 0;
+    if (itemRemovido.compraRapida) {
+      prod.compraRapida = false;
+      prod.compradoCR = false;
+      prod.compradoPorCR = null;
+      prod.compradoEmCR = null;
+      prod.precoRegistradoCR = 0;
+      if (typeof estadoCompraRapida !== 'undefined' && estadoCompraRapida.selecionadosTemp) {
+        estadoCompraRapida.selecionadosTemp.delete(String(prod.id));
+      }
+    } else {
+      prod.selecionado = false;
+      prod.comprado = false;
+      prod.novoPedidoCasa = false;
+      prod.precoRegistradoMercado = 0;
+    }
     registrarTimestampModificacaoItem(prod.id);
   }
-  registrarEventoSincronizacao('desistiu', [nomeItem]);
-  AppState.listaAtiva = AppState.listaAtiva.filter(i => String(i.id) !== String(id) && String(i.catalogoId) !== String(id));
+  if (!itemRemovido.compraRapida) {
+    registrarEventoSincronizacao('desistiu', [nomeItem]);
+  }
+  AppState.listaAtiva = AppState.listaAtiva.filter(i => String(i.id) !== String(id));
   salvarEstado(true);
   renderizarListaCompras();
   renderizarDespensa();
   atualizarCardResumo();
+  atualizarContadorSidebarMontar();
   if (typeof atualizarBadgeCompraRapida === 'function') atualizarBadgeCompraRapida();
   if (catItem) atualizarBalaoTotalCategoria(catItem);
 
@@ -7565,8 +7860,14 @@ function executarDesfazerExclusao(event) {
     if (payload.catalogoId) {
       const prod = AppState.catalogo.find(p => String(p.id) === String(payload.catalogoId));
       if (prod) {
-        prod.selecionado = true;
-        if (payload.item && payload.item.qtde) prod.qtde = payload.item.qtde;
+        if (payload.item && payload.item.compraRapida) {
+          prod.compraRapida = true;
+          if (payload.item.qtde) prod.qtdeCR = payload.item.qtde;
+        } else {
+          prod.selecionado = true;
+          if (payload.item && payload.item.qtde) prod.qtde = payload.item.qtde;
+        }
+        registrarTimestampModificacaoItem(prod.id);
       }
     }
   } else if (tipo === 'catalogo') {
@@ -8796,12 +9097,13 @@ function atualizarUIModoResumido() {
   }
 }
 
-// Atualiza a contagem 'xxx itens' na frente do botão MONTAR LISTA (Desktop e Mobile)
+// Atualiza a contagem 'xxx itens' na frente do botão MONTAR LISTA (Desktop e Mobile) — somente Lista de Compras normal (sem Compra Rápida)
 function atualizarContadorSidebarMontar() {
   const badge = document.getElementById('sidebar-montar-itens-badge');
   const badgeMobile = document.getElementById('mobile-nav-badge-itens');
-  const selecionados = (AppState.listaAtiva && AppState.listaAtiva.length > 0) 
-    ? AppState.listaAtiva.length 
+  const itensNormais = (AppState.listaAtiva || []).filter(i => !i.compraRapida);
+  const selecionados = itensNormais.length > 0
+    ? itensNormais.length
     : (AppState.catalogo ? AppState.catalogo.filter(i => i.selecionado).length : 0);
   if (badge) badge.textContent = `${selecionados} itens`;
   if (badgeMobile) badgeMobile.textContent = String(selecionados);
@@ -9650,11 +9952,11 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
-// Finalizar Compra no Supermercado
+// Finalizar Compra no Supermercado (exclusivo da Lista de Compras normal, sem misturar com Compra Rápida)
 function abrirModalFinalizarCompra(automatico = false) {
-  const itensComprados = AppState.listaAtiva.filter(i => i.comprado);
+  const itensComprados = AppState.listaAtiva.filter(i => !i.compraRapida && i.comprado);
   if (itensComprados.length === 0) {
-    mostrarNotificacaoToast("Nenhum item marcado como pego no carrinho ainda!");
+    mostrarNotificacaoToast("Nenhum item da lista marcado como pego no carrinho ainda!");
     return;
   }
 
@@ -9670,7 +9972,7 @@ function abrirModalFinalizarCompra(automatico = false) {
   if (valorEl) valorEl.textContent = formatarMoeda(totalComprado);
   if (qtdeEl) {
     qtdeEl.textContent = automatico 
-      ? `🎉 Todos os ${itensComprados.length} itens foram pegos no carrinho!`
+      ? `🎉 Todos os ${itensComprados.length} itens da lista foram pegos no carrinho!`
       : `${itensComprados.length} itens marcados como pegos`;
   }
   
@@ -9678,11 +9980,12 @@ function abrirModalFinalizarCompra(automatico = false) {
 }
 
 function acionarFinalizarCompraMobile() {
-  if (!AppState.listaAtiva || AppState.listaAtiva.length === 0) {
+  const itensListaNormal = (AppState.listaAtiva || []).filter(i => !i.compraRapida);
+  if (itensListaNormal.length === 0) {
     mostrarNotificacaoToast("Sua lista de compras está vazia!");
     return;
   }
-  const itensComprados = AppState.listaAtiva.filter(i => i.comprado);
+  const itensComprados = itensListaNormal.filter(i => i.comprado);
   if (itensComprados.length === 0) {
     mostrarNotificacaoToast("Marque os itens no carrinho [✓] para finalizar a compra.");
     return;
@@ -9692,7 +9995,7 @@ function acionarFinalizarCompraMobile() {
 
 function confirmarFinalizarCompra() {
   const nomeMercado = document.getElementById('input-nome-mercado').value.trim() || 'Supermercado';
-  const itensComprados = AppState.listaAtiva.filter(i => i.comprado);
+  const itensComprados = AppState.listaAtiva.filter(i => !i.compraRapida && i.comprado);
   const hoje = new Date().toISOString();
 
   let totalComprado = 0;
@@ -9733,12 +10036,14 @@ function confirmarFinalizarCompra() {
     comprasExpandidasIds.add(novaIdCompra);
   }
 
-  // Desmarca no catálogo os itens comprados e sincroniza a lista ativa
+  // Desmarca no catálogo apenas os itens comprados da Lista de Compras normal (sem afetar Compra Rápida)
   itensComprados.forEach(it => {
-    const cat = AppState.catalogo.find(c => c.nome.toLowerCase() === it.nome.toLowerCase() || String(c.id) === String(it.id));
+    const cat = AppState.catalogo.find(c => String(c.id) === String(it.catalogoId || it.id) || c.nome.toLowerCase() === it.nome.toLowerCase());
     if (cat) {
       cat.selecionado = false;
       cat.comprado = false;
+      cat.precoRegistradoMercado = 0;
+      registrarTimestampModificacaoItem(cat.id);
     }
   });
 
@@ -11376,6 +11681,13 @@ const IDS_COTIDIANO_COMPRA_RAPIDA = [
   'beb_coca_lata_350', 'beb_suco_prats_laranja', 'beb_sococo_1l'
 ];
 
+// Termos genéricos de grupo (trazem de 8 a 10 opções sem exibir quantidade verde enquanto não marcados)
+const TERMOS_GRUPO_OPCOES_CR = new Set([
+  'carne', 'carnes',
+  'verdura', 'verduras', 'legume', 'legumes', 'salada',
+  'fruta', 'frutas'
+]);
+
 // Dicionário Inteligente de Termos Rápidos (ex: "arroz, feijão, pão, carne, verduras")
 const MAPA_TERMOS_INTELIGENTES_CR = {
   'arroz': ['b_arroz_5kg'],
@@ -11391,8 +11703,8 @@ const MAPA_TERMOS_INTELIGENTES_CR = {
   'pão francês': ['pad_pao_frances'],
   'pao de queijo': ['pad_pao_queijo'],
   'pão de queijo': ['pad_pao_queijo'],
-  'carne': ['c_contrafile', 'c_patinho'],
-  'carnes': ['c_contrafile', 'c_patinho', 'f_peito_osso'],
+  'carne': ['c_contrafile', 'c_alcatra', 'c_patinho', 'c_picanha', 'c_costela', 'c_fraldinha', 'c_maminha', 'c_acem_cubos', 'f_peito_osso', 'c_calabresa'],
+  'carnes': ['c_contrafile', 'c_alcatra', 'c_patinho', 'c_picanha', 'c_costela', 'c_fraldinha', 'c_maminha', 'c_acem_cubos', 'f_peito_osso', 'c_calabresa'],
   'carne moida': ['c_patinho'],
   'carne moída': ['c_patinho'],
   'bife': ['c_contrafile'],
@@ -11400,12 +11712,13 @@ const MAPA_TERMOS_INTELIGENTES_CR = {
   'peito de frango': ['f_peito_osso'],
   'linguica': ['c_calabresa'],
   'linguiça': ['c_calabresa'],
-  'verdura': ['h_alface_cresp', 'h_tomate_sal', 'h_cheiro_verde'],
-  'verduras': ['h_alface_cresp', 'h_tomate_sal', 'h_cheiro_verde', 'h_cebola_br'],
-  'salada': ['h_alface_cresp', 'h_tomate_sal'],
-  'legumes': ['h_batata', 'h_cenoura', 'h_tomate_sal', 'h_cebola_br'],
-  'fruta': ['h_banana_prata', 'h_maca_gala'],
-  'frutas': ['h_banana_prata', 'h_maca_gala', 'h_mamao'],
+  'verdura': ['h_alface_cresp', 'h_tomate_sal', 'h_cheiro_verde', 'h_cebola_br', 'h_batata', 'h_cenoura', 'h_couve', 'h_abobrinha', 'h_pepino', 'h_pimentao_vd'],
+  'verduras': ['h_alface_cresp', 'h_tomate_sal', 'h_cheiro_verde', 'h_cebola_br', 'h_batata', 'h_cenoura', 'h_couve', 'h_abobrinha', 'h_pepino', 'h_pimentao_vd'],
+  'salada': ['h_alface_cresp', 'h_tomate_sal', 'h_cheiro_verde', 'h_cebola_br', 'h_cenoura', 'h_couve', 'h_pepino', 'h_alface_amer', 'h_rucula', 'h_beterraba'],
+  'legume': ['h_batata', 'h_cenoura', 'h_tomate_sal', 'h_cebola_br', 'h_abobrinha', 'h_pepino', 'h_pimentao_vd', 'h_beterraba', 'h_chuchu', 'h_mandioca'],
+  'legumes': ['h_batata', 'h_cenoura', 'h_tomate_sal', 'h_cebola_br', 'h_abobrinha', 'h_pepino', 'h_pimentao_vd', 'h_beterraba', 'h_chuchu', 'h_mandioca'],
+  'fruta': ['h_banana_prata', 'h_maca_gala', 'h_mamao', 'h_laranja', 'h_limao', 'h_abacaxi', 'h_melancia', 'h_uva', 'h_morango', 'h_abacate'],
+  'frutas': ['h_banana_prata', 'h_maca_gala', 'h_mamao', 'h_laranja', 'h_limao', 'h_abacaxi', 'h_melancia', 'h_uva', 'h_morango', 'h_abacate'],
   'leite': ['l_leite_int'],
   'ovo': ['l_ovos_30'],
   'ovos': ['l_ovos_30'],
@@ -11457,9 +11770,9 @@ const MAPA_TERMOS_INTELIGENTES_CR = {
 let estadoCompraRapida = {
   categoriaFiltro: 'cotidiano',
   termoBusca: '',
-  selecionadosTemp: new Map(), // id -> { id, qtde, novoEnvio }
+  selecionadosTemp: new Map(), // id -> { id, qtde, novoEnvio, jaEstava, adicionadoEmOriginal }
   favoritosIds: null,          // Set de IDs favoritados para a Lista Rápida
-  itensInteligentesDetectados: [] // Array de { prod, qtde, termoOriginal }
+  itensInteligentesDetectados: [] // Array de { prod, qtde, termoOriginal, ehOpcaoGrupo }
 };
 
 function normalizarTextoCR(txt) {
@@ -11529,14 +11842,16 @@ function abrirModalCompraRapida() {
 
   obterSetFavoritosCompraRapida();
 
-  // Inicializa o mapa temporário com os itens que já estão marcados como compraRapida
+  // Inicializa o mapa temporário com os itens que já estão marcados como compraRapida (independente da Lista de Compras)
   estadoCompraRapida.selecionadosTemp = new Map();
   (AppState.catalogo || []).forEach(prod => {
-    if (prod.selecionado && prod.compraRapida && !prod.comprado) {
+    if (prod.compraRapida && !prod.compradoCR) {
       estadoCompraRapida.selecionadosTemp.set(String(prod.id), {
         id: prod.id,
-        qtde: prod.qtde || 1,
-        jaEstava: true
+        qtde: prod.qtdeCR || 1,
+        jaEstava: true,
+        adicionadoEmOriginal: prod.adicionadoEmCR || 0,
+        adicionadoPorOriginal: prod.adicionadoPorCR || null
       });
     }
   });
@@ -11698,12 +12013,13 @@ function interpretarListaInteligenteCompraRapida(textoBruto) {
     const norm = normalizarTextoCR(termoLimpo);
     if (!norm || norm.length < 2) return;
 
+    const ehOpcaoGrupo = TERMOS_GRUPO_OPCOES_CR.has(norm) && !tinhaQtde;
     const prodsAchados = resolverTermoUnicoCompraRapida(termoLimpo, mapaPorId, catalogo, favSet);
     if (prodsAchados.length > 0) {
       prodsAchados.forEach(prod => {
         if (!idsJaIncluidos.has(String(prod.id))) {
           idsJaIncluidos.add(String(prod.id));
-          encontrados.push({ prod, qtde, tinhaQtde, termoOriginal: termoLimpo });
+          encontrados.push({ prod, qtde, tinhaQtde, ehOpcaoGrupo, termoOriginal: termoLimpo });
         }
       });
     } else if (temSeparadorMultiplo && norm.length >= 2) {
@@ -11712,6 +12028,7 @@ function interpretarListaInteligenteCompraRapida(textoBruto) {
         nomeAvulso: termoLimpo.charAt(0).toUpperCase() + termoLimpo.slice(1),
         qtde,
         tinhaQtde,
+        ehOpcaoGrupo: false,
         termoOriginal: termoLimpo
       });
     }
@@ -11735,7 +12052,7 @@ function atualizarPreviewListaInteligenteCompraRapida() {
   const detectados = interpretarListaInteligenteCompraRapida(termo);
   estadoCompraRapida.itensInteligentesDetectados = detectados;
 
-  // Ao digitar "1 leite", "leite 1", "01 leite", "leite 01", o número já entra em qtde (em verde) nos cards filtrados!
+  // Ao digitar "1 leite", "leite 1", "01 leite", "leite 01", o número já entra em qtdeCR (em verde) nos cards filtrados!
   const catalogo = AppState.catalogo || [];
   const subPartes = termo
     .split(/[,;\n]+|\s+e\s+/i)
@@ -11751,11 +12068,12 @@ function atualizarPreviewListaInteligenteCompraRapida() {
       if (normalizarTextoCR(p.nome).includes(normSub) || normalizarTextoCR(p.categoria).includes(normSub)) {
         const idStr = String(p.id);
         estadoCompraRapida.qtdesDigitadasPorId.set(idStr, sub.qtde);
-        p.qtde = sub.qtde;
+        p.qtdeCR = sub.qtde;
         if (estadoCompraRapida.selecionadosTemp.has(idStr)) {
           const sel = estadoCompraRapida.selecionadosTemp.get(idStr);
           if (sel.qtde !== sub.qtde) {
             sel.qtde = sub.qtde;
+            sel.novoEnvio = true;
             alterouSelecionado = true;
           }
         }
@@ -11767,11 +12085,12 @@ function atualizarPreviewListaInteligenteCompraRapida() {
     if (d.prod && d.tinhaQtde) {
       const idStr = String(d.prod.id);
       estadoCompraRapida.qtdesDigitadasPorId.set(idStr, d.qtde);
-      d.prod.qtde = d.qtde;
+      d.prod.qtdeCR = d.qtde;
       if (estadoCompraRapida.selecionadosTemp.has(idStr)) {
         const sel = estadoCompraRapida.selecionadosTemp.get(idStr);
         if (sel.qtde !== d.qtde) {
           sel.qtde = d.qtde;
+          sel.novoEnvio = true;
           alterouSelecionado = true;
         }
       }
@@ -11846,57 +12165,67 @@ function sincronizarCompraRapidaNoHistorico(concluirSessao = false) {
   }
 }
 
-// Sincroniza imediatamente os cards checados com a lista de compras ativa e Histórico (basta dar check no card!)
+let timerDebounceEventoCR = null;
+
+// Sincroniza imediatamente os cards checados com a Compra Rápida e Histórico (sem nunca alterar os itens da Lista de Compras normal!)
 function aplicarCompraRapidaImediata() {
   const usuarioAtual = AppState.usuarioAtivo || 'Casa';
   const agora = Date.now();
+  const nomesNovosParaNotificar = [];
 
+  // Não desmarca itens que já foram comprados no mercado pelo marido! Só desmarca itens não comprados que o usuário desmarcou aqui.
   (AppState.catalogo || []).forEach(prod => {
     const idStr = String(prod.id);
-    if (prod.compraRapida && !estadoCompraRapida.selecionadosTemp.has(idStr)) {
+    if (prod.compraRapida && !prod.compradoCR && !estadoCompraRapida.selecionadosTemp.has(idStr)) {
       prod.compraRapida = false;
       registrarTimestampModificacaoItem(prod.id);
+      registrarTimestampModificacaoItem('cr_item_' + prod.id);
     }
   });
 
-  (AppState.listaAtiva || []).forEach(item => {
-    const idStr = String(item.catalogoId || item.id);
-    if (item.compraRapida && !estadoCompraRapida.selecionadosTemp.has(idStr)) {
-      item.compraRapida = false;
-      registrarTimestampModificacaoItem(item.id);
-    }
-  });
-
+  let offsetOrdem = 0;
   estadoCompraRapida.selecionadosTemp.forEach((dados, idStr) => {
     const prod = (AppState.catalogo || []).find(p => String(p.id) === idStr);
     if (prod) {
-      prod.selecionado = true;
-      prod.comprado = false;
+      const ehNovoEnvio = !dados.jaEstava || !!dados.novoEnvio;
+      // IMPORTANTE: Não altera prod.selecionado nem prod.comprado nem prod.qtde da lista normal!
       prod.compraRapida = true;
-      prod.novoPedidoCasa = true;
-      prod.qtde = dados.qtde || 1;
-      prod.adicionadoPor = usuarioAtual;
-      prod.adicionadoEm = agora;
+      prod.compradoCR = false;
+      prod.qtdeCR = dados.qtde || 1;
+      if (ehNovoEnvio) {
+        if (!dados.timestampAtribuido) {
+          dados.timestampAtribuido = agora + (++offsetOrdem);
+        }
+        prod.novoPedidoCasa = true;
+        prod.adicionadoPorCR = usuarioAtual;
+        prod.adicionadoEmCR = dados.timestampAtribuido;
+        const nomeCurto = (prod.nome || '').split('(')[0].trim();
+        nomesNovosParaNotificar.push(prod.qtdeCR > 1 ? `${nomeCurto} (${prod.qtdeCR}x)` : nomeCurto);
+      } else {
+        prod.adicionadoPorCR = dados.adicionadoPorOriginal || prod.adicionadoPorCR || usuarioAtual;
+        prod.adicionadoEmCR = dados.adicionadoEmOriginal || prod.adicionadoEmCR || 1;
+      }
       registrarTimestampModificacaoItem(prod.id);
+      registrarTimestampModificacaoItem('cr_item_' + prod.id);
     }
   });
 
   sincronizarListaAtivaComCatalogo();
-
-  (AppState.listaAtiva || []).forEach(item => {
-    const idStr = String(item.catalogoId || item.id);
-    if (estadoCompraRapida.selecionadosTemp.has(idStr)) {
-      const dados = estadoCompraRapida.selecionadosTemp.get(idStr);
-      item.compraRapida = true;
-      item.novoPedidoCasa = true;
-      item.comprado = false;
-      item.qtde = dados.qtde || 1;
-      item.adicionadoPor = usuarioAtual;
-      item.adicionadoEm = agora;
-    }
-  });
-
   sincronizarCompraRapidaNoHistorico(false);
+
+  // Dispara evento de sincronização debounced para que o marido no mercado receba o aviso flutuante na hora!
+  if (nomesNovosParaNotificar.length > 0) {
+    if (timerDebounceEventoCR) clearTimeout(timerDebounceEventoCR);
+    const copiaNomes = [...nomesNovosParaNotificar];
+    timerDebounceEventoCR = setTimeout(() => {
+      registrarEventoSincronizacao('compra_rapida', copiaNomes);
+      salvarEstado(true);
+      if (typeof forcarSincronizacaoImediataNuvem === 'function') {
+        forcarSincronizacaoImediataNuvem();
+      }
+    }, 650);
+  }
+
   salvarEstado(true);
   atualizarBadgeCompraRapida();
   renderizarListaCompras();
@@ -11917,6 +12246,9 @@ function confirmarListaInteligenteCompraRapida() {
 
   let adicionadosCount = 0;
   detectados.forEach(d => {
+    // Se digitou apenas "carnes", "verduras" ou "frutas", traz as 10 opções na tela sem marcar todas de uma vez!
+    if (d.ehOpcaoGrupo) return;
+
     let prodAlvo = d.prod;
     if (!prodAlvo && d.nomeAvulso) {
       const novoId = 'cr_custom_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
@@ -11928,9 +12260,12 @@ function confirmarListaInteligenteCompraRapida() {
         preco: 0,
         precoMedioDF: 0,
         ultimoPreco: 0,
-        qtde: d.qtde || 1,
+        qtde: 1,
+        qtdeCR: d.qtde || 1,
         selecionado: false,
-        comprado: false
+        comprado: false,
+        compraRapida: true,
+        compradoCR: false
       };
       AppState.catalogo.unshift(prodAlvo);
     }
@@ -11945,7 +12280,9 @@ function confirmarListaInteligenteCompraRapida() {
     }
   });
 
-  aplicarCompraRapidaImediata();
+  if (adicionadosCount > 0) {
+    aplicarCompraRapidaImediata();
+  }
   renderizarGridCompraRapida();
   atualizarRodapeModalCompraRapida();
 }
@@ -12035,18 +12372,22 @@ function alternarVozCompraRapida(event) {
       }
       filtrarItensCompraRapida(transcricaoCompleta);
 
-      // Sempre que concluir um trecho falado, já marca automaticamente os itens detectados com check verde e joga na lista!
+      // Sempre que concluir um trecho falado, já marca automaticamente os itens detectados com check verde e joga na lista (exceto termos de grupo como carnes/verduras/frutas que trazem 10 opções para escolher)!
       if (teveFinal && estadoCompraRapida.itensInteligentesDetectados.length > 0) {
+        let marcouAlgum = false;
         estadoCompraRapida.itensInteligentesDetectados.forEach(d => {
-          if (d.prod) {
+          if (d.prod && !d.ehOpcaoGrupo) {
             estadoCompraRapida.selecionadosTemp.set(String(d.prod.id), {
               id: d.prod.id,
-              qtde: d.qtde || d.prod.qtde || 1,
+              qtde: d.qtde || d.prod.qtdeCR || 1,
               novoEnvio: true
             });
+            marcouAlgum = true;
           }
         });
-        aplicarCompraRapidaImediata();
+        if (marcouAlgum) {
+          aplicarCompraRapidaImediata();
+        }
         renderizarGridCompraRapida();
         atualizarRodapeModalCompraRapida();
       }
@@ -12113,7 +12454,7 @@ function obterProdutosFiltradosCompraRapida() {
     const listaBusca = [];
     const vistos = new Set();
 
-    // 1. Coloca no topo os produtos reconhecidos pela Lista Inteligente
+    // 1. Coloca no topo os produtos reconhecidos pela Lista Inteligente (incluindo as 10 opções de carnes, verduras ou frutas)
     detectados.forEach(d => {
       if (d.prod && !vistos.has(String(d.prod.id))) {
         listaBusca.push(d.prod);
@@ -12121,7 +12462,7 @@ function obterProdutosFiltradosCompraRapida() {
       }
     });
 
-    // 2. Inclui os demais produtos que batem com cada termo limpo (mesmo digitando "1 leite", "leite 01", etc.)
+    // 2. Inclui os demais produtos que batem com cada termo limpo (exceto termos genéricos de grupo que já trouxeram de 8 a 10 opções)
     const subTermos = termo
       .split(/[,;\n]+|\s+e\s+/i)
       .map(s => normalizarTextoCR(extrairQtdeETermoCompraRapida(s).termoLimpo))
@@ -12129,6 +12470,7 @@ function obterProdutosFiltradosCompraRapida() {
 
     if (subTermos.length > 0) {
       subTermos.forEach(normSub => {
+        if (TERMOS_GRUPO_OPCOES_CR.has(normSub)) return;
         catalogo.forEach(p => {
           if (!vistos.has(String(p.id))) {
             if (normalizarTextoCR(p.nome).includes(normSub) || normalizarTextoCR(p.categoria).includes(normSub)) {
@@ -12262,10 +12604,17 @@ function renderizarGridCompraRapida() {
   const produtos = obterProdutosFiltradosCompraRapida();
   const termo = (estadoCompraRapida.termoBusca || '').trim();
   const favSet = obterSetFavoritosCompraRapida();
+  const detectadosLista = estadoCompraRapida.itensInteligentesDetectados || [];
   const detectadosSet = new Set(
-    (estadoCompraRapida.itensInteligentesDetectados || [])
+    detectadosLista
       .map(d => d && d.prod ? String(d.prod.id) : '')
       .filter(Boolean)
+  );
+  // Opções trazidas por termos genéricos ("carnes", "verduras", "frutas") não exibem qtde verde até serem escolhidas
+  const opcoesGrupoSemQtdeSet = new Set(
+    detectadosLista
+      .filter(d => d && d.prod && d.ehOpcaoGrupo)
+      .map(d => String(d.prod.id))
   );
 
   if (produtos.length === 0) {
@@ -12286,8 +12635,9 @@ function renderizarGridCompraRapida() {
     const estaMarcado = !!selecionadoObj;
     const ehFiltradoTopo = estaMarcado || detectadosSet.has(idStr);
     const qtdeDigitada = estadoCompraRapida.qtdesDigitadasPorId && estadoCompraRapida.qtdesDigitadasPorId.get(idStr);
-    const qtde = qtdeDigitada || (selecionadoObj ? (selecionadoObj.qtde || 1) : (prod.qtde || 1));
+    const qtde = qtdeDigitada || (selecionadoObj ? (selecionadoObj.qtde || 1) : (prod.qtdeCR || 1));
     const qtdeFmt = String(qtde).padStart(2, '0');
+    const mostrarQtdeVerde = estaMarcado || !!qtdeDigitada || !opcoesGrupoSemQtdeSet.has(idStr);
     const ehFavRapida = favSet.has(idStr);
     const nomeCurto3Palavras = formatarNomeCardCompraRapida(prod.nome);
 
@@ -12303,7 +12653,7 @@ function renderizarGridCompraRapida() {
           <div class="card-cr-linha-nome-qtde">
             <span class="card-cr-nome" title="${escapeHtml(prod.nome)}">${escapeHtml(nomeCurto3Palavras)}</span>
           </div>
-          <span class="card-cr-qtde-verde" onclick="ciclarQtdeCompraRapida('${escapeHtml(idStr)}', event)" title="Quantidade: ${qtdeFmt} (Toque para aumentar)">${qtdeFmt}</span>
+          ${mostrarQtdeVerde ? `<span class="card-cr-qtde-verde" onclick="ciclarQtdeCompraRapida('${escapeHtml(idStr)}', event)" title="Quantidade: ${qtdeFmt} (Toque para aumentar)">${qtdeFmt}</span>` : ''}
           <button type="button"
                   class="btn-fav-cotidiano-cr ${ehFavRapida ? 'ativo' : ''}"
                   onclick="alternarFavoritoCompraRapida('${escapeHtml(idStr)}', event)"
@@ -12328,7 +12678,7 @@ function alternarItemCompraRapida(prodId, event) {
   } else {
     const prod = (AppState.catalogo || []).find(p => String(p.id) === idStr);
     const qtdeDigitada = estadoCompraRapida.qtdesDigitadasPorId && estadoCompraRapida.qtdesDigitadasPorId.get(idStr);
-    const qtdeUsar = qtdeDigitada || ((prod && prod.qtde) ? prod.qtde : 1);
+    const qtdeUsar = qtdeDigitada || ((prod && prod.qtdeCR) ? prod.qtdeCR : 1);
     estadoCompraRapida.selecionadosTemp.set(idStr, {
       id: prod ? prod.id : prodId,
       qtde: qtdeUsar,
@@ -12351,7 +12701,7 @@ function ciclarQtdeCompraRapida(prodId, event) {
   let itemObj = estadoCompraRapida.selecionadosTemp.get(idStr);
 
   if (!itemObj) {
-    const baseQtde = (estadoCompraRapida.qtdesDigitadasPorId && estadoCompraRapida.qtdesDigitadasPorId.get(idStr)) || ((prod && prod.qtde) ? prod.qtde : 1);
+    const baseQtde = (estadoCompraRapida.qtdesDigitadasPorId && estadoCompraRapida.qtdesDigitadasPorId.get(idStr)) || ((prod && prod.qtdeCR) ? prod.qtdeCR : 1);
     const qtdeInicial = baseQtde + 1;
     itemObj = {
       id: prod ? prod.id : prodId,
@@ -12363,12 +12713,13 @@ function ciclarQtdeCompraRapida(prodId, event) {
     let novaQtde = (itemObj.qtde || 1) + 1;
     if (novaQtde > 10) novaQtde = 1;
     itemObj.qtde = novaQtde;
+    itemObj.novoEnvio = true;
   }
 
   if (estadoCompraRapida.qtdesDigitadasPorId) {
     estadoCompraRapida.qtdesDigitadasPorId.set(idStr, itemObj.qtde);
   }
-  if (prod) prod.qtde = itemObj.qtde;
+  if (prod) prod.qtdeCR = itemObj.qtde;
   aplicarCompraRapidaImediata();
   renderizarGridCompraRapida();
   atualizarRodapeModalCompraRapida();
@@ -12383,6 +12734,7 @@ function alterarQtdeCompraRapida(prodId, delta, event) {
   let novaQtde = (itemObj.qtde || 1) + delta;
   if (novaQtde < 1) novaQtde = 1;
   itemObj.qtde = novaQtde;
+  itemObj.novoEnvio = true;
 
   aplicarCompraRapidaImediata();
   renderizarGridCompraRapida();
@@ -12414,9 +12766,12 @@ function adicionarItemDigitadoCompraRapida() {
       preco: 0,
       precoMedioDF: 0,
       ultimoPreco: 0,
-      qtde: qtde || 1,
+      qtde: 1,
+      qtdeCR: qtde || 1,
       selecionado: false,
-      comprado: false
+      comprado: false,
+      compraRapida: true,
+      compradoCR: false
     };
     AppState.catalogo.unshift(prodExistente);
   }
@@ -12465,70 +12820,70 @@ function atualizarRodapeModalCompraRapida() {
 }
 
 function enviarAvisoCompraRapida() {
+  if (timerDebounceEventoCR) {
+    clearTimeout(timerDebounceEventoCR);
+    timerDebounceEventoCR = null;
+  }
+
   const usuarioAtual = AppState.usuarioAtivo || 'Casa';
   const agora = Date.now();
   const nomesAdicionados = [];
+  const todosNomesSelecionados = [];
 
   // Se o usuário digitou algo no campo e clicou direto em FAVOR COMPRAR sem apertar Enter, processa também!
   if ((estadoCompraRapida.termoBusca || '').trim().length > 0 && estadoCompraRapida.selecionadosTemp.size === 0) {
     confirmarListaInteligenteCompraRapida();
   }
 
-  // 1. Desmarca flag compraRapida dos itens que foram removidos da seleção rápida
+  // 1. Desmarca flag compraRapida apenas dos itens NÃO comprados que foram removidos da seleção rápida
   (AppState.catalogo || []).forEach(prod => {
     const idStr = String(prod.id);
-    if (prod.compraRapida && !estadoCompraRapida.selecionadosTemp.has(idStr)) {
+    if (prod.compraRapida && !prod.compradoCR && !estadoCompraRapida.selecionadosTemp.has(idStr)) {
       prod.compraRapida = false;
       registrarTimestampModificacaoItem(prod.id);
+      registrarTimestampModificacaoItem('cr_item_' + prod.id);
     }
   });
 
-  (AppState.listaAtiva || []).forEach(item => {
-    const idStr = String(item.catalogoId || item.id);
-    if (item.compraRapida && !estadoCompraRapida.selecionadosTemp.has(idStr)) {
-      item.compraRapida = false;
-      registrarTimestampModificacaoItem(item.id);
-    }
-  });
-
-  // 2. Marca todos os itens escolhidos na Compra Rápida como selecionados + compraRapida = true
+  // 2. Marca todos os itens escolhidos na Compra Rápida como compraRapida = true (sem afetar prod.selecionado da Lista de Compras!)
+  // Itens novos ganham timestamp mais recente para entrar EM CIMA na lista do marido no mercado!
+  let offsetOrdem = 0;
   estadoCompraRapida.selecionadosTemp.forEach((dados, idStr) => {
     const prod = (AppState.catalogo || []).find(p => String(p.id) === idStr);
     if (prod) {
-      prod.selecionado = true;
-      prod.comprado = false;
+      const ehNovoEnvio = !dados.jaEstava || !!dados.novoEnvio;
       prod.compraRapida = true;
-      prod.novoPedidoCasa = true;
-      prod.qtde = dados.qtde || 1;
-      prod.adicionadoPor = usuarioAtual;
-      prod.adicionadoEm = agora;
-      registrarTimestampModificacaoItem(prod.id);
+      prod.compradoCR = false;
+      prod.qtdeCR = dados.qtde || 1;
 
       const nomeCurto = (prod.nome || '').split('(')[0].trim();
-      nomesAdicionados.push(dados.qtde > 1 ? `${nomeCurto} (${dados.qtde}x)` : nomeCurto);
+      const labelItem = prod.qtdeCR > 1 ? `${nomeCurto} (${prod.qtdeCR}x)` : nomeCurto;
+      todosNomesSelecionados.push(labelItem);
+
+      if (ehNovoEnvio) {
+        const tsNovo = dados.timestampAtribuido || (agora + (++offsetOrdem));
+        dados.timestampAtribuido = tsNovo;
+        prod.novoPedidoCasa = true;
+        prod.adicionadoPorCR = usuarioAtual;
+        prod.adicionadoEmCR = tsNovo;
+        nomesAdicionados.push(labelItem);
+      } else {
+        prod.adicionadoPorCR = dados.adicionadoPorOriginal || prod.adicionadoPorCR || usuarioAtual;
+        prod.adicionadoEmCR = dados.adicionadoEmOriginal || prod.adicionadoEmCR || 1;
+      }
+      registrarTimestampModificacaoItem(prod.id);
+      registrarTimestampModificacaoItem('cr_item_' + prod.id);
     }
   });
 
-  // 3. Sincroniza listaAtiva com o catálogo
+  // 3. Sincroniza listaAtiva com o catálogo (mantendo Lista de Compras e Compra Rápida independentes)
   sincronizarListaAtivaComCatalogo();
 
-  (AppState.listaAtiva || []).forEach(item => {
-    const idStr = String(item.catalogoId || item.id);
-    if (estadoCompraRapida.selecionadosTemp.has(idStr)) {
-      const dados = estadoCompraRapida.selecionadosTemp.get(idStr);
-      item.compraRapida = true;
-      item.novoPedidoCasa = true;
-      item.comprado = false;
-      item.qtde = dados.qtde || 1;
-      item.adicionadoPor = usuarioAtual;
-      item.adicionadoEm = agora;
-    }
-  });
-
-  // 4. Garante gravação da Lista Rápida no Histórico e na Nuvem
+  // 4. Garante gravação da Lista Rápida no Histórico e envia o aviso flutuante apenas dos itens novos adicionados (ou todos se for 1º envio)
   sincronizarCompraRapidaNoHistorico(false);
-  if (nomesAdicionados.length > 0) {
-    registrarEventoSincronizacao('compra_rapida', nomesAdicionados);
+  const listaParaNotificar = nomesAdicionados.length > 0 ? nomesAdicionados : todosNomesSelecionados;
+  if (listaParaNotificar.length > 0) {
+    registrarEventoSincronizacao('compra_rapida', listaParaNotificar);
   }
 
   salvarEstado(true);
@@ -12541,7 +12896,7 @@ function enviarAvisoCompraRapida() {
   renderizarTudo();
   atualizarContadorSidebarMontar();
 
-  if (nomesAdicionados.length > 0) {
+  if (listaParaNotificar.length > 0) {
     if (typeof navegarParaAba === 'function') {
       navegarParaAba('lista');
     }
@@ -12549,7 +12904,7 @@ function enviarAvisoCompraRapida() {
     if (typeof tocarAvisoSonoroCompraRapida === 'function') {
       tocarAvisoSonoroCompraRapida();
     }
-    mostrarNotificacaoToast(`⚡ FAVOR COMPRAR!! (${nomesAdicionados.length} ${nomesAdicionados.length === 1 ? 'item adicionado' : 'itens adicionados'} no início de COMPRAR e no Histórico)!`);
+    mostrarNotificacaoToast(`⚡ FAVOR COMPRAR!! (${listaParaNotificar.length} ${listaParaNotificar.length === 1 ? 'item adicionado' : 'itens adicionados'} no início de COMPRAR)!`);
   } else {
     renderizarListaCompras();
     mostrarNotificacaoToast('⚡ Compra Rápida atualizada.');
@@ -12589,43 +12944,110 @@ function irParaInicioCompraRapida() {
 function dispensarDestaqueItemCompraRapida(id) {
   const item = (AppState.listaAtiva || []).find(i => String(i.id) === String(id));
   if (item) {
-    item.compraRapida = false;
-    item.novoPedidoCasa = false;
     const cat = (AppState.catalogo || []).find(c => String(c.id) === String(id) || String(c.id) === String(item.catalogoId));
     if (cat) {
       cat.compraRapida = false;
+      cat.compradoCR = false;
+      cat.precoRegistradoCR = 0;
       cat.novoPedidoCasa = false;
+      registrarTimestampModificacaoItem(cat.id);
     }
     registrarTimestampModificacaoItem(item.id);
+    sincronizarListaAtivaComCatalogo();
     salvarEstado(true);
     atualizarBadgeCompraRapida();
     renderizarListaCompras();
   }
 }
 
-function dispensarDestaquesCompraRapida() {
-  // Antes de tirar o destaque, consolida/fecha a sessão da Compra Rápida no Histórico para ficar salva permanentemente!
+let timerModalzinhoCompraFinalizada = null;
+
+function exibirModalzinhoCompraFinalizada() {
+  let overlay = document.getElementById('modalzinho-compra-finalizada');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'modalzinho-compra-finalizada';
+    overlay.className = 'modalzinho-compra-finalizada-overlay';
+    overlay.innerHTML = `
+      <div class="modalzinho-compra-finalizada-box">
+        <div class="modalzinho-compra-finalizada-icone">✓</div>
+        <div class="modalzinho-compra-finalizada-titulo">Compra finalizada!</div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+  } else {
+    const tituloEl = overlay.querySelector('.modalzinho-compra-finalizada-titulo');
+    if (tituloEl) tituloEl.textContent = 'Compra finalizada!';
+  }
+  overlay.classList.remove('saindo');
+  overlay.style.display = 'flex';
+  requestAnimationFrame(() => {
+    overlay.classList.add('visivel');
+  });
+}
+
+function finalizarBlocoCompraRapidaAutomatico() {
+  // 1. Salva/consolida a sessão da Compra Rápida no Histórico
   sincronizarCompraRapidaNoHistorico(true);
 
-  (AppState.listaAtiva || []).forEach(i => {
-    if (i.compraRapida) {
-      i.compraRapida = false;
-      i.novoPedidoCasa = false;
-      registrarTimestampModificacaoItem(i.id);
+  // 2. Exibe o modalzinho "Compra finalizada!"
+  exibirModalzinhoCompraFinalizada();
+
+  if (timerModalzinhoCompraFinalizada) {
+    clearTimeout(timerModalzinhoCompraFinalizada);
+  }
+
+  // 3. Some em seguida e limpa APENAS o bloco concluído de FAVOR COMPRAR!! (sem tocar na Lista de Compras normal!)
+  timerModalzinhoCompraFinalizada = setTimeout(() => {
+    const overlay = document.getElementById('modalzinho-compra-finalizada');
+    if (overlay) {
+      overlay.classList.add('saindo');
+      setTimeout(() => {
+        overlay.classList.remove('visivel', 'saindo');
+        overlay.style.display = 'none';
+      }, 240);
     }
-  });
-  (AppState.catalogo || []).forEach(c => {
-    if (c.compraRapida) {
-      c.compraRapida = false;
-      c.novoPedidoCasa = false;
-      registrarTimestampModificacaoItem(c.id);
+
+    const idsConcluidos = new Set(
+      (AppState.listaAtiva || [])
+        .filter(i => i.compraRapida)
+        .map(i => String(i.catalogoId || i.id))
+    );
+
+    (AppState.catalogo || []).forEach(c => {
+      if (c.compraRapida || idsConcluidos.has(String(c.id))) {
+        c.compraRapida = false;
+        c.compradoCR = false;
+        c.compradoPorCR = null;
+        c.compradoPorIconeCR = null;
+        c.compradoEmCR = null;
+        c.precoRegistradoCR = 0;
+        c.qtdeCR = 1;
+        c.novoPedidoCasa = false;
+        registrarTimestampModificacaoItem(c.id);
+        registrarTimestampModificacaoItem('cr_item_' + c.id);
+      }
+    });
+
+    if (estadoCompraRapida && estadoCompraRapida.selecionadosTemp) {
+      estadoCompraRapida.selecionadosTemp.clear();
     }
-  });
-  salvarEstado(true);
-  atualizarBadgeCompraRapida();
-  renderizarListaCompras();
-  if (typeof renderizarHistorico === 'function') renderizarHistorico();
-  mostrarNotificacaoToast('✓ Compra Rápida concluída e salva no Histórico!');
+
+    sincronizarListaAtivaComCatalogo();
+    salvarEstado(true);
+    if (typeof forcarSincronizacaoImediataNuvem === 'function') {
+      forcarSincronizacaoImediataNuvem();
+    }
+    atualizarBadgeCompraRapida();
+    renderizarListaCompras();
+    atualizarCardResumo();
+    atualizarContadorSidebarMontar();
+    if (typeof renderizarHistorico === 'function') renderizarHistorico();
+  }, 1350);
+}
+
+function dispensarDestaquesCompraRapida() {
+  finalizarBlocoCompraRapidaAutomatico();
 }
 
 function atualizarBadgeCompraRapida() {
