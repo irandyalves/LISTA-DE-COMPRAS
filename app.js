@@ -10322,6 +10322,8 @@ function abrirModalPresets() {
 
   const btnMobilePresets = document.getElementById('mobile-nav-btn-presets');
   if (btnMobilePresets) btnMobilePresets.classList.add('ativo');
+  const btnSidebarPresets = document.getElementById('btn-nav-compra-rapida');
+  if (btnSidebarPresets) btnSidebarPresets.classList.add('ativo');
 
   sincronizarPresetsPadraoComEdicoesNuvem();
   fecharDetalhesPreset();
@@ -10765,6 +10767,8 @@ function fecharModalPresetsCompleto() {
   fecharDetalhesPreset();
   const btnMobilePresets = document.getElementById('mobile-nav-btn-presets');
   if (btnMobilePresets) btnMobilePresets.classList.remove('ativo');
+  const btnSidebarPresets = document.getElementById('btn-nav-compra-rapida');
+  if (btnSidebarPresets) btnSidebarPresets.classList.remove('ativo');
   fecharModal('modal-presets-lista');
 }
 
