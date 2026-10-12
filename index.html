@@ -133,7 +133,7 @@
   </style>
 
   <!-- CSS Moderno -->
-  <link rel="stylesheet" href="style.css?v=10.62">
+  <link rel="stylesheet" href="style.css?v=10.65">
 </head>
 <body>
 
@@ -261,6 +261,7 @@
                  onblur="desativarFocoBuscaTopo()"
                  oninput="aoDigitarBuscaTopo(this.value)"
                  onkeydown="gerenciarTeclasBuscaTopo(event)">
+          <button type="button" id="btn-limpar-busca-topo" class="btn-limpar-busca-topo" style="display: none;" onclick="limparCampoBuscaInatividade()" title="Limpar e fechar pesquisa (ESC)">✕</button>
           <button id="btn-adicionar-topo-header" class="btn-adicionar-topo" style="display: none;" onclick="adicionarItemRapido()">Adicionar</button>
 
           <!-- Dropdown Flutuante de Sugestões Instantâneas sobre o Menu -->
@@ -411,6 +412,20 @@
               <span>💲 Exibir Símbolo "R$" nos Preços</span>
               <span class="badge-status-cotado" id="badge-status-cifrao">Desativado</span>
             </button>
+            <div class="cfg-slider-tempo-box">
+              <div class="cfg-slider-topo-linha">
+                <span class="cfg-slider-label">⏱️ Exibição dos Resultados da Pesquisa</span>
+                <span class="badge-status-cotado badge-tempo-pesquisa" id="badge-tempo-pesquisa">15s</span>
+              </div>
+              <input type="range" id="slider-tempo-pesquisa" class="slider-tempo-pesquisa" min="4" max="31" step="1" value="15" oninput="aoAlterarSliderTempoPesquisa(this.value)">
+              <div class="cfg-slider-marcas">
+                <span onclick="aoAlterarSliderTempoPesquisa(4)">4s</span>
+                <span onclick="aoAlterarSliderTempoPesquisa(8)">8s</span>
+                <span onclick="aoAlterarSliderTempoPesquisa(15)">15s</span>
+                <span onclick="aoAlterarSliderTempoPesquisa(30)">30s</span>
+                <span onclick="aoAlterarSliderTempoPesquisa(31)">Até ESC/Fechar</span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -1111,7 +1126,7 @@
   <script src="logos_banco.js?v=10.13"></script>
   <script src="icones2d.js"></script>
   <script src="firebase-sync.js"></script>
-  <script src="app.js?v=10.60"></script>
+  <script src="app.js?v=10.65"></script>
 
 </body>
 </html>

@@ -4132,6 +4132,82 @@ function desativarFocoBuscaTopo() {
   }, 250);
 }
 
+// Obtém o valor salvo do slider de tempo de pesquisa (4 a 30 seg, ou 31 = Até ESC / Fechar)
+function obterValorSliderTempoPesquisa() {
+  const salvo = localStorage.getItem('cfg_tempo_exibicao_pesquisa');
+  if (salvo !== null) {
+    const num = parseInt(salvo, 10);
+    if (!isNaN(num) && num >= 4 && num <= 31) return num;
+  }
+  return 15; // Padrão: 15 segundos
+}
+
+// Retorna o tempo em milissegundos (ou 0 se for "Até ESC ou Fechar")
+function obterTempoExibicaoPesquisaMs() {
+  const val = obterValorSliderTempoPesquisa();
+  if (val >= 31) return 0; // 0 = Sem limite de tempo (apenas ESC ou Fechar)
+  return val * 1000;
+}
+
+// Agenda ou renova o timer de inatividade da busca de acordo com a configuração
+function agendarTimerInatividadeBusca() {
+  if (timerInatividadeBusca) {
+    clearTimeout(timerInatividadeBusca);
+    timerInatividadeBusca = null;
+  }
+  const tempoMs = obterTempoExibicaoPesquisaMs();
+  if (tempoMs > 0) {
+    timerInatividadeBusca = setTimeout(() => {
+      limparCampoBuscaInatividade();
+    }, tempoMs);
+  }
+}
+
+// Chamado ao mover o slider ou clicar nos atalhos de tempo nas Configurações
+function aoAlterarSliderTempoPesquisa(valor) {
+  const num = Math.max(4, Math.min(31, parseInt(valor, 10) || 15));
+  localStorage.setItem('cfg_tempo_exibicao_pesquisa', String(num));
+  if (typeof AppState !== 'undefined') {
+    AppState.tempoExibicaoPesquisa = num;
+  }
+  atualizarVisualSliderTempoPesquisa(num);
+
+  // Se houver uma pesquisa aberta no momento, já aplica o novo tempo imediatamente
+  const inputBusca = document.getElementById('input-novo-item');
+  if (inputBusca && inputBusca.value.trim().length > 0) {
+    agendarTimerInatividadeBusca();
+  }
+}
+
+// Sincroniza o slider, o badge de texto e os botões de marcação rápida no modal de Configurações
+function atualizarVisualSliderTempoPesquisa(valorForcado) {
+  const val = valorForcado !== undefined ? valorForcado : obterValorSliderTempoPesquisa();
+  const slider = document.getElementById('slider-tempo-pesquisa');
+  const badge = document.getElementById('badge-tempo-pesquisa');
+
+  if (slider && String(slider.value) !== String(val)) {
+    slider.value = val;
+  }
+  if (badge) {
+    if (val >= 31) {
+      badge.textContent = 'Até ESC / Fechar';
+      badge.classList.add('modo-infinito');
+    } else {
+      badge.textContent = `${val} seg`;
+      badge.classList.remove('modo-infinito');
+    }
+  }
+
+  // Destaca a marca ativa abaixo do slider
+  const marcas = document.querySelectorAll('.cfg-slider-marcas span');
+  if (marcas.length >= 5) {
+    const valoresMarcas = [4, 8, 15, 30, 31];
+    marcas.forEach((el, idx) => {
+      el.classList.toggle('marca-ativa', valoresMarcas[idx] === val);
+    });
+  }
+}
+
 // Remove estado visual de digitação e limpa timer de inatividade
 function resetarEstadoDigitacaoBusca() {
   if (timerInatividadeBusca) {
@@ -4140,12 +4216,16 @@ function resetarEstadoDigitacaoBusca() {
   }
   const containerBusca = document.querySelector('.busca-topo-reduzida');
   const inputBusca = document.getElementById('input-novo-item');
+  const btnLimpar = document.getElementById('btn-limpar-busca-topo');
   if (containerBusca) containerBusca.classList.remove('digitando-ativo');
   if (inputBusca) inputBusca.classList.remove('digitando-ativo');
-  if (inputBusca && inputBusca.value.trim().length === 0 && document.activeElement !== inputBusca) {
-    const header = document.querySelector('.header-otimizado-l1');
-    if (header) header.classList.remove('busca-focada');
-    if (containerBusca) containerBusca.classList.remove('foco-ativo');
+  if (inputBusca && inputBusca.value.trim().length === 0) {
+    if (btnLimpar) btnLimpar.style.display = 'none';
+    if (document.activeElement !== inputBusca) {
+      const header = document.querySelector('.header-otimizado-l1');
+      if (header) header.classList.remove('busca-focada');
+      if (containerBusca) containerBusca.classList.remove('foco-ativo');
+    }
   }
 }
 
@@ -4190,14 +4270,16 @@ function verificarExibicaoBotaoAdicionar(termoOriginal) {
   }
 }
 
-// Limpa o campo após 4 segundos sem digitar
+// Limpa o campo de busca e fecha resultados (por tempo de inatividade, tecla ESC ou botão ✕)
 function limparCampoBuscaInatividade() {
-  resetarEstadoDigitacaoBusca();
   const input = document.getElementById('input-novo-item');
   if (input) {
     input.value = '';
     if (document.activeElement === input) input.blur();
   }
+  const btnLimpar = document.getElementById('btn-limpar-busca-topo');
+  if (btnLimpar) btnLimpar.style.display = 'none';
+  resetarEstadoDigitacaoBusca();
   const header = document.querySelector('.header-otimizado-l1');
   const containerBusca = document.querySelector('.busca-topo-reduzida');
   if (header) header.classList.remove('busca-focada');
@@ -4218,6 +4300,7 @@ function limparCampoBuscaInatividade() {
 function aoDigitarBuscaTopo(termo) {
   const containerBusca = document.querySelector('.busca-topo-reduzida');
   const inputBusca = document.getElementById('input-novo-item');
+  const btnLimpar = document.getElementById('btn-limpar-busca-topo');
 
   // Limpa qualquer timer anterior a cada toque de tecla
   if (timerInatividadeBusca) {
@@ -4229,17 +4312,16 @@ function aoDigitarBuscaTopo(termo) {
   termoBuscaTopo = termoLimpo.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
   if (termoLimpo.length > 0) {
-    // Ao digitar: bordas vermelhas brilhosas e fonte bold
+    // Ao digitar: bordas vermelhas brilhosas, botão ✕ visível e timer conforme configuração
     if (containerBusca) containerBusca.classList.add('digitando-ativo');
     if (inputBusca) inputBusca.classList.add('digitando-ativo');
+    if (btnLimpar) btnLimpar.style.display = 'inline-flex';
 
-    // Ficou 4 segundos sem digitar, limpa o campo
-    timerInatividadeBusca = setTimeout(() => {
-      limparCampoBuscaInatividade();
-    }, 4000);
+    agendarTimerInatividadeBusca();
   } else {
     if (containerBusca) containerBusca.classList.remove('digitando-ativo');
     if (inputBusca) inputBusca.classList.remove('digitando-ativo');
+    if (btnLimpar) btnLimpar.style.display = 'none';
   }
 
   // Regra: O botão "Adicionar" SÓ APARECE se começar a digitar algo que NÃO exista
@@ -4274,6 +4356,11 @@ function fecharDropdownSugestoesTopo() {
 function renderizarDropdownSugestoesTopo(termoOriginal) {
   const dropdown = document.getElementById('dropdown-sugestoes-topo');
   if (!dropdown) return;
+
+  // Renova o timer se o usuário rolar ou interagir com a lista de sugestões
+  dropdown.onscroll = () => agendarTimerInatividadeBusca();
+  dropdown.ontouchmove = () => agendarTimerInatividadeBusca();
+  dropdown.onmousemove = () => agendarTimerInatividadeBusca();
 
   const termoNorm = termoOriginal.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   sugestaoIndiceTeclado = -1;
@@ -4316,7 +4403,17 @@ function renderizarDropdownSugestoesTopo(termoOriginal) {
   });
 
   const refMercado = AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos' ? AppState.mercadoReferencia : 'nenhum';
+  const valTempo = obterValorSliderTempoPesquisa();
+  const infoTempoTxt = valTempo >= 31 ? 'Fixo até ESC/Fechar' : `Fecha em ${valTempo}s`;
   let html = '';
+
+  // Cabeçalho rápido com info e botão Fechar (ESC)
+  html += `
+    <div class="sugestao-cabecalho-secao sugestao-cabecalho-topo">
+      <span>🔍 PESQUISA (${itensEncontrados.length} encontrados) • <em style="font-style:normal; opacity:0.8;">${infoTempoTxt}</em></span>
+      <button type="button" class="btn-fechar-sugestoes-topo" onclick="limparCampoBuscaInatividade()" title="Fechar pesquisa (Tecla ESC)">✕ Fechar</button>
+    </div>
+  `;
 
   // Opção Rápida de Criar / Adicionar o que foi digitado
   html += `
@@ -4333,12 +4430,6 @@ function renderizarDropdownSugestoesTopo(termoOriginal) {
   `;
 
   if (itensEncontrados.length > 0) {
-    html += `
-      <div class="sugestao-cabecalho-secao">
-        <span>PRODUTOS ENCONTRADOS (${itensEncontrados.length})</span>
-        <span style="font-size: 0.65rem; text-transform: none; color: #94A3B8;">Clique para selecionar</span>
-      </div>
-    `;
 
     // Limita a 10 resultados para manter a caixa rápida e limpa
     itensEncontrados.slice(0, 10).forEach(({ item }) => {
@@ -4452,12 +4543,14 @@ function alternarItemPeloDropdown(itemId, event) {
   else renderizarListaCompras();
 
   // Limpa o input e fecha sugestões com feedback positivo
-  resetarEstadoDigitacaoBusca();
   const input = document.getElementById('input-novo-item');
   if (input) {
     input.value = '';
     input.focus();
   }
+  const btnLimpar = document.getElementById('btn-limpar-busca-topo');
+  if (btnLimpar) btnLimpar.style.display = 'none';
+  resetarEstadoDigitacaoBusca();
   termoBuscaTopo = '';
   termoBuscaDespensa = '';
   termoBuscaLista = '';
@@ -4476,13 +4569,8 @@ function gerenciarTeclasBuscaTopo(event) {
   const aberto = dropdown && dropdown.style.display !== 'none';
 
   if (event.key === 'Escape') {
-    fecharDropdownSugestoesTopo();
-    const input = document.getElementById('input-novo-item');
-    if (input) input.blur();
-    const header = document.querySelector('.header-otimizado-l1');
-    const containerBusca = document.querySelector('.busca-topo-reduzida');
-    if (header) header.classList.remove('busca-focada');
-    if (containerBusca) containerBusca.classList.remove('foco-ativo');
+    event.preventDefault();
+    limparCampoBuscaInatividade();
     return;
   }
 
@@ -4523,6 +4611,18 @@ function gerenciarTeclasBuscaTopo(event) {
     fecharDropdownSugestoesTopo();
   }
 }
+
+// Permite fechar os resultados da pesquisa com ESC mesmo se o campo perder o foco
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const dropdown = document.getElementById('dropdown-sugestoes-topo');
+    const input = document.getElementById('input-novo-item');
+    const temBuscaAtiva = (dropdown && dropdown.style.display !== 'none') || (input && input.value.trim().length > 0);
+    if (temBuscaAtiva) {
+      limparCampoBuscaInatividade();
+    }
+  }
+});
 
 function filtrarItensDespensa(termo) {
   termoBuscaDespensa = (termo || '').trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -7458,6 +7558,7 @@ function abrirModalOpcoesHeader() {
   atualizarVisualTema();
   atualizarVisualOpcaoCifrao();
   atualizarVisualOpcoesCardsHeader();
+  atualizarVisualSliderTempoPesquisa();
   modal.style.display = 'flex';
 }
 
@@ -9333,10 +9434,13 @@ function filtrarItensDrawerPreset(termo) {
     if (inputBusca) inputBusca.classList.add('digitando-ativo');
     if (btnLimpar) btnLimpar.style.display = 'block';
 
-    // Ficou 4 segundos sem digitar, limpa a busca
-    timerInatividadeBuscaDrawer = setTimeout(() => {
-      limparBuscaDrawerPreset();
-    }, 4000);
+    // Usa o tempo configurado no slider de Configurações (ou sem timer se "Até ESC/Fechar")
+    const tempoMs = obterTempoExibicaoPesquisaMs();
+    if (tempoMs > 0) {
+      timerInatividadeBuscaDrawer = setTimeout(() => {
+        limparBuscaDrawerPreset();
+      }, tempoMs);
+    }
   } else {
     if (containerBusca) containerBusca.classList.remove('digitando-ativo');
     if (inputBusca) inputBusca.classList.remove('digitando-ativo');

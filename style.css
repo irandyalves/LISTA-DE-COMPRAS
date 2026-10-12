@@ -10434,3 +10434,216 @@ body.tema-escuro .mobile-nav-btn.ativo {
 body.tema-escuro .mobile-nav-btn.ativo .mobile-nav-label {
   color: #FB923C !important;
 }
+
+/* ==========================================================================
+   SLIDER DE EXIBIÇÃO DOS RESULTADOS DA PESQUISA (CONFIGURAÇÕES) & BOTÃO FECHAR
+   ========================================================================== */
+.cfg-slider-tempo-box {
+  background: #FFFFFF;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-top: 8px;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+}
+
+.cfg-slider-tempo-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.cfg-slider-tempo-titulo {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #1E293B;
+}
+
+.cfg-slider-tempo-badge {
+  background: linear-gradient(135deg, #2563EB, #1D4ED8);
+  color: #FFFFFF;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 9px;
+  border-radius: 999px;
+  letter-spacing: 0.2px;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+  white-space: nowrap;
+}
+
+.cfg-slider-tempo-badge.modo-infinito {
+  background: linear-gradient(135deg, #D97706, #B45309);
+  box-shadow: 0 2px 6px rgba(217, 119, 6, 0.3);
+}
+
+.cfg-slider-tempo-desc {
+  font-size: 0.68rem;
+  color: #64748B;
+  margin: 0 0 10px 0;
+  line-height: 1.35;
+}
+
+.slider-tempo-pesquisa {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 7px;
+  background: linear-gradient(90deg, #DBEAFE 0%, #93C5FD 70%, #FDE68A 100%);
+  border-radius: 999px;
+  outline: none;
+  cursor: pointer;
+  margin: 4px 0 8px 0;
+}
+
+.slider-tempo-pesquisa::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #2563EB;
+  border: 2.5px solid #FFFFFF;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.3);
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.slider-tempo-pesquisa::-webkit-slider-thumb:hover {
+  transform: scale(1.12);
+  background: #1D4ED8;
+}
+
+.cfg-slider-marcas {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.cfg-slider-marcas span {
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: #64748B;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  padding: 3px 7px;
+  border-radius: 6px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
+}
+
+.cfg-slider-marcas span:hover {
+  background: #E2E8F0;
+  color: #0F172A;
+}
+
+.cfg-slider-marcas span.marca-ativa {
+  background: #2563EB;
+  color: #FFFFFF;
+  border-color: #1D4ED8;
+  box-shadow: 0 2px 5px rgba(37, 99, 235, 0.25);
+}
+
+/* Botão ✕ para limpar/fechar pesquisa direto na barra do topo */
+.btn-limpar-busca-topo {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(239, 68, 68, 0.14);
+  color: #EF4444;
+  font-size: 0.72rem;
+  font-weight: 900;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-right: 4px;
+  transition: all 0.15s ease;
+}
+
+.btn-limpar-busca-topo:hover {
+  background: #EF4444;
+  color: #FFFFFF;
+  transform: scale(1.08);
+}
+
+/* Botão ✕ Fechar no cabeçalho do dropdown de sugestões */
+.sugestao-cabecalho-topo {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+}
+
+.btn-fechar-sugestoes-topo {
+  background: rgba(239, 68, 68, 0.12);
+  color: #DC2626;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-fechar-sugestoes-topo:hover {
+  background: #EF4444;
+  color: #FFFFFF;
+  border-color: #DC2626;
+}
+
+/* Tema Escuro para Slider de Tempo de Pesquisa */
+[data-theme="dark"] .cfg-slider-tempo-box,
+body.tema-escuro .cfg-slider-tempo-box {
+  background: #0F172A !important;
+  border-color: #334155 !important;
+}
+
+[data-theme="dark"] .cfg-slider-tempo-titulo,
+body.tema-escuro .cfg-slider-tempo-titulo {
+  color: #F8FAFC !important;
+}
+
+[data-theme="dark"] .cfg-slider-tempo-desc,
+body.tema-escuro .cfg-slider-tempo-desc {
+  color: #94A3B8 !important;
+}
+
+[data-theme="dark"] .slider-tempo-pesquisa,
+body.tema-escuro .slider-tempo-pesquisa {
+  background: linear-gradient(90deg, #1E3A8A 0%, #2563EB 70%, #D97706 100%) !important;
+}
+
+[data-theme="dark"] .cfg-slider-marcas span,
+body.tema-escuro .cfg-slider-marcas span {
+  background: #1E293B !important;
+  border-color: #334155 !important;
+  color: #CBD5E1 !important;
+}
+
+[data-theme="dark"] .cfg-slider-marcas span.marca-ativa,
+body.tema-escuro .cfg-slider-marcas span.marca-ativa {
+  background: #2563EB !important;
+  border-color: #3B82F6 !important;
+  color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .btn-fechar-sugestoes-topo,
+body.tema-escuro .btn-fechar-sugestoes-topo {
+  background: rgba(239, 68, 68, 0.2) !important;
+  color: #FCA5A5 !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
+}
+
+[data-theme="dark"] .btn-fechar-sugestoes-topo:hover,
+body.tema-escuro .btn-fechar-sugestoes-topo:hover {
+  background: #EF4444 !important;
+  color: #FFFFFF !important;
+}
+
