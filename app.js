@@ -3240,7 +3240,7 @@ function atualizarAlturaPainelCongeladoCSS() {
 }
 
 function configurarNavegacao() {
-  const todosBotoesNav = document.querySelectorAll('.nav-item, .sidebar-nav-item');
+  const todosBotoesNav = document.querySelectorAll('.nav-item[data-aba], .sidebar-nav-item[data-aba]');
   todosBotoesNav.forEach(btn => {
     btn.onclick = (e) => {
       e.preventDefault();
@@ -3248,6 +3248,14 @@ function configurarNavegacao() {
       if (aba) alternarAbaApp(aba, true);
     };
   });
+
+  const btnCompraRapidaPC = document.getElementById('btn-nav-compra-rapida');
+  if (btnCompraRapidaPC) {
+    btnCompraRapidaPC.onclick = (e) => {
+      e.preventDefault();
+      abrirModalCompraRapida();
+    };
+  }
 }
 
 // Alternar mercado de referência para a lista
@@ -11370,8 +11378,10 @@ function abrirModalCompraRapida() {
   if (inputBusca) inputBusca.value = '';
   const btnLimpar = document.getElementById('btn-limpar-busca-compra-rapida');
   if (btnLimpar) btnLimpar.style.display = 'none';
+  const btnAddCustom = document.getElementById('btn-add-custom-compra-rapida');
+  if (btnAddCustom) btnAddCustom.style.display = 'none';
 
-  document.querySelectorAll('#compra-rapida-abas-cat .compra-rapida-cat-pill').forEach(btn => {
+  document.querySelectorAll('#compra-rapida-abas-cat .cr-cat-pill, #compra-rapida-abas-cat .compra-rapida-cat-pill').forEach(btn => {
     btn.classList.toggle('ativo', btn.getAttribute('data-cat') === 'cotidiano');
   });
 
@@ -11405,7 +11415,7 @@ function aoClicarForaModalCompraRapida(event) {
 
 function selecionarCategoriaCompraRapida(cat) {
   estadoCompraRapida.categoriaFiltro = cat || 'cotidiano';
-  document.querySelectorAll('#compra-rapida-abas-cat .compra-rapida-cat-pill').forEach(btn => {
+  document.querySelectorAll('#compra-rapida-abas-cat .cr-cat-pill, #compra-rapida-abas-cat .compra-rapida-cat-pill').forEach(btn => {
     btn.classList.toggle('ativo', btn.getAttribute('data-cat') === estadoCompraRapida.categoriaFiltro);
   });
   renderizarGridCompraRapida();
@@ -11413,9 +11423,14 @@ function selecionarCategoriaCompraRapida(cat) {
 
 function filtrarItensCompraRapida(termo) {
   estadoCompraRapida.termoBusca = (termo || '').trim();
+  const temTexto = estadoCompraRapida.termoBusca.length > 0;
   const btnLimpar = document.getElementById('btn-limpar-busca-compra-rapida');
   if (btnLimpar) {
-    btnLimpar.style.display = estadoCompraRapida.termoBusca.length > 0 ? 'flex' : 'none';
+    btnLimpar.style.display = temTexto ? 'flex' : 'none';
+  }
+  const btnAddCustom = document.getElementById('btn-add-custom-compra-rapida');
+  if (btnAddCustom) {
+    btnAddCustom.style.display = temTexto ? 'inline-flex' : 'none';
   }
   renderizarGridCompraRapida();
 }
@@ -11469,7 +11484,36 @@ function obterProdutosFiltradosCompraRapida() {
     return listaCotidiano;
   }
 
-  // Filtro por categoria específica
+  if (cat === 'padaria_cafe') {
+    return catalogo.filter(p =>
+      p.categoria === 'Padaria e Lanches' ||
+      (p.nome || '').toLowerCase().includes('café') ||
+      (p.nome || '').toLowerCase().includes('achocolatado')
+    );
+  }
+  if (cat === 'laticinios') {
+    return catalogo.filter(p => p.categoria === 'Laticínios e Frios');
+  }
+  if (cat === 'hortifruti') {
+    return catalogo.filter(p => p.categoria === 'Hortifrúti');
+  }
+  if (cat === 'mistura') {
+    return catalogo.filter(p => p.categoria === 'Carnes e Proteínas');
+  }
+  if (cat === 'basicos') {
+    return catalogo.filter(p => p.categoria === 'Básicos e Grãos');
+  }
+  if (cat === 'higiene_limpeza') {
+    return catalogo.filter(p => p.categoria === 'Higiene' || p.categoria === 'Limpeza');
+  }
+  if (cat === 'bebidas') {
+    return catalogo.filter(p => p.categoria === 'Bebidas');
+  }
+  if (cat === 'todos') {
+    return catalogo.slice(0, 120);
+  }
+
+  // Fallback para nome literal de categoria
   return catalogo.filter(p => p.categoria === cat);
 }
 
@@ -11590,7 +11634,7 @@ function adicionarItemDigitadoCompraRapida() {
     prodExistente = {
       id: novoId,
       nome: texto.charAt(0).toUpperCase() + texto.slice(1),
-      categoria: estadoCompraRapida.categoriaFiltro !== 'cotidiano' ? estadoCompraRapida.categoriaFiltro : 'Diversos',
+      categoria: 'Diversos',
       icone: 'sacola',
       preco: 0,
       precoMedioDF: 0,
@@ -11612,6 +11656,8 @@ function adicionarItemDigitadoCompraRapida() {
   estadoCompraRapida.termoBusca = '';
   const btnLimpar = document.getElementById('btn-limpar-busca-compra-rapida');
   if (btnLimpar) btnLimpar.style.display = 'none';
+  const btnAddCustom = document.getElementById('btn-add-custom-compra-rapida');
+  if (btnAddCustom) btnAddCustom.style.display = 'none';
 
   renderizarGridCompraRapida();
   atualizarRodapeModalCompraRapida();
@@ -11628,7 +11674,7 @@ function atualizarRodapeModalCompraRapida() {
   const count = estadoCompraRapida.selecionadosTemp.size;
   const countEl = document.getElementById('compra-rapida-count-selecionados');
   const chipsContainer = document.getElementById('compra-rapida-resumo-chips');
-  const btnLimpar = document.getElementById('btn-limpar-selecao-compra-rapida');
+  const btnLimpar = document.getElementById('btn-limpar-compra-rapida') || document.getElementById('btn-limpar-selecao-compra-rapida');
   const btnEnviar = document.getElementById('btn-enviar-compra-rapida');
 
   if (countEl) {
@@ -11640,12 +11686,12 @@ function atualizarRodapeModalCompraRapida() {
   if (btnEnviar) {
     btnEnviar.innerHTML = count > 0
       ? `⚡ Enviar ${count} ${count === 1 ? 'Item' : 'Itens'} de Aviso para COMPRAR`
-      : `⚡ Atualizar Compra Rápida`;
+      : `⚡ Atualizar Compra Rápida (0)`;
   }
 
   if (chipsContainer) {
     if (count === 0) {
-      chipsContainer.innerHTML = `<span class="cr-chip-vazio">Toque nos produtos acima para montar o aviso rápido...</span>`;
+      chipsContainer.innerHTML = `<span class="cr-chip-vazio cr-nenhum-txt">Toque nos produtos acima para montar o pedido emergencial do dia...</span>`;
     } else {
       const chipsHtml = [];
       estadoCompraRapida.selecionadosTemp.forEach((obj, idStr) => {
@@ -11738,7 +11784,9 @@ function enviarAvisoCompraRapida() {
 
   // Leva o usuário direto para a aba COMPRAR para ver o destaque no topo
   if (nomesAdicionados.length > 0) {
-    mudarAba('lista');
+    if (typeof navegarParaAba === 'function') {
+      navegarParaAba('lista');
+    }
     if (typeof tocarAvisoSonoroCompraRapida === 'function') {
       tocarAvisoSonoroCompraRapida();
     }
@@ -11810,5 +11858,6 @@ function atualizarBadgeCompraRapida() {
     }
   }
 }
+
 
 
