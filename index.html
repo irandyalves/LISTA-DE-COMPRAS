@@ -132,7 +132,7 @@
   </style>
 
   <!-- CSS Moderno -->
-  <link rel="stylesheet" href="style.css?v=10.84">
+  <link rel="stylesheet" href="style.css?v=10.86">
 </head>
 <body>
 
@@ -970,13 +970,7 @@
               <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
             </svg>
           </button>
-          <button type="button" id="btn-zap-add-compra-rapida" class="btn-zap-acao btn-zap-enviar" style="display: none;" onclick="confirmarListaInteligenteCompraRapida()" title="Adicionar itens reconhecidos na Compra Rápida">
-            ➤
-          </button>
         </div>
-
-        <!-- Faixa de Reconhecimento da Lista Inteligente (aparece ao digitar/falar itens separados por vírgula) -->
-        <div id="cr-smart-preview-bar" class="cr-smart-preview-bar" style="display: none;"></div>
       </div>
 
       <!-- Abas de Filtro Rápido (Linha Única Deslizante) -->
@@ -997,15 +991,13 @@
 
       <!-- Rodapé com Itens Escolhidos e Botão Confirmar -->
       <div class="compra-rapida-footer">
-        <div id="compra-rapida-resumo-chips" class="compra-rapida-resumo-chips">
-          <span class="cr-nenhum-txt">Toque nos produtos acima (ou digite com vírgulas) para montar a Compra Rápida.</span>
-        </div>
+        <div id="compra-rapida-resumo-chips" class="compra-rapida-resumo-chips" style="display: none;"></div>
         <div class="compra-rapida-footer-botoes">
           <button type="button" id="btn-limpar-compra-rapida" class="btn-cr-limpar" onclick="limparTodosCompraRapida()" style="display: none;" title="Desmarcar itens da Compra Rápida">
             🗑️ Limpar
           </button>
           <button type="button" id="btn-enviar-compra-rapida" class="btn-cr-enviar-aviso" onclick="enviarAvisoCompraRapida()">
-            ⚡ FAVOR COMPRAR (<span id="qtd-btn-enviar-cr">0</span>)
+            FAVOR COMPRAR (<span id="qtd-btn-enviar-cr">0</span>)
           </button>
         </div>
       </div>
@@ -1342,7 +1334,7 @@
   <script src="logos_banco.js?v=10.13"></script>
   <script src="icones2d.js"></script>
   <script src="firebase-sync.js"></script>
-  <script src="app.js?v=10.84"></script>
+  <script src="app.js?v=10.86"></script>
 
 </body>
 </html>

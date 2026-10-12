@@ -4611,6 +4611,17 @@ function renderizarListaCompras() {
         </tr>
       `;
     });
+
+    if (ehGrupoCompraRapida) {
+      const totalColsDivisor = 3 + (ocultarMercados ? 0 : chavesRedes.length) + (isMobile ? 0 : 1);
+      linhasTabelaHtml += `
+        <tr class="mcol-tr-divisor-compra-rapida" aria-hidden="true">
+          <td colspan="${totalColsDivisor}" class="mcol-td-divisor-compra-rapida">
+            <div class="linha-pontilhada-pos-compra-rapida"></div>
+          </td>
+        </tr>
+      `;
+    }
   }
 
   // Rodapé com Totais dos Mercados
@@ -4652,24 +4663,6 @@ function renderizarListaCompras() {
   atualizarCardEconomiaSidebar(campeaoId, totais, economia);
   if (typeof atualizarBadgeCompraRapida === 'function') atualizarBadgeCompraRapida();
 
-  // Banner Piscando de Compra Rápida no Topo de COMPRAR (clicou, abre no início de tudo!)
-  let bannerPiscandoCompraRapidaHtml = '';
-  const urgentesPendentes = (AppState.listaAtiva || []).filter(i => i.compraRapida && !i.comprado);
-  if (urgentesPendentes.length > 0) {
-    const nomesResumoUrg = urgentesPendentes.slice(0, 4).map(i => (i.nome || '').split('(')[0].trim()).join(', ');
-    const maisUrgTxt = urgentesPendentes.length > 4 ? ` +${urgentesPendentes.length - 4}` : '';
-    bannerPiscandoCompraRapidaHtml = `
-      <div class="banner-piscando-compra-rapida" onclick="irParaInicioCompraRapida()" title="Clique para ir ao início da Compra Rápida">
-        <div class="bpcr-esq">
-          <span class="bpcr-raio">⚡</span>
-          <span class="bpcr-titulo">FAVOR COMPRAR!! (${urgentesPendentes.length})</span>
-          <span class="bpcr-itens">${escapeHtml(nomesResumoUrg + maisUrgTxt)}</span>
-        </div>
-        <span class="bpcr-acao">Ver no início ⬆</span>
-      </div>
-    `;
-  }
-
   // Banner de Corredor Ativo
   let bannerCorredorHtml = '';
   if (AppState.filtroCategoria && AppState.filtroCategoria !== 'todas' && AppState.filtroCategoria !== 'favoritos') {
@@ -4687,7 +4680,6 @@ function renderizarListaCompras() {
   }
 
   container.innerHTML = `
-    ${bannerPiscandoCompraRapidaHtml}
     ${bannerCorredorHtml}
     <div class="mcol-tabela-scroll">
       <table class="mcol-tabela-moderna tabela-lista-compras ${ocultarMercados ? 'mercados-ocultos' : ''}">
@@ -11462,6 +11454,8 @@ function normalizarTextoCR(txt) {
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[.,!?:;"'()[\]{}]+/g, ' ')
+    .replace(/\s+/g, ' ')
     .trim();
 }
 
@@ -11581,35 +11575,91 @@ function selecionarCategoriaCompraRapida(cat) {
   renderizarGridCompraRapida();
 }
 
-// Interpreta texto digitado ou falado como uma Lista Inteligente (ex: "arroz, feijão, pão, carne, verduras")
+// Auxiliar para encontrar um produto a partir de um termo único limpo
+function resolverTermoUnicoCompraRapida(termoLimpo, mapaPorId, catalogo, favSet) {
+  const norm = normalizarTextoCR(termoLimpo);
+  if (!norm || norm.length < 2) return [];
+
+  const idsMapeados = MAPA_TERMOS_INTELIGENTES_CR[termoLimpo.toLowerCase().trim()] || MAPA_TERMOS_INTELIGENTES_CR[norm];
+  if (idsMapeados && idsMapeados.length > 0) {
+    const prods = [];
+    idsMapeados.forEach(idAlvo => {
+      const p = mapaPorId.get(String(idAlvo));
+      if (p) prods.push(p);
+    });
+    if (prods.length > 0) return prods;
+  }
+
+  let melhorProd = catalogo.find(p => favSet.has(String(p.id)) && normalizarTextoCR(p.nome).includes(norm));
+  if (!melhorProd) {
+    melhorProd = catalogo.find(p => normalizarTextoCR(p.nome).startsWith(norm)) ||
+                 catalogo.find(p => normalizarTextoCR(p.nome).includes(norm));
+  }
+  return melhorProd ? [melhorProd] : [];
+}
+
+// Interpreta texto digitado ou falado como uma Lista Inteligente (com ou sem vírgulas)
 function interpretarListaInteligenteCompraRapida(textoBruto) {
-  const texto = (textoBruto || '').trim();
+  const texto = (textoBruto || '').replace(/[.,!?:;]+$/g, '').trim();
   if (!texto) return [];
 
   const catalogo = AppState.catalogo || [];
   const mapaPorId = new Map();
   catalogo.forEach(p => mapaPorId.set(String(p.id), p));
+  const favSet = obterSetFavoritosCompraRapida();
 
-  // Divide por vírgula, ponto-e-vírgula, quebra de linha ou " e " quando houver múltiplos itens
+  // Divide por vírgula, ponto-e-vírgula, quebra de linha ou " e "
   const temSeparadorMultiplo = /[,;\n]/.test(texto) || /\s+e\s+/i.test(texto);
   let partes = [];
   if (temSeparadorMultiplo) {
     partes = texto
       .split(/[,;\n]+|\s+e\s+/i)
-      .map(s => s.trim())
+      .map(s => s.replace(/[.,!?:]+$/g, '').trim())
       .filter(s => s.length >= 2);
   } else {
-    partes = [texto];
+    // Se falou vários itens sem vírgula no microfone (ex: "arroz feijão pão carne")
+    const direto = resolverTermoUnicoCompraRapida(texto, mapaPorId, catalogo, favSet);
+    if (direto.length > 0) {
+      partes = [texto];
+    } else {
+      const palavras = texto.split(/\s+/).filter(Boolean);
+      if (palavras.length > 1) {
+        let idx = 0;
+        while (idx < palavras.length) {
+          let casou = false;
+          // Tenta 3 palavras, depois 2 palavras, depois 1 palavra no dicionário/catálogo
+          for (let tam = Math.min(3, palavras.length - idx); tam >= 1; tam--) {
+            let fatia = palavras.slice(idx, idx + tam).join(' ');
+            // Se começa com número (ex: "2 cafés")
+            if (tam === 1 && /^\d+$/.test(fatia) && idx + 1 < palavras.length) {
+              continue;
+            }
+            const teste = resolverTermoUnicoCompraRapida(fatia, mapaPorId, catalogo, favSet);
+            if (teste.length > 0) {
+              partes.push(fatia);
+              idx += tam;
+              casou = true;
+              break;
+            }
+          }
+          if (!casou) {
+            partes.push(palavras[idx]);
+            idx++;
+          }
+        }
+      } else {
+        partes = [texto];
+      }
+    }
   }
 
   const encontrados = [];
   const idsJaIncluidos = new Set();
 
   partes.forEach(parteOriginal => {
-    // Extrai quantidade se começar com número (ex: "2 leites", "3 pães")
     let qtde = 1;
-    let termoLimpo = parteOriginal;
-    const matchQtde = parteOriginal.match(/^(\d+)\s+(.+)$/);
+    let termoLimpo = parteOriginal.replace(/[.,!?:]+$/g, '').trim();
+    const matchQtde = termoLimpo.match(/^(\d+)\s+(.+)$/);
     if (matchQtde) {
       qtde = Math.max(1, parseInt(matchQtde[1], 10) || 1);
       termoLimpo = matchQtde[2].trim();
@@ -11618,34 +11668,15 @@ function interpretarListaInteligenteCompraRapida(textoBruto) {
     const norm = normalizarTextoCR(termoLimpo);
     if (!norm || norm.length < 2) return;
 
-    // 1. Verifica no Dicionário Inteligente de Termos do Cotidiano
-    const idsMapeados = MAPA_TERMOS_INTELIGENTES_CR[termoLimpo.toLowerCase()] || MAPA_TERMOS_INTELIGENTES_CR[norm];
-    if (idsMapeados && idsMapeados.length > 0) {
-      idsMapeados.forEach(idAlvo => {
-        const prod = mapaPorId.get(String(idAlvo));
-        if (prod && !idsJaIncluidos.has(String(prod.id))) {
+    const prodsAchados = resolverTermoUnicoCompraRapida(termoLimpo, mapaPorId, catalogo, favSet);
+    if (prodsAchados.length > 0) {
+      prodsAchados.forEach(prod => {
+        if (!idsJaIncluidos.has(String(prod.id))) {
           idsJaIncluidos.add(String(prod.id));
           encontrados.push({ prod, qtde, termoOriginal: termoLimpo });
         }
       });
-      return;
-    }
-
-    // 2. Procura primeiro entre os Favoritos da Lista Rápida / Cotidiano
-    const favSet = obterSetFavoritosCompraRapida();
-    let melhorProd = catalogo.find(p => favSet.has(String(p.id)) && normalizarTextoCR(p.nome).includes(norm));
-
-    // 3. Se não achou nos favoritos, procura no catálogo geral (priorizando começo da palavra)
-    if (!melhorProd) {
-      melhorProd = catalogo.find(p => normalizarTextoCR(p.nome).startsWith(norm)) ||
-                   catalogo.find(p => normalizarTextoCR(p.nome).includes(norm));
-    }
-
-    if (melhorProd && !idsJaIncluidos.has(String(melhorProd.id))) {
-      idsJaIncluidos.add(String(melhorProd.id));
-      encontrados.push({ prod: melhorProd, qtde, termoOriginal: termoLimpo });
-    } else if (!melhorProd && temSeparadorMultiplo && norm.length >= 2) {
-      // Se o usuário digitou na lista com vírgula um item avulso que não existe no catálogo
+    } else if (temSeparadorMultiplo && norm.length >= 2) {
       encontrados.push({
         prod: null,
         nomeAvulso: termoLimpo.charAt(0).toUpperCase() + termoLimpo.slice(1),
@@ -11660,60 +11691,71 @@ function interpretarListaInteligenteCompraRapida(textoBruto) {
 
 function atualizarPreviewListaInteligenteCompraRapida() {
   const previewBar = document.getElementById('cr-smart-preview-bar');
-  const btnZapAdd = document.getElementById('btn-zap-add-compra-rapida');
-  const termo = (estadoCompraRapida.termoBusca || '').trim();
+  if (previewBar) previewBar.style.display = 'none';
 
+  const termo = (estadoCompraRapida.termoBusca || '').trim();
   if (!termo) {
     estadoCompraRapida.itensInteligentesDetectados = [];
-    if (previewBar) previewBar.style.display = 'none';
-    if (btnZapAdd) btnZapAdd.style.display = 'none';
     return;
   }
 
-  const detectados = interpretarListaInteligenteCompraRapida(termo);
-  estadoCompraRapida.itensInteligentesDetectados = detectados;
+  estadoCompraRapida.itensInteligentesDetectados = interpretarListaInteligenteCompraRapida(termo);
+}
 
-  if (btnZapAdd) {
-    btnZapAdd.style.display = 'inline-flex';
-  }
+// Sincroniza imediatamente os cards checados com a lista de compras ativa (basta dar check no card!)
+function aplicarCompraRapidaImediata() {
+  const usuarioAtual = AppState.usuarioAtivo || 'Casa';
+  const agora = Date.now();
 
-  if (!previewBar) return;
+  (AppState.catalogo || []).forEach(prod => {
+    const idStr = String(prod.id);
+    if (prod.compraRapida && !estadoCompraRapida.selecionadosTemp.has(idStr)) {
+      prod.compraRapida = false;
+      registrarTimestampModificacaoItem(prod.id);
+    }
+  });
 
-  if (detectados.length === 0) {
-    previewBar.style.display = 'flex';
-    previewBar.innerHTML = `
-      <div class="cr-smart-row">
-        <span class="cr-smart-label">⚡ Novo item: <strong>"${escapeHtml(termo)}"</strong></span>
-        <button type="button" class="btn-smart-confirmar-todos" onclick="confirmarListaInteligenteCompraRapida()">
-          + Adicionar à Compra Rápida
-        </button>
-      </div>
-    `;
-    return;
-  }
+  (AppState.listaAtiva || []).forEach(item => {
+    const idStr = String(item.catalogoId || item.id);
+    if (item.compraRapida && !estadoCompraRapida.selecionadosTemp.has(idStr)) {
+      item.compraRapida = false;
+      registrarTimestampModificacaoItem(item.id);
+    }
+  });
 
-  const chipsHtml = detectados.map(item => {
-    const nomeExib = item.prod ? (item.prod.nome || '').split('(')[0].trim() : item.nomeAvulso;
-    const jaMarcado = item.prod && estadoCompraRapida.selecionadosTemp.has(String(item.prod.id));
-    return `
-      <span class="cr-smart-chip ${jaMarcado ? 'ja-marcado' : ''}">
-        ${jaMarcado ? '✓' : '⚡'} ${escapeHtml(nomeExib)} ${item.qtde > 1 ? `<strong>x${item.qtde}</strong>` : ''}
-      </span>
-    `;
-  }).join('');
+  estadoCompraRapida.selecionadosTemp.forEach((dados, idStr) => {
+    const prod = (AppState.catalogo || []).find(p => String(p.id) === idStr);
+    if (prod) {
+      prod.selecionado = true;
+      prod.comprado = false;
+      prod.compraRapida = true;
+      prod.novoPedidoCasa = true;
+      prod.qtde = dados.qtde || 1;
+      prod.adicionadoPor = usuarioAtual;
+      prod.adicionadoEm = agora;
+      registrarTimestampModificacaoItem(prod.id);
+    }
+  });
 
-  previewBar.style.display = 'flex';
-  previewBar.innerHTML = `
-    <div class="cr-smart-row">
-      <div class="cr-smart-chips-wrap">
-        <span class="cr-smart-label">🧠 Lista Inteligente (${detectados.length}):</span>
-        ${chipsHtml}
-      </div>
-      <button type="button" class="btn-smart-confirmar-todos" onclick="confirmarListaInteligenteCompraRapida()">
-        ⚡ Marcar ${detectados.length === 1 ? 'Item' : `Todos (${detectados.length})`}
-      </button>
-    </div>
-  `;
+  sincronizarListaAtivaComCatalogo();
+
+  (AppState.listaAtiva || []).forEach(item => {
+    const idStr = String(item.catalogoId || item.id);
+    if (estadoCompraRapida.selecionadosTemp.has(idStr)) {
+      const dados = estadoCompraRapida.selecionadosTemp.get(idStr);
+      item.compraRapida = true;
+      item.novoPedidoCasa = true;
+      item.comprado = false;
+      item.qtde = dados.qtde || 1;
+      item.adicionadoPor = usuarioAtual;
+      item.adicionadoEm = agora;
+    }
+  });
+
+  salvarEstado(true);
+  atualizarBadgeCompraRapida();
+  renderizarListaCompras();
+  atualizarContadorSidebarMontar();
 }
 
 function confirmarListaInteligenteCompraRapida() {
@@ -11757,26 +11799,31 @@ function confirmarListaInteligenteCompraRapida() {
     }
   });
 
-  limparBuscaCompraRapida();
+  aplicarCompraRapidaImediata();
   renderizarGridCompraRapida();
   atualizarRodapeModalCompraRapida();
-  mostrarNotificacaoToast(`⚡ ${adicionadosCount} ${adicionadosCount === 1 ? 'item adicionado' : 'itens adicionados'} na Compra Rápida!`);
 }
 
 // Microfone estilo WhatsApp para falar lista rápida ("arroz, feijão, pão, carne, verduras")
 let recognizerCompraRapida = null;
 let gravandoVozCompraRapida = false;
+let timerSilencioVozCR = null;
 
 function pararVozCompraRapida() {
   gravandoVozCompraRapida = false;
+  if (timerSilencioVozCR) {
+    clearTimeout(timerSilencioVozCR);
+    timerSilencioVozCR = null;
+  }
   const btnMic = document.getElementById('btn-mic-compra-rapida');
-  if (btnMic) btnMic.classList.remove('gravando');
+  if (btnMic) btnMic.classList.remove('gravando', 'ouvindo');
   const input = document.getElementById('input-busca-compra-rapida');
   if (input && input.placeholder.includes('Ouvindo')) {
     input.placeholder = 'Digite ou fale: arroz, feijão, pão, carne, verduras...';
   }
   if (recognizerCompraRapida) {
-    try { recognizerCompraRapida.stop(); } catch (e) {}
+    try { recognizerCompraRapida.onend = null; recognizerCompraRapida.stop(); } catch (e) {}
+    recognizerCompraRapida = null;
   }
 }
 
@@ -11788,7 +11835,7 @@ function alternarVozCompraRapida(event) {
 
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRecognition) {
-    mostrarNotificacaoToast('ℹ️ O microfone requer navegador Chrome ou Edge.');
+    mostrarNotificacaoToast('ℹ️ O microfone requer navegador Google Chrome ou Microsoft Edge.');
     return;
   }
 
@@ -11797,45 +11844,96 @@ function alternarVozCompraRapida(event) {
     return;
   }
 
+  // Cancela qualquer outro reconhecimento ativo na página para liberar o microfone
+  if (typeof recognizerPreco !== 'undefined' && recognizerPreco) {
+    try { recognizerPreco.abort(); } catch (e) {}
+  }
+
   try {
     recognizerCompraRapida = new SpeechRecognition();
     recognizerCompraRapida.lang = 'pt-BR';
-    recognizerCompraRapida.continuous = false;
+    recognizerCompraRapida.continuous = true;
     recognizerCompraRapida.interimResults = true;
+    recognizerCompraRapida.maxAlternatives = 3;
 
     const btnMic = document.getElementById('btn-mic-compra-rapida');
     const input = document.getElementById('input-busca-compra-rapida');
 
     gravandoVozCompraRapida = true;
-    if (btnMic) btnMic.classList.add('gravando');
+    if (btnMic) btnMic.classList.add('gravando', 'ouvindo');
     if (input) {
-      input.placeholder = '🎙️ Ouvindo... Fale ex: arroz, feijão, pão, leite...';
+      input.value = '';
+      input.placeholder = '🎙️ Ouvindo... Fale os itens (ex: arroz, feijão, pão)...';
     }
+    mostrarNotificacaoToast('🎙️ Microfone ativo! Pode falar os itens...');
 
     recognizerCompraRapida.onresult = (ev) => {
-      let transcricao = '';
+      const partesFaladas = [];
+      let teveFinal = false;
+
       for (let i = 0; i < ev.results.length; i++) {
-        transcricao += ev.results[i][0].transcript;
+        const trans = (ev.results[i][0].transcript || '')
+          .replace(/[.,!?:;]+$/g, '')
+          .trim();
+        if (trans) {
+          partesFaladas.push(trans);
+        }
+        if (ev.results[i].isFinal) {
+          teveFinal = true;
+        }
       }
-      if (input) input.value = transcricao;
-      filtrarItensCompraRapida(transcricao);
+
+      const transcricaoCompleta = partesFaladas.join(', ');
+      if (input) {
+        input.value = transcricaoCompleta;
+      }
+      filtrarItensCompraRapida(transcricaoCompleta);
+
+      // Sempre que concluir um trecho falado, já marca automaticamente os itens detectados com check verde e joga na lista!
+      if (teveFinal && estadoCompraRapida.itensInteligentesDetectados.length > 0) {
+        estadoCompraRapida.itensInteligentesDetectados.forEach(d => {
+          if (d.prod) {
+            estadoCompraRapida.selecionadosTemp.set(String(d.prod.id), {
+              id: d.prod.id,
+              qtde: d.qtde || d.prod.qtde || 1,
+              novoEnvio: true
+            });
+          }
+        });
+        aplicarCompraRapidaImediata();
+        renderizarGridCompraRapida();
+        atualizarRodapeModalCompraRapida();
+      }
+
+      if (timerSilencioVozCR) clearTimeout(timerSilencioVozCR);
+      timerSilencioVozCR = setTimeout(() => {
+        if (gravandoVozCompraRapida) {
+          pararVozCompraRapida();
+        }
+      }, 3200);
+    };
+
+    recognizerCompraRapida.onerror = (e) => {
+      console.warn('[Voz Compra Rápida] Erro:', e && e.error);
+      if (e && (e.error === 'not-allowed' || e.error === 'service-not-allowed')) {
+        mostrarNotificacaoToast('⚠️ Permissão do microfone bloqueada. Clique no cadeado na barra de endereço para permitir.');
+      } else if (e && e.error === 'audio-capture') {
+        mostrarNotificacaoToast('⚠️ Nenhum microfone encontrado no dispositivo.');
+      } else if (e && e.error === 'no-speech') {
+        mostrarNotificacaoToast('🎙️ Nenhuma fala detectada. Clique no microfone e fale próximo a ele.');
+      }
+      pararVozCompraRapida();
     };
 
     recognizerCompraRapida.onend = () => {
-      const eraGravando = gravandoVozCompraRapida;
-      pararVozCompraRapida();
-      // Se falou múltiplos itens, já deixa pronto ou marca se houver resultado
-      if (eraGravando && estadoCompraRapida.itensInteligentesDetectados.length > 1) {
-        confirmarListaInteligenteCompraRapida();
+      if (gravandoVozCompraRapida) {
+        pararVozCompraRapida();
       }
-    };
-
-    recognizerCompraRapida.onerror = () => {
-      pararVozCompraRapida();
     };
 
     recognizerCompraRapida.start();
   } catch (e) {
+    console.error('Erro ao iniciar microfone Compra Rápida:', e);
     pararVozCompraRapida();
   }
 }
@@ -11877,16 +11975,22 @@ function obterProdutosFiltradosCompraRapida() {
       }
     });
 
-    // 2. Se for busca de 1 termo só, inclui os demais produtos que batem com o texto
-    const norm = normalizarTextoCR(termo);
-    if (!/[,;\n]/.test(termo)) {
-      catalogo.forEach(p => {
-        if (!vistos.has(String(p.id))) {
-          if (normalizarTextoCR(p.nome).includes(norm) || normalizarTextoCR(p.categoria).includes(norm)) {
-            listaBusca.push(p);
-            vistos.add(String(p.id));
+    // 2. Inclui os demais produtos que batem com cada termo digitado (mesmo com vírgula!)
+    const subTermos = termo
+      .split(/[,;\n]+|\s+e\s+/i)
+      .map(s => normalizarTextoCR(s))
+      .filter(s => s.length >= 2);
+
+    if (subTermos.length > 0) {
+      subTermos.forEach(normSub => {
+        catalogo.forEach(p => {
+          if (!vistos.has(String(p.id))) {
+            if (normalizarTextoCR(p.nome).includes(normSub) || normalizarTextoCR(p.categoria).includes(normSub)) {
+              listaBusca.push(p);
+              vistos.add(String(p.id));
+            }
           }
-        }
+        });
       });
     }
 
@@ -11967,7 +12071,7 @@ function renderizarGridCompraRapida() {
       <div class="compra-rapida-empty-search">
         <p>Nenhum produto encontrado para "<strong>${escapeHtml(termo)}</strong>".</p>
         <button type="button" class="btn-criar-avulso-compra-rapida" onclick="confirmarListaInteligenteCompraRapida()">
-          ⚡ Adicionar "${escapeHtml(termo)}" em Favor Comprar
+          + Adicionar "${escapeHtml(termo)}" em Favor Comprar
         </button>
       </div>
     `;
@@ -11979,25 +12083,22 @@ function renderizarGridCompraRapida() {
     const selecionadoObj = estadoCompraRapida.selecionadosTemp.get(idStr);
     const estaMarcado = !!selecionadoObj;
     const qtde = selecionadoObj ? (selecionadoObj.qtde || 1) : (prod.qtde || 1);
+    const qtdeFmt = String(qtde).padStart(2, '0');
     const ehFavRapida = favSet.has(idStr);
 
     const svgIcone = (typeof obterIcone2D === 'function')
       ? obterIcone2D(prod.nome, prod.icone)
       : '🛒';
-    const precoRef = Number(prod.preco || prod.ultimoPreco || prod.precoMedioDF || 0);
-    const precoFmt = precoRef > 0 ? precoRef.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '';
 
     return `
       <div class="card-item-compra-rapida ${estaMarcado ? 'selecionado-urgente' : ''}"
            onclick="alternarItemCompraRapida('${escapeHtml(idStr)}', event)">
         <div class="card-cr-topo">
           <div class="card-cr-icone">${svgIcone}</div>
-          <div class="card-cr-info">
-            <span class="card-cr-nome">${escapeHtml(prod.nome)}</span>
-            <div class="card-cr-meta">
-              <span class="card-cr-cat">${escapeHtml(prod.categoria || 'Diversos')}</span>
-              ${precoFmt ? `<span class="card-cr-preco">${precoFmt}</span>` : ''}
-            </div>
+          <div class="card-cr-linha-nome-qtde">
+            <span class="card-cr-nome" title="${escapeHtml(prod.nome)}">${escapeHtml(prod.nome)}</span>
+            <span class="card-cr-pontinhos">....</span>
+            <span class="card-cr-qtde-verde" onclick="ciclarQtdeCompraRapida('${escapeHtml(idStr)}', event)" title="Quantidade: ${qtdeFmt} (Toque para aumentar)">${qtdeFmt}</span>
           </div>
           <button type="button"
                   class="btn-fav-cotidiano-cr ${ehFavRapida ? 'ativo' : ''}"
@@ -12006,20 +12107,9 @@ function renderizarGridCompraRapida() {
             ★
           </button>
           <div class="card-cr-check ${estaMarcado ? 'ativo' : ''}">
-            ${estaMarcado ? '⚡' : '+'}
+            ${estaMarcado ? '✓' : ''}
           </div>
         </div>
-
-        ${estaMarcado ? `
-          <div class="card-cr-controles" onclick="event.stopPropagation()">
-            <span class="card-cr-tag-urgente">⚡ FAVOR COMPRAR</span>
-            <div class="card-cr-qtde-box">
-              <button type="button" class="btn-cr-qtde" onclick="alterarQtdeCompraRapida('${escapeHtml(idStr)}', -1, event)">−</button>
-              <span class="val-cr-qtde">${qtde}</span>
-              <button type="button" class="btn-cr-qtde" onclick="alterarQtdeCompraRapida('${escapeHtml(idStr)}', 1, event)">+</button>
-            </div>
-          </div>
-        ` : ''}
       </div>
     `;
   }).join('');
@@ -12040,7 +12130,36 @@ function alternarItemCompraRapida(prodId, event) {
     });
   }
 
-  atualizarPreviewListaInteligenteCompraRapida();
+  aplicarCompraRapidaImediata();
+  renderizarGridCompraRapida();
+  atualizarRodapeModalCompraRapida();
+}
+
+function ciclarQtdeCompraRapida(prodId, event) {
+  if (event) {
+    event.stopPropagation();
+    event.preventDefault();
+  }
+  const idStr = String(prodId);
+  const prod = (AppState.catalogo || []).find(p => String(p.id) === idStr);
+  let itemObj = estadoCompraRapida.selecionadosTemp.get(idStr);
+
+  if (!itemObj) {
+    const qtdeInicial = ((prod && prod.qtde) ? prod.qtde : 1) + 1;
+    itemObj = {
+      id: prod ? prod.id : prodId,
+      qtde: qtdeInicial > 10 ? 1 : qtdeInicial,
+      novoEnvio: true
+    };
+    estadoCompraRapida.selecionadosTemp.set(idStr, itemObj);
+  } else {
+    let novaQtde = (itemObj.qtde || 1) + 1;
+    if (novaQtde > 10) novaQtde = 1;
+    itemObj.qtde = novaQtde;
+  }
+
+  if (prod) prod.qtde = itemObj.qtde;
+  aplicarCompraRapidaImediata();
   renderizarGridCompraRapida();
   atualizarRodapeModalCompraRapida();
 }
@@ -12055,6 +12174,7 @@ function alterarQtdeCompraRapida(prodId, delta, event) {
   if (novaQtde < 1) novaQtde = 1;
   itemObj.qtde = novaQtde;
 
+  aplicarCompraRapidaImediata();
   renderizarGridCompraRapida();
   atualizarRodapeModalCompraRapida();
 }
@@ -12094,14 +12214,16 @@ function adicionarItemDigitadoCompraRapida() {
     novoEnvio: true
   });
 
+  aplicarCompraRapidaImediata();
   limparBuscaCompraRapida();
   renderizarGridCompraRapida();
   atualizarRodapeModalCompraRapida();
-  mostrarNotificacaoToast(`⚡ "${prodExistente.nome}" marcado em Favor Comprar!`);
+  mostrarNotificacaoToast(`✓ "${prodExistente.nome}" marcado em Favor Comprar!`);
 }
 
 function limparTodosCompraRapida() {
   estadoCompraRapida.selecionadosTemp.clear();
+  aplicarCompraRapidaImediata();
   renderizarGridCompraRapida();
   atualizarRodapeModalCompraRapida();
 }
@@ -12117,22 +12239,25 @@ function atualizarRodapeModalCompraRapida() {
   }
   if (btnEnviar) {
     btnEnviar.innerHTML = count > 0
-      ? `⚡ FAVOR COMPRAR!! (${count} ${count === 1 ? 'item' : 'itens'})`
-      : `⚡ Confirmar Compra Rápida (0)`;
+      ? `FAVOR COMPRAR!! (${count} ${count === 1 ? 'item' : 'itens'})`
+      : `Confirmar Compra Rápida (0)`;
   }
 
   if (chipsContainer) {
     if (count === 0) {
-      chipsContainer.innerHTML = `<span class="cr-chip-vazio cr-nenhum-txt">Toque nos cards acima ou digite ex: "arroz, feijão, pão, carne"...</span>`;
+      chipsContainer.innerHTML = '';
+      chipsContainer.style.display = 'none';
     } else {
+      chipsContainer.style.display = 'flex';
       const chipsHtml = [];
       estadoCompraRapida.selecionadosTemp.forEach((obj, idStr) => {
         const prod = (AppState.catalogo || []).find(p => String(p.id) === idStr);
         if (prod) {
           const nomeCurto = (prod.nome || '').split('(')[0].trim();
+          const qtdeFmt = String(obj.qtde || 1).padStart(2, '0');
           chipsHtml.push(`
             <span class="cr-chip-item" onclick="alternarItemCompraRapida('${escapeHtml(idStr)}', event)" title="Toque para remover">
-              ⚡ ${escapeHtml(nomeCurto)} <strong>x${obj.qtde || 1}</strong> ✕
+              ✓ ${escapeHtml(nomeCurto)} <strong class="cr-chip-qtde-verde">${qtdeFmt}</strong> ✕
             </span>
           `);
         }
