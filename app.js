@@ -3264,10 +3264,16 @@ function atualizarCardEconomiaSidebar(campeaoId, totais, economia) {
 function alternarAbaApp(aba, isUserClick = true) {
   if (!aba) return;
 
-  if (isUserClick && typeof fecharModalCompraRapida === 'function') {
-    const modalCR = document.getElementById('modal-compra-rapida');
-    if (modalCR && modalCR.style.display !== 'none' && modalCR.style.display !== '') {
-      fecharModalCompraRapida();
+  if (isUserClick) {
+    if (typeof fecharModalCompraRapida === 'function') {
+      const modalCR = document.getElementById('modal-compra-rapida');
+      if (modalCR && modalCR.style.display !== 'none' && modalCR.style.display !== '') {
+        fecharModalCompraRapida();
+      }
+    }
+    const modalCfg = document.getElementById('modal-opcoes-header');
+    if (modalCfg && modalCfg.style.display !== 'none' && modalCfg.style.display !== '') {
+      fecharModal('modal-opcoes-header');
     }
   }
 
@@ -9129,6 +9135,16 @@ function atualizarContadorSidebarMontar() {
 function abrirModalOpcoesHeader() {
   const modal = document.getElementById('modal-opcoes-header');
   if (!modal) return;
+  if (modal.style.display !== 'none' && modal.style.display !== '') {
+    fecharModal('modal-opcoes-header');
+    return;
+  }
+  if (typeof fecharModalCompraRapida === 'function') {
+    const modalCR = document.getElementById('modal-compra-rapida');
+    if (modalCR && modalCR.style.display !== 'none' && modalCR.style.display !== '') {
+      fecharModalCompraRapida();
+    }
+  }
   const btnConfig = document.getElementById('mobile-nav-btn-config');
   if (btnConfig) btnConfig.classList.add('ativo');
   const badge = document.getElementById('badge-status-cotado');
@@ -11971,6 +11987,11 @@ function alternarFavoritoCompraRapida(prodId, event) {
 }
 
 function abrirModalCompraRapida() {
+  const modalCfg = document.getElementById('modal-opcoes-header');
+  if (modalCfg && modalCfg.style.display !== 'none' && modalCfg.style.display !== '') {
+    fecharModal('modal-opcoes-header');
+  }
+
   const modal = document.getElementById('modal-compra-rapida');
   if (!modal) return;
 
