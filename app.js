@@ -1213,8 +1213,11 @@ function carregarLocalmente() {
       // Sincroniza a Lista de Compra
       sincronizarListaAtivaComCatalogo();
 
-      if (parsed.historico && Array.isArray(parsed.historico) && parsed.historico.length >= 2) {
+      if (parsed.historico && Array.isArray(parsed.historico)) {
         AppState.historico = parsed.historico;
+        if (typeof deduplicarHistoricoCompraRapida === 'function') {
+          deduplicarHistoricoCompraRapida();
+        }
       }
       if (parsed.meuPreset) {
         AppState.meuPreset = parsed.meuPreset;
@@ -1299,8 +1302,10 @@ function salvarEstado(enviarParaNuvem = true) {
     timestampUltimaModificacaoLocal = Date.now();
   }
 
-  if (typeof sincronizarCompraRapidaNoHistorico === 'function') {
+  if (enviarParaNuvem && !window._finalizandoCompraRapida && typeof sincronizarCompraRapidaNoHistorico === 'function') {
     sincronizarCompraRapidaNoHistorico(false);
+  } else if (typeof deduplicarHistoricoCompraRapida === 'function') {
+    deduplicarHistoricoCompraRapida();
   }
 
   // Salva no localStorage como cache rápido
@@ -1570,8 +1575,12 @@ function inicializarNuvem() {
         sincronizarListaAtivaComCatalogo();
       }
 
+      let removeuDuplicataNuvem = false;
       if (dadosNuvem.historico && Array.isArray(dadosNuvem.historico)) {
         AppState.historico = dadosNuvem.historico;
+        if (typeof deduplicarHistoricoCompraRapida === 'function') {
+          removeuDuplicataNuvem = deduplicarHistoricoCompraRapida();
+        }
       }
 
       if (Array.isArray(dadosNuvem.solicitacoesAcesso)) {
@@ -1641,7 +1650,7 @@ function inicializarNuvem() {
         }
       }
 
-      salvarEstado(false); // Salva local sem retransmitir
+      salvarEstado(removeuDuplicataNuvem); // Salva local (e limpa nuvem se havia duplicata)
       renderizarTudo();
       atualizarContadorSidebarMontar();
     },
@@ -6642,6 +6651,9 @@ function reduzirNomeHistorico(nome, maxChars = 28) {
 
 // Renderizar Histórico Completo de Compras, Duração em Dias/Horas e Comparação %
 function renderizarHistorico() {
+  if (typeof deduplicarHistoricoCompraRapida === 'function') {
+    deduplicarHistoricoCompraRapida();
+  }
   const container = document.getElementById('historico-container');
   const containerResumo = document.getElementById('historico-cards-resumo');
   if (!container) return;
@@ -12260,17 +12272,79 @@ function atualizarPreviewListaInteligenteCompraRapida() {
   }
 }
 
-// Garante que toda Lista Rápida vá automaticamente para o Histórico (e atualize preços/quantidades em tempo real)
+function gerarAssinaturaItensCompraRapida(itens) {
+  if (!Array.isArray(itens) || itens.length === 0) return '';
+  return itens
+    .map(it => `${String(it.nome || it.id || '').toLowerCase().trim()}:${Number(it.qtde) || 1}`)
+    .sort()
+    .join('|');
+}
+
+// Remove registros duplicados da mesma sessão de Compra Rápida no Histórico
+function deduplicarHistoricoCompraRapida() {
+  if (!Array.isArray(AppState.historico) || AppState.historico.length < 2) return false;
+
+  const resultado = [];
+  const vistosCR = [];
+  let removeuAlgum = false;
+
+  for (const compra of AppState.historico) {
+    if (!compra) continue;
+    const ehCR = !!(compra.origemCompraRapida || (compra.mercado && String(compra.mercado).includes('Compra Rápida')));
+    if (!ehCR) {
+      resultado.push(compra);
+      continue;
+    }
+
+    const assinatura = gerarAssinaturaItensCompraRapida(compra.itens);
+    const tsCompra = new Date(compra.data).getTime() || 0;
+
+    // Verifica se já existe no histórico uma Compra Rápida idêntica (mesmos itens em intervalo curto ou ambas emAndamento)
+    const duplicataExistente = vistosCR.find(prev => {
+      if (String(prev.id) === String(compra.id)) return true;
+      if (prev.emAndamento && compra.emAndamento) return true;
+      const prevAssinatura = gerarAssinaturaItensCompraRapida(prev.itens);
+      const prevTs = new Date(prev.data).getTime() || 0;
+      const diffMs = Math.abs(tsCompra - prevTs);
+      return assinatura && assinatura === prevAssinatura && diffMs < 15 * 60 * 1000;
+    });
+
+    if (duplicataExistente) {
+      // Se qualquer uma das duas já foi concluída, garante que o registro mantido fique concluído (emAndamento = false)
+      if (!compra.emAndamento) {
+        duplicataExistente.emAndamento = false;
+      }
+      if ((Number(compra.total) || 0) > (Number(duplicataExistente.total) || 0)) {
+        duplicataExistente.total = compra.total;
+        duplicataExistente.itens = compra.itens;
+        duplicataExistente.itensQtd = compra.itensQtd;
+      }
+      removeuAlgum = true;
+    } else {
+      vistosCR.push(compra);
+      resultado.push(compra);
+    }
+  }
+
+  if (removeuAlgum) {
+    AppState.historico = resultado;
+  }
+  return removeuAlgum;
+}
+
+// Garante que toda Lista Rápida vá automaticamente para o Histórico (e atualize preços/quantidades em tempo real sem duplicar ao concluir)
 function sincronizarCompraRapidaNoHistorico(concluirSessao = false) {
   if (!Array.isArray(AppState.historico)) {
     AppState.historico = [];
   }
 
+  deduplicarHistoricoCompraRapida();
+
   const itensCR = (AppState.listaAtiva || []).filter(i => i.compraRapida);
   let regAtivoIdx = AppState.historico.findIndex(c => c && c.origemCompraRapida && c.emAndamento);
 
   if (itensCR.length === 0) {
-    if (regAtivoIdx !== -1 && concluirSessao) {
+    if (regAtivoIdx !== -1) {
       AppState.historico[regAtivoIdx].emAndamento = false;
     }
     return;
@@ -12294,23 +12368,40 @@ function sincronizarCompraRapidaNoHistorico(concluirSessao = false) {
     };
   });
 
+  const todosComprados = itensCR.every(i => i.comprado);
+  const assinaturaAtual = gerarAssinaturaItensCompraRapida(itensHistCR);
+
+  // Se não achou registro com emAndamento=true, mas estamos concluindo a compra (ou todos já foram marcados),
+  // reaproveita o registro de Compra Rápida mais recente da mesma sessão em vez de criar duplicata!
+  if (regAtivoIdx === -1) {
+    const idxMesmaSessao = AppState.historico.findIndex(c => {
+      if (!c || !(c.origemCompraRapida || (c.mercado && String(c.mercado).includes('Compra Rápida')))) return false;
+      const diffMs = Math.abs(Date.now() - (new Date(c.data).getTime() || 0));
+      if (gerarAssinaturaItensCompraRapida(c.itens) === assinaturaAtual && diffMs < 30 * 60 * 1000) return true;
+      if ((concluirSessao || todosComprados || window._finalizandoCompraRapida) && diffMs < 30 * 60 * 1000) return true;
+      return false;
+    });
+    if (idxMesmaSessao !== -1) {
+      regAtivoIdx = idxMesmaSessao;
+    }
+  }
+
   if (regAtivoIdx !== -1) {
     const regAtivo = AppState.historico[regAtivoIdx];
-    regAtivo.data = new Date().toISOString();
     regAtivo.total = totalCR;
     regAtivo.itensQtd = itensHistCR.length;
     regAtivo.itens = itensHistCR;
     if (concluirSessao) {
       regAtivo.emAndamento = false;
     }
-  } else {
+  } else if (!concluirSessao && !todosComprados && !window._finalizandoCompraRapida) {
     const novoIdHist = 'h_cr_' + Date.now();
     const novaCompraCR = {
       id: novoIdHist,
       data: new Date().toISOString(),
       mercado: '⚡ Compra Rápida',
       origemCompraRapida: true,
-      emAndamento: !concluirSessao,
+      emAndamento: true,
       total: totalCR,
       itensQtd: itensHistCR.length,
       itens: itensHistCR
@@ -12320,6 +12411,8 @@ function sincronizarCompraRapidaNoHistorico(concluirSessao = false) {
       comprasExpandidasIds.add(novoIdHist);
     }
   }
+
+  deduplicarHistoricoCompraRapida();
 }
 
 let timerDebounceEventoCR = null;
@@ -13138,8 +13231,10 @@ function exibirModalzinhoCompraFinalizada() {
 }
 
 function finalizarBlocoCompraRapidaAutomatico() {
-  // 1. Salva/consolida a sessão da Compra Rápida no Histórico
-  sincronizarCompraRapidaNoHistorico(true);
+  window._finalizandoCompraRapida = true;
+
+  // 1. Atualiza a sessão existente da Compra Rápida no Histórico (mantendo a mesma sessão ativa durante o modalzinho)
+  sincronizarCompraRapidaNoHistorico(false);
 
   // 2. Exibe o modalzinho "Compra finalizada!"
   exibirModalzinhoCompraFinalizada();
@@ -13148,7 +13243,7 @@ function finalizarBlocoCompraRapidaAutomatico() {
     clearTimeout(timerModalzinhoCompraFinalizada);
   }
 
-  // 3. Some em seguida e limpa APENAS o bloco concluído de FAVOR COMPRAR!! (sem tocar na Lista de Compras normal!)
+  // 3. Some em seguida, consolida a sessão no Histórico (emAndamento = false) e limpa APENAS o bloco concluído de FAVOR COMPRAR!!
   timerModalzinhoCompraFinalizada = setTimeout(() => {
     const overlay = document.getElementById('modalzinho-compra-finalizada');
     if (overlay) {
@@ -13158,6 +13253,8 @@ function finalizarBlocoCompraRapidaAutomatico() {
         overlay.style.display = 'none';
       }, 240);
     }
+
+    sincronizarCompraRapidaNoHistorico(true);
 
     const idsConcluidos = new Set(
       (AppState.listaAtiva || [])
@@ -13185,6 +13282,7 @@ function finalizarBlocoCompraRapidaAutomatico() {
     }
 
     sincronizarListaAtivaComCatalogo();
+    window._finalizandoCompraRapida = false;
     salvarEstado(true);
     if (typeof forcarSincronizacaoImediataNuvem === 'function') {
       forcarSincronizacaoImediataNuvem();
