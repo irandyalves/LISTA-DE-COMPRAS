@@ -829,10 +829,17 @@ function sincronizarListaAtivaComCatalogo() {
   AppState.catalogo.forEach(prod => {
     if (!prod.selecionado) {
       prod.comprado = false;
+      prod._compradoExplicitoListaNormal = false;
       prod.compradoPor = null;
       prod.compradoPorIcone = null;
       prod.compradoEm = null;
       prod.precoRegistradoMercado = 0;
+    } else if (prod.compraRapida && !prod._compradoExplicitoListaNormal) {
+      // Se o produto está na Compra Rápida e também na Lista Normal ainda não comprada, garante que não fique marcado como comprado na Lista Normal
+      prod.comprado = false;
+      prod.compradoPor = null;
+      prod.compradoPorIcone = null;
+      prod.compradoEm = null;
     }
     if (!prod.compraRapida) {
       prod.compradoCR = false;
@@ -981,6 +988,7 @@ function sincronizarListaAtivaComCatalogo() {
       ultimoPreco: prod.ultimoPreco || precoReferenciaDF,
       dataUltimoPreco: prod.dataUltimoPreco || new Date().toISOString().slice(0, 10),
       comprado: !!prod.comprado,
+      _compradoExplicitoListaNormal: !!prod._compradoExplicitoListaNormal,
       compradoPor: prod.compradoPor || null,
       compradoPorIcone: prod.compradoPorIcone || null,
       compradoEm: prod.compradoEm || null,
@@ -1119,6 +1127,8 @@ function carregarLocalmente() {
         const nomesNaCR = new Set(itensCRSalva.map(it => (it.nome || '').toLowerCase().trim()));
         const idsNaCR = new Set(itensCRSalva.map(it => String(it.catalogoId || String(it.id).replace(/^cr_item_/, ''))));
 
+        const todosNormaisComprados = itensListaNormalSalva.length > 0 && itensListaNormalSalva.every(it => !!it.comprado);
+
         AppState.catalogo.forEach(c => {
           const nomeNormC = (c.nome || '').toLowerCase().trim();
           const idStrC = String(c.id);
@@ -1134,9 +1144,24 @@ function carregarLocalmente() {
             (it.nome || '').toLowerCase().trim() === nomeNormC ||
             String(it.catalogoId || it.id) === idStrC
           );
+          const itemCRSalvo = itensCRSalva.find(it =>
+            (it.nome || '').toLowerCase().trim() === nomeNormC ||
+            String(it.catalogoId || String(it.id).replace(/^cr_item_/, '')) === idStrC
+          );
+
           if (itemNormalSalvo) {
             c.qtde = itemNormalSalvo.qtde || 1;
-            c.comprado = !!itemNormalSalvo.comprado;
+            // Se o item também estava na Compra Rápida (ou sem flag explícita) e a lista normal ainda não foi comprada, garante que não fique concluído por contaminação
+            const compradoNormal = (estaNaCR && !itemNormalSalvo._compradoExplicitoListaNormal && !todosNormaisComprados)
+              ? false
+              : !!itemNormalSalvo.comprado;
+            c.comprado = compradoNormal;
+            c._compradoExplicitoListaNormal = compradoNormal ? !!itemNormalSalvo._compradoExplicitoListaNormal : false;
+            if (!compradoNormal) {
+              c.compradoPor = null;
+              c.compradoPorIcone = null;
+              c.compradoEm = null;
+            }
             c.marca = itemNormalSalvo.marca || c.marca || null;
             c.novoPedidoCasa = !!(itemNormalSalvo.novoPedidoCasa || c.novoPedidoCasa);
             c.adicionadoPor = itemNormalSalvo.adicionadoPor || c.adicionadoPor || null;
@@ -1148,10 +1173,6 @@ function carregarLocalmente() {
             c.origemPreco = itemNormalSalvo.origemPreco || null;
           }
 
-          const itemCRSalvo = itensCRSalva.find(it =>
-            (it.nome || '').toLowerCase().trim() === nomeNormC ||
-            String(it.catalogoId || String(it.id).replace(/^cr_item_/, '')) === idStrC
-          );
           if (itemCRSalvo) {
             c.compraRapida = true;
             c.qtdeCR = itemCRSalvo.qtde || c.qtdeCR || 1;
@@ -1503,10 +1524,13 @@ function inicializarNuvem() {
               (p.nome || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim() === normNuvem
             );
             if (localItem) {
-              const tsLocal = timestampsModificacaoLocalItem[String(localItem.id)] || 0;
-              const modificadoLocalRecente = tsLocal > 0 && (agora - tsLocal) < 2000;
+              const tsLocal = Math.max(
+                timestampsModificacaoLocalItem[String(localItem.id)] || 0,
+                timestampsModificacaoLocalItem['cr_item_' + String(localItem.id)] || 0
+              );
+              const modificadoLocalRecente = (tsLocal > 0 && (agora - tsLocal) < 5000) || !!window._finalizandoCompraRapida;
 
-              // Se este item específico NÃO foi modificado no último segundo aqui, atualiza com a nuvem
+              // Se este item específico NÃO foi modificado recentemente aqui, atualiza com a nuvem
               if (!modificadoLocalRecente) {
                 const eraCRAtivo = !!(localItem.compraRapida && !localItem.compradoCR);
                 const virouCRAtivo = !!(nuvemItem.compraRapida && !nuvemItem.compradoCR);
@@ -1522,11 +1546,22 @@ function inicializarNuvem() {
                   }
                 }
 
+                const protecaoCRListaNormal = (localItem.compraRapida || nuvemItem.compraRapida) && !nuvemItem._compradoExplicitoListaNormal && !localItem._compradoExplicitoListaNormal;
+
                 localItem.selecionado = !!nuvemItem.selecionado;
-                localItem.comprado = !!nuvemItem.comprado;
-                localItem.compradoPor = nuvemItem.compradoPor || null;
-                localItem.compradoPorIcone = nuvemItem.compradoPorIcone || null;
-                localItem.compradoEm = nuvemItem.compradoEm || null;
+                if (protecaoCRListaNormal) {
+                  localItem.comprado = false;
+                  localItem._compradoExplicitoListaNormal = false;
+                  localItem.compradoPor = null;
+                  localItem.compradoPorIcone = null;
+                  localItem.compradoEm = null;
+                } else {
+                  localItem.comprado = !!nuvemItem.comprado;
+                  localItem._compradoExplicitoListaNormal = !!nuvemItem._compradoExplicitoListaNormal;
+                  localItem.compradoPor = nuvemItem.compradoPor || null;
+                  localItem.compradoPorIcone = nuvemItem.compradoPorIcone || null;
+                  localItem.compradoEm = nuvemItem.compradoEm || null;
+                }
                 localItem.qtde = nuvemItem.qtde || localItem.qtde || 1;
                 localItem.marca = nuvemItem.marca || localItem.marca || null;
                 localItem.precoRegistradoMercado = nuvemItem.precoRegistradoMercado || 0;
@@ -7525,6 +7560,9 @@ function alternarItemComprado(id) {
   const item = AppState.listaAtiva.find(i => String(i.id) === String(id));
   if (!item) return;
 
+  const ehItemCR = !!(item.compraRapida || String(item.id).startsWith('cr_item_'));
+  const idCatLimpo = String(item.catalogoId || String(item.id).replace(/^cr_item_/, ''));
+
   // CASO 1: Item ainda NÃO comprado -> Marca imediatamente com 1 clique!
   if (!item.comprado) {
     cancelarPendenteDesmarcar();
@@ -7533,29 +7571,50 @@ function alternarItemComprado(id) {
     item.compradoPorIcone = AppState.usuarioIcone || (AppState.usuarioAtivo === 'Sioneide' ? '👩' : '👨');
     item.compradoEm = Date.now();
     item.novoPedidoCasa = false;
+    if (!ehItemCR) {
+      item._compradoExplicitoListaNormal = true;
+    }
 
-    const catItem = AppState.catalogo.find(c => String(c.id) === String(item.catalogoId || item.id));
+    const catItem = AppState.catalogo.find(c => String(c.id) === idCatLimpo || String(c.id) === String(item.id));
     if (catItem) {
-      if (item.compraRapida) {
+      if (ehItemCR) {
         catItem.compradoCR = true;
         catItem.compradoPorCR = item.compradoPor;
         catItem.compradoPorIconeCR = item.compradoPorIcone;
         catItem.compradoEmCR = item.compradoEm;
+        // Se este produto também está na Lista de Compras normal e ainda não foi comprado lá, garante que continue NÃO comprado!
+        if (catItem.selecionado && !catItem._compradoExplicitoListaNormal) {
+          catItem.comprado = false;
+          catItem.compradoPor = null;
+          catItem.compradoPorIcone = null;
+          catItem.compradoEm = null;
+          const itemNormalAtivo = (AppState.listaAtiva || []).find(
+            i => !i.compraRapida && !String(i.id).startsWith('cr_item_') && String(i.catalogoId || i.id) === String(catItem.id)
+          );
+          if (itemNormalAtivo) {
+            itemNormalAtivo.comprado = false;
+            itemNormalAtivo.compradoPor = null;
+            itemNormalAtivo.compradoPorIcone = null;
+            itemNormalAtivo.compradoEm = null;
+          }
+        }
       } else {
         catItem.comprado = true;
+        catItem._compradoExplicitoListaNormal = true;
         catItem.compradoPor = item.compradoPor;
         catItem.compradoPorIcone = item.compradoPorIcone;
         catItem.compradoEm = item.compradoEm;
         catItem.novoPedidoCasa = false;
       }
       registrarTimestampModificacaoItem(catItem.id);
+      registrarTimestampModificacaoItem('cr_item_' + catItem.id);
     }
 
     registrarTimestampModificacaoItem(item.id);
     salvarEstado(true);
     if (typeof atualizarBadgeCompraRapida === 'function') atualizarBadgeCompraRapida();
 
-    const catAlvo = item.compraRapida ? '⚡ COMPRA RÁPIDA / EMERGENCIAL' : (item.categoria || 'Diversos');
+    const catAlvo = ehItemCR ? '⚡ COMPRA RÁPIDA / EMERGENCIAL' : (item.categoria || 'Diversos');
     const atualizouDOM = atualizarVisualItemLinha(item, false);
     if (atualizouDOM) {
       setTimeout(() => {
@@ -7570,8 +7629,8 @@ function alternarItemComprado(id) {
     }
 
     // Quando marcar todos os itens de FAVOR COMPRAR!! (Compra Rápida), exibe modalzinho "Compra finalizada!" e some em seguida!
-    if (item.compraRapida) {
-      const itensCR = (AppState.listaAtiva || []).filter(i => i.compraRapida);
+    if (ehItemCR) {
+      const itensCR = (AppState.listaAtiva || []).filter(i => i.compraRapida || String(i.id).startsWith('cr_item_'));
       const todosCRComprados = itensCR.length > 0 && itensCR.every(i => i.comprado);
       if (todosCRComprados) {
         setTimeout(() => {
@@ -7584,7 +7643,7 @@ function alternarItemComprado(id) {
     }
 
     // Finalização Automática quando marcar o último item da Lista de Compras normal
-    const itensListaNormal = (AppState.listaAtiva || []).filter(i => !i.compraRapida);
+    const itensListaNormal = (AppState.listaAtiva || []).filter(i => !i.compraRapida && !String(i.id).startsWith('cr_item_'));
     const todosComprados = itensListaNormal.length > 0 && itensListaNormal.every(i => i.comprado);
     if (todosComprados) {
       setTimeout(() => {
@@ -7602,21 +7661,26 @@ function alternarItemComprado(id) {
     item.compradoPor = null;
     item.compradoPorIcone = null;
     item.compradoEm = null;
+    if (!ehItemCR) {
+      item._compradoExplicitoListaNormal = false;
+    }
 
-    const catItem = AppState.catalogo.find(c => String(c.id) === String(item.catalogoId || item.id));
+    const catItem = AppState.catalogo.find(c => String(c.id) === idCatLimpo || String(c.id) === String(item.id));
     if (catItem) {
-      if (item.compraRapida) {
+      if (ehItemCR) {
         catItem.compradoCR = false;
         catItem.compradoPorCR = null;
         catItem.compradoPorIconeCR = null;
         catItem.compradoEmCR = null;
       } else {
         catItem.comprado = false;
+        catItem._compradoExplicitoListaNormal = false;
         catItem.compradoPor = null;
         catItem.compradoPorIcone = null;
         catItem.compradoEm = null;
       }
       registrarTimestampModificacaoItem(catItem.id);
+      registrarTimestampModificacaoItem('cr_item_' + catItem.id);
     }
 
     registrarTimestampModificacaoItem(item.id);
@@ -11374,7 +11438,15 @@ function restaurarItensPresetNoCatalogo(dadosLista, modo = 'substituir') {
   }
 
   if (modo === 'substituir') {
-    AppState.catalogo.forEach(it => { it.selecionado = false; });
+    AppState.catalogo.forEach(it => {
+      it.selecionado = false;
+      it.comprado = false;
+      it._compradoExplicitoListaNormal = false;
+      it.compradoPor = null;
+      it.compradoPorIcone = null;
+      it.compradoEm = null;
+      it.precoRegistradoMercado = 0;
+    });
   }
 
   const idSet = new Set(dadosLista.ids || []);
@@ -11384,6 +11456,12 @@ function restaurarItensPresetNoCatalogo(dadosLista, modo = 'substituir') {
   AppState.catalogo.forEach(it => {
     if (idSet.has(it.id)) {
       it.selecionado = true;
+      it.comprado = false;
+      it._compradoExplicitoListaNormal = false;
+      it.compradoPor = null;
+      it.compradoPorIcone = null;
+      it.compradoEm = null;
+      it.precoRegistradoMercado = 0;
       if (detalhes[it.id]) {
         if (detalhes[it.id].qtde) it.qtde = detalhes[it.id].qtde;
         if (detalhes[it.id].marca !== undefined) it.marca = detalhes[it.id].marca;
@@ -12442,6 +12520,12 @@ function aplicarCompraRapidaImediata() {
       prod.compraRapida = true;
       prod.compradoCR = false;
       prod.qtdeCR = dados.qtde || 1;
+      if (prod.selecionado && !prod._compradoExplicitoListaNormal) {
+        prod.comprado = false;
+        prod.compradoPor = null;
+        prod.compradoPorIcone = null;
+        prod.compradoEm = null;
+      }
       if (ehNovoEnvio) {
         if (!dados.timestampAtribuido) {
           dados.timestampAtribuido = agora + (++offsetOrdem);
@@ -13099,6 +13183,12 @@ function enviarAvisoCompraRapida() {
       prod.compraRapida = true;
       prod.compradoCR = false;
       prod.qtdeCR = dados.qtde || 1;
+      if (prod.selecionado && !prod._compradoExplicitoListaNormal) {
+        prod.comprado = false;
+        prod.compradoPor = null;
+        prod.compradoPorIcone = null;
+        prod.compradoEm = null;
+      }
 
       const nomeCurto = (prod.nome || '').split('(')[0].trim();
       const labelItem = prod.qtdeCR > 1 ? `${nomeCurto} (${prod.qtdeCR}x)` : nomeCurto;
@@ -13194,6 +13284,12 @@ function dispensarDestaqueItemCompraRapida(id) {
       cat.compradoCR = false;
       cat.precoRegistradoCR = 0;
       cat.novoPedidoCasa = false;
+      if (cat.selecionado && !cat._compradoExplicitoListaNormal) {
+        cat.comprado = false;
+        cat.compradoPor = null;
+        cat.compradoPorIcone = null;
+        cat.compradoEm = null;
+      }
       registrarTimestampModificacaoItem(cat.id);
     }
     registrarTimestampModificacaoItem(item.id);
@@ -13233,6 +13329,25 @@ function exibirModalzinhoCompraFinalizada() {
 function finalizarBlocoCompraRapidaAutomatico() {
   window._finalizandoCompraRapida = true;
 
+  // Garante imediatamente que nenhum produto da Compra Rápida contamine o estado de concluído da Lista Normal
+  const idsCRAtuais = new Set(
+    (AppState.listaAtiva || [])
+      .filter(i => i.compraRapida || String(i.id).startsWith('cr_item_'))
+      .map(i => String(i.catalogoId || String(i.id).replace(/^cr_item_/, '')))
+  );
+  (AppState.catalogo || []).forEach(c => {
+    if ((c.compraRapida || idsCRAtuais.has(String(c.id))) && c.selecionado && !c._compradoExplicitoListaNormal) {
+      c.comprado = false;
+      c.compradoPor = null;
+      c.compradoPorIcone = null;
+      c.compradoEm = null;
+      registrarTimestampModificacaoItem(c.id);
+    }
+    if (c.compraRapida || idsCRAtuais.has(String(c.id))) {
+      registrarTimestampModificacaoItem('cr_item_' + c.id);
+    }
+  });
+
   // 1. Atualiza a sessão existente da Compra Rápida no Histórico (mantendo a mesma sessão ativa durante o modalzinho)
   sincronizarCompraRapidaNoHistorico(false);
 
@@ -13258,8 +13373,8 @@ function finalizarBlocoCompraRapidaAutomatico() {
 
     const idsConcluidos = new Set(
       (AppState.listaAtiva || [])
-        .filter(i => i.compraRapida)
-        .map(i => String(i.catalogoId || i.id))
+        .filter(i => i.compraRapida || String(i.id).startsWith('cr_item_'))
+        .map(i => String(i.catalogoId || String(i.id).replace(/^cr_item_/, '')))
     );
 
     (AppState.catalogo || []).forEach(c => {
@@ -13272,6 +13387,13 @@ function finalizarBlocoCompraRapidaAutomatico() {
         c.precoRegistradoCR = 0;
         c.qtdeCR = 1;
         c.novoPedidoCasa = false;
+        // Garante que se o item também estiver na Lista de Compras normal ainda não comprada, jamais fique marcado como concluído
+        if (c.selecionado && !c._compradoExplicitoListaNormal) {
+          c.comprado = false;
+          c.compradoPor = null;
+          c.compradoPorIcone = null;
+          c.compradoEm = null;
+        }
         registrarTimestampModificacaoItem(c.id);
         registrarTimestampModificacaoItem('cr_item_' + c.id);
       }
