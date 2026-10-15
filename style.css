@@ -11955,16 +11955,21 @@ body.tema-escuro .compra-rapida-footer {
   box-shadow: 0 6px 18px rgba(234, 88, 12, 0.55);
 }
 
-/* Linha pontilhada de fora a fora (encostando nas bordas) + Sombra dobrada cobrindo as linhas de baixo */
+/* Linha pontilhada de fora a fora (cortina sobre a lista) + Sombra projetada sobre o que está embaixo */
 .mcol-tr-divisor-compra-rapida {
   width: 100% !important;
+  position: relative !important;
+  z-index: 25 !important;
 }
 
 .mcol-tr-divisor-compra-rapida td.mcol-td-divisor-compra-rapida {
-  padding: 12px 0 16px 0 !important;
+  padding: 6px 0 0 0 !important;
   background: transparent !important;
   border: none !important;
   width: 100% !important;
+  height: 0 !important;
+  line-height: 0 !important;
+  position: relative !important;
 }
 
 .linha-pontilhada-pos-compra-rapida {
@@ -11973,20 +11978,25 @@ body.tema-escuro .compra-rapida-footer {
   border-bottom: 2px dashed rgba(245, 158, 11, 0.85) !important;
   margin: 0 !important;
   display: block !important;
+  position: relative !important;
+  z-index: 26 !important;
 }
 
 .sombra-projetada-pos-compra-rapida {
   width: 100% !important;
   height: 44px !important;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.5) 35%, rgba(0, 0, 0, 0.2) 70%, transparent 100%) !important;
-  margin-top: 1px !important;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.55) 30%, rgba(0, 0, 0, 0.2) 65%, transparent 100%) !important;
+  margin-top: 0 !important;
+  margin-bottom: -44px !important; /* Efeito cortina: a sombra cai por cima da categoria de baixo sem empurrá-la */
   pointer-events: none !important;
   display: block !important;
+  position: relative !important;
+  z-index: 25 !important;
 }
 
 [data-theme="light"] .sombra-projetada-pos-compra-rapida,
 body:not(.tema-escuro) .sombra-projetada-pos-compra-rapida {
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0.45) 0%, rgba(15, 23, 42, 0.22) 35%, rgba(15, 23, 42, 0.08) 70%, transparent 100%) !important;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.45) 0%, rgba(15, 23, 42, 0.25) 30%, rgba(15, 23, 42, 0.08) 65%, transparent 100%) !important;
 }
 
 /* ==========================================================================
