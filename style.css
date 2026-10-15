@@ -7462,20 +7462,27 @@ body.tema-escuro .drawer-fechar-btn {
 .toast-patroa-corpo {
   flex: 1;
   min-width: 0;
+  color: #000000 !important;
 }
 
 .toast-patroa-titulo {
   font-size: 0.88rem;
   font-weight: 700;
-  color: #92400E;
+  color: #000000 !important;
   margin-bottom: 4px;
   line-height: 1.35;
+}
+
+.toast-patroa-titulo strong,
+.toast-patroa-titulo b {
+  color: #000000 !important;
+  font-weight: 900 !important;
 }
 
 .toast-patroa-nome-autor {
   font-size: 0.98rem;
   font-weight: 900;
-  color: #78350F;
+  color: #000000 !important;
   letter-spacing: 0.3px;
 }
 
@@ -7491,11 +7498,11 @@ body.tema-escuro .drawer-fechar-btn {
   position: absolute !important;
   top: 8px !important;
   right: 8px !important;
-  background: rgba(180, 83, 9, 0.15);
-  border: none;
-  color: #92400E;
+  background: rgba(0, 0, 0, 0.08) !important;
+  border: 1px solid rgba(0, 0, 0, 0.15) !important;
+  color: #000000 !important;
   font-size: 1.05rem;
-  font-weight: 700;
+  font-weight: 800;
   width: 26px;
   height: 26px;
   border-radius: 50%;
@@ -12359,24 +12366,17 @@ body.tema-escuro .btn-cr-header-concluir {
 }
 
 /* Banner flutuante quando chega um aviso de Compra Rápida da Patroa */
-#toast-aviso-patroa.modo-compra-rapida {
-  background: linear-gradient(135deg, #EA580C 0%, #B45309 100%) !important;
-  border: 2px solid #FDE047 !important;
-  box-shadow: 0 12px 32px rgba(234, 88, 12, 0.6) !important;
+#toast-aviso-patroa.modo-compra-rapida .toast-patroa-conteudo {
+  border: 2px solid #F59E0B !important;
 }
 
-#toast-aviso-patroa.modo-compra-rapida .toast-patroa-titulo {
-  color: #FEF3C7 !important;
-}
-
-#toast-aviso-patroa.modo-compra-rapida .toast-patroa-nome-autor {
-  color: #FFFFFF !important;
-}
-
+#toast-aviso-patroa.modo-compra-rapida .toast-patroa-corpo,
+#toast-aviso-patroa.modo-compra-rapida .toast-patroa-titulo,
+#toast-aviso-patroa.modo-compra-rapida .toast-patroa-titulo strong,
+#toast-aviso-patroa.modo-compra-rapida .toast-patroa-titulo b,
+#toast-aviso-patroa.modo-compra-rapida .toast-patroa-nome-autor,
 #toast-aviso-patroa.modo-compra-rapida .toast-patroa-itens {
-  color: #FFFFFF !important;
-  font-size: 1.05rem !important;
-  font-weight: 900 !important;
+  color: #000000 !important;
 }
 
 @media (max-width: 640px) {
