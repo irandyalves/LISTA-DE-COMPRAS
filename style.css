@@ -11426,6 +11426,7 @@ body.tema-escuro .compra-rapida-titulo {
   cursor: pointer !important;
   line-height: 1.2 !important;
   transition: all 0.15s ease;
+  margin-right: 6px !important;
 }
 
 .btn-ordem-az-cr:hover {
@@ -11443,20 +11444,30 @@ body.tema-escuro .compra-rapida-titulo {
 .controles-fonte-cr-modal {
   display: inline-flex !important;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
+  margin-right: 14px !important;
 }
 
 .controles-fonte-cr-modal .btn-fonte-header {
-  background: rgba(0, 0, 0, 0.08) !important;
-  border: 1px solid rgba(0, 0, 0, 0.25) !important;
-  color: #000000 !important;
+  background: #2563EB !important;
+  border: 1px solid #1D4ED8 !important;
+  color: #FFFFFF !important;
   font-weight: 900 !important;
+  border-radius: 6px !important;
+  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.35) !important;
+  transition: all 0.15s ease;
 }
 
 .controles-fonte-cr-modal .btn-fonte-header:hover {
-  background: rgba(0, 0, 0, 0.16) !important;
-  border-color: #000000 !important;
-  color: #000000 !important;
+  background: #1D4ED8 !important;
+  border-color: #1E40AF !important;
+  color: #FFFFFF !important;
+}
+
+.controles-fonte-cr-modal .btn-fonte-header .txt-fonte-menor,
+.controles-fonte-cr-modal .btn-fonte-header .txt-fonte-maior {
+  color: #FFFFFF !important;
+  font-weight: 900 !important;
 }
 
 .modal-fechar-btn {
