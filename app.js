@@ -1796,21 +1796,30 @@ function escapeHtml(texto) {
 }
 
 function formatarItemAvisoPatroa(itemStr) {
-  if (!itemStr) return '';
+  if (!itemStr) return null;
   let str = String(itemStr).trim();
+  let qtde = null;
+  let nomeLimpo = str;
+
   const matchJaFmt = str.match(/^(\d+)x\s+(.+)$/i);
   if (matchJaFmt) {
-    return `${matchJaFmt[1]}x ${matchJaFmt[2].trim()}`;
+    qtde = parseInt(matchJaFmt[1], 10);
+    nomeLimpo = matchJaFmt[2].trim();
+  } else {
+    const matchQtdeDe = str.match(/^(\d+)\s*qtde\s+de\s+(.+)$/i);
+    if (matchQtdeDe) {
+      qtde = parseInt(matchQtdeDe[1], 10);
+      nomeLimpo = matchQtdeDe[2].trim();
+    } else {
+      const matchQtdeSufixo = str.match(/\((\d+)x\)\s*$/i);
+      if (matchQtdeSufixo) {
+        qtde = parseInt(matchQtdeSufixo[1], 10);
+        nomeLimpo = str.replace(/\s*\(\d+x\)\s*$/i, '').trim();
+      }
+    }
   }
-  const matchQtdeDe = str.match(/^(\d+)\s*qtde\s+de\s+(.+)$/i);
-  let qtde = matchQtdeDe ? parseInt(matchQtdeDe[1], 10) : null;
-  let nomeLimpo = matchQtdeDe ? matchQtdeDe[2].trim() : str;
 
-  const matchQtdeSufixo = nomeLimpo.match(/\((\d+)x\)\s*$/i);
-  if (matchQtdeSufixo) {
-    qtde = parseInt(matchQtdeSufixo[1], 10);
-    nomeLimpo = nomeLimpo.replace(/\s*\(\d+x\)\s*$/i, '').trim();
-  }
+  nomeLimpo = nomeLimpo.replace(/^[-\s|]+/, '').replace(/[-\s|]+$/, '').trim();
 
   if (!qtde && typeof AppState !== 'undefined' && Array.isArray(AppState.catalogo)) {
     const nomeNorm = nomeLimpo.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
@@ -1823,7 +1832,8 @@ function formatarItemAvisoPatroa(itemStr) {
   if (!qtde || isNaN(qtde)) {
     qtde = 1;
   }
-  return `${qtde}x ${nomeLimpo}`;
+  const qtdePad = String(qtde).padStart(2, '0');
+  return { qtde: qtdePad, nome: nomeLimpo };
 }
 
 // Banner Flutuante de Pedido, Compra Rápida ou Desistência da Patroa (Sioneide)
@@ -1839,7 +1849,10 @@ function exibirAvisoPedidoPatroa(autor, itens, icone = '👩', tipo = 'adicionad
   const nomeFormatado = nomeRaw.charAt(0).toUpperCase() + nomeRaw.slice(1).toLowerCase();
   const nomeUpper = nomeRaw.toUpperCase();
   const listaItensArr = Array.isArray(itens) ? itens : [String(itens)];
-  const listaTexto = listaItensArr.map(formatarItemAvisoPatroa).filter(Boolean).join(', ');
+  const itensFormatados = listaItensArr.map(formatarItemAvisoPatroa).filter(Boolean);
+  const htmlItens = (itensFormatados.length > 0)
+    ? '- ' + itensFormatados.map(it => `<span class="toast-item-qtde-destaque">${it.qtde}</span> <span class="toast-item-nome-texto">${escapeHtml(it.nome)}</span>`).join(' <span class="toast-item-separador-barra">|</span> ')
+    : '';
 
   const dAgora = new Date();
   const hh = String(dAgora.getHours()).padStart(2, '0');
@@ -1855,24 +1868,24 @@ function exibirAvisoPedidoPatroa(autor, itens, icone = '👩', tipo = 'adicionad
       tituloEl.innerHTML = `<strong class="toast-patroa-nome-autor">${escapeHtml(nomeFormatado)}</strong> desistiu de comprar o item:`;
     }
     if (itensEl) {
-      itensEl.textContent = listaTexto;
+      itensEl.innerHTML = htmlItens;
     }
   } else if (tipo === 'compra_rapida') {
     banner.classList.add('modo-compra-rapida');
     if (iconeEl) iconeEl.textContent = '⚡';
     if (tituloEl) {
-      tituloEl.innerHTML = `<strong class="toast-patroa-nome-autor">${escapeHtml(nomeUpper)}</strong> pediu pra comprar <strong>HOJE</strong> . ${horaStr}`;
+      tituloEl.innerHTML = `<strong class="toast-patroa-nome-autor">${escapeHtml(nomeUpper)}</strong> pediu pra comprar <span class="toast-patroa-badge-tempo">HOJE  ${horaStr}</span>`;
     }
     if (itensEl) {
-      itensEl.textContent = listaTexto;
+      itensEl.innerHTML = htmlItens;
     }
   } else {
     if (iconeEl) iconeEl.textContent = '🔔';
     if (tituloEl) {
-      tituloEl.innerHTML = `<strong class="toast-patroa-nome-autor">${escapeHtml(nomeUpper)}</strong> pediu pra comprar <strong>HOJE</strong> . ${horaStr}`;
+      tituloEl.innerHTML = `<strong class="toast-patroa-nome-autor">${escapeHtml(nomeUpper)}</strong> pediu pra comprar <span class="toast-patroa-badge-tempo">HOJE  ${horaStr}</span>`;
     }
     if (itensEl) {
-      itensEl.textContent = listaTexto;
+      itensEl.innerHTML = htmlItens;
     }
   }
 

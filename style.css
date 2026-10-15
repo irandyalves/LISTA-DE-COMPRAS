@@ -7486,12 +7486,46 @@ body.tema-escuro .drawer-fechar-btn {
   letter-spacing: 0.3px;
 }
 
+.toast-patroa-badge-tempo {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 7px;
+  border: 1.5px solid #D97706;
+  border-radius: 6px;
+  font-weight: 900;
+  font-size: 0.82rem;
+  background: rgba(245, 158, 11, 0.15);
+  color: #000000 !important;
+  margin-left: 4px;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
 .toast-patroa-itens {
-  font-size: 1.05rem; /* Aumentado em 10% */
-  font-weight: 900 !important; /* BOLD */
+  font-size: 1.05rem;
+  font-weight: 500 !important; /* Itens sem bold */
   color: #000000 !important;
   word-break: break-word;
-  line-height: 1.35;
+  line-height: 1.45;
+}
+
+.toast-item-qtde-destaque {
+  color: #DC2626 !important; /* Vermelho vivo */
+  font-size: 1.15em !important; /* 15% maior */
+  font-weight: 900 !important; /* BOLD */
+  display: inline-block;
+  line-height: 1;
+}
+
+.toast-item-nome-texto {
+  font-weight: 500 !important; /* Sem bold */
+  color: #000000 !important;
+}
+
+.toast-item-separador-barra {
+  color: #B45309 !important;
+  font-weight: 700;
+  margin: 0 5px;
 }
 
 .toast-patroa-fechar {
