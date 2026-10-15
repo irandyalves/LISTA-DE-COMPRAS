@@ -7452,13 +7452,11 @@ body.tema-escuro .drawer-fechar-btn {
 }
 
 .toast-patroa-titulo {
-  font-size: 0.86rem;
+  font-size: 0.88rem;
   font-weight: 700;
   color: #92400E;
-  margin-bottom: 3px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
+  margin-bottom: 4px;
+  line-height: 1.35;
 }
 
 .toast-patroa-nome-autor {
@@ -7469,10 +7467,11 @@ body.tema-escuro .drawer-fechar-btn {
 }
 
 .toast-patroa-itens {
-  font-size: 0.95rem;
-  font-weight: 800 !important;
+  font-size: 1.05rem; /* Aumentado em 10% */
+  font-weight: 900 !important; /* BOLD */
   color: #000000 !important;
   word-break: break-word;
+  line-height: 1.35;
 }
 
 .toast-patroa-fechar {
@@ -12344,6 +12343,20 @@ body.tema-escuro .btn-cr-header-concluir {
   background: linear-gradient(135deg, #EA580C 0%, #B45309 100%) !important;
   border: 2px solid #FDE047 !important;
   box-shadow: 0 12px 32px rgba(234, 88, 12, 0.6) !important;
+}
+
+#toast-aviso-patroa.modo-compra-rapida .toast-patroa-titulo {
+  color: #FEF3C7 !important;
+}
+
+#toast-aviso-patroa.modo-compra-rapida .toast-patroa-nome-autor {
+  color: #FFFFFF !important;
+}
+
+#toast-aviso-patroa.modo-compra-rapida .toast-patroa-itens {
+  color: #FFFFFF !important;
+  font-size: 1.05rem !important;
+  font-weight: 900 !important;
 }
 
 @media (max-width: 640px) {

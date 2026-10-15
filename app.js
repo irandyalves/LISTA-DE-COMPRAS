@@ -1795,6 +1795,30 @@ function escapeHtml(texto) {
     .replace(/'/g, '&#39;');
 }
 
+function formatarItemAvisoPatroa(itemStr) {
+  if (!itemStr) return '';
+  let str = String(itemStr).trim();
+  if (/^\d+\s*qtde\s+de\s+/i.test(str)) {
+    return str;
+  }
+  const matchQtde = str.match(/\((\d+)x\)\s*$/i);
+  let qtde = matchQtde ? parseInt(matchQtde[1], 10) : null;
+  let nomeLimpo = str.replace(/\s*\(\d+x\)\s*$/i, '').trim();
+
+  if (!qtde && typeof AppState !== 'undefined' && Array.isArray(AppState.catalogo)) {
+    const nomeNorm = nomeLimpo.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+    const p = AppState.catalogo.find(x => (x.nome || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim() === nomeNorm)
+      || AppState.catalogo.find(x => (x.nome || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().includes(nomeNorm));
+    if (p) {
+      qtde = p.qtdeCR || p.quantidade || 1;
+    }
+  }
+  if (!qtde || isNaN(qtde)) {
+    qtde = 1;
+  }
+  return `${qtde} qtde de ${nomeLimpo}`;
+}
+
 // Banner Flutuante de Pedido, Compra Rápida ou Desistência da Patroa (Sioneide)
 let timerAvisoPatroa = null;
 function exibirAvisoPedidoPatroa(autor, itens, icone = '👩', tipo = 'adicionado') {
@@ -1808,7 +1832,12 @@ function exibirAvisoPedidoPatroa(autor, itens, icone = '👩', tipo = 'adicionad
   const nomeFormatado = nomeRaw.charAt(0).toUpperCase() + nomeRaw.slice(1).toLowerCase();
   const nomeUpper = nomeRaw.toUpperCase();
   const listaItensArr = Array.isArray(itens) ? itens : [String(itens)];
-  const listaTexto = listaItensArr.join(', ');
+  const listaTexto = listaItensArr.map(formatarItemAvisoPatroa).filter(Boolean).join(', ');
+
+  const dAgora = new Date();
+  const hh = String(dAgora.getHours()).padStart(2, '0');
+  const mm = String(dAgora.getMinutes()).padStart(2, '0');
+  const horaStr = `${hh}:${mm}`;
 
   banner.classList.remove('modo-desistencia', 'modo-compra-rapida');
 
@@ -1825,7 +1854,7 @@ function exibirAvisoPedidoPatroa(autor, itens, icone = '👩', tipo = 'adicionad
     banner.classList.add('modo-compra-rapida');
     if (iconeEl) iconeEl.textContent = '⚡';
     if (tituloEl) {
-      tituloEl.innerHTML = `<span class="badge-toast-compra-rapida">⚡ COMPRA RÁPIDA EMERGENCIAL (${listaItensArr.length})</span> <strong class="toast-patroa-nome-autor">${escapeHtml(nomeUpper)}</strong> pediu para trazer hoje:`;
+      tituloEl.innerHTML = `<strong class="toast-patroa-nome-autor">${escapeHtml(nomeUpper)}</strong> pediu para comprar HOJE . ${horaStr}:`;
     }
     if (itensEl) {
       itensEl.textContent = listaTexto;
@@ -1833,7 +1862,7 @@ function exibirAvisoPedidoPatroa(autor, itens, icone = '👩', tipo = 'adicionad
   } else {
     if (iconeEl) iconeEl.textContent = '🔔';
     if (tituloEl) {
-      tituloEl.innerHTML = `<strong class="toast-patroa-nome-autor">${escapeHtml(nomeUpper)}</strong> | pediu para comprar:`;
+      tituloEl.innerHTML = `<strong class="toast-patroa-nome-autor">${escapeHtml(nomeUpper)}</strong> pediu para comprar HOJE . ${horaStr}:`;
     }
     if (itensEl) {
       itensEl.textContent = listaTexto;
