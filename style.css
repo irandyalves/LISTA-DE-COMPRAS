@@ -11955,32 +11955,38 @@ body.tema-escuro .compra-rapida-footer {
   box-shadow: 0 6px 18px rgba(234, 88, 12, 0.55);
 }
 
-/* Espaço reduzido (pertinho da linha pontilhada) + Sombra projetada cobrindo as linhas de baixo */
+/* Linha pontilhada de fora a fora (encostando nas bordas) + Sombra dobrada cobrindo as linhas de baixo */
+.mcol-tr-divisor-compra-rapida {
+  width: 100% !important;
+}
+
 .mcol-tr-divisor-compra-rapida td.mcol-td-divisor-compra-rapida {
-  padding: 4px 4px 14px 4px !important;
+  padding: 12px 0 16px 0 !important;
   background: transparent !important;
   border: none !important;
+  width: 100% !important;
 }
 
 .linha-pontilhada-pos-compra-rapida {
-  width: 100%;
-  height: 0;
-  border-bottom: 2px dashed rgba(245, 158, 11, 0.8) !important;
+  width: 100% !important;
+  height: 0 !important;
+  border-bottom: 2px dashed rgba(245, 158, 11, 0.85) !important;
   margin: 0 !important;
+  display: block !important;
 }
 
 .sombra-projetada-pos-compra-rapida {
-  width: 100%;
-  height: 22px;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.72) 0%, rgba(0, 0, 0, 0.3) 50%, rgba(0, 0, 0, 0) 100%);
-  margin-top: 1px;
-  pointer-events: none;
-  border-radius: 0 0 10px 10px;
+  width: 100% !important;
+  height: 44px !important;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.5) 35%, rgba(0, 0, 0, 0.2) 70%, transparent 100%) !important;
+  margin-top: 1px !important;
+  pointer-events: none !important;
+  display: block !important;
 }
 
 [data-theme="light"] .sombra-projetada-pos-compra-rapida,
 body:not(.tema-escuro) .sombra-projetada-pos-compra-rapida {
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0.3) 0%, rgba(15, 23, 42, 0.12) 50%, rgba(15, 23, 42, 0) 100%);
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.45) 0%, rgba(15, 23, 42, 0.22) 35%, rgba(15, 23, 42, 0.08) 70%, transparent 100%) !important;
 }
 
 /* ==========================================================================
