@@ -4951,6 +4951,7 @@ function renderizarListaCompras() {
         <tr class="mcol-tr-divisor-compra-rapida" aria-hidden="true">
           <td colspan="${totalColsDivisor}" class="mcol-td-divisor-compra-rapida">
             <div class="linha-pontilhada-pos-compra-rapida"></div>
+            <div class="sombra-projetada-pos-compra-rapida"></div>
           </td>
         </tr>
       `;

@@ -11955,9 +11955,9 @@ body.tema-escuro .compra-rapida-footer {
   box-shadow: 0 6px 18px rgba(234, 88, 12, 0.55);
 }
 
-/* Espaço dobrado + Linha Pontilhada entre o último card de Compra Rápida e o primeiro título da lista */
+/* Espaço reduzido (pertinho da linha pontilhada) + Sombra projetada cobrindo as linhas de baixo */
 .mcol-tr-divisor-compra-rapida td.mcol-td-divisor-compra-rapida {
-  padding: 22px 4px 26px 4px !important;
+  padding: 4px 4px 14px 4px !important;
   background: transparent !important;
   border: none !important;
 }
@@ -11965,7 +11965,22 @@ body.tema-escuro .compra-rapida-footer {
 .linha-pontilhada-pos-compra-rapida {
   width: 100%;
   height: 0;
-  border-bottom: 2px dashed rgba(245, 158, 11, 0.65) !important;
+  border-bottom: 2px dashed rgba(245, 158, 11, 0.8) !important;
+  margin: 0 !important;
+}
+
+.sombra-projetada-pos-compra-rapida {
+  width: 100%;
+  height: 22px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.72) 0%, rgba(0, 0, 0, 0.3) 50%, rgba(0, 0, 0, 0) 100%);
+  margin-top: 1px;
+  pointer-events: none;
+  border-radius: 0 0 10px 10px;
+}
+
+[data-theme="light"] .sombra-projetada-pos-compra-rapida,
+body:not(.tema-escuro) .sombra-projetada-pos-compra-rapida {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.3) 0%, rgba(15, 23, 42, 0.12) 50%, rgba(15, 23, 42, 0) 100%);
 }
 
 /* ==========================================================================
