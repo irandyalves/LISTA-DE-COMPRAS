@@ -4384,8 +4384,8 @@ body.tema-escuro .despensa-aba-tab.btn-aba-favoritos-estrela.ativa,
   min-width: 14px;
   border-radius: 2px;
   border: none !important;
-  background: #F1F5F9;
-  color: #334155;
+  background: #1E293B;
+  color: #4ADE80 !important;
   font-weight: 900;
   font-size: 0.75rem;
   cursor: pointer;
@@ -4398,7 +4398,7 @@ body.tema-escuro .despensa-aba-tab.btn-aba-favoritos-estrela.ativa,
 }
 
 .btn-step-tabela:active {
-  background: #E2E8F0;
+  background: #334155;
   transform: scale(0.92);
 }
 
@@ -4411,7 +4411,7 @@ body.tema-escuro .despensa-aba-tab.btn-aba-favoritos-estrela.ativa,
   text-align: center;
   font-weight: 800;
   font-size: 0.78rem;
-  color: #0F172A;
+  color: #4ADE80 !important;
   padding: 0;
   -moz-appearance: textfield;
 }
@@ -10261,7 +10261,7 @@ body.tema-escuro .mcol-prod-nome {
 [data-theme="dark"] .btn-step-tabela,
 body.tema-escuro .btn-step-tabela {
   background: #334155 !important;
-  color: #F8FAFC !important;
+  color: #4ADE80 !important;
 }
 
 [data-theme="dark"] .input-qtde-tabela,
@@ -10270,7 +10270,7 @@ body.tema-escuro .input-qtde-tabela,
 body.tema-escuro .input-qtde-card {
   background: transparent !important;
   border: none !important;
-  color: #F8FAFC !important;
+  color: #4ADE80 !important;
 }
 
 [data-theme="dark"] .badge-preco-real.com-preco,
@@ -12088,15 +12088,110 @@ body.tema-escuro .bpcr-titulo {
   display: none !important;
 }
 
-.cr-titulo-destaque {
-  color: #FBBF24 !important;
+/* Cabeçalho da Compra Rápida com Fontes Brancas */
+.cr-titulo-destaque,
+.secao-header-compra-rapida .cr-titulo-destaque,
+.secao-header-compra-rapida .cr-data-label,
+.secao-header-compra-rapida .cr-hora-label,
+.secao-header-compra-rapida .cr-comprar-label,
+[data-theme="dark"] .cr-titulo-destaque,
+body.tema-escuro .cr-titulo-destaque,
+[data-theme="dark"] .secao-header-compra-rapida .cr-titulo-destaque,
+body.tema-escuro .secao-header-compra-rapida .cr-titulo-destaque,
+.secao-header-compra-rapida.fundo-claro .cr-titulo-destaque,
+.cr-fundo-claro .secao-header-compra-rapida .cr-titulo-destaque {
+  color: #FFFFFF !important;
   font-weight: 900 !important;
   letter-spacing: 0.02em;
 }
 
-[data-theme="dark"] .cr-titulo-destaque,
-body.tema-escuro .cr-titulo-destaque {
-  color: #FBBF24 !important;
+.cr-dot-branco,
+.secao-header-compra-rapida .cr-dot-branco {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  background-color: #FFFFFF !important;
+  border-radius: 50%;
+  margin: 0 5px 2px 5px;
+  vertical-align: middle;
+  border: 1px solid rgba(255, 255, 255, 0.8) !important;
+  box-shadow: 0 0 3px rgba(255, 255, 255, 0.7);
+}
+
+.cr-divisor-barra,
+.secao-header-compra-rapida .cr-divisor-barra {
+  display: inline-block;
+  margin: 0 6px;
+  color: #FFFFFF !important;
+  opacity: 0.85;
+  font-weight: normal;
+}
+
+.btn-cr-header-concluir,
+.secao-header-compra-rapida .btn-cr-header-concluir,
+[data-theme="dark"] .btn-cr-header-concluir,
+body.tema-escuro .btn-cr-header-concluir,
+[data-theme="dark"] .secao-header-compra-rapida .btn-cr-header-concluir,
+body.tema-escuro .secao-header-compra-rapida .btn-cr-header-concluir,
+.cr-fundo-claro .secao-header-compra-rapida .btn-cr-header-concluir,
+.secao-header-compra-rapida.fundo-claro .btn-cr-header-concluir {
+  background: rgba(255, 255, 255, 0.18) !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255, 255, 255, 0.45) !important;
+  font-weight: 800 !important;
+}
+
+.secao-header-compra-rapida th,
+.secao-header-compra-rapida td {
+  background: linear-gradient(90deg, #0B192C 0%, #1E3A8A 100%) !important;
+  border-top: 2px solid #1D4ED8 !important;
+  border-bottom: 2px solid #1D4ED8 !important;
+}
+
+/* Linha do produto emergencial com Fundo Claro */
+.cr-fundo-claro .mcol-tr-item.tr-item-compra-rapida:not(.item-linha-comprado) .mcol-prod-card-cell,
+.mcol-tr-item.tr-item-compra-rapida.fundo-claro:not(.item-linha-comprado) .mcol-prod-card-cell {
+  border-left: 5px solid #F59E0B !important;
+  background: linear-gradient(90deg, #FFFBEB 0%, #FEF9C3 100%) !important;
+}
+
+.cr-fundo-claro .mcol-tr-item.tr-item-compra-rapida:not(.item-linha-comprado) .mcol-prod-nome,
+.mcol-tr-item.tr-item-compra-rapida.fundo-claro:not(.item-linha-comprado) .mcol-prod-nome {
+  color: #1E293B !important;
+  font-weight: 700 !important;
+}
+
+/* Botões - e + e a quantidade em verdinho claro */
+.contador-qtde-tabela .btn-step-tabela,
+.btn-step-tabela,
+.mcol-tr-item.tr-item-compra-rapida .contador-qtde-tabela .btn-step-tabela,
+.cr-fundo-claro .mcol-tr-item.tr-item-compra-rapida:not(.item-linha-comprado) .contador-qtde-tabela .btn-step-tabela,
+.mcol-tr-item.tr-item-compra-rapida.fundo-claro:not(.item-linha-comprado) .contador-qtde-tabela .btn-step-tabela {
+  color: #4ADE80 !important;
+  font-weight: 900 !important;
+}
+
+.contador-qtde-tabela .input-qtde-tabela,
+.input-qtde-tabela,
+.mcol-tr-item.tr-item-compra-rapida .contador-qtde-tabela .input-qtde-tabela,
+.cr-fundo-claro .mcol-tr-item.tr-item-compra-rapida:not(.item-linha-comprado) .contador-qtde-tabela .input-qtde-tabela,
+.mcol-tr-item.tr-item-compra-rapida.fundo-claro:not(.item-linha-comprado) .contador-qtde-tabela .input-qtde-tabela {
+  color: #4ADE80 !important;
+  font-weight: 800 !important;
+}
+
+/* Modal de Compra Rápida com Fundo Claro */
+.cr-fundo-claro .compra-rapida-header,
+.cr-fundo-claro #modal-compra-rapida .compra-rapida-header {
+  background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%) !important;
+  border-bottom: 2px solid #F59E0B !important;
+}
+
+.cr-fundo-claro .compra-rapida-titulo,
+.cr-fundo-claro #modal-compra-rapida .compra-rapida-titulo,
+[data-theme="dark"] .cr-fundo-claro .compra-rapida-titulo,
+body.tema-escuro .cr-fundo-claro .compra-rapida-titulo {
+  color: #78350F !important;
 }
 
 .cr-badge-autor-pedido {

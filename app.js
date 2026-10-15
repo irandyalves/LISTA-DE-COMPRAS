@@ -740,6 +740,7 @@ let AppState = {
   exibirMarcaCard: (typeof localStorage !== 'undefined' && localStorage.getItem('cfg_exibir_marca_card') !== null) ? localStorage.getItem('cfg_exibir_marca_card') === 'true' : true,
   exibirFavoritoCard: (typeof localStorage !== 'undefined' && localStorage.getItem('cfg_exibir_favorito_card') !== null) ? localStorage.getItem('cfg_exibir_favorito_card') === 'true' : true,
   exibirCompradorCard: (typeof localStorage !== 'undefined' && localStorage.getItem('cfg_exibir_comprador_card') !== null) ? localStorage.getItem('cfg_exibir_comprador_card') === 'true' : true,
+  fundoCompraRapidaClaro: (typeof localStorage !== 'undefined' && localStorage.getItem('cfg_fundo_cr_claro') !== null) ? localStorage.getItem('cfg_fundo_cr_claro') === 'true' : true,
   mercadoReferencia: 'atacadao',
   ordenacaoMercados: 'original', // 'original', 'alfabetico_az', 'alfabetico_za', 'preco'
   usuarioAtivo: (typeof localStorage !== 'undefined' && localStorage.getItem('usuario_nome_ativo')) || 'Irandy',
@@ -1013,6 +1014,7 @@ function sincronizarListaAtivaComCatalogo() {
 // Inicialização da Aplicação
 document.addEventListener('DOMContentLoaded', () => {
   inicializarTema();
+  atualizarVisualFundoCompraRapida();
   carregarLocalmente();
   sanearTodaListaHortifruti();
   verificarAutenticacaoAcesso();
@@ -1065,6 +1067,8 @@ function carregarLocalmente() {
       if (parsed.exibirMarcaCard !== undefined) AppState.exibirMarcaCard = parsed.exibirMarcaCard;
       if (parsed.exibirFavoritoCard !== undefined) AppState.exibirFavoritoCard = parsed.exibirFavoritoCard;
       if (parsed.exibirCompradorCard !== undefined) AppState.exibirCompradorCard = parsed.exibirCompradorCard;
+      if (parsed.fundoCompraRapidaClaro !== undefined) AppState.fundoCompraRapidaClaro = parsed.fundoCompraRapidaClaro;
+      atualizarVisualFundoCompraRapida();
       if (parsed.mercadoReferencia && parsed.mercadoReferencia !== 'todos') {
         AppState.mercadoReferencia = parsed.mercadoReferencia;
       } else {
@@ -1350,6 +1354,7 @@ function salvarEstado(enviarParaNuvem = true) {
     exibirMarcaCard: AppState.exibirMarcaCard !== false,
     exibirFavoritoCard: AppState.exibirFavoritoCard !== false,
     exibirCompradorCard: AppState.exibirCompradorCard !== false,
+    fundoCompraRapidaClaro: AppState.fundoCompraRapidaClaro !== false,
     mercadoReferencia: (AppState.mercadoReferencia && AppState.mercadoReferencia !== 'todos') ? AppState.mercadoReferencia : 'nenhum',
     modoCotacao: AppState.modoCotacao || 'mais_baratos',
     ordenacaoMercados: AppState.ordenacaoMercados || 'original',
@@ -4707,19 +4712,53 @@ function renderizarListaCompras() {
 
     if (ehGrupoCompraRapida) {
       const autorEmergencia = (itens.find(i => i.adicionadoPor)?.adicionadoPor) || 'Casa';
+      const ehFundoClaro = (AppState.fundoCompraRapidaClaro !== false);
+
+      // Identifica data e hora mais recentes de inclusão na Compra Rápida
+      const tsMaisRecente = itens.reduce((max, it) => {
+        const ts = Number(it.adicionadoEmCR || it.adicionadoEm) || (it.adicionadoEm ? new Date(it.adicionadoEm).getTime() : 0);
+        return (ts && !isNaN(ts) && ts > max) ? ts : max;
+      }, 0) || Date.now();
+
+      const dRef = new Date(tsMaisRecente);
+      const dAgora = new Date();
+      const ehHoje = (dRef.getFullYear() === dAgora.getFullYear() &&
+                      dRef.getMonth() === dAgora.getMonth() &&
+                      dRef.getDate() === dAgora.getDate());
+
+      const dOntem = new Date();
+      dOntem.setDate(dOntem.getDate() - 1);
+      const ehOntem = (dRef.getFullYear() === dOntem.getFullYear() &&
+                       dRef.getMonth() === dOntem.getMonth() &&
+                       dRef.getDate() === dOntem.getDate());
+
+      let rotuloData = 'HOJE';
+      if (ehHoje) {
+        rotuloData = 'HOJE';
+      } else if (ehOntem) {
+        rotuloData = 'ONTEM';
+      } else {
+        const dd = String(dRef.getDate()).padStart(2, '0');
+        const mm = String(dRef.getMonth() + 1).padStart(2, '0');
+        rotuloData = `${dd}/${mm}`;
+      }
+
+      const hh = String(dRef.getHours()).padStart(2, '0');
+      const mm = String(dRef.getMinutes()).padStart(2, '0');
+      const horaFormatada = `${hh}:${mm}`;
+
       linhasTabelaHtml += `
-        <tr id="secao-topo-compra-rapida" class="mcol-tr-categoria-separador secao-header-compra-rapida">
+        <tr id="secao-topo-compra-rapida" class="mcol-tr-categoria-separador secao-header-compra-rapida ${ehFundoClaro ? 'fundo-claro' : ''}">
           <th colspan="3" class="mcol-th-categoria-col">
             <div class="categoria-titulo-tabela header-compra-rapida-urgente">
               <div class="cr-header-bloco-esq">
-                <span class="categoria-nome-txt cr-titulo-destaque">FAVOR COMPRAR!!</span>
-                <span class="cr-badge-autor-pedido">${escapeHtml(autorEmergencia)}</span>
+                <span class="categoria-nome-txt cr-titulo-destaque"><span class="cr-data-label">${rotuloData}</span><span class="cr-dot-branco" title="Hora"></span><span class="cr-hora-label">${horaFormatada}</span> <span class="cr-divisor-barra">|</span> <span class="cr-comprar-label">Comprar</span></span>
               </div>
               <div class="cr-header-bloco-dir">
-                <div class="balao-total-categoria ${temValorComprar ? '' : 'vazio'}" id="balao-total-comprar-compra_rapida" title="Total de Favor Comprar">
+                <div class="balao-total-categoria ${temValorComprar ? '' : 'vazio'}" id="balao-total-comprar-compra_rapida" title="Total de Comprar">
                   <span class="balao-valor">${formatarMoeda(totalCatComprar)}</span>
                 </div>
-                <button type="button" class="btn-cr-header-acao btn-cr-header-add" onclick="abrirModalCompraRapida()" title="Adicionar ou editar produtos em Favor Comprar">+ Itens</button>
+                <button type="button" class="btn-cr-header-acao btn-cr-header-add" onclick="abrirModalCompraRapida()" title="Adicionar ou editar produtos em Compra Rápida">+ Itens</button>
                 <button type="button" class="btn-cr-header-acao btn-cr-header-concluir" onclick="dispensarDestaquesCompraRapida()" title="Tirar o destaque destes itens">✓ Ok</button>
               </div>
             </div>
@@ -4858,7 +4897,7 @@ function renderizarListaCompras() {
       }
 
       linhasTabelaHtml += `
-        <tr class="mcol-tr-item ${item.compraRapida ? 'tr-item-compra-rapida' : ''} ${item.comprado ? 'item-linha-comprado' : ''} ${classePendente}" id="tr-item-${item.id}">
+        <tr class="mcol-tr-item ${item.compraRapida ? 'tr-item-compra-rapida' : ''} ${item.compraRapida && AppState.fundoCompraRapidaClaro !== false ? 'fundo-claro' : ''} ${item.comprado ? 'item-linha-comprado' : ''} ${classePendente}" id="tr-item-${item.id}">
           <td class="mcol-td-check" onclick="alternarItemComprado('${item.id}')">
             <input type="checkbox" class="check-item-comprado" ${item.comprado ? 'checked="checked"' : ''} 
                    onclick="event.stopPropagation(); alternarItemComprado('${item.id}')" 
@@ -9233,6 +9272,7 @@ function abrirModalOpcoesHeader() {
   atualizarVisualOpcaoCifrao();
   atualizarVisualOpcoesCardsHeader();
   atualizarVisualSliderTempoPesquisa();
+  atualizarVisualFundoCompraRapida();
   atualizarBadgeItensExcluidosHeader();
   modal.style.display = 'flex';
 }
@@ -9303,6 +9343,31 @@ function atualizarVisualOpcaoCifrao() {
     badge.textContent = ativo ? 'Ativo' : 'Desativado';
     badge.style.background = ativo ? '#D1FAE5' : '#F1F5F9';
     badge.style.color = ativo ? '#065F46' : '#64748B';
+  }
+}
+
+function alternarFundoCompraRapida() {
+  AppState.fundoCompraRapidaClaro = (AppState.fundoCompraRapidaClaro === false);
+  localStorage.setItem('cfg_fundo_cr_claro', String(AppState.fundoCompraRapidaClaro));
+  salvarEstado(true);
+  atualizarVisualFundoCompraRapida();
+  renderizarListaCompras();
+  mostrarNotificacaoToast(AppState.fundoCompraRapidaClaro ? '☀️ Fundo claro da Compra Rápida ativado.' : '🌙 Fundo escuro da Compra Rápida ativado.');
+}
+
+function atualizarVisualFundoCompraRapida() {
+  const ativo = (AppState && AppState.fundoCompraRapidaClaro !== false);
+  const badge = document.getElementById('badge-status-fundo-cr');
+  if (badge) {
+    badge.textContent = ativo ? 'Ativo' : 'Desativado';
+    badge.style.background = ativo ? '#D1FAE5' : '#F1F5F9';
+    badge.style.color = ativo ? '#065F46' : '#64748B';
+  }
+  if (document.body) {
+    document.body.classList.toggle('cr-fundo-claro', ativo);
+  }
+  if (document.documentElement) {
+    document.documentElement.classList.toggle('cr-fundo-claro', ativo);
   }
 }
 
