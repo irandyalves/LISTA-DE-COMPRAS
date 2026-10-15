@@ -4898,18 +4898,28 @@ function renderizarListaCompras() {
 
       linhasTabelaHtml += `
         <tr class="mcol-tr-item ${item.compraRapida ? 'tr-item-compra-rapida' : ''} ${item.compraRapida && AppState.fundoCompraRapidaClaro !== false ? 'fundo-claro' : ''} ${item.comprado ? 'item-linha-comprado' : ''} ${classePendente}" id="tr-item-${item.id}">
-          <td class="mcol-td-check" onclick="alternarItemComprado('${item.id}')">
-            <input type="checkbox" class="check-item-comprado" ${item.comprado ? 'checked="checked"' : ''} 
-                   onclick="event.stopPropagation(); alternarItemComprado('${item.id}')" 
-                   title="${item.comprado ? 'Desmarcar produto' : 'Marcar como pego no carrinho'}" />
-          </td>
-          <td class="mcol-td-qtde">
-            <div class="contador-qtde-tabela">
-              <button class="btn-step-tabela" onclick="alterarQuantidade('${item.id}', -1)" title="Diminuir">-</button>
-              <input type="number" min="1" class="input-qtde-tabela" value="${qtde}" onchange="definirQuantidadeDireta('${item.id}', this.value)" title="Editar quantidade" />
-              <button class="btn-step-tabela" onclick="alterarQuantidade('${item.id}', 1)" title="Aumentar">+</button>
-            </div>
-          </td>
+          ${item.compraRapida ? `
+            <td colspan="2" class="mcol-td-check mcol-td-cr-contador-bloco" onclick="alternarItemComprado('${item.id}')">
+              <div class="contador-qtde-tabela cr-contador-esq" onclick="event.stopPropagation()">
+                <button class="btn-step-tabela" onclick="alterarQuantidade('${item.id}', -1)" title="Diminuir">-</button>
+                <input type="number" min="1" class="input-qtde-tabela" value="${qtde}" onchange="definirQuantidadeDireta('${item.id}', this.value)" title="Editar quantidade" />
+                <button class="btn-step-tabela" onclick="alterarQuantidade('${item.id}', 1)" title="Aumentar">+</button>
+              </div>
+            </td>
+          ` : `
+            <td class="mcol-td-check" onclick="alternarItemComprado('${item.id}')">
+              <input type="checkbox" class="check-item-comprado" ${item.comprado ? 'checked="checked"' : ''} 
+                     onclick="event.stopPropagation(); alternarItemComprado('${item.id}')" 
+                     title="${item.comprado ? 'Desmarcar produto' : 'Marcar como pego no carrinho'}" />
+            </td>
+            <td class="mcol-td-qtde">
+              <div class="contador-qtde-tabela">
+                <button class="btn-step-tabela" onclick="alterarQuantidade('${item.id}', -1)" title="Diminuir">-</button>
+                <input type="number" min="1" class="input-qtde-tabela" value="${qtde}" onchange="definirQuantidadeDireta('${item.id}', this.value)" title="Editar quantidade" />
+                <button class="btn-step-tabela" onclick="alterarQuantidade('${item.id}', 1)" title="Aumentar">+</button>
+              </div>
+            </td>
+          `}
           <td class="mcol-td-produto">
             <div class="mcol-prod-card-cell">
               <div class="mcol-prod-linha-principal">
@@ -7405,7 +7415,7 @@ function atualizarVisualItemLinha(item, isPendente = false) {
   const tr = document.getElementById(`tr-item-${item.id}`);
   if (!tr) return false;
 
-  tr.className = `mcol-tr-item ${item.comprado ? 'item-linha-comprado' : ''} ${item.compraRapida ? 'tr-item-compra-rapida' : ''} ${isPendente ? 'pendente-desmarcar' : ''}`;
+  tr.className = `mcol-tr-item ${item.compraRapida ? 'tr-item-compra-rapida' : ''} ${item.compraRapida && AppState.fundoCompraRapidaClaro !== false ? 'fundo-claro' : ''} ${item.comprado ? 'item-linha-comprado' : ''} ${isPendente ? 'pendente-desmarcar' : ''}`;
 
   const chk = tr.querySelector('.check-item-comprado');
   if (chk) {
@@ -7574,10 +7584,15 @@ function reordenarLinhaNaCategoria(item) {
     curr = curr.nextElementSibling;
   }
 
+  // Se for da Compra Rápida, o divisor da linha pontilhada é a fronteira final absoluta!
+  const ehCR = !!(item.compraRapida || (headerCat && headerCat.id === 'secao-topo-compra-rapida'));
+  const divisorCR = ehCR ? tbody.querySelector('.mcol-tr-divisor-compra-rapida') : null;
+  const fronteiraFinal = divisorCR || nextCatHeader;
+
   if (item.comprado) {
-    // Move para o final do bloco desta categoria (após todos os itens desta categoria)
-    if (nextCatHeader) {
-      tbody.insertBefore(tr, nextCatHeader);
+    // Move para o final do bloco desta categoria (mas ANTES do divisor na Compra Rápida!)
+    if (fronteiraFinal) {
+      tbody.insertBefore(tr, fronteiraFinal);
     } else {
       tbody.appendChild(tr);
     }
@@ -7586,8 +7601,8 @@ function reordenarLinhaNaCategoria(item) {
     const primeiroComprado = itemRows.find(r => r.classList.contains('item-linha-comprado'));
     if (primeiroComprado) {
       tbody.insertBefore(tr, primeiroComprado);
-    } else if (nextCatHeader) {
-      tbody.insertBefore(tr, nextCatHeader);
+    } else if (fronteiraFinal) {
+      tbody.insertBefore(tr, fronteiraFinal);
     } else {
       tbody.appendChild(tr);
     }
