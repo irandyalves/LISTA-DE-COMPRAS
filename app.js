@@ -1795,6 +1795,91 @@ function escapeHtml(texto) {
     .replace(/'/g, '&#39;');
 }
 
+// ========================================================
+// PWA: SERVICE WORKER, BADGE NO ÍCONE E NOTIFICAÇÃO NATIVA
+// ========================================================
+
+// 1. Registra o Service Worker (permite rodar em background no celular)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').then((reg) => {
+      // Service worker ativo
+    }).catch((err) => {
+      console.warn('Erro ao registrar Service Worker:', err);
+    });
+  });
+}
+
+// 2. Atualiza a bolinha vermelha / número de mensagens no ícone do atalho (App Badging API)
+function atualizarBadgeAtalhoCelular(qtd = 0) {
+  try {
+    const num = Number(qtd) || 0;
+    if ('setAppBadge' in navigator) {
+      if (num > 0) {
+        navigator.setAppBadge(num).catch(() => {});
+      } else {
+        navigator.clearAppBadge().catch(() => {});
+      }
+    }
+  } catch (e) {}
+}
+
+// 3. Solicita permissão para o celular exibir notificações no topo da tela
+function solicitarPermissaoNotificacoes() {
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'default') {
+    try {
+      Notification.requestPermission().then((perm) => {
+        if (perm === 'granted') {
+          atualizarBadgeAtalhoCelular();
+        }
+      }).catch(() => {});
+    } catch(e) {}
+  }
+}
+
+// Escuta o primeiro toque do usuário na tela para liberar a permissão sem bloqueio do navegador
+window.addEventListener('click', () => {
+  solicitarPermissaoNotificacoes();
+}, { once: true });
+
+// 4. Dispara alerta nativo no sistema operacional (desce na barra de status do celular)
+async function dispararNotificacaoSistemaCelular(titulo, corpo, qtdBadge = 1) {
+  try {
+    // Atualiza imediatamente a bolinha no ícone do atalho
+    atualizarBadgeAtalhoCelular(qtdBadge);
+
+    if (!('Notification' in window) || Notification.permission !== 'granted') {
+      return;
+    }
+
+    const payload = {
+      body: corpo,
+      icon: './icone_lista.ico',
+      badge: './icone_lista.ico',
+      vibrate: [320, 100, 320, 100, 450],
+      tag: 'pedido-patroa-' + Date.now(),
+      renotify: true,
+      data: { url: './index.html' }
+    };
+
+    // Tenta exibir pelo Service Worker (ideal para Android PWA em segundo plano)
+    if ('serviceWorker' in navigator) {
+      try {
+        const reg = await navigator.serviceWorker.getRegistration();
+        if (reg && typeof reg.showNotification === 'function') {
+          return reg.showNotification(titulo, payload);
+        }
+      } catch (errSw) {}
+    }
+
+    // Fallback para Notification direta
+    return new Notification(titulo, payload);
+  } catch (e) {
+    console.warn('Não foi possível disparar notificação nativa:', e);
+  }
+}
+
 function formatarItemAvisoPatroa(itemStr) {
   if (!itemStr) return null;
   let str = String(itemStr).trim();
@@ -1887,6 +1972,20 @@ function exibirAvisoPedidoPatroa(autor, itens, icone = '👩', tipo = 'adicionad
     if (itensEl) {
       itensEl.innerHTML = htmlItens;
     }
+  }
+
+  // Dispara notificação nativa no sistema operacional do celular (se em segundo plano ou tela minimizada)
+  if (tipo === 'compra_rapida' || tipo === 'adicionado') {
+    const textoLimpoItens = (itensFormatados && itensFormatados.length > 0)
+      ? itensFormatados.map(it => `${it.qtde} ${it.nome}`).join(' | ')
+      : (Array.isArray(itens) ? itens.join(', ') : String(itens));
+    const tituloPush = `${nomeUpper} pediu pra comprar HOJE:`;
+    dispararNotificacaoSistemaCelular(tituloPush, textoLimpoItens || 'Novos itens de compra rápida!', itensFormatados ? itensFormatados.length : 1);
+  } else if (tipo === 'desistiu') {
+    const textoLimpoItens = (itensFormatados && itensFormatados.length > 0)
+      ? itensFormatados.map(it => it.nome).join(', ')
+      : (Array.isArray(itens) ? itens.join(', ') : String(itens));
+    dispararNotificacaoSistemaCelular(`${nomeFormatado} desistiu de comprar:`, textoLimpoItens || 'Item desmarcado', 0);
   }
 
   banner.classList.add('visivel');
@@ -13563,6 +13662,9 @@ function dispensarDestaquesCompraRapida() {
 function atualizarBadgeCompraRapida() {
   const qtdUrgentes = (AppState.listaAtiva || []).filter(i => i.compraRapida && !i.comprado).length;
   const temUrgente = qtdUrgentes > 0;
+
+  // Atualiza a bolinha vermelha / contador no ícone do atalho no celular (App Badging API)
+  atualizarBadgeAtalhoCelular(qtdUrgentes);
 
   // Badges nos botões COMPRA RÁPIDA (PC e Mobile)
   const badgeSidebar = document.getElementById('sidebar-compra-rapida-badge');
