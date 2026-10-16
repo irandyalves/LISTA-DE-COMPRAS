@@ -2575,11 +2575,11 @@ function atualizarBadgeUsuarioHeader() {
   const icoEl = document.getElementById('ico-perfil-header');
   const nomeEl = document.getElementById('nome-perfil-header');
   const nomeAtivo = AppState.usuarioAtivo || 'Irandy';
-  
-  const usr = (AppState.usuarios || []).find(u => u.nome.toLowerCase().trim() === nomeAtivo.toLowerCase().trim());
-  const iconeAtivo = usr ? usr.icone : (AppState.usuarioIcone || (nomeAtivo.toLowerCase().includes('sioneide') ? '👩' : '👨'));
 
-  if (icoEl) icoEl.textContent = iconeAtivo;
+  if (icoEl) {
+    icoEl.textContent = '';
+    icoEl.style.display = 'none';
+  }
   if (nomeEl) nomeEl.textContent = nomeAtivo;
   if (typeof atualizarBotaoDeletarLoteHeader === 'function') {
     atualizarBotaoDeletarLoteHeader();

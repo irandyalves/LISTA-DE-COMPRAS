@@ -12599,3 +12599,18 @@ body.tema-escuro .tag-marca-escolhida-comprar {
   border-color: rgba(251, 146, 60, 0.4);
 }
 
+/* Nome logado no topo: sem ícone à esquerda e fonte lilás claro */
+#ico-perfil-header,
+.btn-perfil-usuario-header .ico-perfil-header {
+  display: none !important;
+}
+
+#nome-perfil-header,
+.btn-perfil-usuario-header .nome-perfil-header,
+[data-theme="dark"] .btn-perfil-usuario-header .nome-perfil-header,
+body.tema-escuro .btn-perfil-usuario-header .nome-perfil-header {
+  color: #C4B5FD !important;
+  font-weight: 800 !important;
+}
+
+
