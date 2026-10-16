@@ -7184,7 +7184,10 @@ function renderizarHistorico() {
       });
 
       // Supermercado registrado na compra (com logo se for mercado cadastrado)
-      const nomeMercado = (compra.mercado || '').trim();
+      let nomeMercado = (compra.mercado || '').trim();
+      if (/compra\s*r[aá]pida/i.test(nomeMercado)) {
+        nomeMercado = '⚡ Compra Rápida';
+      }
       let mercadoBadgeHtml = '';
       if (nomeMercado) {
         let logoSrc = null;
@@ -7193,15 +7196,15 @@ function renderizarHistorico() {
         }
         if (logoSrc && (logoSrc.startsWith('data:') || logoSrc.endsWith('.png') || logoSrc.endsWith('.svg'))) {
           mercadoBadgeHtml = `
-            <span class="hist-mercado-badge" title="Supermercado: ${nomeMercado}">
-              <img src="${logoSrc}" alt="${nomeMercado}" class="hist-mercado-logo" onerror="this.style.display='none'" />
-              <span class="hist-mercado-nome">${nomeMercado}</span>
+            <span class="hist-mercado-badge" title="Supermercado: ${escapeHtml(nomeMercado)}">
+              <img src="${logoSrc}" alt="${escapeHtml(nomeMercado)}" class="hist-mercado-logo" onerror="this.style.display='none'" />
+              <span class="hist-mercado-nome">${escapeHtml(nomeMercado)}</span>
             </span>
           `;
         } else {
           mercadoBadgeHtml = `
-            <span class="hist-mercado-badge sem-logo" title="Supermercado: ${nomeMercado}">
-              <span class="hist-mercado-nome">${nomeMercado}</span>
+            <span class="hist-mercado-badge sem-logo" title="Supermercado: ${escapeHtml(nomeMercado)}">
+              <span class="hist-mercado-nome">${escapeHtml(nomeMercado)}</span>
             </span>
           `;
         }
