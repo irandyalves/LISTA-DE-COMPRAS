@@ -1165,6 +1165,10 @@ function carregarLocalmente() {
               c.compradoPor = null;
               c.compradoPorIcone = null;
               c.compradoEm = null;
+            } else {
+              c.compradoPor = itemNormalSalvo.compradoPor || c.compradoPor || null;
+              c.compradoPorIcone = itemNormalSalvo.compradoPorIcone || c.compradoPorIcone || null;
+              c.compradoEm = itemNormalSalvo.compradoEm || c.compradoEm || null;
             }
             c.marca = itemNormalSalvo.marca || c.marca || null;
             c.novoPedidoCasa = !!(itemNormalSalvo.novoPedidoCasa || c.novoPedidoCasa);
@@ -5026,6 +5030,7 @@ function renderizarListaCompras() {
         }
         nomesResumidosVistos.add(chaveDeduplicacao);
       }
+      const nomeExibicaoTruncado = truncarNome18Caracteres(nomeExibicao);
 
       const qtde = item.qtde || 1;
       const ehFavorito = !!(item.favorito || (AppState.catalogo.find(c => String(c.id) === String(item.id) || String(c.id) === String(item.catalogoId))?.favorito));
@@ -5091,17 +5096,13 @@ function renderizarListaCompras() {
       const precoFormatadoTxt = formatarMoeda(precoRegistradoValor);
 
       let marcaHtml = '';
-      if (AppState.exibirMarcaCard !== false) {
-        if (item.marca) {
-          marcaHtml = `<button type="button" class="btn-marca-listbox-tag com-marca" onclick="alterarMarcaItem('${item.id}', this, event)" title="Marca: ${item.marca} (Clique para alterar)">${item.marca}</button>`;
-        } else {
-          marcaHtml = `<button type="button" class="btn-marca-listbox-tag" onclick="alterarMarcaItem('${item.id}', this, event)" title="Clique para escolher a marca">+ Marca</button>`;
-        }
+      if (AppState.exibirMarcaCard !== false && item.marca) {
+        marcaHtml = `<span class="tag-marca-escolhida-comprar" title="Marca: ${escapeHtml(item.marca)}">${escapeHtml(item.marca)}</span>`;
       }
 
       let badgeCompradorHtml = '';
       if (AppState.exibirCompradorCard !== false && item.comprado && item.compradoPor && !isPendente) {
-        badgeCompradorHtml = `<span class="badge-comprado-por" title="Pego por ${item.compradoPor}"><span class="ico-mao-comprador">✊</span> <span class="nome-comprador-txt">${item.compradoPor}</span></span>`;
+        badgeCompradorHtml = `<span class="badge-comprado-por" title="Retirado por ${escapeHtml(item.compradoPor)}"><span class="nome-comprador-txt">${escapeHtml(item.compradoPor)} já pegou</span></span>`;
       }
 
       let tagAutorPedidoHtml = '';
@@ -5126,34 +5127,19 @@ function renderizarListaCompras() {
 
       linhasTabelaHtml += `
         <tr class="mcol-tr-item ${item.compraRapida ? 'tr-item-compra-rapida' : ''} ${item.compraRapida && AppState.fundoCompraRapidaClaro !== false ? 'fundo-claro' : ''} ${item.comprado ? 'item-linha-comprado' : ''} ${classePendente}" id="tr-item-${item.id}">
-          ${item.compraRapida ? `
-            <td colspan="2" class="mcol-td-check mcol-td-cr-contador-bloco" onclick="alternarItemComprado('${item.id}')">
-              <div class="contador-qtde-tabela cr-contador-esq" onclick="event.stopPropagation()">
-                <button class="btn-step-tabela" onclick="alterarQuantidade('${item.id}', -1)" title="Diminuir">-</button>
-                <input type="number" min="1" class="input-qtde-tabela" value="${qtde}" onchange="definirQuantidadeDireta('${item.id}', this.value)" title="Editar quantidade" />
-                <button class="btn-step-tabela" onclick="alterarQuantidade('${item.id}', 1)" title="Aumentar">+</button>
-              </div>
-            </td>
-          ` : `
-            <td class="mcol-td-check" onclick="alternarItemComprado('${item.id}')">
-              <input type="checkbox" class="check-item-comprado" ${item.comprado ? 'checked="checked"' : ''} 
-                     onclick="event.stopPropagation(); alternarItemComprado('${item.id}')" 
-                     title="${item.comprado ? 'Desmarcar produto' : 'Marcar como pego no carrinho'}" />
-            </td>
-            <td class="mcol-td-qtde">
-              <div class="contador-qtde-tabela">
-                <button class="btn-step-tabela" onclick="alterarQuantidade('${item.id}', -1)" title="Diminuir">-</button>
-                <input type="number" min="1" class="input-qtde-tabela" value="${qtde}" onchange="definirQuantidadeDireta('${item.id}', this.value)" title="Editar quantidade" />
-                <button class="btn-step-tabela" onclick="alterarQuantidade('${item.id}', 1)" title="Aumentar">+</button>
-              </div>
-            </td>
-          `}
+          <td colspan="2" class="mcol-td-check mcol-td-cr-contador-bloco" onclick="alternarItemComprado('${item.id}')">
+            <div class="contador-qtde-tabela cr-contador-esq" onclick="event.stopPropagation()">
+              <button class="btn-step-tabela" onclick="alterarQuantidade('${item.id}', -1)" title="Diminuir">-</button>
+              <input type="number" min="1" class="input-qtde-tabela" value="${qtde}" onchange="definirQuantidadeDireta('${item.id}', this.value)" title="Editar quantidade" />
+              <button class="btn-step-tabela" onclick="alterarQuantidade('${item.id}', 1)" title="Aumentar">+</button>
+            </div>
+          </td>
           <td class="mcol-td-produto">
             <div class="mcol-prod-card-cell">
               <div class="mcol-prod-linha-principal">
-                <div class="mcol-prod-zona-clique-marcar" onclick="alternarItemComprado('${item.id}')" title="${item.nome}">
+                <div class="mcol-prod-zona-clique-marcar" onclick="alternarItemComprado('${item.id}')" title="${escapeHtml(item.nome)}">
                   <div class="mcol-prod-info-esquerda">
-                    <span class="mcol-prod-nome ${item.comprado && !isPendente ? 'texto-riscado' : ''}">${nomeExibicao}</span>
+                    <span class="mcol-prod-nome ${item.comprado && !isPendente ? 'texto-riscado' : ''}">${escapeHtml(nomeExibicaoTruncado)}</span>
                     ${marcaHtml}
                     ${badgePendente}
                   </div>
@@ -6326,6 +6312,7 @@ function alternarFiltroFavoritosCategoria(categoria, event) {
           }
           nomesResumidosVistos.add(chaveDeduplicacao);
         }
+        const nomeExibicaoTruncado = truncarNome18Caracteres(nomeExibicao);
         itensVisiveisContador++;
 
         const chaveIcone = prod.icone || detectarChaveIcone(prod.nome);
@@ -6335,7 +6322,6 @@ function alternarFiltroFavoritosCategoria(categoria, event) {
         const estaNaLista = !!prod.selecionado;
         const ehFavorito = !!prod.favorito;
         const qtde = prod.qtde || 1;
-        const checkIcone = estaNaLista ? '✓' : '';
         const isDespensaPendente = (String(despensaPendenteDesmarcarId) === String(prod.id));
         const classeNaLista = estaNaLista ? 'na-lista-montar' : '';
         const classePendenteDesp = isDespensaPendente ? 'pendente-desmarcar' : '';
@@ -6348,11 +6334,6 @@ function alternarFiltroFavoritosCategoria(categoria, event) {
                oncontextmenu="event.preventDefault(); abrirModalEditarNomeDespensa('${prod.id}', event);"
                title="${estaNaLista ? 'Na Lista de Compra (Clique para desmarcar)' : 'Clique para marcar e adicionar à Lista de Compra'} • Botão direito para editar"
                style="cursor: pointer;">
-            <div class="item-check-btn ${estaNaLista ? 'check-ativo' : ''}" 
-                 onclick="event.stopPropagation(); alternarItemDespensaEmTempoReal('${prod.id}', event)"
-                 title="${estaNaLista ? 'Retirar da Lista de Compra' : 'Adicionar à Lista de Compra'}">
-              ${checkIcone}
-            </div>
 
             <!-- Coluna de Quantidade editável na frente do nome -->
             <div class="contador-qtde" style="margin-right: 2px; ${estaNaLista ? '' : 'opacity: 0.5;'}" onclick="event.stopPropagation()">
@@ -6372,7 +6353,12 @@ function alternarFiltroFavoritosCategoria(categoria, event) {
                     </svg>
                   </button>
                 ` : ''}
-                <span class="item-nome" title="${prod.nome}">${nomeExibicao}</span>
+                <span class="item-nome" title="${escapeHtml(prod.nome)}">${escapeHtml(nomeExibicaoTruncado)}</span>
+                <button type="button" class="btn-marca-criar-lista ${prod.marca ? 'com-marca' : ''}"
+                        onclick="event.stopPropagation(); alterarMarcaItem('${prod.id}', this, event)"
+                        title="${prod.marca ? 'Marca escolhida: ' + escapeHtml(prod.marca) + ' (Clique para alterar)' : 'Escolher marca'}">
+                  ${escapeHtml(prod.marca || 'MARCA')}
+                </button>
                 ${isAdmin ? `
                   <input type="checkbox" class="check-lote-excluir-admin" id="check-lote-excluir-${prod.id}"
                          ${marcadoExcluirLote ? 'checked' : ''}
@@ -7693,23 +7679,34 @@ function atualizarVisualItemLinha(item, isPendente = false) {
     if (oldNovoEsq) oldNovoEsq.remove();
   }
 
-  // Atualiza badge de quem comprou e ticket do autor (alinhado à direita, antes da estrelinha)
+  // Atualiza badge de quem retirou (na frente do item, sem ícone à esquerda) e ticket do autor
   const precoGrupo = tr.querySelector('.mcol-prod-preco-grupo');
+  const zonaMarcar = tr.querySelector('.mcol-prod-zona-clique-marcar');
   if (precoGrupo) {
-    let badgeCompradoEl = precoGrupo.querySelector('.badge-comprado-por');
+    const strayBadgePreco = precoGrupo.querySelector('.badge-comprado-por');
+    if (strayBadgePreco) strayBadgePreco.remove();
+  }
+  if (zonaMarcar) {
+    let badgeCompradoEl = zonaMarcar.querySelector('.badge-comprado-por');
     if (AppState.exibirCompradorCard !== false && item.comprado && item.compradoPor && !isPendente) {
       if (!badgeCompradoEl) {
         badgeCompradoEl = document.createElement('span');
         badgeCompradoEl.className = 'badge-comprado-por';
-        precoGrupo.insertBefore(badgeCompradoEl, precoGrupo.firstChild);
+        const infoEsq = zonaMarcar.querySelector('.mcol-prod-info-esquerda');
+        if (infoEsq && infoEsq.nextSibling) {
+          zonaMarcar.insertBefore(badgeCompradoEl, infoEsq.nextSibling);
+        } else {
+          zonaMarcar.appendChild(badgeCompradoEl);
+        }
       }
-      badgeCompradoEl.title = `Pego por ${item.compradoPor}`;
-      badgeCompradoEl.innerHTML = `<span class="ico-mao-comprador">✊</span> <span class="nome-comprador-txt">${item.compradoPor}</span>`;
+      badgeCompradoEl.title = `Retirado por ${item.compradoPor}`;
+      badgeCompradoEl.innerHTML = `<span class="nome-comprador-txt">${escapeHtml(item.compradoPor)} já pegou</span>`;
     } else if (badgeCompradoEl) {
       badgeCompradoEl.remove();
     }
+  }
 
-    const zonaMarcar = tr.querySelector('.mcol-prod-zona-clique-marcar');
+  if (precoGrupo) {
     const favBtnEl = precoGrupo.querySelector('.btn-favorito-item') || precoGrupo.querySelector('.btn-mic-preco-verde');
     let tagRapidaEl = tr.querySelector('.tag-compra-rapida-card');
     let tagNovoEl = tr.querySelector('.tag-novo-pedido-casa');
@@ -7756,6 +7753,72 @@ function atualizarVisualItemLinha(item, isPendente = false) {
   if (strayBadge) strayBadge.remove();
 
   return true;
+}
+
+function truncarNome18Caracteres(texto) {
+  const str = String(texto || '').trim();
+  if (str.length > 18) {
+    return str.slice(0, 18) + '...';
+  }
+  return str;
+}
+
+function obterUsuarioLogadoFiel() {
+  try {
+    // 1. Verifica sessão autenticada salva no localStorage
+    const rawLogin = localStorage.getItem('app_login_autorizado_v1');
+    if (rawLogin) {
+      const parsed = JSON.parse(rawLogin);
+      if (parsed && parsed.nome && String(parsed.nome).trim()) {
+        const nomeLogon = String(parsed.nome).trim();
+        AppState.usuarioAtivo = nomeLogon;
+        return nomeLogon;
+      }
+      if (parsed && (parsed.id || parsed.credencial) && Array.isArray(AppState.usuarios)) {
+        const u = AppState.usuarios.find(usr =>
+          (parsed.id && String(usr.id) === String(parsed.id)) ||
+          (parsed.credencial && String(usr.credencial || '').toLowerCase() === String(parsed.credencial).toLowerCase())
+        );
+        if (u && u.nome) {
+          AppState.usuarioAtivo = u.nome;
+          return u.nome;
+        }
+      }
+    }
+
+    // 2. Verifica usuário autenticado no Firebase Auth
+    if (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) {
+      const fbUser = firebase.auth().currentUser;
+      if (fbUser.email && typeof buscarUsuarioPorCredencial === 'function') {
+        const uFb = buscarUsuarioPorCredencial(fbUser.email);
+        if (uFb && uFb.nome) {
+          AppState.usuarioAtivo = uFb.nome;
+          return uFb.nome;
+        }
+      }
+      if (fbUser.displayName && String(fbUser.displayName).trim()) {
+        const nomeFb = String(fbUser.displayName).trim();
+        AppState.usuarioAtivo = nomeFb;
+        return nomeFb;
+      }
+    }
+
+    // 3. Verifica o nome exibido no cabeçalho do perfil logado
+    const elHeader = document.getElementById('nome-perfil-header');
+    if (elHeader && elHeader.textContent && elHeader.textContent.trim()) {
+      const nomeHeader = elHeader.textContent.trim();
+      AppState.usuarioAtivo = nomeHeader;
+      return nomeHeader;
+    }
+
+    // 4. Fallback para usuario_nome_ativo / AppState.usuarioAtivo
+    const salvoAtivo = localStorage.getItem('usuario_nome_ativo');
+    if (salvoAtivo && salvoAtivo.trim()) {
+      AppState.usuarioAtivo = salvoAtivo.trim();
+      return salvoAtivo.trim();
+    }
+  } catch (e) {}
+  return AppState.usuarioAtivo || 'Irandy';
 }
 
 function dispensarAlertaNovoPedido(id) {
@@ -7854,13 +7917,14 @@ function alternarItemComprado(id) {
 
   const ehItemCR = !!(item.compraRapida || String(item.id).startsWith('cr_item_'));
   const idCatLimpo = String(item.catalogoId || String(item.id).replace(/^cr_item_/, ''));
+  const nomeUsuarioLogado = obterUsuarioLogadoFiel();
 
   // CASO 1: Item ainda NÃO comprado -> Marca imediatamente com 1 clique!
   if (!item.comprado) {
     cancelarPendenteDesmarcar();
     item.comprado = true;
-    item.compradoPor = AppState.usuarioAtivo || 'Irandy';
-    item.compradoPorIcone = AppState.usuarioIcone || (AppState.usuarioAtivo === 'Sioneide' ? '👩' : '👨');
+    item.compradoPor = nomeUsuarioLogado;
+    item.compradoPorIcone = AppState.usuarioIcone || (nomeUsuarioLogado === 'Sioneide' ? '👩' : '👨');
     item.compradoEm = Date.now();
     item.novoPedidoCasa = false;
     if (!ehItemCR) {
@@ -7904,6 +7968,9 @@ function alternarItemComprado(id) {
 
     registrarTimestampModificacaoItem(item.id);
     salvarEstado(true);
+    if (typeof forcarSincronizacaoImediataNuvem === 'function') {
+      forcarSincronizacaoImediataNuvem();
+    }
     if (typeof atualizarBadgeCompraRapida === 'function') atualizarBadgeCompraRapida();
 
     const catAlvo = ehItemCR ? '⚡ COMPRA RÁPIDA / EMERGENCIAL' : (item.categoria || 'Diversos');
@@ -10020,7 +10087,7 @@ function fecharCortinaMarcas() {
 document.addEventListener('click', (ev) => {
   const modal = document.getElementById('modal-marcas');
   if (!modal || modal.style.display === 'none') return;
-  if (modal.contains(ev.target) || (ev.target.closest && ev.target.closest('.btn-marca-listbox-tag'))) {
+  if (modal.contains(ev.target) || (ev.target.closest && ev.target.closest('.btn-marca-listbox-tag, .btn-marca-criar-lista'))) {
     return;
   }
   fecharCortinaMarcas();
@@ -10039,7 +10106,8 @@ function filtrarMarcasRealtime(texto) {
   const listbox = document.getElementById('modal-marca-listbox');
   if (!listbox) return;
 
-  const item = AppState.listaAtiva.find(i => String(i.id) === String(itemEmEdicaoMarcaId));
+  const item = AppState.listaAtiva.find(i => String(i.id) === String(itemEmEdicaoMarcaId))
+            || AppState.catalogo.find(i => String(i.id) === String(itemEmEdicaoMarcaId));
   const chaveIcone = item ? (item.icone || detectarChaveIcone(item.nome)) : '';
   const termo = (texto || '').trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
@@ -10264,16 +10332,19 @@ function obterMarcasParaProduto(chaveIcone, nomeItem) {
 function selecionarMarcaModal(marca, preco) {
   if (!itemEmEdicaoMarcaId) return;
 
-  let item = AppState.listaAtiva.find(i => String(i.id) === String(itemEmEdicaoMarcaId));
+  let item = AppState.listaAtiva.find(i => String(i.id) === String(itemEmEdicaoMarcaId))
+          || AppState.catalogo.find(i => String(i.id) === String(itemEmEdicaoMarcaId));
   if (!item) {
     const tituloEl = document.getElementById('modal-marca-titulo');
     const nomeModal = tituloEl ? tituloEl.textContent.trim().toLowerCase() : '';
-    item = AppState.listaAtiva.find(i => i.nome.toLowerCase() === nomeModal);
+    item = AppState.listaAtiva.find(i => i.nome.toLowerCase() === nomeModal)
+        || AppState.catalogo.find(i => i.nome.toLowerCase() === nomeModal);
   }
   if (!item) return;
 
   // Atualiza marca
-  item.marca = marca ? capitalizar(marca) : null;
+  const marcaFinal = marca ? capitalizar(marca) : null;
+  item.marca = marcaFinal;
 
   // Atualiza preço imediatamente sincronizado
   const precoNum = Number(preco);
@@ -10293,16 +10364,22 @@ function selecionarMarcaModal(marca, preco) {
     item.ultimoPreco = item.preco;
   }
 
-  // Sincroniza também no catálogo da despensa
-  const catItem = AppState.catalogo.find(p => p.id === item.id || p.id === item.catalogoId);
+  // Sincroniza também no catálogo da despensa e na lista ativa
+  const catItem = AppState.catalogo.find(p => String(p.id) === String(item.id) || String(p.id) === String(item.catalogoId));
   if (catItem) {
-    catItem.marca = item.marca;
+    catItem.marca = marcaFinal;
     catItem.preco = item.preco;
     catItem.ultimoPreco = item.preco;
     if (ref !== 'nenhum' && item.preco > 0) {
       if (!catItem.precosMercados) catItem.precosMercados = {};
       catItem.precosMercados[ref] = item.preco;
     }
+  }
+  const itemAtivo = AppState.listaAtiva.find(i => String(i.id) === String(item.id) || String(i.catalogoId) === String(item.id));
+  if (itemAtivo && itemAtivo !== item) {
+    itemAtivo.marca = marcaFinal;
+    itemAtivo.preco = item.preco;
+    itemAtivo.ultimoPreco = item.preco;
   }
 
   // Persiste no LocalStorage e Nuvem Firebase
@@ -10317,7 +10394,7 @@ function selecionarMarcaModal(marca, preco) {
 
   // Feedback visual no card do produto salvo
   setTimeout(() => {
-    const cardEl = document.getElementById('card-item-' + item.id);
+    const cardEl = document.getElementById('card-item-' + item.id) || document.getElementById('card-despensa-' + item.id);
     if (cardEl) {
       cardEl.style.transition = 'all 0.4s ease';
       cardEl.style.boxShadow = '0 0 0 2px #10B981';

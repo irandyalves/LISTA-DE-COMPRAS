@@ -12539,3 +12539,63 @@ body.tema-escuro .btn-cr-header-concluir {
   color: #FFFFFF;
   text-align: center;
 }
+
+/* Botão laranja escuro MARCA na aba CRIAR LISTA (fonte 20% menor que o item) */
+.btn-marca-criar-lista {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #C2410C 0%, #9A3412 100%) !important;
+  color: #FFFFFF !important;
+  border: 1px solid #7C2D12 !important;
+  border-radius: 5px;
+  padding: 1px 6px;
+  font-size: calc(var(--fonte-card-nome, 0.82rem) * 0.80) !important;
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: 4px;
+  box-shadow: 0 1px 3px rgba(154, 52, 18, 0.35);
+  transition: transform 0.12s ease, filter 0.12s ease;
+}
+
+.btn-marca-criar-lista:hover {
+  filter: brightness(1.08);
+  transform: translateY(-0.5px);
+}
+
+.btn-marca-criar-lista.com-marca {
+  background: linear-gradient(135deg, #EA580C 0%, #9A3412 100%) !important;
+  border-color: #FDBA74 !important;
+}
+
+.item-card.pendente-desmarcar .btn-marca-criar-lista {
+  visibility: hidden !important;
+}
+
+/* Tag discreta de marca escolhida na aba COMPRAR (sem botão +Marca) */
+.tag-marca-escolhida-comprar {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(194, 65, 12, 0.12);
+  color: #9A3412;
+  border: 1px solid rgba(194, 65, 12, 0.3);
+  border-radius: 4px;
+  padding: 0 5px;
+  font-size: calc(var(--fonte-card-nome, 0.82rem) * 0.78);
+  font-weight: 700;
+  margin-left: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+[data-theme="dark"] .tag-marca-escolhida-comprar,
+body.tema-escuro .tag-marca-escolhida-comprar {
+  background: rgba(234, 88, 12, 0.22);
+  color: #FDBA74;
+  border-color: rgba(251, 146, 60, 0.4);
+}
+
