@@ -4383,11 +4383,11 @@ body.tema-escuro .despensa-aba-tab.btn-aba-favoritos-estrela.ativa,
   left: 0 !important;
   z-index: 5 !important;
   background: white;
-  width: 56px !important;
-  min-width: 56px !important;
-  max-width: 56px !important;
+  width: 66px !important;
+  min-width: 66px !important;
+  max-width: 66px !important;
   padding: 4px 0 4px 2px !important;
-  text-align: left !important;
+  text-align: right !important;
   vertical-align: middle !important;
   box-sizing: border-box !important;
 }
@@ -4403,7 +4403,7 @@ body.tema-escuro .mcol-tr-item:hover .mcol-td-cr-contador-bloco {
 }
 
 .mcol-td-cr-contador-bloco .cr-contador-esq {
-  margin-left: 2px !important;
+  margin-left: auto !important;
   margin-right: 4px !important; /* Encostado logo após o botão + */
 }
 
@@ -4480,11 +4480,11 @@ body.tema-escuro .mcol-tr-item:hover .mcol-td-cr-contador-bloco {
   margin: 0;
 }
 
-/* Coluna de Produto: ajustada com left 56px (contador - qtde +) */
+/* Coluna de Produto: ajustada com left 66px (contador - qtde +) */
 .mcol-th-produto {
   position: sticky;
   top: 0;
-  left: 56px !important;
+  left: 66px !important;
   z-index: 29 !important;
   background: #F8FAFC !important;
   font-weight: 800;
@@ -4514,7 +4514,7 @@ body.tema-escuro .mcol-tr-item:hover .mcol-td-cr-contador-bloco {
 
 .mcol-td-produto {
   position: sticky;
-  left: 56px !important;
+  left: 66px !important;
   z-index: 4;
   background: white;
   padding: 4px 4px !important;
@@ -5185,7 +5185,7 @@ body.tema-escuro .btn-marca-listbox-tag.com-marca:hover {
 
 .mcol-td-totais-label {
   position: sticky;
-  left: 56px;
+  left: 66px;
   z-index: 4;
   background: #F8FAFC !important;
   text-align: left !important;
@@ -6873,7 +6873,7 @@ body.tema-escuro .drawer-fechar-btn {
 
   .mcol-th-produto,
   .mcol-td-produto {
-    left: 56px !important;
+    left: 66px !important;
     padding: 4px 2px !important;
     min-width: 140px !important;
   }
@@ -9657,6 +9657,8 @@ body.tema-escuro .card-ranking-stats {
 .btn-dispensar-alerta-pedidos:hover {
   background: #DC2626;
   transform: scale(1.04);
+}
+
 /* 2. Tag de quem pediu o item (ex: Irandy / Sioneide): sem borda vermelha, fonte branca, seta cheia laranja */
 .tag-novo-pedido-casa {
   display: inline-flex;
@@ -11286,22 +11288,7 @@ body.tema-escuro .btn-restaurar-item-lixeira:hover {
    CHECKBOX DE EXCLUSÃO EM LOTE ANTES DO LÁPIS VERDE + BOTÃO NO CABEÇALHO
    ========================================================================== */
 #view-despensa .item-card .check-lote-excluir-admin {
-  width: 14px !important;
-  height: 14px !important;
-  min-width: 14px !important;
-  margin: 0 2px 0 auto !important;
-  padding: 0 !important;
-  cursor: pointer !important;
-  accent-color: #EF4444 !important;
-  flex-shrink: 0 !important;
-  opacity: 0.72;
-  transition: opacity 0.15s ease, transform 0.15s ease;
-}
-
-#view-despensa .item-card .check-lote-excluir-admin:hover,
-#view-despensa .item-card .check-lote-excluir-admin:checked {
-  opacity: 1 !important;
-  transform: scale(1.08);
+  display: none !important;
 }
 
 /* Quando o check antes do lápis está presente, o lápis cola logo à direita dele */
