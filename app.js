@@ -5118,7 +5118,7 @@ function renderizarListaCompras() {
       if (item.compraRapida && !item.comprado) {
         tagAutorPedidoHtml = `<span class="tag-compra-rapida-card" onclick="alternarItemComprado('${item.id}')" title="Compra Rápida pedida por ${escapeHtml(item.adicionadoPor || 'Casa')}"><span class="tag-cr-autor-preto">${escapeHtml(item.adicionadoPor || 'Casa')}</span></span>`;
       } else if (item.novoPedidoCasa && !item.comprado) {
-        tagAutorPedidoHtml = `<span class="tag-novo-pedido-casa" onclick="alternarItemComprado('${item.id}')" title="Pedido de ${escapeHtml(item.adicionadoPor || 'Casa')}">${escapeHtml(item.adicionadoPor || 'Casa')}</span>`;
+        tagAutorPedidoHtml = `<span class="tag-novo-pedido-casa" onclick="alternarItemComprado('${item.id}')" title="Pedido de ${escapeHtml(item.adicionadoPor || 'Casa')}"><span class="seta-laranja-pedido">▶</span><span class="nome-pedido-txt">${escapeHtml(item.adicionadoPor || 'Casa')}</span></span>`;
       }
 
       let favBtnHtml = '';
@@ -7755,7 +7755,7 @@ function atualizarVisualItemLinha(item, isPendente = false) {
             precoGrupo.insertBefore(tagNovoEl, favBtnEl || null);
           }
         }
-        tagNovoEl.textContent = `${item.adicionadoPor || 'Casa'}`;
+        tagNovoEl.innerHTML = `<span class="seta-laranja-pedido">▶</span><span class="nome-pedido-txt">${escapeHtml(item.adicionadoPor || 'Casa')}</span>`;
       } else if (tagNovoEl) {
         tagNovoEl.remove();
       }

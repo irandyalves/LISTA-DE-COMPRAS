@@ -9657,36 +9657,45 @@ body.tema-escuro .card-ranking-stats {
 .btn-dispensar-alerta-pedidos:hover {
   background: #DC2626;
   transform: scale(1.04);
-}
-
-/* 2. Tag de quem pediu o item (ex: Irandy / Sioneide) alinhada à direita, antes da estrelinha */
+/* 2. Tag de quem pediu o item (ex: Irandy / Sioneide): sem borda vermelha, fonte branca, seta cheia laranja */
 .tag-novo-pedido-casa {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #FEE2E2;
-  color: #DC2626;
-  border: 1px solid #FCA5A5;
-  border-radius: 999px;
-  font-size: 0.64rem;
+  gap: 3px;
+  background: transparent !important;
+  color: #FFFFFF !important;
+  border: none !important;
+  border-radius: 0 !important;
+  font-size: 0.76rem;
   font-weight: 800;
-  padding: 2px 7px;
+  padding: 0 4px;
   cursor: pointer;
   margin-left: 0;
   margin-right: 2px;
   white-space: nowrap;
   flex-shrink: 0;
   user-select: none;
+  box-shadow: none !important;
 }
 
-@keyframes pulsarTagNovo {
-  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-  50% { transform: scale(1.06); box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15); }
+.tag-novo-pedido-casa .seta-laranja-pedido {
+  color: #EA580C !important;
+  font-size: 0.70rem;
+  line-height: 1;
+  display: inline-block;
+  margin-right: 1px;
+}
+
+.tag-novo-pedido-casa .nome-pedido-txt {
+  color: #FFFFFF !important;
+  font-weight: 800 !important;
 }
 
 .tag-novo-pedido-casa:hover {
-  background: #FECACA;
-  color: #991B1B;
+  background: transparent !important;
+  color: #FFFFFF !important;
+}
 /* 3. Badge "Quem Pegou o Item" (Alinhado à Direita, Fonte Branca, Sem Borda e Sem Fundo Verde) */
 .badge-comprado-por {
   display: inline-flex;
@@ -9780,10 +9789,12 @@ body.dark-mode .nomes-itens-novos-texto {
 }
 
 body.tema-escuro .tag-novo-pedido-casa,
-body.dark-mode .tag-novo-pedido-casa {
-  background: #7F1D1D;
-  color: #FEE2E2;
-  border-color: #991B1B;
+body.dark-mode .tag-novo-pedido-casa,
+[data-theme="dark"] .tag-novo-pedido-casa {
+  background: transparent !important;
+  color: #FFFFFF !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 body.tema-escuro .badge-comprado-por,
