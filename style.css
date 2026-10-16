@@ -4383,9 +4383,9 @@ body.tema-escuro .despensa-aba-tab.btn-aba-favoritos-estrela.ativa,
   left: 0 !important;
   z-index: 5 !important;
   background: white;
-  width: 66px !important;
-  min-width: 66px !important;
-  max-width: 66px !important;
+  width: 56px !important;
+  min-width: 56px !important;
+  max-width: 56px !important;
   padding: 4px 0 4px 2px !important;
   text-align: left !important;
   vertical-align: middle !important;
@@ -4404,7 +4404,7 @@ body.tema-escuro .mcol-tr-item:hover .mcol-td-cr-contador-bloco {
 
 .mcol-td-cr-contador-bloco .cr-contador-esq {
   margin-left: 2px !important;
-  margin-right: 18px !important; /* Separa o + do início do card do item */
+  margin-right: 4px !important; /* Encostado logo após o botão + */
 }
 
 .contador-qtde-tabela {
@@ -4480,11 +4480,11 @@ body.tema-escuro .mcol-tr-item:hover .mcol-td-cr-contador-bloco {
   margin: 0;
 }
 
-/* Coluna de Produto: ajustada com left 66px (check 22px + qtde 44px) */
+/* Coluna de Produto: ajustada com left 56px (contador - qtde +) */
 .mcol-th-produto {
   position: sticky;
   top: 0;
-  left: 66px !important;
+  left: 56px !important;
   z-index: 29 !important;
   background: #F8FAFC !important;
   font-weight: 800;
@@ -4514,7 +4514,7 @@ body.tema-escuro .mcol-tr-item:hover .mcol-td-cr-contador-bloco {
 
 .mcol-td-produto {
   position: sticky;
-  left: 66px !important;
+  left: 56px !important;
   z-index: 4;
   background: white;
   padding: 4px 4px !important;
@@ -5185,7 +5185,7 @@ body.tema-escuro .btn-marca-listbox-tag.com-marca:hover {
 
 .mcol-td-totais-label {
   position: sticky;
-  left: 66px;
+  left: 56px;
   z-index: 4;
   background: #F8FAFC !important;
   text-align: left !important;
@@ -6873,7 +6873,7 @@ body.tema-escuro .drawer-fechar-btn {
 
   .mcol-th-produto,
   .mcol-td-produto {
-    left: 66px !important;
+    left: 56px !important;
     padding: 4px 2px !important;
     min-width: 140px !important;
   }
@@ -9682,37 +9682,29 @@ body.tema-escuro .card-ranking-stats {
 .tag-novo-pedido-casa:hover {
   background: #FECACA;
   color: #991B1B;
-}
-
-/* 3. Badge "Quem Pegou o Item" (✊ Nome - Alinhado à Direita) */
+/* 3. Badge "Quem Pegou o Item" (Alinhado à Direita, Fonte Branca, Sem Borda e Sem Fundo Verde) */
 .badge-comprado-por {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  background: #ECFDF5;
-  color: #047857;
-  border: 1px solid #A7F3D0;
-  border-radius: 12px;
-  font-size: 0.68rem;
+  background: transparent !important;
+  color: #FFFFFF !important;
+  border: none !important;
+  border-radius: 0 !important;
+  font-size: 0.76rem;
   font-weight: 700;
-  padding: 1px 6px;
+  padding: 0 4px;
   margin-right: 2px;
   white-space: nowrap;
   user-select: none;
   flex-shrink: 0;
   line-height: 1.2;
-}
-
-.badge-comprado-por .ico-mao-comprador {
-  font-size: 0.74rem;
-  line-height: 1;
+  box-shadow: none !important;
 }
 
 .badge-comprado-por .nome-comprador-txt {
-  max-width: 65px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  color: #FFFFFF !important;
+  font-weight: 700 !important;
+  white-space: nowrap !important;
 }
 
 /* 4. Banner de Corredor Ativo */
@@ -9790,10 +9782,12 @@ body.dark-mode .tag-novo-pedido-casa {
 }
 
 body.tema-escuro .badge-comprado-por,
-body.dark-mode .badge-comprado-por {
-  background: #064E3B;
-  color: #A7F3D0;
-  border-color: #059669;
+body.dark-mode .badge-comprado-por,
+[data-theme="dark"] .badge-comprado-por {
+  background: transparent !important;
+  color: #FFFFFF !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 body.tema-escuro .banner-corredor-ativo,
@@ -12554,63 +12548,14 @@ body.tema-escuro .btn-cr-header-concluir {
   text-align: center;
 }
 
-/* Botão laranja escuro MARCA na aba CRIAR LISTA (fonte 20% menor que o item) */
+/* Botão MARCA na aba CRIAR LISTA (ocultado temporariamente mantendo a estrutura intacta para quando for necessário) */
 .btn-marca-criar-lista {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #C2410C 0%, #9A3412 100%) !important;
-  color: #FFFFFF !important;
-  border: 1px solid #7C2D12 !important;
-  border-radius: 5px;
-  padding: 1px 6px;
-  font-size: calc(var(--fonte-card-nome, 0.82rem) * 0.80) !important;
-  font-weight: 800;
-  line-height: 1.25;
-  letter-spacing: 0.02em;
-  cursor: pointer;
-  white-space: nowrap;
-  flex-shrink: 0;
-  margin-left: 4px;
-  box-shadow: 0 1px 3px rgba(154, 52, 18, 0.35);
-  transition: transform 0.12s ease, filter 0.12s ease;
+  display: none !important;
 }
 
-.btn-marca-criar-lista:hover {
-  filter: brightness(1.08);
-  transform: translateY(-0.5px);
-}
-
-.btn-marca-criar-lista.com-marca {
-  background: linear-gradient(135deg, #EA580C 0%, #9A3412 100%) !important;
-  border-color: #FDBA74 !important;
-}
-
-.item-card.pendente-desmarcar .btn-marca-criar-lista {
-  visibility: hidden !important;
-}
-
-/* Tag discreta de marca escolhida na aba COMPRAR (sem botão +Marca) */
+/* Tag discreta de marca escolhida na aba COMPRAR (oculta conforme solicitação) */
 .tag-marca-escolhida-comprar {
-  display: inline-flex;
-  align-items: center;
-  background: rgba(194, 65, 12, 0.12);
-  color: #9A3412;
-  border: 1px solid rgba(194, 65, 12, 0.3);
-  border-radius: 4px;
-  padding: 0 5px;
-  font-size: calc(var(--fonte-card-nome, 0.82rem) * 0.78);
-  font-weight: 700;
-  margin-left: 4px;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-[data-theme="dark"] .tag-marca-escolhida-comprar,
-body.tema-escuro .tag-marca-escolhida-comprar {
-  background: rgba(234, 88, 12, 0.22);
-  color: #FDBA74;
-  border-color: rgba(251, 146, 60, 0.4);
+  display: none !important;
 }
 
 /* Nome logado no topo: sem ícone à esquerda e fonte lilás claro */

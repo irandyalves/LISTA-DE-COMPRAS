@@ -5108,9 +5108,6 @@ function renderizarListaCompras() {
       const precoFormatadoTxt = formatarMoeda(precoRegistradoValor);
 
       let marcaHtml = '';
-      if (AppState.exibirMarcaCard !== false && item.marca) {
-        marcaHtml = `<span class="tag-marca-escolhida-comprar" title="Marca: ${escapeHtml(item.marca)}">${escapeHtml(item.marca)}</span>`;
-      }
 
       let badgeCompradorHtml = '';
       if (AppState.exibirCompradorCard !== false && item.comprado && item.compradoPor && !isPendente) {
