@@ -58,76 +58,18 @@
     html[data-aba-ativa="historico"] #btn-perfil-usuario { display: none !important; }
     html[data-aba-ativa="historico"] #historico-topo-integrado { display: flex !important; }
 
-    html[data-aba-ativa="despensa"] .mobile-nav-btn[data-aba="lista"],
-    html[data-aba-ativa="historico"] .mobile-nav-btn[data-aba="lista"],
-    html[data-aba-ativa="despensa"] .nav-item[data-aba="lista"],
-    html[data-aba-ativa="historico"] .nav-item[data-aba="lista"] {
+    .mobile-nav-btn:not(.ativo) {
       background: transparent !important;
+      border: 1.5px solid transparent !important;
+      box-shadow: none !important;
     }
-    html[data-aba-ativa="despensa"] .mobile-nav-btn[data-aba="lista"] .mobile-nav-label,
-    html[data-aba-ativa="historico"] .mobile-nav-btn[data-aba="lista"] .mobile-nav-label {
-      color: #64748B !important;
-      font-weight: 500 !important;
+    .mobile-nav-btn.ativo {
+      border: 1.5px solid #10B981 !important;
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.35), inset 0 0 0 1px rgba(16, 185, 129, 0.25) !important;
     }
-    html[data-aba-ativa="despensa"] .mobile-nav-btn[data-aba="lista"] .mobile-nav-icon,
-    html[data-aba-ativa="historico"] .mobile-nav-btn[data-aba="lista"] .mobile-nav-icon {
-      filter: grayscale(100%) opacity(0.65) !important;
-      transform: none !important;
-    }
-    html[data-aba-ativa="despensa"] .mobile-nav-btn[data-aba="lista"] .nav-icon-comprar svg,
-    html[data-aba-ativa="historico"] .mobile-nav-btn[data-aba="lista"] .nav-icon-comprar svg {
-      color: #94A3B8 !important;
-      stroke: #94A3B8 !important;
-    }
-
-    html[data-aba-ativa="despensa"] .mobile-nav-btn[data-aba="despensa"] {
-      background: #F4EBE1 !important;
-    }
-    html[data-aba-ativa="despensa"] .mobile-nav-btn[data-aba="despensa"] .mobile-nav-label {
-      color: #C2410C !important;
-      font-weight: 800 !important;
-    }
-    html[data-aba-ativa="despensa"] .mobile-nav-btn[data-aba="despensa"] .mobile-nav-icon {
-      filter: none !important;
-      opacity: 1 !important;
-      transform: scale(1.10) !important;
-    }
-    html[data-aba-ativa="despensa"] .sidebar-nav-item[data-aba="despensa"] {
-      background: linear-gradient(135deg, #1E3A8A 0%, #172554 100%) !important;
-      color: #FFFFFF !important;
-      border-color: #3B82F6 !important;
-    }
-
-    html[data-aba-ativa="historico"] .mobile-nav-btn[data-aba="historico"] {
-      background: #F4EBE1 !important;
-    }
-    html[data-aba-ativa="historico"] .mobile-nav-btn[data-aba="historico"] .mobile-nav-label {
-      color: #C2410C !important;
-      font-weight: 800 !important;
-    }
-    html[data-aba-ativa="historico"] .mobile-nav-btn[data-aba="historico"] .mobile-nav-icon {
-      filter: none !important;
-      opacity: 1 !important;
-      transform: scale(1.10) !important;
-    }
-    html[data-aba-ativa="historico"] .sidebar-nav-item[data-aba="historico"] {
-      background: linear-gradient(135deg, #1E3A8A 0%, #172554 100%) !important;
-      color: #FFFFFF !important;
-      border-color: #3B82F6 !important;
-    }
-
-    html.tema-escuro[data-aba-ativa="despensa"] .mobile-nav-btn[data-aba="despensa"],
-    html.tema-escuro[data-aba-ativa="historico"] .mobile-nav-btn[data-aba="historico"],
-    [data-theme="dark"][data-aba-ativa="despensa"] .mobile-nav-btn[data-aba="despensa"],
-    [data-theme="dark"][data-aba-ativa="historico"] .mobile-nav-btn[data-aba="historico"] {
-      background: #1E293B !important;
-    }
-    html.tema-escuro[data-aba-ativa="despensa"] .mobile-nav-btn[data-aba="despensa"] .mobile-nav-label,
-    html.tema-escuro[data-aba-ativa="historico"] .mobile-nav-btn[data-aba="historico"] .mobile-nav-label,
-    [data-theme="dark"][data-aba-ativa="despensa"] .mobile-nav-btn[data-aba="despensa"] .mobile-nav-label,
-    [data-theme="dark"][data-aba-ativa="historico"] .mobile-nav-btn[data-aba="historico"] .mobile-nav-label {
-      color: #FB923C !important;
-      font-weight: 800 !important;
+    .sidebar-nav-item.ativo {
+      border: 1.5px solid #10B981 !important;
+      border-right: none !important;
     }
   </style>
 
@@ -953,7 +895,7 @@
           <h3 class="compra-rapida-titulo">COMPRA URGENTE</h3>
         </div>
         <div class="compra-rapida-header-acoes-dir">
-          <button type="button" id="btn-ordem-az-compra-rapida" class="btn-ordem-az-header btn-ordem-az-cr" onclick="alternarOrdemAlfabeticaCompraRapida()" title="Ordenar de A a Z">
+          <button type="button" id="btn-ordem-az-compra-rapida" class="btn-ordem-az-header btn-ordem-az-cr ativo" onclick="alternarOrdemAlfabeticaCompraRapida()" title="Ordenar de A a Z">
             A-Z
           </button>
           <div class="controles-fonte-header controles-fonte-cr-modal">

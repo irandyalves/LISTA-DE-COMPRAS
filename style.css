@@ -94,6 +94,13 @@ body.tema-escuro .mobile-bottom-nav {
   border-top-color: #334155 !important;
 }
 
+[data-theme="dark"] .mobile-nav-btn:not(.ativo),
+body.tema-escuro .mobile-nav-btn:not(.ativo) {
+  background: transparent !important;
+  border: 1.5px solid transparent !important;
+  box-shadow: none !important;
+}
+
 [data-theme="dark"] .mobile-nav-btn:not(.ativo) .mobile-nav-label,
 body.tema-escuro .mobile-nav-btn:not(.ativo) .mobile-nav-label {
   color: #94A3B8 !important;
@@ -113,6 +120,8 @@ body.tema-escuro .mobile-nav-btn:not(:last-child)::after {
 [data-theme="dark"] .mobile-nav-btn.ativo,
 body.tema-escuro .mobile-nav-btn.ativo {
   background: #1E293B !important;
+  border: 1.5px solid #10B981 !important;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.35), inset 0 0 0 1px rgba(16, 185, 129, 0.25) !important;
 }
 
 [data-theme="dark"] .mobile-nav-btn.ativo .mobile-nav-label,
@@ -6543,9 +6552,11 @@ body.tema-escuro .drawer-fechar-btn {
     pointer-events: none;
   }
 
-  /* Quando NÃO estiver selecionado: fonte sem bold, ícones cinzas (inclusive histórico) */
+  /* Quando NÃO estiver selecionado: fonte sem bold, ícones cinzas (inclusive histórico), sem borda */
   .mobile-nav-btn:not(.ativo) {
     background: transparent !important;
+    border: 1.5px solid transparent !important;
+    box-shadow: none !important;
   }
 
   .mobile-nav-btn:not(.ativo) .mobile-nav-label {
@@ -6569,9 +6580,11 @@ body.tema-escuro .drawer-fechar-btn {
     stroke: none !important;
   }
 
-  /* Quando estiver SELECIONADO: fundo bege médio, cantos arredondados, ícone e fontes coloridos */
+  /* Quando estiver SELECIONADO: fundo bege médio, bordinha verdinha, cantos arredondados, ícone e fontes coloridos */
   .mobile-nav-btn.ativo {
     background: #F4EBE1 !important;
+    border: 1.5px solid #10B981 !important;
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.35), inset 0 0 0 1px rgba(16, 185, 129, 0.25) !important;
     border-radius: 7px !important;
   }
 
@@ -9991,10 +10004,10 @@ body.tema-escuro .sidebar-nav-item:hover {
 body.tema-escuro .sidebar-nav-item.ativo {
   background: linear-gradient(135deg, #1E3A8A 0%, #172554 100%) !important;
   color: #FFFFFF !important;
-  border-color: #3B82F6 !important;
+  border: 1.5px solid #10B981 !important;
   border-right: none !important;
   border-radius: 8px 0 0 8px !important;
-  box-shadow: 0 4px 12px rgba(29, 78, 216, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.16) !important;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.16) !important;
 }
 
 .sidebar-nav-badge,
@@ -10893,6 +10906,8 @@ body.tema-escuro .mobile-nav-btn:not(:last-child)::after {
 [data-theme="dark"] .mobile-nav-btn.ativo,
 body.tema-escuro .mobile-nav-btn.ativo {
   background: #1E293B !important;
+  border: 1.5px solid #10B981 !important;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.35), inset 0 0 0 1px rgba(16, 185, 129, 0.25) !important;
 }
 
 [data-theme="dark"] .mobile-nav-btn.ativo .mobile-nav-label,
@@ -12138,7 +12153,7 @@ body:not(.tema-escuro) .sombra-projetada-pos-compra-rapida {
 
 #btn-nav-comprar.tem-compra-rapida-piscando,
 #mobile-nav-btn-comprar.tem-compra-rapida-piscando {
-  animation: piscarAlertaCompraRapida 1.2s infinite ease-in-out !important;
+  animation: none !important;
 }
 
 .badge-piscando-comprar {

@@ -3511,6 +3511,34 @@ function atualizarCardEconomiaSidebar(campeaoId, totais, economia) {
   `;
 }
 
+// Garante que APENAS 1 botão de navegação fique selecionado por vez (se selecionou um, desmarca todos os outros!)
+function marcarBotaoNavegacaoExclusivo(alvo) {
+  document.querySelectorAll('.mobile-nav-btn, .sidebar-nav-item, .nav-item').forEach(b => {
+    b.classList.remove('ativo');
+  });
+
+  if (alvo === 'compra-rapida') {
+    const btnMobile = document.getElementById('mobile-nav-btn-presets');
+    if (btnMobile) btnMobile.classList.add('ativo');
+    const btnSidebar = document.getElementById('btn-nav-compra-rapida');
+    if (btnSidebar) btnSidebar.classList.add('ativo');
+    return;
+  }
+
+  if (alvo === 'config') {
+    const btnConfig = document.getElementById('mobile-nav-btn-config');
+    if (btnConfig) btnConfig.classList.add('ativo');
+    const abaAtual = (typeof AppState !== 'undefined' && AppState.abaAtiva) ? AppState.abaAtiva : 'lista';
+    document.querySelectorAll(`.sidebar-nav-item[data-aba="${abaAtual}"]`).forEach(b => b.classList.add('ativo'));
+    return;
+  }
+
+  const aba = alvo || ((typeof AppState !== 'undefined' && AppState.abaAtiva) ? AppState.abaAtiva : 'lista');
+  document.querySelectorAll(`.mobile-nav-btn[data-aba="${aba}"], .sidebar-nav-item[data-aba="${aba}"], .nav-item[data-aba="${aba}"]`).forEach(b => {
+    b.classList.add('ativo');
+  });
+}
+
 // Navegação de Abas Unificada (Sidebar + Menus) com Cortinas Identadas
 function alternarAbaApp(aba, isUserClick = true) {
   if (!aba) return;
@@ -3540,11 +3568,16 @@ function alternarAbaApp(aba, isUserClick = true) {
   if (typeof cancelarPendenteDesmarcar === 'function') cancelarPendenteDesmarcar();
   if (typeof cancelarDespensaPendenteDesmarcar === 'function') cancelarDespensaPendenteDesmarcar();
 
-  // Sincroniza classes ativas em todos os menus (sidebar, inferior celular e desktop)
-  document.querySelectorAll('.nav-item[data-aba], .sidebar-nav-item[data-aba], .mobile-nav-btn[data-aba]').forEach(b => {
-    if (b.getAttribute('data-aba') === aba) b.classList.add('ativo');
-    else b.classList.remove('ativo');
-  });
+  // Sincroniza classes ativas garantindo que apenas 1 botão fique marcado por vez
+  const modalCRAtivo = document.getElementById('modal-compra-rapida');
+  const modalCfgAtivo = document.getElementById('modal-opcoes-header');
+  if (!isUserClick && modalCRAtivo && modalCRAtivo.style.display !== 'none' && modalCRAtivo.style.display !== '') {
+    marcarBotaoNavegacaoExclusivo('compra-rapida');
+  } else if (!isUserClick && modalCfgAtivo && modalCfgAtivo.style.display !== 'none' && modalCfgAtivo.style.display !== '') {
+    marcarBotaoNavegacaoExclusivo('config');
+  } else {
+    marcarBotaoNavegacaoExclusivo(aba);
+  }
 
   const vLista = document.getElementById('view-lista');
   const vDespensa = document.getElementById('view-despensa');
@@ -4863,7 +4896,7 @@ function renderizarListaCompras() {
     const ehGrupoCompraRapida = (categoria === CHAVE_GRUPO_COMPRA_RAPIDA);
 
     // Ordenação dinâmica dentro da categoria:
-    // Itens NÃO pegos primeiro; em Compra Rápida, os itens recém-adicionados entram sempre EM CIMA!
+    // Itens NÃO pegos primeiro; em Compra Rápida, SEMPRE traz em ordem alfabética (A-Z)!
     // Itens COMPRADOS vão para o final da seção
     itens.sort((a, b) => {
       const aComp = a.comprado ? 1 : 0;
@@ -4871,14 +4904,7 @@ function renderizarListaCompras() {
       if (aComp !== bComp) {
         return aComp - bComp; // 0 (não pego) vem antes de 1 (pego)
       }
-      if (ehGrupoCompraRapida && !a.comprado && !b.comprado) {
-        const tsA = Number(a.adicionadoEm) || 0;
-        const tsB = Number(b.adicionadoEm) || 0;
-        if (tsA !== tsB) {
-          return tsB - tsA; // Mais novos entram no topo de FAVOR COMPRAR!!
-        }
-      }
-      if (AppState.modoCotacao === 'alfabetico') {
+      if (ehGrupoCompraRapida || AppState.modoCotacao === 'alfabetico') {
         return (a.nome || '').localeCompare(b.nome || '', 'pt-BR', { sensitivity: 'base' });
       }
       return (a.indexOriginal || 0) - (b.indexOriginal || 0);
@@ -9496,8 +9522,7 @@ function abrirModalOpcoesHeader() {
       fecharModalCompraRapida();
     }
   }
-  const btnConfig = document.getElementById('mobile-nav-btn-config');
-  if (btnConfig) btnConfig.classList.add('ativo');
+  marcarBotaoNavegacaoExclusivo('config');
   const badge = document.getElementById('badge-status-cotado');
   if (badge) {
     badge.textContent = AppState.cotacaoAtiva ? 'Ativo' : 'Pausado';
@@ -10682,16 +10707,20 @@ function abrirModalNuvem() {
 }
 
 function fecharModal(id) {
-  if (id === 'modal-opcoes-header') {
-    const btnConfig = document.getElementById('mobile-nav-btn-config');
-    if (btnConfig) btnConfig.classList.remove('ativo');
-  }
   if (id === 'modal-marcas') {
     fecharCortinaMarcas();
     return;
   }
   const el = document.getElementById(id);
   if (el) el.style.display = 'none';
+  if (id === 'modal-opcoes-header') {
+    const modalCR = document.getElementById('modal-compra-rapida');
+    if (modalCR && modalCR.style.display !== 'none' && modalCR.style.display !== '') {
+      marcarBotaoNavegacaoExclusivo('compra-rapida');
+    } else {
+      marcarBotaoNavegacaoExclusivo(AppState.abaAtiva || 'lista');
+    }
+  }
 }
 
 function salvarConfigNuvem() {
@@ -11258,10 +11287,7 @@ function abrirModalPresets() {
     alternarSidebar(false);
   }
 
-  const btnMobilePresets = document.getElementById('mobile-nav-btn-presets');
-  if (btnMobilePresets) btnMobilePresets.classList.add('ativo');
-  const btnSidebarPresets = document.getElementById('btn-nav-compra-rapida');
-  if (btnSidebarPresets) btnSidebarPresets.classList.add('ativo');
+  marcarBotaoNavegacaoExclusivo(AppState.abaAtiva || 'despensa');
 
   sincronizarPresetsPadraoComEdicoesNuvem();
   fecharDetalhesPreset();
@@ -11703,11 +11729,8 @@ function fecharDetalhesPreset() {
 // Fechar todo o modal de presets e gaveta
 function fecharModalPresetsCompleto() {
   fecharDetalhesPreset();
-  const btnMobilePresets = document.getElementById('mobile-nav-btn-presets');
-  if (btnMobilePresets) btnMobilePresets.classList.remove('ativo');
-  const btnSidebarPresets = document.getElementById('btn-nav-compra-rapida');
-  if (btnSidebarPresets) btnSidebarPresets.classList.remove('ativo');
   fecharModal('modal-presets-lista');
+  marcarBotaoNavegacaoExclusivo(AppState.abaAtiva || 'lista');
 }
 
 // Fechar ambos os modais ao clicar em qualquer área externa aos cartões
@@ -12304,20 +12327,20 @@ const MAPA_TERMOS_INTELIGENTES_CR = {
 let estadoCompraRapida = {
   categoriaFiltro: 'cotidiano',
   termoBusca: '',
-  ordemAlfabetica: false,
+  ordemAlfabetica: true,
   selecionadosTemp: new Map(), // id -> { id, qtde, novoEnvio, jaEstava, adicionadoEmOriginal }
   favoritosIds: null,          // Set de IDs favoritados para a Lista Rápida
   itensInteligentesDetectados: [] // Array de { prod, qtde, termoOriginal, ehOpcaoGrupo }
 };
 
 function alternarOrdemAlfabeticaCompraRapida() {
-  estadoCompraRapida.ordemAlfabetica = !estadoCompraRapida.ordemAlfabetica;
+  estadoCompraRapida.ordemAlfabetica = true;
   const btn = document.getElementById('btn-ordem-az-compra-rapida');
   if (btn) {
-    btn.classList.toggle('ativo', estadoCompraRapida.ordemAlfabetica);
+    btn.classList.add('ativo');
   }
   renderizarGridCompraRapida();
-  mostrarNotificacaoToast(estadoCompraRapida.ordemAlfabetica ? '🔤 Ordenado de A a Z' : '📋 Ordem padrão restaurada');
+  mostrarNotificacaoToast('🔤 Ordenado de A a Z');
 }
 
 function normalizarTextoCR(txt) {
@@ -12447,6 +12470,7 @@ function abrirModalCompraRapida() {
 
   estadoCompraRapida.categoriaFiltro = 'cotidiano';
   estadoCompraRapida.termoBusca = '';
+  estadoCompraRapida.ordemAlfabetica = true;
   estadoCompraRapida.itensInteligentesDetectados = [];
 
   const inputBusca = document.getElementById('input-busca-compra-rapida');
@@ -12458,7 +12482,7 @@ function abrirModalCompraRapida() {
   const previewBar = document.getElementById('cr-smart-preview-bar');
   if (previewBar) previewBar.style.display = 'none';
   const btnOrdemAz = document.getElementById('btn-ordem-az-compra-rapida');
-  if (btnOrdemAz) btnOrdemAz.classList.toggle('ativo', !!estadoCompraRapida.ordemAlfabetica);
+  if (btnOrdemAz) btnOrdemAz.classList.add('ativo');
 
   document.querySelectorAll('#compra-rapida-abas-cat .cr-cat-pill').forEach(btn => {
     btn.classList.toggle('ativo', btn.getAttribute('data-cat') === 'cotidiano');
@@ -12466,10 +12490,7 @@ function abrirModalCompraRapida() {
 
   modal.style.display = 'flex';
 
-  const btnMobile = document.getElementById('mobile-nav-btn-presets');
-  if (btnMobile) btnMobile.classList.add('ativo');
-  const btnSidebar = document.getElementById('btn-nav-compra-rapida');
-  if (btnSidebar) btnSidebar.classList.add('ativo');
+  marcarBotaoNavegacaoExclusivo('compra-rapida');
 
   renderizarGridCompraRapida();
   atualizarRodapeModalCompraRapida();
@@ -12480,10 +12501,7 @@ function fecharModalCompraRapida() {
   const modal = document.getElementById('modal-compra-rapida');
   if (modal) modal.style.display = 'none';
 
-  const btnMobile = document.getElementById('mobile-nav-btn-presets');
-  if (btnMobile) btnMobile.classList.remove('ativo');
-  const btnSidebar = document.getElementById('btn-nav-compra-rapida');
-  if (btnSidebar) btnSidebar.classList.remove('ativo');
+  marcarBotaoNavegacaoExclusivo(AppState.abaAtiva || 'lista');
 }
 
 function selecionarCategoriaCompraRapida(cat) {
@@ -13255,11 +13273,7 @@ function obterProdutosFiltradosCompraRapida() {
     resultado = catalogo.filter(p => p.categoria === cat);
   }
 
-  if (estadoCompraRapida.ordemAlfabetica) {
-    return [...resultado].sort((a, b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR', { sensitivity: 'base' }));
-  }
-
-  return resultado;
+  return [...resultado].sort((a, b) => (a.nome || '').localeCompare(b.nome || '', 'pt-BR', { sensitivity: 'base' }));
 }
 
 // Formata o nome do card na Compra Rápida com no máximo 2 palavras principais + 3ª palavra (medida/kilo) + "...."
