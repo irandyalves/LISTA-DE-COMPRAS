@@ -6662,12 +6662,12 @@ body.tema-escuro .drawer-fechar-btn {
 
   .mobile-nav-label {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-    font-size: 0.62rem !important;
-    letter-spacing: -0.1px !important;
+    font-size: 0.56rem !important;
+    letter-spacing: -0.25px !important;
     line-height: 1.2 !important;
     white-space: nowrap !important;
     overflow: hidden !important;
-    text-overflow: ellipsis !important;
+    text-overflow: clip !important;
     max-width: 100% !important;
     transition: color 0.15s ease, font-weight 0.15s ease;
   }

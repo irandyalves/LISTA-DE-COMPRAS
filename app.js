@@ -4980,10 +4980,10 @@ function renderizarListaCompras() {
           <th colspan="3" class="mcol-th-categoria-col">
             <div class="categoria-titulo-tabela header-compra-rapida-urgente">
               <div class="cr-header-bloco-esq">
-                <span class="categoria-nome-txt cr-titulo-destaque"><span class="cr-data-label">${rotuloData}</span><span class="cr-dot-branco" title="Hora"></span><span class="cr-hora-label">${horaFormatada}</span> <span class="cr-divisor-barra">|</span> <span class="cr-comprar-label">Comprar</span></span>
+                <span class="categoria-nome-txt cr-titulo-destaque"><span class="cr-data-label">${rotuloData}</span><span class="cr-dot-branco" title="Hora"></span><span class="cr-hora-label">${horaFormatada}</span> <span class="cr-divisor-barra">|</span> <span class="cr-comprar-label">Compra Rápida</span></span>
               </div>
               <div class="cr-header-bloco-dir">
-                <div class="balao-total-categoria ${temValorComprar ? '' : 'vazio'}" id="balao-total-comprar-compra_rapida" title="Total de Comprar">
+                <div class="balao-total-categoria ${temValorComprar ? '' : 'vazio'}" id="balao-total-comprar-compra_rapida" title="Total de Compra Rápida">
                   <span class="balao-valor">${formatarMoeda(totalCatComprar)}</span>
                 </div>
                 <button type="button" class="btn-cr-header-acao btn-cr-header-add" onclick="abrirModalCompraRapida()" title="Adicionar ou editar produtos em Compra Rápida">+ Itens</button>
@@ -7109,8 +7109,8 @@ function renderizarHistorico() {
         }
       } else {
         badgeComparativoCompra = `
-          <span class="tag-comparativo-base" title="Primeira compra registrada no histórico">
-            ⭐ Compra Base
+          <span class="tag-comparativo-base" title="Compra Rápida registrada no histórico">
+            ⚡ Compra Rápida
           </span>
         `;
       }
