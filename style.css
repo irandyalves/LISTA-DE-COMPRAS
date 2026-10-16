@@ -7481,6 +7481,7 @@ body.tema-escuro .drawer-fechar-btn {
   margin-left: 0 !important;
   padding-left: 0 !important;
   color: #000000 !important;
+  text-align: center !important;
 }
 
 .toast-patroa-titulo {
@@ -7489,6 +7490,7 @@ body.tema-escuro .drawer-fechar-btn {
   color: #000000 !important;
   margin-bottom: 4px;
   line-height: 1.35;
+  text-align: center !important;
 }
 
 .toast-patroa-titulo strong,
@@ -7520,11 +7522,12 @@ body.tema-escuro .drawer-fechar-btn {
 }
 
 .toast-patroa-itens {
-  font-size: 1.05rem;
-  font-weight: 500 !important; /* Itens sem bold */
+  font-size: calc(1.05rem * 1.15) !important; /* +15% fonte */
+  font-weight: 900 !important; /* BOLD */
   color: #000000 !important;
   word-break: break-word;
   line-height: 1.45;
+  text-align: center !important;
 }
 
 .toast-item-qtde-destaque {
@@ -7536,7 +7539,7 @@ body.tema-escuro .drawer-fechar-btn {
 }
 
 .toast-item-nome-texto {
-  font-weight: 500 !important; /* Sem bold */
+  font-weight: 900 !important; /* BOLD */
   color: #000000 !important;
 }
 
@@ -7603,6 +7606,7 @@ body.tema-escuro .drawer-fechar-btn {
 #toast-aviso-patroa.modo-desistencia .toast-patroa-titulo b {
   color: #FFFFFF !important;
   font-weight: 700 !important;
+  text-align: center !important;
 }
 
 .toast-aviso-patroa.modo-desistencia .toast-patroa-nome-autor,
@@ -7622,6 +7626,7 @@ body.tema-escuro .drawer-fechar-btn {
   font-size: calc(1.05rem * 1.15) !important;
   font-weight: 900 !important;
   text-decoration: none !important;
+  text-align: center !important;
 }
 
 .toast-aviso-patroa.modo-desistencia .toast-item-qtde-destaque,
