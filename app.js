@@ -1975,6 +1975,9 @@ function formatarItemAvisoPatroa(itemStr) {
 
   // Remove sufixo de embalagem entre parênteses (ex: "(Caixa 1L)", "(kg)") para exibir o nome limpo
   nomeLimpo = nomeLimpo.split('(')[0].replace(/^[-\s|]+/, '').replace(/[-\s|]+$/, '').trim() || nomeLimpo;
+  if (nomeLimpo.length > 20) {
+    nomeLimpo = nomeLimpo.slice(0, 20) + '...';
+  }
 
   if (!qtde || isNaN(qtde)) {
     qtde = 1;
@@ -2011,7 +2014,10 @@ function exibirAvisoPedidoPatroa(autor, itens, icone = '👩', tipo = 'adicionad
 
   if (tipo === 'desistiu' || tipo === 'desistiu_cr') {
     banner.classList.add('modo-desistencia');
-    if (iconeEl) iconeEl.textContent = '🚫';
+    if (iconeEl) {
+      iconeEl.textContent = '';
+      iconeEl.style.display = 'none';
+    }
     if (tituloEl) {
       tituloEl.innerHTML = `<strong class="toast-patroa-nome-autor">${escapeHtml(nomeUpper)}</strong> disse que NÃO precisa comprar mais:`;
     }
@@ -2020,7 +2026,10 @@ function exibirAvisoPedidoPatroa(autor, itens, icone = '👩', tipo = 'adicionad
     }
   } else if (tipo === 'compra_rapida') {
     banner.classList.add('modo-compra-rapida');
-    if (iconeEl) iconeEl.textContent = '⚡';
+    if (iconeEl) {
+      iconeEl.textContent = '⚡';
+      iconeEl.style.display = 'inline-flex';
+    }
     if (tituloEl) {
       tituloEl.innerHTML = `<strong class="toast-patroa-nome-autor">${escapeHtml(nomeUpper)}</strong> pediu pra comprar <span class="toast-patroa-badge-tempo">HOJE  ${horaStr}</span>`;
     }
@@ -2028,7 +2037,10 @@ function exibirAvisoPedidoPatroa(autor, itens, icone = '👩', tipo = 'adicionad
       itensEl.innerHTML = htmlItens;
     }
   } else {
-    if (iconeEl) iconeEl.textContent = '🔔';
+    if (iconeEl) {
+      iconeEl.textContent = '⚡';
+      iconeEl.style.display = 'inline-flex';
+    }
     if (tituloEl) {
       tituloEl.innerHTML = `<strong class="toast-patroa-nome-autor">${escapeHtml(nomeUpper)}</strong> pediu pra comprar <span class="toast-patroa-badge-tempo">HOJE  ${horaStr}</span>`;
     }
