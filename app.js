@@ -4993,7 +4993,7 @@ function renderizarListaCompras() {
 
       linhasTabelaHtml += `
         <tr id="secao-topo-compra-rapida" class="mcol-tr-categoria-separador secao-header-compra-rapida ${ehFundoClaro ? 'fundo-claro' : ''}">
-          <th colspan="3" class="mcol-th-categoria-col">
+          <th colspan="2" class="mcol-th-categoria-col">
             <div class="categoria-titulo-tabela header-compra-rapida-urgente">
               <div class="cr-header-bloco-esq">
                 <span class="categoria-nome-txt cr-titulo-destaque"><span class="cr-data-label">${rotuloData}</span><span class="cr-dot-branco" title="Hora"></span><span class="cr-hora-label">${horaFormatada}</span> <span class="cr-divisor-barra">|</span> <span class="cr-comprar-label">Compra Rápida</span></span>
@@ -5014,7 +5014,7 @@ function renderizarListaCompras() {
     } else {
       linhasTabelaHtml += `
         <tr class="mcol-tr-categoria-separador">
-          <th colspan="3" class="mcol-th-categoria-col">
+          <th colspan="2" class="mcol-th-categoria-col">
             <div class="categoria-titulo-tabela">
               <span class="categoria-nome-txt">${categoria}</span>
               <span class="categoria-qtd-badge">(${itens.length} ${itens.length === 1 ? 'item' : 'itens'})</span>
@@ -5136,11 +5136,11 @@ function renderizarListaCompras() {
 
       linhasTabelaHtml += `
         <tr class="mcol-tr-item ${item.compraRapida ? 'tr-item-compra-rapida' : ''} ${item.compraRapida && AppState.fundoCompraRapidaClaro !== false ? 'fundo-claro' : ''} ${item.comprado ? 'item-linha-comprado' : ''} ${classePendente}" id="tr-item-${item.id}">
-          <td colspan="2" class="mcol-td-check mcol-td-cr-contador-bloco" onclick="alternarItemComprado('${item.id}')">
+          <td class="mcol-td-cr-contador-bloco" onclick="alternarItemComprado('${item.id}')">
             <div class="contador-qtde-tabela cr-contador-esq" onclick="event.stopPropagation()">
-              <button class="btn-step-tabela" onclick="alterarQuantidade('${item.id}', -1)" title="Diminuir">-</button>
+              <button type="button" class="btn-step-tabela btn-step-triangulo-diminuir" onclick="alterarQuantidade('${item.id}', -1)" title="Diminuir (vermelho)">▼</button>
               <input type="number" min="1" class="input-qtde-tabela" value="${qtde}" onchange="definirQuantidadeDireta('${item.id}', this.value)" title="Editar quantidade" />
-              <button class="btn-step-tabela" onclick="alterarQuantidade('${item.id}', 1)" title="Aumentar">+</button>
+              <button type="button" class="btn-step-tabela btn-step-triangulo-aumentar" onclick="alterarQuantidade('${item.id}', 1)" title="Aumentar (azul)">▲</button>
             </div>
           </td>
           <td class="mcol-td-produto">
@@ -5215,8 +5215,7 @@ function renderizarListaCompras() {
     tfootHtml = `
       <tfoot>
         <tr class="mcol-tr-totais">
-          <td class="mcol-td-check-total"></td>
-          <td class="mcol-td-qtde-total"></td>
+          <td class="mcol-td-contador-total"></td>
           <td class="mcol-td-totais-label">
             <div style="font-weight: 800; font-size: 0.92rem;">TOTAL ESTIMADO</div>
             <small style="color: var(--text-muted); font-size: 0.72rem;">Soma dos ${AppState.listaAtiva.length} itens</small>
@@ -13472,16 +13471,17 @@ function renderizarGridCompraRapida() {
           <div class="card-cr-linha-nome-qtde">
             <span class="card-cr-nome" title="${escapeHtml(prod.nome)}">${escapeHtml(nomeCurto3Palavras)}</span>
           </div>
-          ${mostrarQtdeVerde ? `<span class="card-cr-qtde-verde" onclick="ciclarQtdeCompraRapida('${escapeHtml(idStr)}', event)" title="Quantidade: ${qtdeFmt} (Toque para aumentar)">${qtdeFmt}</span>` : ''}
+          <div class="card-cr-contador" onclick="event.stopPropagation()">
+            <button type="button" class="btn-cr-triangulo btn-cr-triangulo-diminuir" onclick="alterarQtdeCompraRapida('${escapeHtml(idStr)}', -1, event)" title="Diminuir (vermelho)">▼</button>
+            <span class="card-cr-qtde-verde" title="Quantidade: ${qtdeFmt}">${qtdeFmt}</span>
+            <button type="button" class="btn-cr-triangulo btn-cr-triangulo-aumentar" onclick="alterarQtdeCompraRapida('${escapeHtml(idStr)}', 1, event)" title="Aumentar (azul)">▲</button>
+          </div>
           <button type="button"
                   class="btn-fav-cotidiano-cr ${ehFavRapida ? 'ativo' : ''}"
                   onclick="alternarFavoritoCompraRapida('${escapeHtml(idStr)}', event)"
                   title="${ehFavRapida ? 'Pertence à Lista Rápida (Clique para desafavoritar)' : 'Favoritar para aparecer na Lista Rápida do Cotidiano'}">
             ★
           </button>
-          <div class="card-cr-check ${estaMarcado ? 'ativo' : ''}">
-            ${estaMarcado ? '✓' : ''}
-          </div>
         </div>
       </div>
     `;
@@ -13554,17 +13554,36 @@ function ciclarQtdeCompraRapida(prodId, event) {
 }
 
 function alterarQtdeCompraRapida(prodId, delta, event) {
-  if (event) event.stopPropagation();
+  if (event) {
+    event.stopPropagation();
+    event.preventDefault();
+  }
   const idStr = String(prodId);
-  const itemObj = estadoCompraRapida.selecionadosTemp.get(idStr);
-  if (!itemObj) return;
-
-  let novaQtde = (itemObj.qtde || 1) + delta;
-  if (novaQtde < 1) novaQtde = 1;
-  itemObj.qtde = novaQtde;
-  itemObj.novoEnvio = true;
-
   const prod = (AppState.catalogo || []).find(p => String(p.id) === idStr);
+  let itemObj = estadoCompraRapida.selecionadosTemp.get(idStr);
+
+  const baseQtde = itemObj
+    ? (itemObj.qtde || 1)
+    : ((estadoCompraRapida.qtdesDigitadasPorId && estadoCompraRapida.qtdesDigitadasPorId.get(idStr)) || ((prod && prod.qtdeCR) ? prod.qtdeCR : 1));
+
+  let novaQtde = baseQtde + delta;
+  if (novaQtde < 1) novaQtde = 1;
+
+  if (!itemObj) {
+    itemObj = {
+      id: prod ? prod.id : prodId,
+      qtde: novaQtde,
+      novoEnvio: true
+    };
+    estadoCompraRapida.selecionadosTemp.set(idStr, itemObj);
+  } else {
+    itemObj.qtde = novaQtde;
+    itemObj.novoEnvio = true;
+  }
+
+  if (estadoCompraRapida.qtdesDigitadasPorId) {
+    estadoCompraRapida.qtdesDigitadasPorId.set(idStr, novaQtde);
+  }
   if (prod) prod.qtdeCR = novaQtde;
 
   aplicarCompraRapidaImediata(prod ? { tipo: 'compra_rapida', prod, qtde: novaQtde } : null);

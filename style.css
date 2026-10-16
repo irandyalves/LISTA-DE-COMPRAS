@@ -4383,11 +4383,11 @@ body.tema-escuro .despensa-aba-tab.btn-aba-favoritos-estrela.ativa,
   left: 0 !important;
   z-index: 5 !important;
   background: white;
-  width: 66px !important;
-  min-width: 66px !important;
-  max-width: 66px !important;
-  padding: 4px 0 4px 2px !important;
-  text-align: right !important;
+  width: 72px !important;
+  min-width: 72px !important;
+  max-width: 72px !important;
+  padding: 4px 4px !important;
+  text-align: center !important;
   vertical-align: middle !important;
   box-sizing: border-box !important;
 }
@@ -4403,14 +4403,16 @@ body.tema-escuro .mcol-tr-item:hover .mcol-td-cr-contador-bloco {
 }
 
 .mcol-td-cr-contador-bloco .cr-contador-esq {
-  margin-left: auto !important;
-  margin-right: 4px !important; /* Encostado logo após o botão + */
+  margin: 0 auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
 .contador-qtde-tabela {
   display: inline-flex;
   align-items: center;
-  gap: 0;
+  gap: 2px;
   background: transparent;
   border: none !important;
   border-radius: 4px;
@@ -4418,22 +4420,29 @@ body.tema-escuro .mcol-tr-item:hover .mcol-td-cr-contador-bloco {
 }
 
 .btn-step-tabela {
-  width: 14px;
-  height: 18px;
-  min-width: 14px;
-  border-radius: 2px;
+  width: 17px !important;
+  height: 20px !important;
+  min-width: 17px !important;
+  border-radius: 3px !important;
   border: none !important;
   background: #1E293B;
-  color: #4ADE80 !important;
-  font-weight: 900;
-  font-size: 0.75rem;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   transition: all 0.15s;
-  padding: 0;
-  line-height: 1;
+  padding: 0 !important;
+  line-height: 1 !important;
+}
+
+.btn-step-tabela.btn-step-triangulo-diminuir {
+  color: #EF4444 !important; /* Vermelho diminui */
+  font-size: 0.72rem !important;
+}
+
+.btn-step-tabela.btn-step-triangulo-aumentar {
+  color: #3B82F6 !important; /* Azul aumenta */
+  font-size: 0.72rem !important;
 }
 
 .btn-step-tabela:active {
@@ -4480,18 +4489,18 @@ body.tema-escuro .mcol-tr-item:hover .mcol-td-cr-contador-bloco {
   margin: 0;
 }
 
-/* Coluna de Produto: ajustada com left 66px (contador - qtde +) */
+/* Coluna de Produto: ajustada com left 72px (contador com triangulos) */
 .mcol-th-produto {
   position: sticky;
   top: 0;
-  left: 66px !important;
+  left: 72px !important;
   z-index: 29 !important;
   background: #F8FAFC !important;
   font-weight: 800;
   color: #1E293B;
   min-width: 170px;
   max-width: 250px;
-  padding: 6px 4px !important;
+  padding: 6px 6px !important;
   box-shadow: 2px 0 6px rgba(0,0,0,0.04), 0 6px 14px -2px rgba(15, 23, 42, 0.16);
 }
 
@@ -4514,10 +4523,10 @@ body.tema-escuro .mcol-tr-item:hover .mcol-td-cr-contador-bloco {
 
 .mcol-td-produto {
   position: sticky;
-  left: 66px !important;
+  left: 72px !important;
   z-index: 4;
   background: white;
-  padding: 4px 4px !important;
+  padding: 4px 8px !important;
   min-width: 170px;
   max-width: 250px;
   box-shadow: 2px 0 6px rgba(0,0,0,0.04);
@@ -5183,13 +5192,28 @@ body.tema-escuro .btn-marca-listbox-tag.com-marca:hover {
   padding: 8px 0 !important;
 }
 
+.mcol-td-contador-total {
+  position: sticky;
+  left: 0;
+  z-index: 5;
+  background: #F8FAFC !important;
+  width: 72px;
+  min-width: 72px;
+  max-width: 72px;
+}
+
+[data-theme="dark"] .mcol-td-contador-total,
+body.tema-escuro .mcol-td-contador-total {
+  background: #0F172A !important;
+}
+
 .mcol-td-totais-label {
   position: sticky;
-  left: 66px;
+  left: 72px;
   z-index: 4;
   background: #F8FAFC !important;
   text-align: left !important;
-  padding-left: 4px !important;
+  padding-left: 8px !important;
   min-width: 170px;
   max-width: 250px;
   box-shadow: 2px 0 6px rgba(0,0,0,0.04);
@@ -6871,10 +6895,18 @@ body.tema-escuro .drawer-fechar-btn {
     padding: 4px 0 !important;
   }
 
+  .mcol-td-cr-contador-bloco {
+    width: 72px !important;
+    min-width: 72px !important;
+    max-width: 72px !important;
+    left: 0 !important;
+    padding: 4px 4px !important;
+  }
+
   .mcol-th-produto,
   .mcol-td-produto {
-    left: 66px !important;
-    padding: 4px 2px !important;
+    left: 72px !important;
+    padding: 4px 8px !important;
     min-width: 140px !important;
   }
 
@@ -10410,7 +10442,16 @@ body.tema-escuro .mcol-prod-nome {
 [data-theme="dark"] .btn-step-tabela,
 body.tema-escuro .btn-step-tabela {
   background: #334155 !important;
-  color: #4ADE80 !important;
+}
+
+[data-theme="dark"] .btn-step-tabela.btn-step-triangulo-diminuir,
+body.tema-escuro .btn-step-tabela.btn-step-triangulo-diminuir {
+  color: #EF4444 !important;
+}
+
+[data-theme="dark"] .btn-step-tabela.btn-step-triangulo-aumentar,
+body.tema-escuro .btn-step-tabela.btn-step-triangulo-aumentar {
+  color: #3B82F6 !important;
 }
 
 [data-theme="dark"] .input-qtde-tabela,
@@ -11975,43 +12016,93 @@ body.tema-escuro .card-item-compra-rapida.item-filtrado-bold .card-cr-nome {
   display: none !important;
 }
 
+.card-cr-contador {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+  margin-right: 6px;
+  flex-shrink: 0;
+}
+
 .card-cr-qtde-verde {
-  font-size: 0.78rem !important;
+  font-size: 0.82rem !important;
   font-weight: 900 !important;
   color: #10B981 !important;
   line-height: 1;
   padding: 1px 4px;
-  margin-left: auto;
-  margin-right: 2px;
-  min-width: 22px;
-  text-align: right;
+  min-width: 20px;
+  text-align: center;
   border-radius: 3px;
   flex-shrink: 0;
-  cursor: pointer;
+  user-select: none;
 }
 
-.card-cr-qtde-verde:hover {
-  background: rgba(16, 185, 129, 0.18);
-}
-
-/* Botão Estrela para Favoritar como pertencente à Lista Rápida */
-.btn-fav-cotidiano-cr {
-  width: 20px !important;
+.btn-cr-triangulo {
+  width: 18px !important;
   height: 20px !important;
+  min-width: 18px !important;
+  border-radius: 3px;
+  border: none;
+  background: #1E293B;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+  transition: transform 0.1s ease;
+}
+
+.btn-cr-triangulo:active {
+  transform: scale(0.9);
+}
+
+.btn-cr-triangulo-diminuir {
+  color: #EF4444 !important; /* Vermelho diminui */
+  font-size: 0.72rem !important;
+}
+
+.btn-cr-triangulo-aumentar {
+  color: #3B82F6 !important; /* Azul aumenta */
+  font-size: 0.72rem !important;
+}
+
+[data-theme="dark"] .btn-cr-triangulo,
+body.tema-escuro .btn-cr-triangulo {
+  background: #334155 !important;
+}
+
+[data-theme="dark"] .btn-cr-triangulo-diminuir,
+body.tema-escuro .btn-cr-triangulo-diminuir {
+  color: #EF4444 !important;
+}
+
+[data-theme="dark"] .btn-cr-triangulo-aumentar,
+body.tema-escuro .btn-cr-triangulo-aumentar {
+  color: #3B82F6 !important;
+}
+
+/* Botão Estrela para Favoritar como pertencente à Lista Rápida (+80% maior) */
+.btn-fav-cotidiano-cr {
+  width: 26px !important;
+  height: 26px !important;
+  min-width: 26px !important;
   border-radius: 4px;
   border: none;
   background: transparent;
   color: #64748B;
-  font-size: 0.82rem;
+  font-size: 1.48rem !important; /* +80% maior que 0.82rem */
   line-height: 1;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  opacity: 0.5;
+  opacity: 0.7;
   padding: 0;
   transition: all 0.12s ease;
+  user-select: none;
 }
 
 .btn-fav-cotidiano-cr:hover {
@@ -12024,26 +12115,9 @@ body.tema-escuro .card-item-compra-rapida.item-filtrado-bold .card-cr-nome {
   opacity: 1;
 }
 
-/* Check verde ao marcar o card */
+/* Checkbox removido na Compra Rápida conforme solicitação */
 .card-cr-check {
-  width: 19px !important;
-  height: 19px !important;
-  border-radius: 4px !important;
-  border: 1.5px solid #64748B;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.74rem;
-  font-weight: 900;
-  color: transparent;
-  flex-shrink: 0;
-  background: transparent;
-}
-
-.card-cr-check.ativo {
-  background: #10B981 !important;
-  border-color: #059669 !important;
-  color: #FFFFFF !important;
+  display: none !important;
 }
 
 /* Rodapé do modal Compra Rápida */
