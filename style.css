@@ -2978,10 +2978,11 @@ body.tema-escuro .btn-categoria-fav.ativo,
   flex-shrink: 0 !important;
 }
 
-/* Contador - 1 + compacto e bem encostado */
+/* Contador com triângulos na Despensa: sem fundo, apenas os ícones vermelho e azul */
 #view-despensa .item-card .contador-qtde {
-  background: #E2E8F0 !important;
-  border: 1px solid #CBD5E1 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
   color: #475569 !important;
   padding: 0 !important;
   border-radius: 4px !important;
@@ -2992,11 +2993,27 @@ body.tema-escuro .btn-categoria-fav.ativo,
 #view-despensa .item-card .contador-qtde .btn-step {
   width: 18px !important;
   height: 18px !important;
-  font-size: 0.76rem !important;
-  font-weight: 700 !important;
-  color: #475569 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  cursor: pointer;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   padding: 0 !important;
-  border-radius: 2px !important;
+  line-height: 1 !important;
+}
+
+#view-despensa .item-card .contador-qtde .btn-step.btn-step-triangulo-diminuir,
+.btn-step.btn-step-triangulo-diminuir {
+  color: #EF4444 !important; /* Vermelho diminui */
+  font-size: 0.72rem !important;
+}
+
+#view-despensa .item-card .contador-qtde .btn-step.btn-step-triangulo-aumentar,
+.btn-step.btn-step-triangulo-aumentar {
+  color: #3B82F6 !important; /* Azul aumenta */
+  font-size: 0.72rem !important;
 }
 
 #view-despensa .item-card .contador-qtde .qtde-valor,
@@ -3138,12 +3155,17 @@ body.tema-escuro .btn-categoria-fav.ativo,
 }
 
 #view-despensa .item-card.na-lista-montar .contador-qtde {
-  background: #F1F5F9 !important;
-  border-color: #E2E8F0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
   color: #475569 !important;
 }
 
-#view-despensa .item-card.na-lista-montar .contador-qtde .btn-step,
+#view-despensa .item-card.na-lista-montar .contador-qtde .btn-step {
+  background: transparent !important;
+  border: none !important;
+}
+
 #view-despensa .item-card.na-lista-montar .contador-qtde .input-qtde-card {
   color: #475569 !important;
 }
@@ -4425,7 +4447,8 @@ body.tema-escuro .mcol-tr-item:hover .mcol-td-cr-contador-bloco {
   min-width: 17px !important;
   border-radius: 3px !important;
   border: none !important;
-  background: #1E293B;
+  background: transparent !important;
+  box-shadow: none !important;
   cursor: pointer;
   display: inline-flex !important;
   align-items: center !important;
@@ -4446,8 +4469,8 @@ body.tema-escuro .mcol-tr-item:hover .mcol-td-cr-contador-bloco {
 }
 
 .btn-step-tabela:active {
-  background: #334155;
-  transform: scale(0.92);
+  background: transparent !important;
+  transform: scale(0.88);
 }
 
 .input-qtde-tabela {
@@ -10608,14 +10631,17 @@ body.tema-escuro #view-despensa .item-card .item-check-btn {
 
 [data-theme="dark"] #view-despensa .item-card .contador-qtde,
 body.tema-escuro #view-despensa .item-card .contador-qtde {
-  background: #0F172A !important;
-  border-color: #334155 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
   color: #CBD5E1 !important;
 }
 
 [data-theme="dark"] #view-despensa .item-card .contador-qtde .btn-step,
 body.tema-escuro #view-despensa .item-card .contador-qtde .btn-step {
-  color: #CBD5E1 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 [data-theme="dark"] #view-despensa .item-card .contador-qtde .qtde-valor,
@@ -12648,5 +12674,80 @@ body.tema-escuro .btn-perfil-usuario-header .nome-perfil-header {
   color: #C4B5FD !important;
   font-weight: 800 !important;
 }
+
+/* ==========================================================================
+   AJUSTES: COMPRA RÁPIDA, BOTÕES DE QUANTIDADE E MODAIS
+   ========================================================================== */
+
+/* 1. ABA CRIAR LISTA & COMPRAR: Triângulos sem fundo (vermelho diminui, azul aumenta) */
+#view-despensa .item-card .contador-qtde,
+#view-despensa .item-card .contador-qtde .btn-step,
+.btn-step-tabela,
+.contador-qtde-tabela .btn-step-tabela {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.btn-step-triangulo-diminuir,
+.btn-step.btn-step-triangulo-diminuir,
+.btn-step-tabela.btn-step-triangulo-diminuir,
+.contador-qtde-tabela .btn-step-tabela.btn-step-triangulo-diminuir,
+#view-despensa .item-card .contador-qtde .btn-step.btn-step-triangulo-diminuir {
+  color: #EF4444 !important; /* Vermelho diminui ▼ */
+  font-size: 0.72rem !important;
+  line-height: 1 !important;
+}
+
+.btn-step-triangulo-aumentar,
+.btn-step.btn-step-triangulo-aumentar,
+.btn-step-tabela.btn-step-triangulo-aumentar,
+.contador-qtde-tabela .btn-step-tabela.btn-step-triangulo-aumentar,
+#view-despensa .item-card .contador-qtde .btn-step.btn-step-triangulo-aumentar {
+  color: #3B82F6 !important; /* Azul aumenta ▲ */
+  font-size: 0.72rem !important;
+  line-height: 1 !important;
+}
+
+/* 2. COMPRA RÁPIDA NA ABA COMPRAR:
+   - Sem coluna de triângulos/qtde
+   - O card começa no canto esquerdo (onde era o triângulo para baixo)
+*/
+.mcol-td-produto.mcol-td-produto-cr,
+.mcol-tr-item.tr-item-compra-rapida .mcol-td-produto,
+.mcol-tr-item.tr-item-compra-rapida .mcol-td-produto-cr {
+  left: 0 !important;
+  min-width: 242px !important;
+  padding-left: 6px !important;
+}
+
+@media (max-width: 768px) {
+  .mcol-td-produto.mcol-td-produto-cr,
+  .mcol-tr-item.tr-item-compra-rapida .mcol-td-produto,
+  .mcol-tr-item.tr-item-compra-rapida .mcol-td-produto-cr {
+    left: 0 !important;
+    min-width: 210px !important;
+  }
+}
+
+/* 3. CABEÇALHO COMPRA RÁPIDA: Total aumentado em 15% */
+#balao-total-comprar-compra_rapida .balao-valor,
+.secao-header-compra-rapida #balao-total-comprar-compra_rapida .balao-valor {
+  font-size: 1.06rem !important;
+  font-weight: 900 !important;
+}
+
+/* 4. MODAIS NA ABA CRIAR LISTA: abrem quase no topo */
+#modal-editar-nome-despensa.modal-overlay,
+#modal-novo-item-despensa.modal-overlay {
+  align-items: flex-start !important;
+  padding-top: 25px !important;
+}
+
+#modal-editar-nome-despensa .modal-content,
+#modal-novo-item-despensa .modal-content {
+  margin-top: 15px !important;
+}
+
 
 

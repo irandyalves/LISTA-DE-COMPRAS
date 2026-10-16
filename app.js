@@ -4996,14 +4996,13 @@ function renderizarListaCompras() {
           <th colspan="2" class="mcol-th-categoria-col">
             <div class="categoria-titulo-tabela header-compra-rapida-urgente">
               <div class="cr-header-bloco-esq">
-                <span class="categoria-nome-txt cr-titulo-destaque"><span class="cr-data-label">${rotuloData}</span><span class="cr-dot-branco" title="Hora"></span><span class="cr-hora-label">${horaFormatada}</span> <span class="cr-divisor-barra">|</span> <span class="cr-comprar-label">Compra Rápida</span></span>
+                <span class="categoria-nome-txt cr-titulo-destaque"><span class="cr-comprar-label">Compra Rápida</span></span>
               </div>
               <div class="cr-header-bloco-dir">
                 <div class="balao-total-categoria ${temValorComprar ? '' : 'vazio'}" id="balao-total-comprar-compra_rapida" title="Total de Compra Rápida">
                   <span class="balao-valor">${formatarMoeda(totalCatComprar)}</span>
                 </div>
                 <button type="button" class="btn-cr-header-acao btn-cr-header-add" onclick="abrirModalCompraRapida()" title="Adicionar ou editar produtos em Compra Rápida">+ Itens</button>
-                <button type="button" class="btn-cr-header-acao btn-cr-header-concluir" onclick="dispensarDestaquesCompraRapida()" title="Tirar o destaque destes itens">✓ Ok</button>
               </div>
             </div>
           </th>
@@ -5042,7 +5041,14 @@ function renderizarListaCompras() {
         }
         nomesResumidosVistos.add(chaveDeduplicacao);
       }
-      const nomeExibicaoTruncado = truncarNome18Caracteres(nomeExibicao);
+      let nomeExibicaoTruncado = truncarNome18Caracteres(nomeExibicao);
+      if (item.compraRapida) {
+        if (nomeExibicao.length > 20) {
+          nomeExibicaoTruncado = nomeExibicao.slice(0, 20).trim() + '...';
+        } else {
+          nomeExibicaoTruncado = nomeExibicao;
+        }
+      }
 
       const qtde = item.qtde || 1;
       const ehFavorito = !!(item.favorito || (AppState.catalogo.find(c => String(c.id) === String(item.id) || String(c.id) === String(item.catalogoId))?.favorito));
@@ -5116,7 +5122,19 @@ function renderizarListaCompras() {
 
       let tagAutorPedidoHtml = '';
       if (item.compraRapida && !item.comprado) {
-        tagAutorPedidoHtml = `<span class="tag-compra-rapida-card" onclick="alternarItemComprado('${item.id}')" title="Compra Rápida pedida por ${escapeHtml(item.adicionadoPor || 'Casa')}"><span class="tag-cr-autor-preto">${escapeHtml(item.adicionadoPor || 'Casa')}</span></span>`;
+        const tsItem = Number(item.adicionadoEmCR || item.adicionadoEm) || (item.adicionadoEm ? new Date(item.adicionadoEm).getTime() : 0);
+        let horaItem = '';
+        if (tsItem && !isNaN(tsItem) && tsItem > 1000) {
+          const dItem = new Date(tsItem);
+          const hh = String(dItem.getHours()).padStart(2, '0');
+          const mi = String(dItem.getMinutes()).padStart(2, '0');
+          horaItem = `${hh}:${mi}`;
+        } else {
+          const dAgora = new Date();
+          horaItem = `${String(dAgora.getHours()).padStart(2, '0')}:${String(dAgora.getMinutes()).padStart(2, '0')}`;
+        }
+        const autorItem = item.adicionadoPorCR || item.adicionadoPor || 'Casa';
+        tagAutorPedidoHtml = `<span class="tag-compra-rapida-card" onclick="alternarItemComprado('${item.id}')" title="Compra Rápida pedida por ${escapeHtml(autorItem)} às ${horaItem}"><span class="tag-cr-autor-preto">${escapeHtml(autorItem)} ${horaItem}</span></span>`;
       } else if (item.novoPedidoCasa && !item.comprado) {
         tagAutorPedidoHtml = `<span class="tag-novo-pedido-casa" onclick="alternarItemComprado('${item.id}')" title="Pedido de ${escapeHtml(item.adicionadoPor || 'Casa')}"><span class="seta-laranja-pedido">▶</span><span class="nome-pedido-txt">${escapeHtml(item.adicionadoPor || 'Casa')}</span></span>`;
       }
@@ -5136,14 +5154,18 @@ function renderizarListaCompras() {
 
       linhasTabelaHtml += `
         <tr class="mcol-tr-item ${item.compraRapida ? 'tr-item-compra-rapida' : ''} ${item.compraRapida && AppState.fundoCompraRapidaClaro !== false ? 'fundo-claro' : ''} ${item.comprado ? 'item-linha-comprado' : ''} ${classePendente}" id="tr-item-${item.id}">
-          <td class="mcol-td-cr-contador-bloco" onclick="alternarItemComprado('${item.id}')">
-            <div class="contador-qtde-tabela cr-contador-esq" onclick="event.stopPropagation()">
-              <button type="button" class="btn-step-tabela btn-step-triangulo-diminuir" onclick="alterarQuantidade('${item.id}', -1)" title="Diminuir (vermelho)">▼</button>
-              <input type="number" min="1" class="input-qtde-tabela" value="${qtde}" onchange="definirQuantidadeDireta('${item.id}', this.value)" title="Editar quantidade" />
-              <button type="button" class="btn-step-tabela btn-step-triangulo-aumentar" onclick="alterarQuantidade('${item.id}', 1)" title="Aumentar (azul)">▲</button>
-            </div>
-          </td>
-          <td class="mcol-td-produto">
+          ${item.compraRapida ? `
+            <td colspan="2" class="mcol-td-produto mcol-td-produto-cr">
+          ` : `
+            <td class="mcol-td-cr-contador-bloco" onclick="alternarItemComprado('${item.id}')">
+              <div class="contador-qtde-tabela cr-contador-esq" onclick="event.stopPropagation()">
+                <button type="button" class="btn-step-tabela btn-step-triangulo-diminuir" onclick="alterarQuantidade('${item.id}', -1)" title="Diminuir (vermelho)">▼</button>
+                <input type="number" min="1" class="input-qtde-tabela" value="${qtde}" onchange="definirQuantidadeDireta('${item.id}', this.value)" title="Editar quantidade" />
+                <button type="button" class="btn-step-tabela btn-step-triangulo-aumentar" onclick="alterarQuantidade('${item.id}', 1)" title="Aumentar (azul)">▲</button>
+              </div>
+            </td>
+            <td class="mcol-td-produto">
+          `}
             <div class="mcol-prod-card-cell">
               <div class="mcol-prod-linha-principal">
                 <div class="mcol-prod-zona-clique-marcar" onclick="alternarItemComprado('${item.id}')" title="${escapeHtml(item.nome)}">
@@ -6345,9 +6367,9 @@ function alternarFiltroFavoritosCategoria(categoria, event) {
 
             <!-- Coluna de Quantidade editável na frente do nome -->
             <div class="contador-qtde" style="margin-right: 2px; ${estaNaLista ? '' : 'opacity: 0.5;'}" onclick="event.stopPropagation()">
-              <button class="btn-step" onclick="event.stopPropagation(); alterarQuantidadeMontarLista('${prod.id}', -1, event)">-</button>
+              <button type="button" class="btn-step btn-step-triangulo-diminuir" onclick="event.stopPropagation(); alterarQuantidadeMontarLista('${prod.id}', -1, event)" title="Diminuir (vermelho)">▼</button>
               <input type="number" min="1" class="input-qtde-card" value="${qtde}" id="qtde-montar-${prod.id}" onclick="event.stopPropagation()" onchange="definirQuantidadeMontarLista('${prod.id}', this.value, event)" />
-              <button class="btn-step" onclick="event.stopPropagation(); alterarQuantidadeMontarLista('${prod.id}', 1, event)">+</button>
+              <button type="button" class="btn-step btn-step-triangulo-aumentar" onclick="event.stopPropagation(); alterarQuantidadeMontarLista('${prod.id}', 1, event)" title="Aumentar (azul)">▲</button>
             </div>
 
             <div class="item-corpo">
